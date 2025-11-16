@@ -62,7 +62,7 @@
             {% for deactivated_part in deactivated_parts %}
                 <tr>
                     <td>
-                        {% trans "Deaktivierung" %}
+                        <span class="d-none">6</span>{% trans "Deaktivierung" %}
                     </td>
                     <td>
                         {{ deactivated_part.deactivation_date|date:"Y-m-d" }}
@@ -78,29 +78,29 @@
                     </td>
                 </tr>
             {% endfor %}
-            {% for cancelled_part in cancelled_parts %}
+            {% for canceled_part in canceled_parts %}
                 <tr>
                     <td>
-                        {% trans "Kündigung" %}
+                        <span class="d-none">5</span>{% trans "Kündigung" %}
                     </td>
                     <td>
-                        {{ cancelled_part.cancellation_date|date:"Y-m-d" }}
+                        {{ canceled_part.cancellation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=cancelled_part.subscription %}
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=canceled_part.subscription %}
                     </td>
                     <td>
-                        {{ cancelled_part.type.display_name }}
+                        {{ canceled_part.type.display_name }}
                     </td>
                     <td>
-                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=cancelled_part.subscription %}
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=canceled_part.subscription %}
                     </td>
                 </tr>
             {% endfor %}
             {% for left_membership in left_memberships %}
                 <tr>
                     <td>
-                        {% trans "Austritt" %}
+                        <span class="d-none">4</span>{% trans "Austritt" %}
                     </td>
                     <td>
                         {{ left_membership.leave_date|date:"Y-m-d" }}
@@ -119,7 +119,7 @@
             {% for joined_membership in joined_memberships %}
                 <tr>
                     <td>
-                        {% trans "Beitritt" %}
+                        <span class="d-none">3</span>{% trans "Beitritt" %}
                     </td>
                     <td>
                         {{ joined_membership.join_date|date:"Y-m-d" }}
@@ -138,7 +138,7 @@
             {% for activated_part in activated_parts %}
                 <tr>
                     <td>
-                        {% trans "Aktivierung" %}
+                        <span class="d-none">2</span>{% trans "Aktivierung" %}
                     </td>
                     <td>
                         {{ activated_part.activation_date|date:"Y-m-d" }}
@@ -157,7 +157,7 @@
             {% for ordered_part in ordered_parts %}
                 <tr>
                     <td>
-                        {% trans "Bestellung" %}
+                        <span class="d-none">1</span>{% trans "Bestellung" %}
                     </td>
                     <td>
                         {{ ordered_part.creation_date|date:"Y-m-d" }}
@@ -181,4 +181,5 @@
     {{ block.super }}
     config.ordering = true
     config.order = [[1, 'desc']]
+    config.columnDefs = [{ orderData: [1, 2, 0], targets: 1 }]
 {% endblock %}

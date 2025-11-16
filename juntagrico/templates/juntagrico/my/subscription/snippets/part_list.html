@@ -14,65 +14,92 @@
         </thead>
         <tbody>
         {% for part in parts.sorted %}
-            <tr>
-                <td>{{ part }}</td>
-                <td>{{ part.state_text }}</td>
-                <td>
-                    {% if part.cancellation_date %}
-                        {% blocktrans with cd=part.cancellation_date %}
-                            Gekündigt am {{ cd }}
-                        {% endblocktrans %}
-                        {% if part.deactivation_date %}
-                            <br>
-                            {% blocktrans with dd=part.deactivation_date %}
-                                Noch aktiv bis am {{ dd }}
-                            {% endblocktrans %}
+            {% with remaining=part.remaining_trial_days %}
+                <tr>
+                    <td>
+                        {{ part }}
+                        {% if part.is_trial %}<span class="badge badge-info">{% trans "Probe" %}</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if remaining > 0 %}
+                            {{ part.state_text }}
+                            <div>
+                                {% blocktrans trimmed count remaining=remaining %}
+                                    Noch {{ remaining }} Tag
+                                {% plural %}
+                                    Noch {{ remaining }} Tage
+                                {% endblocktrans %}
+                            </div>
+                        {% elif remaining <= 0 %}
+                            <span class="badge badge-danger">{% trans "abgelaufen" %}</span>
+                        {% else %}
+                            {{ part.state_text }}
                         {% endif %}
-                    {% else %}
-                        {% with ad=part.activation_date %}
-                            {% if part.active %}
-                                {% blocktrans %}
-                                    Aktiv seit {{ ad }}
-                                {% endblocktrans %}
+                    </td>
+                    <td>
+                        {% if part.cancellation_date %}
+                            {% blocktrans trimmed with cd=part.cancellation_date %}
+                                Gekündigt am {{ cd }}
+                            {% endblocktrans %}
+                            {% if part.deactivation_date %}
                                 <br>
-                            {% elif ad %}
-                                {% blocktrans %}
-                                    Wird aktiv am {{ ad }}
+                                {% blocktrans trimmed with dd=part.deactivation_date %}
+                                    Noch aktiv bis am {{ dd }}
                                 {% endblocktrans %}
-                                <br>
                             {% endif %}
-                        {% endwith %}
-                        {% if subscription.primary_member == member %}
-                            {% if part.is_extra %}
-                                {% if part.state != 'canceled' and  part.state != 'inactive' %}
-                                    <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
-                                    onclick="return confirm('{% trans "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?" %}')">
-                                        {% trans "kündigen" %}
-                                    </a>
+                        {% else %}
+                            {% with ad=part.activation_date %}
+                                {% if part.active %}
+                                    {% if remaining > 0 %}
+                                        {% blocktrans trimmed %}
+                                            Aktiv seit {{ ad }}
+                                        {% endblocktrans %}
+                                        <br>
+                                    {% endif %}
+                                {% elif ad %}
+                                    {% blocktrans trimmed %}
+                                        Wird aktiv am {{ ad }}
+                                    {% endblocktrans %}
+                                    <br>
                                 {% endif %}
-                            {% else %}
-                                {% if can_change_part %}
-                                    <a href="{% url 'part-change' part.id %}" class="btn btn-primary">
-                                        {% trans "ändern" %}
-                                    </a>
-                                {% endif %}
-                                {% if part.subscription.future_parts.is_normal.count == 1 %}
-                                    {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
-                                        <a href="{% url 'sub-cancel' subscription.id %}" class="btn btn-danger">
-                                            {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                            {% endwith %}
+                            {% if subscription.primary_member == member %}
+                                {% if part.is_trial %}
+                                    {% if not part.follow_up_parts.exists %}
+                                        <div>{% trans "Willst du weitermachen?" %}</div>
+                                        {% include "./buttons/trial.html" %}
+                                    {% endif %}
+                                {% elif part.is_extra %}
+                                    {% if part.state != 'canceled' and  part.state != 'inactive' %}
+                                        <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
+                                        onclick="return confirm('{% trans "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?" %}')">
+                                            {% trans "kündigen" %}
                                         </a>
                                     {% endif %}
-                                {% elif part.subscription.future_parts.is_normal.count > 1 %}
-                                    <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
-                                    onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
-                                        {% trans "kündigen" %}
-                                    </a>
+                                {% else %}
+                                    {% if can_change_part %}
+                                        <a href="{% url 'part-change' part.id %}" class="btn btn-primary">
+                                            {% trans "ändern" %}
+                                        </a>
+                                    {% endif %}
+                                    {% if part.subscription.future_parts.is_normal.count == 1 %}
+                                        {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
+                                            <a href="{% url 'sub-cancel' subscription.id %}" class="btn btn-danger">
+                                                {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                                            </a>
+                                        {% endif %}
+                                    {% elif part.subscription.future_parts.is_normal.count > 1 %}
+                                        <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
+                                        onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
+                                            {% trans "kündigen" %}
+                                        </a>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
+                    </td>
+                </tr>
+            {% endwith %}
         {% endfor %}
         </tbody>
     </table>

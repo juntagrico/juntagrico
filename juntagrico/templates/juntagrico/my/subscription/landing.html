@@ -17,18 +17,12 @@
                     {% with jd=submem.join_date ld=submem.leave_date %}
                         {% if jd %}
                             {% if submem.waiting %}
-                                {% blocktrans %}
-                                    Ab {{ jd }}
-                                {% endblocktrans %}
+                                {% blocktrans %}Ab {{ jd }}{% endblocktrans %}
                             {% else %}
                                 {% if ld %}
-                                    {% blocktrans %}
-                                        {{ jd }} - {{ ld }}
-                                    {% endblocktrans %}
+                                    {% blocktrans %}{{ jd }} - {{ ld }}{% endblocktrans %}
                                 {% else %}
-                                    {% blocktrans %}
-                                        Seit {{ jd }}
-                                    {% endblocktrans %}
+                                    {% blocktrans %}Seit {{ jd }}{% endblocktrans %}
                                 {% endif %}
                             {% endif %}
                         {% else %}
@@ -39,7 +33,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">
                     {% with co_members=submem.co_members %}
                         {% if co_members %}
-                            {% blocktrans with cm=co_members|join:", " %}
+                            {% blocktrans trimmed with cm=co_members|join:", " %}
                                 Geteilt mit {{ cm }}
                             {% endblocktrans %}
                         {% endif %}
@@ -49,7 +43,7 @@
                     {{ submem.subscription.future_part_overview|overview|safe }}
                 </p>
                 <p class="card-text">
-                    {% blocktrans with d=submem.subscription.depot %}
+                    {% blocktrans trimmed with d=submem.subscription.depot %}
                         Depot: {{ d }}
                     {% endblocktrans %}
                 </p>

@@ -33,7 +33,7 @@
                 {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                 {% endblocktrans %}
             {% elif c_required_shares > 0 %}
-                {% blocktrans trimmed %}
+                {% blocktrans trimmed with v_share_pl=vocabulary.share_pl %}
                 Du benötigst mindestens {{ c_required_shares }} {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                 {% endblocktrans %}
             {% endif %}

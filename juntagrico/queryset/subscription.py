@@ -43,7 +43,16 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         self._start_required = False
         self._end_required = False
 
+    @staticmethod
+    def _assignment_rounding(number):
+        return Round(number)
+
     def active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions active on the given date.
+        """
         on_date = on_date or datetime.date.today()
         return self.in_date_range(on_date, on_date).exclude(activation_date=None)
 
@@ -109,6 +118,9 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
                 Case(
+                    # If activated and deactivated on same day, ignore the part
+                    When(parts__deactivation_date=F('parts__activation_date'),
+                         then=Cast(F('parts__deactivation_date') - self.one_day, DateField())),
                     # use deactivation date if set
                     When(parts__deactivation_date__isnull=False,
                          then='parts__deactivation_date'),
@@ -120,7 +132,8 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                     output_field=DateField()
                 )
             ),
-            # number of days subscription part is actually active within period of interest. Add a day because activation day should also count to duration
+            # number of days subscription part is actually active within period of interest.
+            # Add a day because activation day should also count to duration
             parts__duration_in_period=F('parts__forecast_final_date') - Greatest('parts__activation_date', start) + self.one_day,
             parts__duration_in_period_float=Greatest(
                 0.0,  # ignore values <0 resulting from parts outside the period of interest
@@ -145,8 +158,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
-            required_assignments=Round(Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)),
-            required_core_assignments=Round(Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)),
+            required_core_assignments=Greatest(0.0, self._assignment_rounding(
+                Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            )),
+            required_assignments=Greatest(F('required_core_assignments'), self._assignment_rounding(
+                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            )),
         )
 
     @method_decorator(default_to_business_year)
@@ -187,11 +204,24 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_extra(self):
         return self.filter(type__size__product__is_extra=True)
 
+    def is_trial(self):
+        return self.filter(type__trial_days__gt=0)
+
+    def non_trial(self):
+        return self.filter(type__trial_days=0)
+
     def ordered(self):
         return self.filter(activation_date=None)
 
-    def cancelled(self):
+    def waiting(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(activation_date__lte=date)
+
+    def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
+
+    def not_canceled(self):
+        return self.filter(cancellation_date=None)
 
     def waiting_or_active(self, date=None):
         date = date or datetime.date.today()

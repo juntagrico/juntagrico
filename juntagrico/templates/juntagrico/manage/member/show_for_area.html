@@ -1,0 +1,45 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+
+{% block list_head %}
+    <th class="filter">
+        {% trans "Kontakt" %}
+    </th>
+    {% if can_remove_member %}
+        <th>
+            {% trans "Aktionen" %}
+        </th>
+    {% endif %}
+{% endblock %}
+
+{% block list_foot %}
+    <th>
+        {% trans "Kontakt" %}
+    </th>
+    {% if can_remove_member %}
+        <th>
+            {% trans "Aktionen" %}
+        </th>
+    {% endif %}
+{% endblock %}
+
+{% block list_entry %}
+    <td>
+        {% include './snippets/display_linked.html' %}
+    </td>
+    {% if can_remove_member %}
+        <td>
+            <form action="{% url 'manage-area-member-remove' area.id %}" method="POST"
+                  onsubmit="return confirm('{% trans "Bist du sicher?" %}')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger" name="member_id" value="{{ member.id }}">
+                    {% trans "Entfernen" %}
+                </button>
+            </form>
+        </td>
+    {% endif %}
+{% endblock %}

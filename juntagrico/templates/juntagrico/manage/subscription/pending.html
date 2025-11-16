@@ -7,7 +7,7 @@
 {% block page_title %}
     <h3>
         {% vocabulary "subscription_pl" as v_subscription_pl %}
-        {% blocktrans %}Pendente Änderungen an {{ v_subscription_pl }}{% endblocktrans %}
+        {% blocktrans %}Pendente Änderungen der {{ v_subscription_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
 
@@ -63,15 +63,15 @@
         </thead>
         <tbody>
             {% for subscription in object_list %}
-                {% with cancelled_parts=subscription.parts.cancelled ordered_parts=subscription.parts.ordered %}
+                {% with canceled_parts=subscription.parts.canceled ordered_parts=subscription.parts.ordered %}
                     <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
                             <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                                 {{ subscription.id }}
                             </a>
                         </td>
-                        <td class="cancelled-parts pl-5">
-                            {% regroup cancelled_parts by cancellation_date as parts_by_date %}
+                        <td class="canceled-parts pl-5">
+                            {% regroup canceled_parts by cancellation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}
                             {% if parts_by_date and subscription.cancellation_date %}
                                 <div class="end-date pre" title="{% trans "Gewünschtes Enddatum" %}"

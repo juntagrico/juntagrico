@@ -70,7 +70,14 @@
                                 <td>
                                     {% if forloop.first %}
                                         {% blocktrans %}Du brauchst mindestens 1 {{ v_share }}{% endblocktrans %}
-                                    {% elif forloop.counter <=  required %}
+                                        {% if not required %}
+                                            <div>
+                                                <a href="{% url 'cancel-membership' %}" class="btn btn-outline-danger">
+                                                    {% trans "Mitgliedschaft kündigen" %}
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    {% elif forloop.counter <= required %}
                                         {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
                                     {% elif ibanempty %}
                                         <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>

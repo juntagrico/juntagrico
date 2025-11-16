@@ -10,11 +10,6 @@
         "groups": [],
         "user_permissions": [
             [
-                "is_area_admin",
-                "juntagrico",
-                "activityarea"
-            ],
-            [
                 "change_assignment",
                 "juntagrico",
                 "assignment"
@@ -271,11 +266,6 @@
         "user_permissions": [
             [
                 "change_activityarea",
-                "juntagrico",
-                "activityarea"
-            ],
-            [
-                "is_area_admin",
                 "juntagrico",
                 "activityarea"
             ],

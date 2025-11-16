@@ -2,19 +2,29 @@
 $(function () {
     if ($.fn.dataTable) {
         $.extend($.fn.dataTable.defaults, {
-            "responsive": true,
-            "paging": false,
-            "info": false,
-            "ordering": false,
-            "search": {
-                "smart": false,
-                "regex": true
+            responsive: true,
+            paging: false,
+            info: false,
+            ordering: false,
+            search: {
+                smart: false,
+                regex: true
             },
-            "searchBuilder": {
-                "columns": ".search-builder-column"
+            searchBuilder: {
+                columns: ".search-builder-column"
             },
-            "language": dt_language,
-            "initComplete": function (settings) {
+            language: dt_language,
+            layout: {
+                topStart: {
+                    // Add class here to make row sticky. Keep default layout.
+                    rowClass: 'row justify-content-between table-sticky-row',
+                    features: ['pageLength']
+                },
+                topEnd: 'search',
+                bottomStart: 'info',
+                bottomEnd: 'paging'
+            },
+            initComplete: function (settings) {
                 let api = new $.fn.dataTable.Api(settings)
                 // activate column search inputs
                 if (api.init().searching !== false) {

@@ -32,6 +32,7 @@ class SpecialRoles(models.Model):
         permissions = (('is_operations_group', _('Ist in der BG')),
                        ('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
                        ('can_send_mails', _('Kann E-Mails versenden')),
+                       ('can_email_attachments', _('Benutzer kann Anhänge per E-Mail senden')),
                        ('can_use_general_email', _('Kann Haupt-E-Mail-Adresse verwenden')),
                        ('can_use_for_members_email', _('Kann E-Mail-Adresse "for_members" verwenden')),
                        ('can_use_for_subscriptions_email', _('Kann E-Mail-Adresse "for_subscription" verwenden')),

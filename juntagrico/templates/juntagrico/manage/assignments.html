@@ -70,7 +70,7 @@
                         </a>
                         {% if subscription.canceled %}
                             -
-                            {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
+                            {% blocktrans trimmed with cd=subscription.cancellation_date|date:"Y-m-d" %}
                                 Gekündigt am {{cd}}
                             {% endblocktrans %}
                         {% endif %}
@@ -79,20 +79,20 @@
                         {{ subscription.assignment_count|floatformat:-2 }}
                     </td>
                     <td>
-                        {{ subscription.required_assignments|floatformat:0 }}
+                        {{ subscription.required_assignments|floatformat:-1 }}
                     </td>
                     <td>
-                        {{ subscription.assignments_progress|floatformat:0 }}%
+                        {{ subscription.assignments_progress|floatformat:-1 }}%
                     </td>
                     {% if b_show_core and b_requires_core %}
                         <td>
                             {{ subscription.core_assignment_count|floatformat:-2 }}
                         </td>
                         <td>
-                            {{ subscription.required_core_assignments|floatformat:0 }}
+                            {{ subscription.required_core_assignments|floatformat:-1 }}
                         </td>
                         <td>
-                            {{ subscription.core_assignments_progress|floatformat:0 }}%
+                            {{ subscription.core_assignments_progress|floatformat:-1 }}%
                         </td>
                     {% endif %}
                 </tr>

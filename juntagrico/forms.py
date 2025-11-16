@@ -1,4 +1,5 @@
 import datetime
+from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
@@ -8,6 +9,8 @@ from django.db import transaction
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
     DateTimeField, forms
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string, get_template
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -16,13 +19,16 @@ from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
+from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.entity.jobs import Assignment, Job, JobExtra
+from juntagrico.entity.jobs import Assignment, Job, JobExtra, ActivityArea
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
 from juntagrico.util.temporal import get_business_year, get_business_date_range
@@ -103,9 +109,11 @@ class AbstractMemberCancellationForm(ModelForm):
 
     def save(self, commit=True):
         if (sub := self.instance.subscription_current) is not None:
-            self.instance.leave_subscription(sub)
+            if sub.primary_member != self.instance:
+                self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
-            self.instance.leave_subscription(sub)
+            if sub.primary_member != self.instance:
+                self.instance.leave_subscription(sub)
         self.instance.cancel()
         return super().save(commit)
 
@@ -449,13 +457,16 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in subscription_size.types.filter(visible=True):
+                for subscription_type in self.type_filter(subscription_size.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
                 product_container.append(size_container)
             if len(product_container):
                 containers.append(product_container)
         return containers
+
+    def type_filter(self, qs):
+        return qs.filter(visible=True)
 
     def _get_initial(self, subscription_type):
         return 0
@@ -468,17 +479,20 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
 
 class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
+
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
-        containers = self._collect_type_fields()
-
-        self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
+        self.containers = self._collect_type_fields()
+        self.fields['no_selection'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
                                                       initial=not any(selected.values()), required=False)
+        self.helper.layout = self.get_form_layout()
 
-        self.helper.layout = Layout(
-            *containers,
-            Field('no_subscription', template='forms/no_subscription_field.html'),
+    def get_form_layout(self):
+        return Layout(
+            *self.containers,
+            Field('no_selection', template=self.no_selection_template),
             FormActions(
                 Submit('submit', _('Weiter'), css_class='btn-success'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
@@ -486,7 +500,14 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         )
 
     def _get_initial(self, subscription_type):
-        return self.selected.get(subscription_type, 0)
+        return self.selected.get(str(subscription_type.id), 0)
+
+
+class SubscriptionExtraPartSelectForm(SubscriptionPartSelectForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_extras_field.html'
+
+    def __init__(self, selected, *args, **kwargs):
+        super().__init__(selected, *args, product_method=SubscriptionProductDao.all_visible_extra_products, **kwargs)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
@@ -535,6 +556,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     part_type = ChoiceField()
 
     def __init__(self, part=None, *args, **kwargs):
+        self.pre_check(part)
         super().__init__(*args, **kwargs)
         self.part = part
         self.fields['part_type'].choices = self.get_choices
@@ -547,13 +569,21 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             )
         )
 
+    @staticmethod
+    def pre_check(part):
+        if part.subscription.canceled or part.subscription.inactive:
+            raise Http404("Can't change subscription part of canceled subscription")
+        if SubscriptionType.objects.normal().visible().count() <= 1:
+            raise Http404("Can't change subscription part if there is only one subscription type")
+
     def get_type_field(self, subscription_type):
-        if subscription_type.pk == self.part.type.pk:
-            return None
         return SubscriptionTypeOption('part_type', instance=subscription_type)
 
+    def type_filter(self, qs):
+        return super().type_filter(qs).exclude(pk=self.part.type.pk)
+
     def get_choices(self):
-        for subscription_type in SubscriptionTypeDao.get_normal_visible().exclude(pk=self.part.type.pk):
+        for subscription_type in self.type_filter(SubscriptionType.objects.normal().visible()):
             yield subscription_type.id, subscription_type.name
 
     def clean(self):
@@ -576,6 +606,110 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             for error_code, error in self.errors.items():
                 raise ValidationError(error, code=error_code)
         return super().clean()
+
+    def save(self):
+        subscription_type = get_object_or_404(SubscriptionType, id=self.cleaned_data['part_type'])
+        if self.part.activation_date is None:
+            # just change type of waiting part
+            self.part.type = subscription_type
+            self.part.save()
+        else:
+            # cancel existing part and create new waiting one
+            with transaction.atomic():
+                new_part = SubscriptionPart.objects.create(subscription=self.part.subscription, type=subscription_type)
+                self.part.cancel()
+            self.send_notification(new_part)
+        return self.part
+
+    def send_notification(self, new_part):
+        # notify admin
+        adminnotification.subpart_canceled(self.part)
+        adminnotification.subparts_created([new_part], self.part.subscription)
+
+
+class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
+    def __init__(self, part=None, *args, **kwargs):
+        super().__init__(part, *args, **kwargs)
+        self.helper.layout = Layout(
+            *self._collect_type_fields(),
+            FormActions(
+                Submit('submit', _('Bestellen'), css_class='btn-success')
+            )
+        )
+
+    def type_filter(self, qs):
+        return super().type_filter(qs).exclude(trial_days__gt=0)
+
+
+class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
+    def send_notification(self, new_part):
+        membernotification.trial_continued_for_you(self.part, new_part)
+        pass
+
+
+class TrialCloseoutForm(Form):
+    deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')), required=False)
+    deactivation_date = DateField(required=False)
+
+    def __init__(self, part=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.part = part
+        # add fields
+        if self.follow_up_part or self.other_new_parts:
+            self.fields['mode'] = ChoiceField(choices=(('append', ''), ('replace', '')), required=False)
+            if self.follow_up_part:
+                self.fields['activation_mode'] = ChoiceField(choices=(('next_day', ''), ('by_date', '')), required=False)
+                self.fields['activation_date'] = DateField(required=False)
+            for other_part in self.other_new_parts:
+                self.fields[f'activate{other_part.id}'] = BooleanField(required=False)
+                self.fields[f'activation_date{other_part.id}'] = DateField(required=False)
+
+    @cached_property
+    def follow_up_part(self):
+        return self.part.follow_up_parts().waiting().filter(type__size=self.part.type.size).first()
+
+    @cached_property
+    def other_new_parts(self):
+        other_parts = self.part.follow_up_parts().waiting()
+        if self.follow_up_part:
+            other_parts = other_parts.exclude(pk=self.follow_up_part.pk)
+        return other_parts
+
+    def clean(self):
+        if self.cleaned_data.get('mode') != 'replace':
+            if self.cleaned_data.get('deactivation_mode') == 'by_date':
+                if self.cleaned_data.get('deactivation_date') is None:
+                    raise ValidationError(_('Bitte gib ein Deaktivierungsdatum an.'), code='invalid_deactivation_date')
+        if self.cleaned_data.get('mode') == 'append':
+            if self.cleaned_data.get('activation_mode') == 'by_date':
+                if self.cleaned_data.get('activation_date') is None:
+                    raise ValidationError(_('Bitte gib ein Aktivierungsdatum an.'), code='invalid_activation_date')
+        for other_part in self.other_new_parts:
+            if self.cleaned_data.get(f'activate{other_part.id}'):
+                if not self.cleaned_data.get(f'activation_date{other_part.id}'):
+                    raise ValidationError(_('Bitte gib ein Aktivierungsdatum an.'), code='invalid_other_activation_date')
+
+    def save(self):
+        if self.cleaned_data.get('mode') == 'replace':
+            self.follow_up_part.activate(self.part.activation_date)
+            self.part.delete()
+        else:
+            # deactivate trial
+            if self.cleaned_data.get('deactivation_mode') == 'by_end':
+                self.part.deactivate(self.part.end_of_trial_date)
+            elif self.cleaned_data.get('deactivation_mode') == 'by_date':
+                self.part.deactivate(self.cleaned_data.get('deactivation_date'))
+        if self.cleaned_data.get('mode') == 'append':
+            # activate follow up part
+            if self.cleaned_data.get('activation_mode') == 'next_day':
+                self.follow_up_part.activate(self.part.end_of_trial_date + datetime.timedelta(days=1))
+            elif self.cleaned_data.get('activation_mode') == 'by_date':
+                self.follow_up_part.activate(self.cleaned_data.get('activation_date'))
+        # activate other new parts
+        for other_part in self.other_new_parts:
+            if self.cleaned_data.get(f'activate{other_part.id}'):
+                other_part.activate(self.cleaned_data.get(f'activation_date{other_part.id}'))
+        return self.part
 
 
 class ShareOrderForm(Form):
@@ -624,7 +758,7 @@ class ShareOrderForm(Form):
             v_share = Config.vocabulary('share') if existing_shares == 1 else Config.vocabulary('share_pl')
             help_text = _(self.text['co_member_info']).format(existing_shares, v_share)
             self.fields[f'of_co_member[{i}]'] = IntegerField(
-                label=name, initial=0, min_value=0, required=False,
+                label=name, initial=0, min_value=0,
                 help_text=help_text
             )
 
@@ -674,6 +808,26 @@ class GenerateListForm(Form):
             del self.fields['future']
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
+
+
+class AreaDescriptionForm(ModelForm):
+    class Meta:
+        model = ActivityArea
+        fields = ['description']
+        labels = {'description': ''}
+        if Config.using_richtext():
+            widgets = {'description': RichTextWidget()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            'description',
+            FormActions(
+                Submit('submit', _('Speichern')),
+            ),
+        )
 
 
 class JobSubscribeForm(Form):
@@ -746,7 +900,7 @@ class JobSubscribeForm(Form):
         )
         if self.current_slots > 0:
             self.helper.layout.insert(-1, Div(
-                HTML(get_template('messages/job_assigned.html').render(dict(amount=self.current_slots - 1))),
+                HTML(get_template('messages/job_assigned.html').render(dict(others=self.current_slots - 1))),
                 css_id='subscribed_info',
                 css_class='offset-md-3 col-md-6 mb-3 d-none'
             ))

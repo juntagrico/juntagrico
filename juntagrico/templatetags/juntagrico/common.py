@@ -1,14 +1,16 @@
 from django import template
-from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import __version__
+from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
 
@@ -23,6 +25,11 @@ def get_item(dictionary, key):
 @register.simple_tag
 def has_extra_subscriptions():
     return SubscriptionProductDao.all_extra_products().count() > 0
+
+
+@register.simple_tag
+def has_trial_subscriptions():
+    return SubscriptionType.objects.filter(trial_days__gt=0).exists()
 
 
 @register.simple_tag
@@ -53,11 +60,6 @@ def activemenu(request, expected):
     return ''
 
 
-@register.simple_tag
-def messages(request):
-    return getattr(request, 'member_messages', [])
-
-
 @register.filter
 def view_name(request):
     return request.resolver_match.view_name.replace('.', '-')
@@ -73,7 +75,10 @@ def depot_admin(request):
 @register.simple_tag
 def area_admin(request):
     if hasattr(request.user, 'member'):
-        return ActivityAreaDao.areas_by_coordinator(request.user.member)
+        return ActivityArea.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 
@@ -84,7 +89,7 @@ def get_version():
 
 @register.filter
 def richtext(value):
-    if 'djrichtextfield' not in settings.INSTALLED_APPS or not hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+    if not Config.using_richtext():
         value = urlize(value)
         value = linebreaksbr(value)
     return value

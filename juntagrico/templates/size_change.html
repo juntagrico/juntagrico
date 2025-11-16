@@ -54,13 +54,13 @@
                                     {% endif %}
                                 {% endif %}
                                 {% if part.subscription.future_parts.is_normal.count > 1 %}
-                                    <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
+                                    <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
                                     onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
                             {% else %}
-                                {% blocktrans with cd=part.cancellation_date %}
+                                {% blocktrans trimmed with cd=part.cancellation_date %}
                                     Gekündigt am {{cd}}
                                 {% endblocktrans %}
                             {% endif %}

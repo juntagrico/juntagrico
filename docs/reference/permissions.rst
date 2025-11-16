@@ -110,20 +110,22 @@ Should be assigned to members which are administrator of a depot, so that they c
 Search Hints:
     * German: Benutzer ist Depot Admin
 
-juntagrico.is_area_admin
-^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
-Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
-They also have the permission to modify assignments in jobs of their area.
+Area Coordinators
+^^^^^^^^^^^^^^^^^
 
-people with this permission have limited access to certain fields. They can not:
+.. warning::
+    Changed in 2.0: Permission `juntagrico.is_area_admin` was removed.
 
-- change name, core, hidden and coordinator fields of areas
-- see assignments of anybody but people from their areas
-- see job types which are not from their areas
+Area coordinator permissions are configured for each area and coordinator individually.
+These permissions can be set when editing an area in the data management ("Datenverwaltung") -> Activity Area ("Tätigkeitsbereiche").
+There you can add a coordinator and distribute the following permissions.
 
-Search Hints:
-    * German: Benutzer ist Tätigkeitsbereichskoordinator
+- Can modify area: Coordinator can change the description and the contact(s) of this area
+- Can see members: Coordinator can see the list of members that participate in this activity area
+- Can contact members: Coordinator can see names, email addresses and phone numbers of area participants and can contact participants of jobs in their area
+- Can remove members: Coordinator can remove participants from this area
+- Can manage jobs: Coordinator can create and modify all jobs of this area
+- Can manage assignments: Coordinator can change and remove assignments of jobs in this area
 
 
 .. _reference-permission-notifications:
@@ -187,7 +189,7 @@ Search Hints:
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is cancelled.
+Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is canceled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -390,6 +392,15 @@ Person can use the "technical" email address specified in the setting :ref:`CONT
 Search Hints:
     * German: Benutzer kann technische E-Mail-Adresse verwenden
 
+juntagrico.can_email_attachments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Person can add attachments when sending an email via the member contact form.
+
+Search Hints:
+    * German: Benutzer kann Anhänge per E-Mail senden
+
+
 Edit Permissions
 ----------------
 These permissions allow to edit certain entities.
@@ -434,10 +445,6 @@ juntagrico.is_operations_group
 
 - Download payment file for shares
 - (De)activate subscriptions
-- Add attachments in the form to contact members
-
-In addition, the limitations applied by ``juntagrico.is_area_admin`` become ineffective,
-when this permission is also given.
 
 Search Hints:
     * German: Benutzer ist in der BG

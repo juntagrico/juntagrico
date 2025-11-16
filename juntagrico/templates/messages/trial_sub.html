@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+
+{% for trial_part in trial_parts %}
+    {% if trial_part.waiting %}
+        <div class="alert alert-info">
+            {% if not trial_part.activation_date %}
+                {% blocktrans trimmed %}
+                    Probe-{{ v_subscription }} "{{ trial_part }}" hat noch nicht begonnen.
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans trimmed with ad=trial_part.activation_date %}
+                    Probe-{{ v_subscription }} "{{ trial_part }}" startet am {{ ad }}.
+                {% endblocktrans %}
+            {% endif %}
+        </div>
+    {% elif trial_part.remaining_trial_days > 0 %}
+        <div class="alert alert-success">
+            <div>
+                {% blocktrans trimmed count remaining=trial_part.remaining_trial_days %}
+                    Probe-{{ v_subscription }} "{{ trial_part }}" ist noch für {{ remaining }} Tag aktiv.
+                {% plural %}
+                    Probe-{{ v_subscription }} "{{ trial_part }}" ist noch für {{ remaining }} Tage aktiv.
+                {% endblocktrans %}
+            </div>
+            {% if trial_part.follow_up_parts.exists %}
+                <p>
+                    {% trans "Es freut uns, dass du weiterhin dabei bist." %}
+                </p>
+            {% elif not trial_part.canceled %}
+                <p>
+                    {% trans "Weisst du schon ob du weiterhin dabei bleibst?" %}
+                </p>
+                {% include "juntagrico/my/subscription/snippets/buttons/trial.html" with part=trial_part %}
+            {% endif %}
+        </div>
+    {% elif not trial_part.follow_up_parts.exists %}
+        <div class="alert alert-danger">
+            {% blocktrans trimmed %}
+                Probe-{{ v_subscription }} "{{ trial_part }}" ist abgelaufen.
+            {% endblocktrans %}
+            {% if not trial_part.canceled %}
+                <p>
+                    {% trans "Möchtest du weiterhin dabei bleiben?" %}
+                </p>
+                {% include "juntagrico/my/subscription/snippets/buttons/trial.html" with part=trial_part %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}

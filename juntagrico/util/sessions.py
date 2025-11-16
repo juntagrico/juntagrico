@@ -1,11 +1,17 @@
 from django.db import transaction
 
+from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.util.management import create_share, create_subscription_parts
+
+
+def get_parts_dict(selection):
+    sub_types = SubscriptionType.objects.filter(id__in=selection.keys())
+    return {sub_type: selection[str(sub_type.id)] for sub_type in sub_types if selection[str(sub_type.id)]}
 
 
 class SessionManager:
@@ -72,8 +78,14 @@ class SignupManager(SessionManager):
         :return: dict of subscription_types -> amount, where selected amount > 0
         """
         subscription = self.get('subscriptions', {})
-        sub_types = SubscriptionType.objects.filter(id__in=subscription.keys())
-        return {sub_type: subscription[str(sub_type.id)] for sub_type in sub_types if subscription[str(sub_type.id)]}
+        return get_parts_dict(subscription)
+
+    def extras_enabled(self):
+        return SubscriptionType.objects.is_extra().visible().exists()
+
+    def extras(self):
+        extras = self.get('extras', {})
+        return get_parts_dict(extras)
 
     def depot(self):
         if (depot_id := self.data.get('depot', None)) is not None:
@@ -106,16 +118,21 @@ class SignupManager(SessionManager):
                 return 'subscription-landing'
         elif not self.get('main_member'):
             return 'signup'
+        url_name = self.request.resolver_match.url_name
+        if self.request.GET.get('mod') is not None or url_name == 'cs-cancel':
+            return url_name
         has_parts = self.has_parts()
         if not self.get('subscriptions'):
             return 'cs-subscription'
+        elif has_parts and self.extras_enabled() and not self.get('extras'):
+            return 'cs-extras'
         elif has_parts and self.get('depot') is None:
             return 'cs-depot'
         elif has_parts and not self.get('start_date'):
             return 'cs-start'
         elif has_parts and not self.get('co_members_done'):
             return 'cs-co-members'
-        elif not self.shares_ok():
+        elif Config.enable_shares() and not self.shares_ok():
             return 'cs-shares'
         return 'cs-summary'
 
@@ -165,6 +182,8 @@ class SignupManager(SessionManager):
                 co_member.member.join_subscription(subscription)
             # add parts
             create_subscription_parts(subscription, self.subscriptions())
+            # add extra parts
+            create_subscription_parts(subscription, self.extras())
         return subscription
 
     def send_emails(self, member, co_members, subscription):
@@ -183,12 +202,13 @@ class SignupManager(SessionManager):
         """ create all elements from data the collected data
         :return the new main member object
         """
-        # create member
+        # create memberd
         member = self.apply_member()
         # create co-members
         co_members = self.apply_co_member()
         # create shares (notifies member and admin)
-        self.apply_shares(member, co_members)
+        if Config.enable_shares():
+            self.apply_shares(member, co_members)
         # create subscription
         subscription = self.apply_subscriptions(member, co_members)
         # send emails and notifications

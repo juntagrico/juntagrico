@@ -66,13 +66,11 @@ class SubscriptionType(JuntagricoBaseModel):
                              related_name='types', verbose_name=_('Grösse'))
     shares = models.PositiveIntegerField(
         _('Anz benötigter Anteilsscheine'), default=0)
-    required_assignments = models.PositiveIntegerField(
-        _('Anz benötigter Arbeitseinsätze'))
-    required_core_assignments = models.PositiveIntegerField(
-        _('Anz benötigter Kern Arbeitseinsätze'), default=0)
+    required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
+    required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)
     visible = models.BooleanField(_('Sichtbar'), default=True)
-    trial = models.BooleanField(_('Probe-Abo'), default=False)
+    trial = models.BooleanField(_('Probe-Abo'), default=False)  # Deprecated
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)

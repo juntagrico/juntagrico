@@ -1,0 +1,34 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans with v_subscription=vocabulary.subscription %}Probe-{{ v_subscription }} deaktivieren{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    {% blocktrans %}Wähle das Deaktivierungsdatum:{% endblocktrans %}
+    <form action="#" method="post" class="modal-form" id="{{ name }}_form">
+        {% csrf_token %}
+        <div class="custom-control custom-radio">
+            <input type="radio" id="option_end_date_by_end" name="end_date" class="custom-control-input" value=""
+                   checked>
+            <label class="custom-control-label" for="option_end_date_by_end">
+                {% trans "Per Ende der Laufzeit:" %} <strong class="end-of-trial-date"></strong>
+            </label>
+        </div>
+        <div class="custom-control custom-radio">
+            <input type="radio" id="option_end_date_as_chosen" name="end_date" class="custom-control-input"
+                   value="{{ change_date|date:"c" }}">
+            <label class="custom-control-label" for="option_end_date_as_chosen">
+                {% trans "Per ausgewähltem Datum:" %}
+                <strong>{{ change_date }}</strong>
+                {% if not change_date %}{% trans "(Heute)" %}{% endif %}
+            </label>
+        </div>
+    </form>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="{{ name }}_form" class="btn btn-danger"
+           value="{% trans "Deaktivieren" %}">
+{% endblock %}

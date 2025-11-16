@@ -1,7 +1,9 @@
 import datetime
 import re
 from io import BytesIO
+from smtplib import SMTPException
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
@@ -31,7 +33,7 @@ from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
-from juntagrico.view_decorators import any_permission_required
+from juntagrico.view_decorators import requires_permission_to_contact
 from juntagrico.views_subscription import error_page
 
 
@@ -45,12 +47,12 @@ def send_email_depot(request):
     return send_email_intern(request)
 
 
-@permission_required('juntagrico.is_area_admin')
+@requires_permission_to_contact
 def send_email_area(request):
     return send_email_intern(request)
 
 
-@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
+@requires_permission_to_contact
 def send_email_job(request):
     return send_email_intern(request)
 
@@ -76,24 +78,24 @@ def send_email_intern(request):
     append_attachements(request, files)
 
     if len(emails) > 0:
-        formemails.internal(
-            request.POST.get('subject'),
-            request.POST.get('message'),
-            request.POST.get('textMessage'),
-            emails, files, sender=sender
-        )
-        sent = len(emails)
+        try:
+            formemails.internal(
+                request.POST.get('subject'),
+                request.POST.get('message'),
+                request.POST.get('textMessage'),
+                emails, files, sender=sender
+            )
+            sent = len(emails)
+        except SMTPException as e:
+            messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
     return redirect('mail-result', numsent=sent)
 
 
-@any_permission_required('juntagrico.can_send_mails',
-                         'juntagrico.is_depot_admin',
-                         'juntagrico.is_area_admin')
+@requires_permission_to_contact
 def send_email_result(request, numsent):
-    renderdict = {
-        'sent': numsent
-    }
-    return render(request, 'mail_sender_result.html', renderdict)
+    return render(request, 'mail_sender_result.html', {
+        'sent': numsent,
+    })
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -106,12 +108,12 @@ def mails_depot(request):
     return my_mails_intern(request, 'mail-depot-send')
 
 
-@permission_required('juntagrico.is_area_admin')
+@requires_permission_to_contact
 def mails_area(request):
     return my_mails_intern(request, 'mail-area-send')
 
 
-@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
+@requires_permission_to_contact
 def mails_job(request):
     return my_mails_intern(request, 'mail-job-send')
 
