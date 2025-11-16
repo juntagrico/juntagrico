@@ -15,7 +15,7 @@ from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm
 from juntagrico.util import temporal
@@ -102,12 +102,18 @@ class ExternalSignupForm(forms.Form):
     city = forms.CharField()
     phone = forms.CharField()
     email = forms.EmailField()
-    subscription_id = forms.ModelMultipleChoiceField(queryset=SubscriptionTypeDao.get_all_visible())
     depot_id = forms.ModelChoiceField(queryset=DepotDao.all_visible_depots())
     start_date = forms.DateField()
     shares = forms.IntegerField(min_value=0)
     comment = forms.CharField(required=False)
     by_laws_accepted = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        sub_ids = kwargs.pop('sub_ids')
+        super(ExternalSignupForm, self).__init__(*args, **kwargs)
+
+        for id in sub_ids:
+            self.fields['subscription_%s' % id] = forms.IntegerField(min_value=0, required=False)
 
 
 @csrf_exempt
@@ -115,13 +121,13 @@ def create_external(request):
     '''
     Handle external subscription POST requests and return depot and subscription details on GET
 
-    Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_id=1&subscription_id=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'
+    Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'
     '''
     if not Config.enable_external_signup():
         raise Http404
     if request.method == "GET":
         depots = list(DepotDao.all_visible_depots().values('id','name'))
-        subs = list(SubscriptionTypeDao.get_all_visible()
+        subs = list(SubscriptionType.objects.visible()
                     .annotate(is_extra = F("size__product__is_extra"))
                     .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
                             'price', 'trial', 'description', 'is_extra'))
@@ -132,7 +138,8 @@ def create_external(request):
         raise BadRequest("POST request method expected")
     if request.user.is_authenticated:
         logout(request)
-    form = ExternalSignupForm(request.POST)
+    allsubs = SubscriptionType.objects.visible()
+    form = ExternalSignupForm(request.POST, sub_ids=list(allsubs.values_list('id', flat=True)))
     if not form.is_valid():
         raise BadRequest("Invalid data submitted")
     post_data = form.cleaned_data
@@ -151,9 +158,8 @@ def create_external(request):
                    'comment': post_data['comment'] + '[External signup API]'
                    }
     signup_manager.set('main_member', main_member)
-    allsubs = SubscriptionTypeDao.get_all_visible()
-    subs = {str(x.pk): int(x in post_data['subscription_id'] and not x.size.product.is_extra) for x in allsubs}
-    extras = {str(x.pk): int(x in post_data['subscription_id'] and x.size.product.is_extra) for x in allsubs}
+    subs = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if not x.size.product.is_extra else 0) for x in allsubs}
+    extras = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if x.size.product.is_extra else 0) for x in allsubs}
     signup_manager.set('subscriptions', subs)
     signup_manager.set('extras', extras)
     depot_id = post_data['depot_id'].pk
