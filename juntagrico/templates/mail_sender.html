@@ -83,20 +83,6 @@
                     </label>
                 </div>
             {% endif %}
-            {% if perms.juntagrico.can_email_all_in_system %}
-            <div class="form-group row">
-                <div class="offset-md-2 col-md-1">
-                    <span class="switch switch-sm">
-                        <input type="checkbox" class="switch" id="all" name="all"/>
-                        <label for="all">
-                        </label>
-                    </span>
-                </div>
-                <label class="col-md-9" for="all">
-                    {% trans "Alle im System" %}
-                </label>
-            </div>
-            {% endif %}
             {% if perms.juntagrico.can_email_free_address_list %}
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">

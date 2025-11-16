@@ -65,11 +65,6 @@
                 "specialroles"
             ],
             [
-                "can_email_all_in_system",
-                "juntagrico",
-                "specialroles"
-            ],
-            [
                 "can_email_all_with_share",
                 "juntagrico",
                 "specialroles"

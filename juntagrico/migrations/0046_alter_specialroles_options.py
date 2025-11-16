@@ -15,7 +15,6 @@ def mail_send_permissions_forward(apps, schema_editor):
         app_config.models_module = None
     # get relevant new send mail permissions from juntagrico
     perm_new = Permission.objects.filter(Q(content_type__app_label='juntagrico') & (
-            Q(codename='can_email_all_in_system') |
             Q(codename='can_email_all_with_share') |
             Q(codename='can_email_all_with_sub') |
             Q(codename='can_email_free_address_list')))
@@ -36,7 +35,6 @@ def mail_send_permissions_forward(apps, schema_editor):
 def mail_send_permissions_backward(apps, schema_editor):
     """Delete permissions added above"""
     Permission.objects.filter(Q(content_type__app_label='juntagrico') & (
-            Q(codename='can_email_all_in_system') |
             Q(codename='can_email_all_with_share') |
             Q(codename='can_email_all_with_sub') |
             Q(codename='can_email_free_address_list'))).delete()
@@ -59,7 +57,6 @@ class Migration(migrations.Migration):
             ('can_use_for_subscriptions_email', 'Kann E-Mail-Adresse "for_subscription" verwenden'),
             ('can_use_for_shares_email', 'Kann E-Mail-Adresse "for_shares" verwenden'),
             ('can_use_technical_email', 'Kann technische E-Mail-Adresse verwenden'),
-            ('can_email_all_in_system', 'Kann E-Mails an alle im System senden'),
             ('can_email_all_with_share', 'Kann E-Mails an alle mit Anteilschein senden'),
             ('can_email_all_with_sub', 'Kann E-Mails an alle mit Abo senden'),
             ('can_email_free_address_list', 'Kann E-Mails frei an Adressen senden'),

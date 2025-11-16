@@ -38,7 +38,6 @@ class SpecialRoles(models.Model):
                        ('can_use_for_subscriptions_email', _('Kann E-Mail-Adresse "for_subscription" verwenden')),
                        ('can_use_for_shares_email', _('Kann E-Mail-Adresse "for_shares" verwenden')),
                        ('can_use_technical_email', _('Kann technische E-Mail-Adresse verwenden')),
-                       ('can_email_all_in_system', _('Kann E-Mails an alle im System senden')),
                        ('can_email_all_with_share',
                         _('Kann E-Mails an alle mit {0} senden').format(Config.vocabulary('share'))),
                        ('can_email_all_with_sub',
