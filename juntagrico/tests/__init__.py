@@ -18,6 +18,7 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
     fixtures = ['test/members', 'test/areas']
+    with_extra_subs = True
 
     _count_sub_types = 0
 
@@ -32,8 +33,9 @@ class JuntagricoTestCase(TestCase):
         cls.set_up_depots()
         cls.set_up_sub_types()
         cls.set_up_sub()
-        cls.set_up_extra_sub_types()
-        cls.set_up_extra_sub()
+        if cls.with_extra_subs:
+            cls.set_up_extra_sub_types()
+            cls.set_up_extra_sub()
         cls.set_up_mail_template()
         cls.set_up_deliveries()
         # Use this command here to create fixtures fast:
@@ -49,6 +51,9 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def load_areas(cls):
         cls.area_admin = Member.objects.get(email='areaadmin@email.org')
+        (cls.area_admin_modifier, cls.area_admin_viewer,
+         cls.area_admin_contact, cls.area_admin_remover,
+         cls.area_admin_job_modifier, cls.area_admin_assignment_modifier) = Member.objects.filter(email__startswith='area_admin').order_by('id')
         cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod

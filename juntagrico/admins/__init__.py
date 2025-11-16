@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin.options import BaseModelAdmin, InlineModelAdmin
 from django.db.models import TextField
 from djrichtextfield.widgets import RichTextWidget
 from import_export.admin import ExportMixin
@@ -66,3 +67,63 @@ class SortableExportMixin(ExportMixin):
     """ Fix to make import-export and sortable admin work together.
     """
     change_list_template = 'adminsortable2/change_list.html'
+
+
+class AreaCoordinatorBaseMixin(BaseModelAdmin):
+    coordinator_permissions = ['view', 'add', 'change', 'delete']
+    coordinator_access = 'can_modify_jobs'
+
+    def _has_permission(self, request, obj=None, access=None):
+        if access is None or access in self.coordinator_permissions:
+            area = {'area': self.get_area(obj)} if obj else {}
+            return request.user.member.area_access.filter(**area, **{self.coordinator_access: True}).exists()
+        return False
+
+    def get_area(self, obj):
+        return obj
+
+    def has_module_permission(self, request):
+        return self._has_permission(request) or super().has_module_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'view') or super().has_view_permission(request)
+
+    def has_full_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj)
+
+    def has_add_permission(self, request):
+        return self._has_permission(request, None, 'add') or super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'change') or super().has_change_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'delete') or super().has_delete_permission(request)
+
+
+class AreaCoordinatorMixin(AreaCoordinatorBaseMixin):
+    path_to_area = 'pk'
+
+    def get_coordinator_queryset(self, request, qs):
+        allowed_areas = request.user.member.coordinated_areas.filter(
+            **{f'coordinator_access__{self.coordinator_access}': True}
+        )
+        return qs.filter(**{f'{self.path_to_area}__in': allowed_areas})
+
+    def get_queryset(self, request):
+        if self.has_full_view_permission(request):
+            return super().get_queryset(request)
+        else:
+            return self.get_coordinator_queryset(request, super().get_queryset(request))
+
+
+class AreaCoordinatorInlineMixin(InlineModelAdmin, AreaCoordinatorBaseMixin):
+    def get_area(self, obj):
+        related_modeladmin = self.admin_site._registry.get(type(obj))
+        if related_modeladmin is None:
+            return None
+        return related_modeladmin.get_area(obj)
+
+
+def can_see_all(user, model):
+    return user.has_perm(f'juntagrico.view_{model}') or user.has_perm(f'juntagrico.change_{model}')

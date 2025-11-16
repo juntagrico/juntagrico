@@ -9,6 +9,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
@@ -74,7 +75,10 @@ def depot_admin(request):
 @register.simple_tag
 def area_admin(request):
     if hasattr(request.user, 'member'):
-        return ActivityAreaDao.areas_by_coordinator(request.user.member)
+        return ActivityArea.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 

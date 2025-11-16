@@ -10,7 +10,6 @@ from django_select2.views import AutoResponseView
 
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm
 
-
 class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
     """Limit access to autocomplete (select2) to logged-in users
     """

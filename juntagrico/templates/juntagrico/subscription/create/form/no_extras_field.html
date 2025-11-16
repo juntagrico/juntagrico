@@ -1,0 +1,11 @@
+{% extends './no_selection_field.html' %}
+{% load i18n %}
+
+{% block label %}
+    <strong>{% trans "Kein Zusatz-Abo" %}</strong>
+{% endblock %}
+
+{% block description %}
+    {% trans "Ohne Zusatz-Abo fortfahren." %}<br>
+    {% trans "Du kannst auch später noch Zusatz-Abos bestellen." %}
+{% endblock %}

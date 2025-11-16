@@ -1,11 +1,13 @@
 from django.contrib import admin
 
+from juntagrico.admins import AreaCoordinatorInlineMixin
 from juntagrico.entity.jobs import Assignment
 
 
-class AssignmentInline(admin.TabularInline):
+class AssignmentInline(AreaCoordinatorInlineMixin, admin.TabularInline):
     model = Assignment
     raw_id_fields = ['member']
+    coordinator_access = 'can_modify_assignments'
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj is None:

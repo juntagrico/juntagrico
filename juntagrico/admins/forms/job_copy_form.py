@@ -13,7 +13,55 @@ from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
 
 
+def collect_contacts(formsets):
+    """collect contacts from formsets
+    """
+    contacts = []
+    if formsets and len(formsets) >= 1:
+        for contact_form in formsets[0].forms:
+            if not contact_form.cleaned_data['DELETE']:
+                contacts.append(contact_form.instance.copy())
+        # excepted by ModelAdmin
+        formsets[0].new_objects = []
+        formsets[0].changed_objects = []
+        formsets[0].deleted_objects = []
+    return contacts
+
+
+class OnlyFutureJobForm(forms.ModelForm):
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        if time <= timezone.now():
+            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'))
+        return time
+
+
 class JobCopyForm(forms.ModelForm):
+    class Meta:
+        model = RecuringJob
+        exclude = ['canceled']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial['time'] = None
+
+    def save(self, commit=True):
+        self.instance.pk = None
+        self.instance.id = None
+        return super().save(commit)
+
+    def save_related(self, formsets):
+        # copy contacts
+        self.instance.save()
+        for contact in collect_contacts(formsets):
+            self.instance.contact_set.add(contact, bulk=False)
+
+
+class JobCopyToFutureForm(JobCopyForm, OnlyFutureJobForm):
+    pass
+
+
+class JobMassCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
         fields = []
@@ -65,6 +113,7 @@ class JobCopyForm(forms.ModelForm):
                 multiplier=inst.multiplier,
                 additional_description=inst.additional_description,
                 duration_override=inst.duration_override,
+                pinned=inst.pinned,
             )
             if commit:
                 newjob.save()
@@ -72,17 +121,8 @@ class JobCopyForm(forms.ModelForm):
         return newjob
 
     def save_related(self, formsets):
-        # collect contacts from formsets
-        contacts = []
-        if formsets and len(formsets) >= 1:
-            for contact_form in formsets[0].forms:
-                if not contact_form.cleaned_data['DELETE']:
-                    contacts.append(contact_form.instance.copy())
-            # excepted by ModelAdmin
-            formsets[0].new_objects = []
-            formsets[0].changed_objects = []
-            formsets[0].deleted_objects = []
         # save and apply contacts
+        contacts = collect_contacts(formsets)
         for job in self.new_jobs:
             job.save()
             for contact in contacts:
@@ -114,7 +154,7 @@ class JobCopyForm(forms.ModelForm):
         return res
 
 
-class JobCopyToFutureForm(JobCopyForm):
+class JobMassCopyToFutureForm(JobMassCopyForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.cleaned(cleaned_data) and self.get_datetimes(cleaned_data)[0] <= timezone.now():

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.utils import timezone
 from polymorphic.query import PolymorphicQuerySet
 
@@ -43,3 +43,14 @@ class JobQueryset(PolymorphicQuerySet):
     def order_by_recent(self, days=7):
         cutoff = timezone.now() - timedelta(days=days)
         return self.annotate(is_old=Q(time__lt=cutoff)).order_by('is_old', 'time')
+
+
+class AssignmentQuerySet(QuerySet):
+    def by_areas(self, areas):
+        from juntagrico.entity.jobs import Job
+        return self.filter(
+            job__in=Job.objects.filter(
+                Q(OneTimeJob___activityarea__in=areas) |
+                Q(RecuringJob___type__activityarea__in=areas)
+            )
+        )
