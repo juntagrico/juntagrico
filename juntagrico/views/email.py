@@ -8,7 +8,10 @@ from django.shortcuts import render, redirect
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
-from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm
+from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
+    AreaRecipientsForm
+from juntagrico.view_decorators import requires_permission_to_contact
+
 
 class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
     """Limit access to autocomplete (select2) to logged-in users
@@ -16,7 +19,7 @@ class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
     pass
 
 
-@login_required
+@requires_permission_to_contact
 def count_recipients(request, form=None):
     form = form or RecipientsForm(request.user.member, data=request.GET)
     if form.is_valid():
@@ -29,9 +32,15 @@ def count_recipients(request, form=None):
     return HttpResponse(_('Senden'))
 
 
-@login_required
+@requires_permission_to_contact
 def count_depot_recipients(request, depot_id):
     form = DepotRecipientsForm(request.user.member, {'depot': depot_id}, data=request.GET)
+    return count_recipients(request, form)
+
+
+@requires_permission_to_contact
+def count_area_recipients(request, area_id):
+    form = AreaRecipientsForm(request.user.member, {'area': area_id}, data=request.GET)
     return count_recipients(request, form)
 
 
@@ -57,6 +66,18 @@ def to_depot(request, depot_id):
     })
 
 
+@requires_permission_to_contact
+def to_area(request, area_id):
+    # TODO: include an email footer that says "you receive this email because you are in the area ..."
+    members = request.GET.get('members', '')
+    return email_view(request, AreaForm, {
+        'recipients': {'area': area_id}
+    }, {
+        'to_area': not members,
+        'to_members': members.split('-')
+    })
+
+
 @login_required
 def write(request):
     # TODO: limit access
@@ -71,7 +92,6 @@ def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, i
     member = request.user.member
     features = features or {}
     features.setdefault('template', request.user.has_perm('juntagrico.can_load_templates'))
-    # TODO: using this permission from the future
     features.setdefault('attachment', request.user.has_perm('juntagrico.can_email_attachments'))
 
     if request.method == 'POST':

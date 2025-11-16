@@ -23,7 +23,7 @@ font-weight: normal; font-style: normal;}
     {% block all_content %}
     <tr>
         <td style="font-size:14px;font-family: 'Source Sans Pro Light', monospace; padding:20px; */word-break: break-all;">
-            {% block content %}{% endblock %}
+            {% block content %}{{ content }}{% endblock %}
         </td>
     </tr>
     {% endblock %}

@@ -26,18 +26,7 @@ from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
-from juntagrico.view_decorators import requires_permission_to_contact
 from juntagrico.views_subscription import error_page
-
-
-@requires_permission_to_contact
-def send_email_area(request):
-    return send_email_intern(request)
-
-
-@requires_permission_to_contact
-def mails_area(request):
-    return my_mails_intern(request, 'mail-area-send')
 
 
 @permission_required('juntagrico.can_view_lists')

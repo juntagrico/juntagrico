@@ -81,17 +81,22 @@ class MailerTests(JuntagricoTestCaseWithShares):
         ])
 
     def testMailArea(self):
-        self.utilMailConcernTest('area')
+        url = reverse('email-to-area', args=[1])
+        self.assertGet(url)
+        self.assertPost(url)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertPost(url, {
+            'from_email': 'private',
+            'to_area': 'on',
+            'subject': 'Test',
+            'body': 'Test Body',
+            'submit': 1
+        }, 302)
+        self.assertEqual(len(mail.outbox), 1)
 
     def testMailTemplate(self):
         self.assertGet(reverse('mail-template', args=[self.mail_template.pk]))
         self.assertGet(reverse('mail-template', args=[self.mail_template.pk]), member=self.member2, code=302)
-
-    def utilMailConcernTest(self, concern):
-        self.assertGet(reverse('mail-{}'.format(concern)))
-        self.assertGet(reverse('mail-{}-send'.format(concern)), code=404)
-        self.assertPost(reverse('mail-{}-send'.format(concern)), code=302)
-        self.assertGet(reverse('mail-{}'.format(concern)), member=self.member2, code=302)
 
     @override_settings(EMAIL_BACKEND='juntagrico.backends.email.LocmemBatchEmailBackend')
     @patch('juntagrico.backends.email.LocmemBatchEmailBackend.send_messages', mock_batch_mailer)

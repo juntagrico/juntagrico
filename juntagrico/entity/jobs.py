@@ -50,10 +50,14 @@ class ActivityArea(JuntagricoBaseModel):
         return [MemberContact(member=m) for m in self.coordinators.all()]
 
     def _get_email_fallback(self, get_member=False, exclude=None):
-        if exclude is None or self.coordinator.email not in exclude:
-            if get_member:
-                return [(self.coordinator.email, self.coordinator)]
-            return [self.coordinator.email]
+        emails = []
+        for coordinator in self.coordinators.all():
+            if exclude is None or coordinator.email not in exclude:
+                if get_member:
+                    emails.append((coordinator.email, coordinator))
+                else:
+                    emails.append(coordinator.email)
+        return emails
 
     def get_emails(self, get_member=False, exclude=None):
         """

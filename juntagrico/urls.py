@@ -204,8 +204,8 @@ urlpatterns = [
     path('email/depot/<int:depot_id>/', email.to_depot, name='email-to-depot'),
     path('email/depot/<int:depot_id>/recipients/count', email.count_depot_recipients, name='email-count-depot-recipients'),
     # /email/area
-    path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
-    path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
+    path('email/area/<int:area_id>/', email.to_area, name='email-to-area'),
+    path('email/area/<int:area_id>/recipients/count', email.count_area_recipients, name='email-count-area-recipients'),
     # /email/template
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
 

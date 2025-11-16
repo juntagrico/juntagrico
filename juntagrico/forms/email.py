@@ -127,7 +127,7 @@ class RecipientsForm(BaseRecipientsForm):
     )
     to_depots = forms.ModelMultipleChoiceField(
         Depot.objects.order_by('id'),
-        label=_('An alle mit aktivem/r {} in diesen Depots').format(Config.vocabulary('subscription')),
+        label=_('An alle mit aktivem/r {} in diesen {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot_pl')),
         required=False,
         widget=InternalModelSelect2MultipleWidget(
             model=Depot,
@@ -187,7 +187,7 @@ class RecipientsForm(BaseRecipientsForm):
 
 class DepotRecipientsForm(BaseRecipientsForm):
     to_depot = forms.BooleanField(
-        label=_('An alle mit aktivem/r {} im Depot {}').format(Config.vocabulary('subscription'), '{}'),
+        label=_('An alle mit aktivem/r {} in {} {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot'), '{}'),
         required=False
     )
 
@@ -196,7 +196,7 @@ class DepotRecipientsForm(BaseRecipientsForm):
         self.depot_id = features['depot']
         depot = Depot.objects.get(pk=self.depot_id)
         self.fields['to_depot'].label = self.fields['to_depot'].label.format(depot.name)
-        self.fields['to_members'].label = _('An diese Personen im Depot')
+        self.fields['to_members'].label = _('An diese Personen in {}').format(Config.vocabulary('depot'))
         self.fields['to_members'].queryset = Member.objects.active().has_active_subscription().in_depot(self.depot_id)
         self.form_fields.insert(0, 'to_depot')
 
@@ -206,6 +206,30 @@ class DepotRecipientsForm(BaseRecipientsForm):
     def _populate_recipients_queryset(self, recipients):
         if self.cleaned_data.get('to_depot'):
             recipients |= Member.objects.active().has_active_subscription().in_depot(self.depot_id)
+        return super()._populate_recipients_queryset(recipients)
+
+
+class AreaRecipientsForm(BaseRecipientsForm):
+    to_area = forms.BooleanField(
+        label=_('An alle Personen im Tätigkeitsbereich {}'),
+        required=False
+    )
+
+    def __init__(self, sender, features=None, *args, **kwargs):
+        super().__init__(sender, *args, **kwargs)
+        self.area_id = features['area']
+        area = ActivityArea.objects.get(pk=self.area_id)
+        self.fields['to_area'].label = self.fields['to_area'].label.format(area.name)
+        self.fields['to_members'].label = _('An diese Personen im Tätigkeitsbereich')
+        self.fields['to_members'].queryset = area.members.active()
+        self.form_fields.insert(0, 'to_area')
+
+    def get_count_url(self):
+        return reverse('email-count-area-recipients', args=[self.area_id])
+
+    def _populate_recipients_queryset(self, recipients):
+        if self.cleaned_data.get('to_area'):
+            recipients |= ActivityArea.objects.get(pk=self.area_id).members.active()
         return super()._populate_recipients_queryset(recipients)
 
 
@@ -294,4 +318,8 @@ class EmailForm(BaseForm, RecipientsForm):
 
 
 class DepotForm(BaseForm, DepotRecipientsForm):
+    pass
+
+
+class AreaForm(BaseForm, AreaRecipientsForm):
     pass

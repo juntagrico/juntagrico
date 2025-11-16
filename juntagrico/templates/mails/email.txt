@@ -1,6 +1,6 @@
 {% spaceless %}
 {% autoescape off %}
-{% block content %}{% endblock %}
+{% block content %}{{ content }}{% endblock %}
 {% endautoescape %}
 {% endspaceless %}
 
