@@ -8,6 +8,10 @@ class SubscriptionTypeDao:
         return SubscriptionType.objects.all()
 
     @staticmethod
+    def get_all_visible():
+        return SubscriptionType.objects.filter(visible=True, size__visible=True)
+
+    @staticmethod
     def get_normal_visible():
         return SubscriptionType.objects.filter(visible=True, size__visible=True, size__product__is_extra=False)
 

@@ -315,6 +315,22 @@ ENABLE_REGISTRATION
 
     True
 
+ENABLE_EXTERNAL_SIGNUP
+^^^^^^^^^^^^^^^^^^^
+  Activates the external signup API and exposes internal depot and subscription info as json.
+
+  Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_id=1&subscription_id=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external
+
+  Will redirect to signup summary page for final confirmation or redirect to correction of main member details (if mail address exists), subscription selection (on missing main subscription) or number of shares (if requirements not met).
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
 SIGNUP_MANAGER
 ^^^^^^^^^^^^^^
 
