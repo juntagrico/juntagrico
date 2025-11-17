@@ -85,7 +85,7 @@ class Member(JuntagricoBaseModel):
             member.reachable_by_email
             or self.user.has_perm('juntagrico.can_send_mails')
             or (allowed_areas & member.areas.all()).exists()  # member is in area
-            or member.assignment_set.by_areas(allowed_areas).exists()  # member participated in job of area
+            or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of area
         )
 
     @property

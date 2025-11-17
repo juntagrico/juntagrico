@@ -106,7 +106,7 @@ class BaseRecipientsForm(forms.Form):
 class RecipientsForm(BaseRecipientsForm):
     to_list = forms.MultipleChoiceField(label=False, required=False, widget=forms.CheckboxSelectMultiple)
     to_areas = forms.ModelMultipleChoiceField(
-        ActivityArea.objects.none(), label=_('An alle in diesen Tätigkeitsbereichen'), required=False,
+        ActivityArea.objects.order_by('name'), label=_('An alle in diesen Tätigkeitsbereichen'), required=False,
         widget=InternalModelSelect2MultipleWidget(
             model=ActivityArea,
             search_fields=['name__icontains'],
@@ -140,17 +140,42 @@ class RecipientsForm(BaseRecipientsForm):
         super().__init__(sender, *args, **kwargs)
         # filter available fields
         default_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
-        if features:
+        features = features or {}
+        if features.get('fields'):
             for field in default_fields:
                 if field not in features:
                     del self.fields[field]
-        self.form_fields = features or default_fields
+        self.form_fields = features.get('fields') or default_fields
         # configure fields
         if 'to_list' in self.fields:
             self.fields['to_list'].choices = self.get_recipient_list_choices()
+        # limit selectable values
         if 'to_areas' in self.fields:
-            # TODO: limit selection of areas, depots and members
-            self.fields['to_areas'].queryset = ActivityArea.objects.all()
+            self._set_field_queryset('to_areas', features.get('areas', ActivityArea.objects.all()).order_by('name'))
+        if 'to_jobs' in self.fields:
+            if 'areas' in features:
+                self._set_field_queryset('to_jobs', Job.objects.in_areas(features['areas']))
+        if 'to_depots' in self.fields:
+            self._set_field_queryset(
+                'to_depots',
+                features.get('depots', features.get('depots', Depot.objects).order_by('id'))
+            )
+        if 'to_members' in self.fields:
+            if {'areas', 'depots'} & features.keys():  # areas or depots are defined
+                members = Member.objects.filter(reachable_by_email=True)
+                if 'depots' in features:
+                    members |= Member.objects.has_active_subscription().in_depot(features['depots'])
+                if 'areas' in features:
+                    members |= Member.objects.filter(areas__in=features['areas'])
+                    members |= Member.objects.filter(assignment__job__in=Job.objects.in_areas(features['areas']))
+                self.fields['to_members'].queryset = members.active().distinct()
+
+    def _set_field_queryset(self, field, queryset):
+        if not queryset.exists():
+            del self.fields[field]
+            self.form_fields.remove(field)
+        else:
+            self.fields[field].queryset = queryset
 
     def get_recipient_list_choices(self):
         # TODO: only show options based on members permissions (future)

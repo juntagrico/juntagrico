@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
+from juntagrico.entity.depot import Depot
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
     AreaRecipientsForm
 from juntagrico.view_decorators import requires_permission_to_contact
@@ -48,7 +49,9 @@ def count_area_recipients(request, area_id):
 def to_member(request, member_id):
     # TODO: Check if request.user.member can contact member_id
     return email_view(request, EmailForm, {
-        'recipients': ['to_members', 'copy']
+        'recipients': {
+            'fields': ['to_members', 'copy']
+        }
     }, {
         'to_members': [member_id]
     })
@@ -78,9 +81,8 @@ def to_area(request, area_id):
     })
 
 
-@login_required
+@requires_permission_to_contact
 def write(request):
-    # TODO: limit access
     initial = dict(
         to_jobs=[request.GET.get('job')],
         to_members=request.GET.get('members', '').split('-')
@@ -89,10 +91,21 @@ def write(request):
 
 
 def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, initial=None):
-    member = request.user.member
+    user = request.user
+    member = user.member
     features = features or {}
     features.setdefault('template', request.user.has_perm('juntagrico.can_load_templates'))
     features.setdefault('attachment', request.user.has_perm('juntagrico.can_email_attachments'))
+
+    # limit available areas and depots if user can't send emails in general
+    if not user.has_perm('juntagrico.can_send_mails'):
+        depots = Depot.objects.none()
+        if user.has_perm('juntagrico.is_depot_admin'):
+            depots = features.setdefault('depots', Depot.objects.filter(contact=member))
+        features.setdefault('recipients', {
+            'areas': member.coordinated_areas.filter(coordinator_access__can_contact_member=True),
+            'depots': depots,
+        })
 
     if request.method == 'POST':
         form = form_class(member, features, request.POST, request.FILES, initial=initial)

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if perms.juntagrico.can_send_mails %}
+{% if perms.juntagrico.can_send_mails %}  {# TODO: show this entry to area admins who can contact #}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'email-write' %}">
             {% trans "E-Mail-Versand" %}
