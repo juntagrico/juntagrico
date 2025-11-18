@@ -22,6 +22,7 @@ urlpatterns = [
     path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
     path('signup/welcome/', create_subscription.welcome, name='welcome'),
     path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('signup/external', create_subscription.create_external, name='signup-external'),
 
     # /subscription/create
     path('subscription/create/parts/', create_subscription.select_parts, name='cs-subscription'),
