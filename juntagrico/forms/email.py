@@ -1,5 +1,4 @@
 import html
-import re
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
@@ -10,7 +9,6 @@ from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.formats import date_format
-from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2MultipleWidget
 from djrichtextfield.widgets import RichTextWidget
@@ -20,6 +18,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
+from juntagrico.util.html import EmailHtmlParser
 
 
 class RichTextWidgetWithTemplates(RichTextWidget):
@@ -305,9 +304,9 @@ class BaseForm(BaseRecipientsForm):
 
     def _html_to_text(self, raw_html):
         text = raw_html.replace('\n', '\n\n')
-        text = re.sub('<br ?/?>', '\n', text, flags=re.IGNORECASE)
-        text = html.unescape(text)
-        return strip_tags(text)
+        parser = EmailHtmlParser()
+        parser.feed(text)
+        return html.unescape(parser.text)
 
     def send(self):
         subject = self.cleaned_data['subject']
