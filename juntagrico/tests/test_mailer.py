@@ -67,7 +67,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
             }
             if settings.ENABLE_SHARES:
                 post_data['to_list'].append('all_shares')
-            response = self.assertPost(reverse('email-write'), post_data, code=302)
+            self.assertPost(reverse('email-write'), post_data, code=302)
         self.assertEqual(len(mail.outbox), 1)
 
     @tag('shares')
