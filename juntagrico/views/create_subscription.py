@@ -1,11 +1,21 @@
 from django.db import transaction
+from django.db.models import F
 from django.forms import model_to_dict
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
+from django.utils.module_loading import import_string
+from django.http import Http404, JsonResponse
+from django import forms
+from django.core.exceptions import BadRequest
+from django.urls import reverse
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm
 from juntagrico.util import temporal
@@ -78,6 +88,94 @@ def select_start_date(request, signup_manager):
         'subscriptionform': subscription_form,
     }
     return render(request, 'juntagrico/subscription/create/select_start_date.html', render_dict)
+
+
+class ExternalSignupForm(forms.Form):
+    '''
+    Defines the fields and validations for the external signup API, decouple from internal names
+    '''
+    first_name = forms.CharField()
+    family_name = forms.CharField()
+    street = forms.CharField()
+    house_number = forms.CharField()
+    postal_code = forms.CharField()
+    city = forms.CharField()
+    phone = forms.CharField()
+    email = forms.EmailField()
+    depot_id = forms.ModelChoiceField(queryset=DepotDao.all_visible_depots())
+    start_date = forms.DateField()
+    shares = forms.IntegerField(min_value=0)
+    comment = forms.CharField(required=False)
+    by_laws_accepted = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        sub_ids = kwargs.pop('sub_ids')
+        super(ExternalSignupForm, self).__init__(*args, **kwargs)
+
+        for id in sub_ids:
+            self.fields['subscription_%s' % id] = forms.IntegerField(min_value=0, required=False)
+
+
+@csrf_exempt
+def create_external(request):
+    '''
+    Handle external subscription POST requests and return depot and subscription details on GET
+
+    Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'
+    '''
+    if not Config.enable_external_signup():
+        raise Http404
+    if request.method == "GET":
+        depots = list(DepotDao.all_visible_depots().values('id','name'))
+        subs = list(SubscriptionType.objects.visible()
+                    .annotate(is_extra = F("size__product__is_extra"))
+                    .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
+                            'price', 'trial', 'description', 'is_extra'))
+        external_details = {'depots': depots,
+                    'subscriptions': subs}
+        return JsonResponse(external_details, safe=False)
+    if not request.method == 'POST':
+        raise BadRequest("POST request method expected")
+    if request.user.is_authenticated:
+        logout(request)
+    allsubs = SubscriptionType.objects.visible()
+    form = ExternalSignupForm(request.POST, sub_ids=list(allsubs.values_list('id', flat=True)))
+    if not form.is_valid():
+        raise BadRequest("Invalid data submitted")
+    post_data = form.cleaned_data
+    signup_manager = import_string(Config.signup_manager())(request)
+    main_member = {'last_name': post_data['family_name'],
+                   'first_name': post_data['first_name'],
+                   'addr_street': post_data['street'] + ' ' + post_data['house_number'],
+                   'addr_zipcode': post_data['postal_code'],
+                   'addr_location': post_data['city'],
+                   'phone': post_data['phone'],
+                   'email': post_data['email'],
+                   'agb': post_data['by_laws_accepted'],
+                   'mobile_phone': '',
+                   'birthday': '',
+                   'submit': 'Anmelden',
+                   'comment': post_data['comment'] + '[External signup API]'
+                   }
+    signup_manager.set('main_member', main_member)
+    subs = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if not x.size.product.is_extra else 0) for x in allsubs}
+    extras = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if x.size.product.is_extra else 0) for x in allsubs}
+    signup_manager.set('subscriptions', subs)
+    signup_manager.set('extras', extras)
+    depot_id = post_data['depot_id'].pk
+    signup_manager.set('depot', depot_id)
+    start_date = post_data['start_date'].strftime('%Y-%m-%d')
+    signup_manager.set('start_date', start_date)
+    signup_manager.set('co_members_done', True)
+    shares_amount = post_data['shares']
+    signup_manager.set('shares', {'of_member': shares_amount})
+    if MemberDao.member_by_email(main_member['email']) or not post_data['by_laws_accepted']:
+        # submitted mail address exists in system or by laws acceptance missing, send back to member details form for correction
+        return redirect(reverse('signup') + '?mod')
+    if all(value == 0 for value in subs.values()):
+        # no subscription selected, send back to subscription selection form
+        return redirect(reverse('cs-subscription') + '?mod')
+    return redirect(signup_manager.get_next_page())
 
 
 class AddMemberView(SignupView, FormView):
