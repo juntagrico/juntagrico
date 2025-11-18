@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core import mail
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -59,12 +60,14 @@ class MailerTests(JuntagricoTestCaseWithShares):
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions', 'all_shares', 'all'],
+                'to_list': ['all_subscriptions', 'all'],
                 'to_members': [1],
                 'subject': 'test',
                 'attachment0': fp
             }
-            self.assertPost(reverse('email-write'), post_data, code=302)
+            if settings.ENABLE_SHARES:
+                post_data['to_list'].append('all_shares')
+            response = self.assertPost(reverse('email-write'), post_data, code=302)
         self.assertEqual(len(mail.outbox), 1)
 
     @tag('shares')
@@ -103,9 +106,11 @@ class MailerTests(JuntagricoTestCaseWithShares):
     def testBatchMailer(self):
         post_data = {
             'from_email': 'private',
-            'to_list': ['all_subscriptions', 'all_shares', 'all'],
+            'to_list': ['all_subscriptions', 'all'],
             'to_members': [1],
             'subject': 'test',
         }
+        if settings.ENABLE_SHARES:
+            post_data['to_list'].append('all_shares')
         self.assertPost(reverse('email-write'), post_data, code=302)
         self.assertEqual(len(mail.outbox), 25)  # check that email was split into batches

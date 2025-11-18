@@ -179,11 +179,13 @@ class RecipientsForm(BaseRecipientsForm):
 
     def get_recipient_list_choices(self):
         # TODO: only show options based on members permissions (future)
-        return [
+        choices = [
             ('all', _('Alle')),  # TODO: Challenge the existence of this option
-            ('all_subscriptions', _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription')),),
-            ('all_shares', _('Alle mit {}').format(Config.vocabulary('share')),),
+            ('all_subscriptions', _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription'))),
         ]
+        if Config.enable_shares():
+            choices.append(('all_shares', _('Alle mit {}').format(Config.vocabulary('share'))))
+        return choices
 
     def _populate_recipients_queryset(self, recipients):
         cleaned_data = self.cleaned_data
