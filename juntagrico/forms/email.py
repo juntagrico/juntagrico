@@ -5,6 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, Fieldset, HTML
 from django import forms
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import OuterRef, Exists
 from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
@@ -57,6 +58,23 @@ class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
         'last_name__icontains',
         'email__icontains',
     ]
+
+    def get_queryset(self):
+        # annotate if another member with the exact same name exists
+        return super().get_queryset().annotate(
+            duplicate=Exists(
+                Member.objects.exclude(pk=OuterRef('pk')).filter(
+                    first_name=OuterRef('first_name'),
+                    last_name=OuterRef('last_name')
+                )
+            )
+        )
+
+    def label_from_instance(self, obj):
+        label = super().label_from_instance(obj)
+        if obj.duplicate:
+            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
+        return label
 
 
 class BaseRecipientsForm(forms.Form):
