@@ -4,6 +4,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import juntagrico.entity
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

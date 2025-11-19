@@ -11,7 +11,8 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
+    SubscriptionItem
 
 
 class Command(BaseCommand):
@@ -89,6 +90,7 @@ class Command(BaseCommand):
             ).first()
             if not bundle:
                 bundle = SubscriptionBundle.objects.create(**bundle_fields)
+            SubscriptionItem.objects.get_or_create(product=subproduct, bundle=bundle)
             subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'bundle': bundle, 'shares': 2,
                               'visible': True, 'required_assignments': 10, 'price': 1000,
                               'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
