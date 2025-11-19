@@ -4,6 +4,7 @@ import hashlib
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_save, post_init
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
@@ -70,6 +71,19 @@ class Member(JuntagricoBaseModel):
     subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
 
     objects = MemberQuerySet.as_manager()
+
+    previous_email = None
+
+    @staticmethod
+    def post_save(sender, instance, created, **kwargs):
+        if instance.previous_email != instance.email or created:
+            instance.confirmed = False
+            instance.previous_email = instance.email
+            instance.save()
+
+    @staticmethod
+    def remember_email(sender, instance, **kwargs):
+        instance.previous_email = instance.email
 
     @property
     def canceled(self):
@@ -346,3 +360,7 @@ class SubscriptionMembership(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))
+
+
+post_save.connect(Member.post_save, sender=Member)
+post_init.connect(Member.remember_email, sender=Member)
