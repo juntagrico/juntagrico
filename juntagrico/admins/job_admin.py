@@ -51,7 +51,7 @@ class JobCopy(admin.ModelAdmin):
     copy_fieldsets = [
         (None, {'fields': [
             'type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
-            'type_description', 'additional_description'
+            'type_description', 'additional_description', 'pinned'
         ]}),
         (gettext_lazy('Kopieren nach'), {'fields': [
             'new_time', 'start_date', 'end_date', 'weekdays', 'weekly'
