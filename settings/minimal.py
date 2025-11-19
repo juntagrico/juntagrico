@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from juntagrico.defaults import richtextfield_config
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Core Settings
@@ -24,6 +26,7 @@ INSTALLED_APPS = [
     'django_select2',
     'polymorphic',
     'import_export',
+    'djrichtextfield',
 ]
 
 DATABASES = {
@@ -90,3 +93,7 @@ STATIC_URL = '/static/'
 # Crispy Forms Settings
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Rich Text Editor Settings
+
+DJRICHTEXTFIELD_CONFIG = richtextfield_config('en')

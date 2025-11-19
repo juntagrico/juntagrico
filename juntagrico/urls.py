@@ -1,5 +1,5 @@
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, include
 
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
@@ -236,6 +236,9 @@ urlpatterns = [
     # /api/jobtype
     path('api/jobtype/<int:id>/description', api.job_type_description, name='api-jobtype-description'),
     path('api/jobtype/<int:id>/duration', api.job_type_duration, name='api-jobtype-duration'),
+
+    # richtext
+    path('djrichtextfield/', include('djrichtextfield.urls')),
 
     # autocomplete
     path("select2/fields/auto.json", email.InternalSelect2View.as_view(), name="internal-select2-view"),

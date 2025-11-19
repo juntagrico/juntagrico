@@ -709,6 +709,12 @@ MAIL_TEMPLATE
 
     "mails/email.html"
 
+DEFAULT_MAILER
+^^^^^^^^^^^^^^
+  .. warning::
+    Removed in version 2.0.
+    Instead extend ``juntagrico.backends.email.BaseEmailBackend`` and set the EMAIL_BACKEND to customize how your emails are sent.
+    See ``juntagrico.backends.email.BaseBatchEmailBackend`` for reference.
 
 BATCH_MAILER
 ^^^^^^^^^^^^^^
@@ -756,7 +762,7 @@ WHITELIST_EMAILS
 MAILER_RICHTEXT_OPTIONS
 ^^^^^^^^^^^^^^^^^^^^^^^
   .. warning::
-    Removed in version 2.0. Configure using `DJRICHTEXTFIELD_CONFIG` instead.
+    Removed in version 2.0. Configure using `DJRICHTEXTFIELD_CONFIG` instead. See :ref:`Richtext in Mailer <intro-richtext-mailer>`.
 
 Notifications
 -------------
