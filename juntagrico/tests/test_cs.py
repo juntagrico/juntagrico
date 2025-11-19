@@ -232,7 +232,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
 
     def testExternalSignup(self):
-        def externalSignupDetails(email='test@user.com', shares = 10, comment='User comment', extra_only = False):
+        def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
             if extra_only:
                 sub_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]
             else:
@@ -260,11 +260,12 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             response = self.assertPost(reverse('signup-external'), externalSignupDetails())
             self.assertRedirects(response, reverse('cs-summary'))
             if settings.ENABLE_SHARES:
-                response = self.assertPost(reverse('signup-external'), externalSignupDetails(shares = 0))
+                response = self.assertPost(reverse('signup-external'), externalSignupDetails(shares=0))
                 self.assertRedirects(response, reverse('cs-shares'))
             if self.with_extra_subs:
-                response = self.assertPost(reverse('signup-external'), externalSignupDetails(extra_only = True))
+                response = self.assertPost(reverse('signup-external'), externalSignupDetails(extra_only=True))
                 self.assertRedirects(response, reverse('cs-subscription'))
+
 
 class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
     with_extra_subs = False
