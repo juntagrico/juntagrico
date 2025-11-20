@@ -73,7 +73,6 @@ class AreaCoordinatorBaseMixin(BaseModelAdmin):
     coordinator_permissions = ['view', 'add', 'change', 'delete']
     coordinator_access = 'can_modify_jobs'
 
-
     def _has_permission(self, request, obj=None, access=None):
         if access is None or access in self.coordinator_permissions:
             area = {'area': self.get_area(obj)} if obj else {}
