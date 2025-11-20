@@ -268,15 +268,17 @@ class MemberSignupView(SignupView, FormView):
 
 def confirm(request, member_hash):
     """
-    Confirm from a user that has been added as a co_subscription member
+    Confirm mail address from link with hash after signup or if user that has been added as a co_subscription member
     """
-
     for member in MemberDao.all_members().filter(confirmed=False):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
-
-    return redirect('home')
+            renderdict = {}
+            break
+        else:
+            renderdict = {'error_message': 'Ungültiger Link.'}
+    return render(request, 'mail_confirmation.html', renderdict)
 
 
 class AddCoMemberView(FormView, ModelFormMixin):
