@@ -158,8 +158,8 @@ def create_external(request):
                    'comment': post_data['comment'] + '[External signup API]'
                    }
     signup_manager.set('main_member', main_member)
-    subs = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if not x.size.product.is_extra else 0) for x in allsubs}
-    extras = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if x.size.product.is_extra else 0) for x in allsubs}
+    subs = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if not x.is_extra else 0) for x in allsubs}
+    extras = {str(x.pk): int(post_data['subscription_%s' % x.pk] or 0 if x.is_extra else 0) for x in allsubs}
     signup_manager.set('subscriptions', subs)
     signup_manager.set('extras', extras)
     depot_id = post_data['depot_id'].pk
