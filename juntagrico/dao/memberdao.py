@@ -4,57 +4,38 @@ from django.contrib.auth.models import Permission
 from django.db.models import Q
 
 from juntagrico.entity.member import Member
+from juntagrico.queryset.member import q_subscription_activated, q_subscription_deactivated, q_joined_subscription, \
+    q_left_subscription
 from juntagrico.util.models import q_deactivated
 
 
 class MemberDao:
-
-    @staticmethod
-    def q_joined_subscription():
-        return Q(subscriptionmembership__join_date__isnull=False,
-                 subscriptionmembership__join_date__lte=datetime.date.today())
-
-    @staticmethod
-    def q_left_subscription():
-        return Q(subscriptionmembership__leave_date__isnull=False,
-                 subscriptionmembership__leave_date__lte=datetime.date.today())
-
-    @staticmethod
-    def q_subscription_activated():
-        return Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                 subscriptionmembership__subscription__activation_date__lte=datetime.date.today())
-
     @staticmethod
     def q_subscription_canceled():
         return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
                  subscriptionmembership__subscription__cancellation_date__lte=datetime.date.today())
 
     @staticmethod
-    def q_subscription_deactivated():
-        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
-                 subscriptionmembership__subscription__deactivation_date__lte=datetime.date.today())
-
-    @staticmethod
     def has_subscription():
-        return Q(MemberDao.q_subscription_activated(),
+        return Q(q_subscription_activated(),
                  ~MemberDao.q_subscription_canceled(),
-                 ~MemberDao.q_subscription_deactivated(),
-                 MemberDao.q_joined_subscription(),
-                 ~MemberDao.q_left_subscription())
+                 ~q_subscription_deactivated(),
+                 q_joined_subscription(),
+                 ~q_left_subscription())
 
     @staticmethod
     def has_canceled_subscription():
-        return Q(MemberDao.q_subscription_activated(),
+        return Q(q_subscription_activated(),
                  MemberDao.q_subscription_canceled(),
-                 ~MemberDao.q_subscription_deactivated(),
-                 MemberDao.q_joined_subscription(),
-                 ~MemberDao.q_left_subscription())
+                 ~q_subscription_deactivated(),
+                 q_joined_subscription(),
+                 ~q_left_subscription())
 
     @staticmethod
     def has_future_subscription():
-        return Q(~MemberDao.q_subscription_activated(),
+        return Q(~q_subscription_activated(),
                  ~MemberDao.q_subscription_canceled(),
-                 ~MemberDao.q_subscription_deactivated(),
+                 ~q_subscription_deactivated(),
                  subscriptionmembership__isnull=False)
 
     @staticmethod

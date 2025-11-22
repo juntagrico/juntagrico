@@ -41,14 +41,12 @@
                         {{ part.subscription.primary_member.first_name }} {{ part.subscription.primary_member.last_name }}
                     </td>
                     <td>
-                        <form id="part{{ part.id }}" method="post" action="{% url 'mail' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="recipients"value="{{ part.subscription.primary_member.email }}"/>
-                            <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#"onclick="$('#part{{ part.id }}').submit();" class="email">
+                        {% if part.subscription.primary_member %}
+                            <a href="{% url 'email-to-member' part.subscription.primary_member.id %}" class="email"
+                               data-id="{{ part.subscription.primary_member.id }}">
                                 {{ part.subscription.primary_member.email }}
                             </a>
-                        </form>
+                        {% endif %}
                     </td>
                     <td>
                         {{ part.cancellation_date|date:"Y-m-d" }}

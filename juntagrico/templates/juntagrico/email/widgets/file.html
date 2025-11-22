@@ -1,0 +1,20 @@
+{% load crispy_forms_field %}
+{% load i18n %}
+
+<div class="form-group">
+    {% if field.label and form_show_labels %}
+        <label {% if field.id_for_label %}for="{{ field.id_for_label }}" {% endif %}class="{% if 'form-horizontal' in form_class %}col-form-label {% endif %}{{ label_class }}{% if field.field.required %} requiredField{% endif %}">
+            {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+        </label>
+    {% endif %}
+    <div class="file-upload">
+        {% if field.errors %}
+            {% crispy_field field 'class' 'custom-control-input is-invalid' %}
+        {% else %}
+            {% crispy_field field 'class' 'custom-control-input' %}
+        {% endif %}
+        <button class="btn btn-secondary file-upload-button">
+            {% trans "Datei hinzufügen" %}
+        </button>
+    </div>
+</div>

@@ -3,6 +3,7 @@ import random
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.test import override_settings
 from faker import Faker
 
 from juntagrico.config import Config
@@ -137,7 +138,8 @@ class Command(BaseCommand):
         parser.add_argument('--subs-per-depot', type=int, help='Subscriptions per depot', default=10)
         parser.add_argument('--job-amount', type=int, help='Jobs per area', default=10)
 
-    # entry point used by manage.py
+    # prevent sending emails while creating testdata
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.dummy.EmailBackend')
     def handle(self, *args, **options):
         sub_types = []
         default_size = options['sub_size']

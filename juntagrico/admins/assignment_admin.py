@@ -1,15 +1,10 @@
-from django.db.models import Q
-
 from juntagrico.admins import BaseAdmin, AreaCoordinatorMixin, can_see_all
 from juntagrico.entity.jobs import Job
 
 
 def get_allowed_jobs(member):
     allowed_areas = member.coordinated_areas.filter(coordinator_access__can_modify_assignments=True)
-    return Job.objects.filter(
-        Q(OneTimeJob___activityarea__in=allowed_areas) |
-        Q(RecuringJob___type__activityarea__in=allowed_areas)
-    )
+    return Job.objects.in_areas(allowed_areas)
 
 
 class AssignmentAdmin(AreaCoordinatorMixin, BaseAdmin):

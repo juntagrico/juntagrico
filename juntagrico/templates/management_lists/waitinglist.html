@@ -60,14 +60,12 @@
                         {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
                     </td>
                     <td>
-                        <form id="subscription{{ subscription.id }}" method="post" action="{% url 'mail' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="recipients"value="{{ subscription.primary_member.email }}"/>
-                            <input type="hidden"name="recipients_count"value="1"/>
-                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();" class="email">
+                        {% if subscription.primary_member %}
+                            <a href="{% url 'email-to-member' subscription.primary_member.id %}" class="email"
+                               data-id="{{ subscription.primary_member.id }}">
                                 {{ subscription.primary_member.email }}
                             </a>
-                        </form>
+                        {% endif %}
                     </td>
                     <td>
                         {{ subscription.depot.get_weekday_display }}
