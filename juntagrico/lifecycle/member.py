@@ -9,6 +9,7 @@ from juntagrico.signals import member_deactivated, member_created, member_cancel
 def member_post_save(sender, instance, created, **kwargs):
     if created:
         member_created.send(sender=sender, instance=instance)
+    update_mail_confirmed(instance, created)
 
 
 def member_pre_save(sender, instance, **kwargs):
@@ -41,3 +42,9 @@ def check_member_consistency(instance):
 
 def handle_member_created(sender, instance, **kwargs):
     adminnotification.member_created(instance)
+
+def update_mail_confirmed(instance, created):
+    if instance._old['email'] != instance.email or created:
+        instance.confirmed = False
+        instance._old['email'] = instance.email
+        instance.save()

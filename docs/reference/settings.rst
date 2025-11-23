@@ -355,7 +355,7 @@ ENFORCE_MAIL_CONFIRMATION
 
   .. code-block:: python
 
-    False
+    True
 
 Membership
 ----------

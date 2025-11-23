@@ -277,7 +277,7 @@ def confirm(request, member_hash):
             renderdict = {}
             break
         else:
-            renderdict = {'error_message': 'Ungültiger Link.'}
+            renderdict = {'error_message': _('Ungültiger Link.')}
     return render(request, 'mail_confirmation.html', renderdict)
 
 
