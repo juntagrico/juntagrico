@@ -6,6 +6,10 @@ from . import JuntagricoTestCaseWithShares
 
 
 class AdminTests(JuntagricoTestCaseWithShares):
+    def testAdminLogin(self):
+        response = self.client.get(reverse('admin:login'))
+        self.assertEqual(response.status_code, 200)
+
     def testOneTimeJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)),
