@@ -64,25 +64,25 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertListEqual(sorted(mail.outbox[0].bcc), ['email1@email.org', 'email4@email.org'])
 
     def testMailResult(self):
-        self.assertGet(reverse('mail-result', args=[1]))
+        self.assertGet(reverse('mail-result', args=[1]), member=self.area_admin_contact)
 
     def testMailArea(self):
-        self.utilMailConcernTest('area')
+        self.utilMailConcernTest('area', member=self.area_admin_contact)
 
     def testMailDepot(self):
         self.utilMailConcernTest('depot')
 
     def testMailJob(self):
-        self.utilMailConcernTest('job')
+        self.utilMailConcernTest('job', member=self.area_admin_contact)
 
     def testMailTemplate(self):
         self.assertGet(reverse('mail-template', args=[self.mail_template.pk]))
         self.assertGet(reverse('mail-template', args=[self.mail_template.pk]), member=self.member2, code=302)
 
-    def utilMailConcernTest(self, concern):
-        self.assertGet(reverse('mail-{}'.format(concern)))
-        self.assertGet(reverse('mail-{}-send'.format(concern)), code=404)
-        self.assertPost(reverse('mail-{}-send'.format(concern)), code=302)
+    def utilMailConcernTest(self, concern, member=None):
+        self.assertGet(reverse('mail-{}'.format(concern)), member=member)
+        self.assertGet(reverse('mail-{}-send'.format(concern)), code=404, member=member)
+        self.assertPost(reverse('mail-{}-send'.format(concern)), code=302, member=member)
         self.assertGet(reverse('mail-{}'.format(concern)), member=self.member2, code=302)
 
     @override_settings(DEFAULT_MAILER='juntagrico.util.mailer.batch.Mailer')
