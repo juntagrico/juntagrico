@@ -48,7 +48,7 @@ class InternalModelSelect2MultipleWidget(ModelSelect2MultipleWidget):
 
 class JobSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
     def label_from_instance(self, obj):
-        return f'{obj.type.get_name} ({date_format(obj.time, "SHORT_DATETIME_FORMAT")})'
+        return obj.get_label()
 
 
 class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
@@ -277,6 +277,31 @@ class AreaRecipientsForm(BaseRecipientsForm):
         return super()._populate_recipients_queryset(recipients)
 
 
+class JobRecipientsForm(BaseRecipientsForm):
+    to_job = forms.BooleanField(
+        label=_('An alle Personen im Einsatz "{}"'),
+        required=False
+    )
+
+    def __init__(self, sender, features=None, *args, **kwargs):
+        super().__init__(sender, *args, **kwargs)
+        self.job_id = features['job']
+        job = Job.objects.get(pk=self.job_id)
+        self.fields['to_job'].label = self.fields['to_job'].label.format(job.get_label())
+        self.fields['to_members'].label = _('An diese Personen im Einsatz')
+        self.fields['to_members'].widget.attrs['data-minimum-input-length'] = 0
+        self.fields['to_members'].queryset = job.members.active()
+        self.form_fields.insert(0, 'to_job')
+
+    def get_count_url(self):
+        return reverse('email-count-job-recipients', args=[self.job_id])
+
+    def _populate_recipients_queryset(self, recipients):
+        if self.cleaned_data.get('to_job'):
+            recipients |= Job.objects.get(pk=self.job_id).members.active()
+        return super()._populate_recipients_queryset(recipients)
+
+
 class BaseForm(BaseRecipientsForm):
     from_email = forms.ChoiceField(label=_('Von'))
     subject = forms.CharField(label=_('Betreff'))
@@ -366,4 +391,8 @@ class DepotForm(BaseForm, DepotRecipientsForm):
 
 
 class AreaForm(BaseForm, AreaRecipientsForm):
+    pass
+
+
+class JobForm(BaseForm, JobRecipientsForm):
     pass

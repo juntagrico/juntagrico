@@ -33,7 +33,7 @@
 {# button to contact all #}
 {% if can_contact %}
     {% block send_mail %}
-        <a href="{% url 'email-write' %}?job={{ job.id }}" class="btn btn-secondary">
+        <a href="{% url 'email-to-job' job.id %}" class="btn btn-secondary">
             <i class="fa fa-envelope"></i>
             {% trans "Allen ein E-Mail senden" %}
         </a>

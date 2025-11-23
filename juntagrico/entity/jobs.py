@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
@@ -223,6 +224,9 @@ class Job(JuntagricoBasePoly):
 
     def __str__(self):
         return _('Job {0}').format(self.id)
+
+    def get_label(self):
+        return f'{self.type.get_name} ({date_format(self.time, "SHORT_DATETIME_FORMAT")})'
 
     @property
     @admin.display(description=_('Freie Plätze'))

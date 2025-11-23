@@ -207,6 +207,8 @@ urlpatterns = [
     # /email/area
     path('email/area/<int:area_id>/', email.to_area, name='email-to-area'),
     path('email/area/<int:area_id>/recipients/count', email.count_area_recipients, name='email-count-area-recipients'),
+    path('email/job/<int:job_id>/', email.to_job, name='email-to-job'),
+    path('email/job/<int:job_id>/recipients/count', email.count_job_recipients, name='email-count-job-recipients'),
     # /email/template
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
 

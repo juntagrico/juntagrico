@@ -10,7 +10,7 @@ from django_select2.views import AutoResponseView
 
 from juntagrico.entity.depot import Depot
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
-    AreaRecipientsForm
+    AreaRecipientsForm, JobForm, JobRecipientsForm
 from juntagrico.view_decorators import requires_permission_to_contact
 
 
@@ -42,6 +42,12 @@ def count_depot_recipients(request, depot_id):
 @requires_permission_to_contact
 def count_area_recipients(request, area_id):
     form = AreaRecipientsForm(request.user.member, {'area': area_id}, data=request.GET)
+    return count_recipients(request, form)
+
+
+@requires_permission_to_contact
+def count_job_recipients(request, job_id):
+    form = JobRecipientsForm(request.user.member, {'job': job_id}, data=request.GET)
     return count_recipients(request, form)
 
 
@@ -77,6 +83,18 @@ def to_area(request, area_id):
         'recipients': {'area': area_id}
     }, {
         'to_area': not members,
+        'to_members': members.split('-')
+    })
+
+
+@requires_permission_to_contact
+def to_job(request, job_id):
+    # TODO: include an email footer that says "you receive this email because you are in the job ..."
+    members = request.GET.get('members', '')
+    return email_view(request, JobForm, {
+        'recipients': {'job': job_id}
+    }, {
+        'to_job': not members,
         'to_members': members.split('-')
     })
 
