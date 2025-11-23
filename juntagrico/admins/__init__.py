@@ -125,5 +125,61 @@ class AreaCoordinatorInlineMixin(InlineModelAdmin, AreaCoordinatorBaseMixin):
         return related_modeladmin.get_area(obj)
 
 
+class DepotCoordinatorBaseMixin(BaseModelAdmin):
+    coordinator_permissions = ['view', 'add', 'change', 'delete']
+    coordinator_access = 'can_modify_depot'
+
+    def _has_permission(self, request, obj=None, access=None):
+        if access is None or access in self.coordinator_permissions:
+            depot = {'depot': self.get_depot(obj)} if obj else {}
+            return request.user.member.depot_access.filter(**depot, **{self.coordinator_access: True}).exists()
+        return False
+
+    def get_depot(self, obj):
+        return obj
+
+    def has_module_permission(self, request):
+        return self._has_permission(request) or super().has_module_permission(request)
+
+    def has_view_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'view') or super().has_view_permission(request)
+
+    def has_full_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj)
+
+    def has_add_permission(self, request):
+        return self._has_permission(request, None, 'add') or super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'change') or super().has_change_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self._has_permission(request, obj, 'delete') or super().has_delete_permission(request)
+
+
+class DepotCoordinatorMixin(DepotCoordinatorBaseMixin):
+    path_to_depot = 'pk'
+
+    def get_coordinator_queryset(self, request, qs):
+        allowed_depots = request.user.member.coordinated_depots.filter(
+            **{f'coordinator_access__{self.coordinator_access}': True}
+        )
+        return qs.filter(**{f'{self.path_to_depot}__in': allowed_depots})
+
+    def get_queryset(self, request):
+        if self.has_full_view_permission(request):
+            return super().get_queryset(request)
+        else:
+            return self.get_coordinator_queryset(request, super().get_queryset(request))
+
+
+class DepotCoordinatorInlineMixin(InlineModelAdmin, DepotCoordinatorBaseMixin):
+    def get_depot(self, obj):
+        related_modeladmin = self.admin_site._registry.get(type(obj))
+        if related_modeladmin is None:
+            return None
+        return related_modeladmin.get_depot(obj)
+
+
 def can_see_all(user, model):
     return user.has_perm(f'juntagrico.view_{model}') or user.has_perm(f'juntagrico.change_{model}')

@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
@@ -111,7 +111,9 @@ class Command(BaseCommand):
             depot2_fields = {'name': 'Siemens', 'weekday': 4, 'location': depot2_location,
                              'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
             depot1, _ = Depot.objects.get_or_create(name=depot1_fields['name'], defaults=depot1_fields)
+            DepotCoordinator.objects.update_or_create(member=member_2, depot=depot1)
             depot2, _ = Depot.objects.get_or_create(name=depot2_fields['name'], defaults=depot2_fields)
+            DepotCoordinator.objects.update_or_create(member=member_1, depot=depot2)
 
             self.create_subscription(depot1, member_1, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
             self.create_subscription(depot2, member_2, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())

@@ -58,6 +58,8 @@ class Depot(JuntagricoBaseModel):
                                                   Config.vocabulary('depot')))
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     visible = models.BooleanField(_('Sichtbar'), default=True)
+    coordinators = models.ManyToManyField('Member', verbose_name=_('Koordinatoren'), through='DepotCoordinator',
+                                          related_name='coordinated_depots')
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     overview_cache = None
@@ -126,7 +128,23 @@ class Depot(JuntagricoBaseModel):
         verbose_name = Config.vocabulary('depot')
         verbose_name_plural = Config.vocabulary('depot_pl')
         ordering = ['sort_order']
-        permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)
+
+
+class DepotCoordinator(JuntagricoBaseModel):
+    depot = models.ForeignKey(Depot, related_name='coordinator_access', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', related_name='depot_access', on_delete=models.PROTECT)
+    can_modify_depot = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
+    can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
+    can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    class Meta:
+        verbose_name = _('Koordinator')
+        verbose_name_plural = _('Koordinatoren')
+        ordering = ['sort_order']
+        constraints = [
+            models.UniqueConstraint(fields=['depot', 'member'], name='unique_depot_member'),
+        ]
 
 
 class DepotSubscriptionTypeCondition(JuntagricoBaseModel):

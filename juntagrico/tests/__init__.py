@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
-from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition
+from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
@@ -204,6 +204,14 @@ class JuntagricoTestCase(TestCase):
             'location': location,
         }
         cls.depot = Depot.objects.create(**depot_data)
+        depot_coordinator = {
+                "depot": cls.depot,
+                "member": cls.member,
+                "can_modify_depot": True,
+                "can_view_member": True,
+                "can_contact_member": True,
+        }
+        DepotCoordinator.objects.create(**depot_coordinator)
         depot_data = {
             'name': 'depot2',
             'contact': cls.member,
@@ -215,6 +223,8 @@ class JuntagricoTestCase(TestCase):
             'fee': 55.0,
         }
         cls.depot2 = Depot.objects.create(**depot_data)
+        depot_coordinator["depot"] = cls.depot2
+        DepotCoordinator.objects.create(**depot_coordinator)
 
     @staticmethod
     def create_sub_size(name, product, long_name='', units=1, visible=True, depot_list=True, description='', **kwargs):

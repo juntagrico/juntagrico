@@ -50,10 +50,12 @@ class ActivityArea(JuntagricoBaseModel):
         return [MemberContact(member=m) for m in self.coordinators.all()]
 
     def _get_email_fallback(self, get_member=False, exclude=None):
-        if exclude is None or self.coordinator.email not in exclude:
-            if get_member:
-                return [(self.coordinator.email, self.coordinator)]
-            return [self.coordinator.email]
+        for coordinator in self.coordinators.all():
+            if exclude is None or coordinator.email not in exclude:
+                if get_member:
+                    return [(coordinator.email, coordinator)]
+                return [coordinator.email]
+        return []
 
     def get_emails(self, get_member=False, exclude=None):
         """
@@ -88,6 +90,7 @@ class AreaCoordinator(JuntagricoBaseModel):
         constraints = [
             models.UniqueConstraint(fields=['area', 'member'], name='unique_area_member'),
         ]
+        ordering = ['sort_order']
 
 
 class JobExtraType(JuntagricoBaseModel):

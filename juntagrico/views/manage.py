@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
@@ -349,20 +349,24 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
 
 
 class DepotSubscriptionView(SubscriptionView):
-    permission_required = 'juntagrico.is_depot_admin'
+    permission_required = []
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
     )
 
     def get_queryset(self):
-        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']), contact=self.request.user.member)
+        self.depot = get_object_or_404(Depot,
+                                       id=int(self.kwargs['depot_id']),
+                                       coordinator_access__member = self.request.user.member,
+                                       coordinator_access__can_view_member = True)
         return super().get_queryset()().filter(depot=self.depot)
 
     def get_context_data(self, **kwargs):
+        access = DepotCoordinator.objects.filter(member=self.request.user.member, depot=self.depot).first()
         context = super().get_context_data(**kwargs)
         context['title'] = self.title.format(depot_name=self.depot.name)
         context['mail_url'] = 'mail-depot'
-        context['can_see_emails'] = True
+        context['can_see_emails'] = access and access.can_contact_member
         context['hide_depots'] = True
         return context
 

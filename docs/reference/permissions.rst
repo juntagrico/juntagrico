@@ -103,12 +103,19 @@ Also require at least view permission for members.
 
 Area and Depot Admins
 ---------------------
-juntagrico.is_depot_admin
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administrator of a depot, so that they can filter and communicate with the members in their depot.
+Depot Coordinators
+^^^^^^^^^^^^^^^^^
 
-Search Hints:
-    * German: Benutzer ist Depot Admin
+.. warning::
+    Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed.
+
+Depot coordinator permissions are configured for each depot and coordinator individually.
+These permissions can be set when editing a depot in the data management ("Datenverwaltung") -> Depots ("Depots").
+There you can add a coordinator and distribute the following permissions.
+
+- Can modify depot: Coordinator can change the descriptions of this depot
+- Can see members: Coordinator can see the list of members with active subscriptions in this depot
+- Can contact members: Coordinator can see names, email addresses and phone numbers of members with active subscriptions in this depot
 
 Area Coordinators
 ^^^^^^^^^^^^^^^^^

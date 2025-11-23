@@ -15,11 +15,6 @@
                 "assignment"
             ],
             [
-                "is_depot_admin",
-                "juntagrico",
-                "depot"
-            ],
-            [
                 "can_load_templates",
                 "juntagrico",
                 "mailtemplate"
