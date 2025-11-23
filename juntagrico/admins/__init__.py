@@ -76,7 +76,7 @@ class AreaCoordinatorBaseMixin(BaseModelAdmin):
     def _has_permission(self, request, obj=None, access=None):
         if access is None or access in self.coordinator_permissions:
             area = {'area': self.get_area(obj)} if obj else {}
-            return request.user or False and request.user.member.area_access.filter(**area, **{self.coordinator_access: True}).exists()
+            return (not request.user.is_anonymous) and request.user.member.area_access.filter(**area, **{self.coordinator_access: True}).exists()
         return False
 
     def get_area(self, obj):
