@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core import mail
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -94,4 +95,5 @@ class MailerTests(JuntagricoTestCaseWithShares):
             'recipients': 'test2@mail.org',
         }
         self.assertPost(reverse('mail-send'), post_data, code=302)
-        self.assertEqual(len(mail.outbox), 10)  # check that email was split into batches
+        # check that email was split into batches
+        self.assertEqual(len(mail.outbox), 10 if settings.ENABLE_SHARES else 7 )

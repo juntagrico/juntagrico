@@ -302,21 +302,21 @@ juntagrico.can_view_lists
 Person can open the generated lists in the administration menu.
 
 Search Hints:
-    * German: Benutzer kann Listen öffnen
+    * German: Kann Listen öffnen
 
 juntagrico.can_generate_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can generate lists (of depot etc.)
 
 Search Hints:
-    * German: Benutzer kann Listen erzeugen
+    * German: Kann Listen erzeugen
 
 juntagrico.can_view_exports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the exports entry in the administration menu.
 
 Search Hints:
-    * German: Benutzer kann Exporte öffnen
+    * German: Kann Exporte öffnen
 
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -342,35 +342,35 @@ juntagrico.can_use_general_email
 Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann allgemeine E-Mail-Adresse verwenden
+    * German: Kann allgemeine E-Mail-Adresse verwenden
 
 juntagrico.can_use_for_members_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_member" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_members" verwenden
+    * German: Kann E-Mail-Adresse "for_members" verwenden
 
 juntagrico.can_use_for_subscriptions_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_subscriptions" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_subscription" verwenden
+    * German: Kann E-Mail-Adresse "for_subscription" verwenden
 
 juntagrico.can_use_for_shares_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_shares" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_shares" verwenden
+    * German: Kann E-Mail-Adresse "for_shares" verwenden
 
 juntagrico.can_use_technical_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "technical" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann technische E-Mail-Adresse verwenden
+    * German: Kann technische E-Mail-Adresse verwenden
 
 juntagrico.can_email_attachments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -427,4 +427,4 @@ juntagrico.is_operations_group
 - (De)activate subscriptions
 
 Search Hints:
-    * German: Benutzer ist in der BG
+    * German: Ist in der BG
