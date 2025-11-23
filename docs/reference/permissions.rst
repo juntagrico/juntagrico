@@ -297,16 +297,6 @@ Requires:
 Search Hints:
     * German: Emails versenden
 
-juntagrico.can_email_free_address_list
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Person send mails to a any manual list of addresses via the email form.
-
-Requires:
-    * juntagrico.can_send_mails
-
-Search Hints:
-    * German: Emails versenden
-
 juntagrico.can_view_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can open the generated lists in the administration menu.
@@ -388,7 +378,7 @@ juntagrico.can_email_attachments
 Person can add attachments when sending an email via the member contact form.
 
 Search Hints:
-    * German: Benutzer kann Anhänge per E-Mail senden
+    * German: Kann Anhänge per E-Mail senden
 
 
 Edit Permissions

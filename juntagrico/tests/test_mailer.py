@@ -45,7 +45,6 @@ class MailerTests(JuntagricoTestCaseWithShares):
                 'sender': 'test@mail.org',
                 'allsubscription': 'on',
                 'allshares': 'on',
-                'all': 'on',
                 'recipients': 'test2@mail.org',
                 'allsingleemail': 'on',
                 'singleemail': 'test3@mail.org test4@mail.org',
@@ -92,8 +91,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
             'sender': 'test@mail.org',
             'allsubscription': 'on',
             'allshares': 'on',
-            'all': 'on',
             'recipients': 'test2@mail.org',
         }
         self.assertPost(reverse('mail-send'), post_data, code=302)
-        self.assertEqual(len(mail.outbox), 27)  # check that email was split into batches
+        self.assertEqual(len(mail.outbox), 10)  # check that email was split into batches

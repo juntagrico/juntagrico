@@ -83,7 +83,6 @@
                     </label>
                 </div>
             {% endif %}
-            {% if perms.juntagrico.can_email_free_address_list %}
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">
                     <span class="switch switch-sm">
@@ -101,7 +100,6 @@
                     <input type="text" class="form-control" id="singleemail" name="singleemail" placeholder="{% trans "Nur an diese Email" %}" style="display:none"/>
                 </div>
             </div>
-            {% endif %}
         {% endif %}
         <div class="form-group row">
             <label for="subject" class="col-md-2">

@@ -72,7 +72,7 @@ def send_email_intern(request):
         ).values_list('email', flat=True))
     if request.POST.get('recipients'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
-    if request.POST.get('allsingleemail') and request.user.has_perm('juntagrico.can_email_free_address_list'):
+    if request.POST.get('allsingleemail'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
 
     files = []
