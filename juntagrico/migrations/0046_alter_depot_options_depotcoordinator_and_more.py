@@ -2,6 +2,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import juntagrico
 
+
 def has_perm(apps, user, perm):
     permission = apps.get_model('auth', 'Permission')
     perm = permission.objects.get(codename=perm)

@@ -22,7 +22,7 @@ class ManageListTests(JuntagricoTestCase):
         url = reverse('manage-depot-subs', args=[self.depot.pk])
         self.assertGet(url)
         # member2 has no access
-        self.assertGet(url, member=self.member2, code=403)
+        self.assertGet(url, member=self.member2, code=404)
 
     def testMember(self):
         response = self.assertGet(reverse('manage-member'))
