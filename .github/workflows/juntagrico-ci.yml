@@ -65,7 +65,7 @@ jobs:
         pip install psycopg2 mysqlclient
     - name: ruff
       run: |
-        ruff check juntagrico
+        ruff check --preview juntagrico
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
