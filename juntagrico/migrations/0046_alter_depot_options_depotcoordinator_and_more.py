@@ -13,13 +13,13 @@ def migrate_coordinators(apps, schema_editor):
     depot_coordinator = apps.get_model('juntagrico', 'DepotCoordinator')
     user = apps.get_model('auth', 'User')
     for depot in depots.objects.all():
-        coordinator = user.objects.get(pk=depot.coordinator.user.pk)
+        coordinator = user.objects.get(pk=depot.contact.user.pk)
         is_depot_admin = has_perm(apps, coordinator, 'is_depot_admin')
         can_change_depot = has_perm(apps, coordinator, 'change_depot')
         depot_coordinator.objects.create(
             depot=depot,
-            member=depot.coordinator,
-            can_modify_area=can_change_depot,
+            member=depot.contact,
+            can_modify_depot=can_change_depot,
             can_view_member=is_depot_admin,
             can_contact_member=is_depot_admin,
         )
