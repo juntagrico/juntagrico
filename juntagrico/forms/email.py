@@ -165,7 +165,11 @@ class RecipientsForm(BaseRecipientsForm):
         self.form_fields = features.get('fields') or default_fields
         # configure fields
         if 'to_list' in self.fields:
-            self.fields['to_list'].choices = self.get_recipient_list_choices()
+            if choices := self.get_recipient_list_choices():
+                self.fields['to_list'].choices = choices
+            else:
+                del self.fields['to_list']
+                self.form_fields.remove('to_list')
         # limit selectable values
         if 'to_areas' in self.fields:
             self._set_field_queryset('to_areas', features.get('areas', ActivityArea.objects.all()).order_by('name'))
@@ -195,13 +199,17 @@ class RecipientsForm(BaseRecipientsForm):
             self.fields[field].queryset = queryset
 
     def get_recipient_list_choices(self):
-        # TODO: only show options based on members permissions (future)
-        choices = [
-            ('all', _('Alle')),  # TODO: Challenge the existence of this option
-            ('all_subscriptions', _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription'))),
-        ]
-        if Config.enable_shares():
-            choices.append(('all_shares', _('Alle mit {}').format(Config.vocabulary('share'))))
+        choices = []
+        if self.sender.user.has_perm('juntagrico.can_email_all_with_sub'):
+            choices.append((
+                'all_subscriptions',
+                _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription'))
+            ))
+        if Config.enable_shares() and self.sender.user.has_perm('juntagrico.can_email_all_with_share'):
+            choices.append((
+                'all_shares',
+                _('Alle mit {}').format(Config.vocabulary('share'))
+            ))
         return choices
 
     def _populate_recipients_queryset(self, recipients):

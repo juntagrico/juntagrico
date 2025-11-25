@@ -1,6 +1,6 @@
 $(function () {
     // if all with active subcription are selected, selection of depots is obsolete
-    $('#id_to_list_1').on('change', function () {
+    $('[value="all_subscriptions"]').on('change', function () {
         $('#div_id_to_depots').toggle(!this.checked)
     })
 
