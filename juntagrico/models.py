@@ -29,20 +29,24 @@ class SpecialRoles(models.Model):
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (('is_operations_group', _('Benutzer ist in der BG')),
-                       ('is_book_keeper', _('Benutzer ist Buchhalter')),  # DEPRECATED
-                       ('can_send_mails', _('Benutzer kann im System E-Mails versenden')),
-                       ('can_email_attachments', _('Benutzer kann Anhänge per E-Mail senden')),
-                       ('can_use_general_email', _('Benutzer kann allgemeine E-Mail-Adresse verwenden')),
-                       ('can_use_for_members_email', _('Benutzer kann E-Mail-Adresse "for_members" verwenden')),
-                       ('can_use_for_subscriptions_email', _('Benutzer kann E-Mail-Adresse "for_subscription" verwenden')),
-                       ('can_use_for_shares_email', _('Benutzer kann E-Mail-Adresse "for_shares" verwenden')),
-                       ('can_use_technical_email', _('Benutzer kann technische E-Mail-Adresse verwenden')),
+        permissions = (('is_operations_group', _('Ist in der BG')),
+                       ('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
+                       ('can_send_mails', _('Kann E-Mails versenden')),
+                       ('can_email_attachments', _('Kann Anhänge per E-Mail senden')),
+                       ('can_use_general_email', _('Kann allgemeine E-Mail-Adresse verwenden')),
+                       ('can_use_for_members_email', _('Kann E-Mail-Adresse "for_members" verwenden')),
+                       ('can_use_for_subscriptions_email', _('Kann E-Mail-Adresse "for_subscription" verwenden')),
+                       ('can_use_for_shares_email', _('Kann E-Mail-Adresse "for_shares" verwenden')),
+                       ('can_use_technical_email', _('Kann technische E-Mail-Adresse verwenden')),
+                       ('can_email_all_with_share',
+                        _('Kann E-Mails an alle mit {0} senden').format(Config.vocabulary('share'))),
+                       ('can_email_all_with_sub',
+                        _('Kann E-Mails an alle mit {0} senden').format(Config.vocabulary('subscription'))),
                        ('depot_list_notification',
-                        _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
-                       ('can_view_exports', _('Benutzer kann Exporte öffnen')),
-                       ('can_view_lists', _('Benutzer kann Listen öffnen')),
-                       ('can_generate_lists', _('Benutzer kann Listen erzeugen')),
+                        _('Wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
+                       ('can_view_exports', _('Kann Exporte öffnen')),
+                       ('can_view_lists', _('Kann Listen öffnen')),
+                       ('can_generate_lists', _('Kann Listen erzeugen')),
                        )
 
 

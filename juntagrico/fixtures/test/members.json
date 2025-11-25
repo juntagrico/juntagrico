@@ -65,6 +65,16 @@
                 "specialroles"
             ],
             [
+                "can_email_all_with_share",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_email_all_with_sub",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
                 "can_view_exports",
                 "juntagrico",
                 "specialroles"
