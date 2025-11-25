@@ -8,7 +8,7 @@ from django.template import loader
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailSender
+from juntagrico.mailer import EmailSender, membernotification
 from juntagrico.models import Member
 
 
@@ -36,6 +36,9 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
         'inactive': _('Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
             '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members'))
         ),
+        'mail_unconfirmed': _('Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '
+                              'der E-Mail, die wir gerade verschickt haben (schaue auch im Spam-Ordner nach).'
+        ),
     }
 
     def confirm_login_allowed(self, user):
@@ -43,6 +46,13 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
             raise ValidationError(
                 self.error_messages['inactive'],
                 code='inactive',
+            )
+
+        if not user.member.confirmed and Config.enforce_mail_confirmation():
+            membernotification.email_confirmation(user.member)
+            raise ValidationError(
+                self.error_messages['mail_unconfirmed'],
+                code='mail_unconfirmed',
             )
 
 
