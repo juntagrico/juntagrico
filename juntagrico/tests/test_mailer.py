@@ -60,7 +60,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions', 'all'],
+                'to_list': ['all_subscriptions'],
                 'to_members': [1],
                 'subject': 'test',
                 'attachment0': fp
@@ -106,11 +106,12 @@ class MailerTests(JuntagricoTestCaseWithShares):
     def testBatchMailer(self):
         post_data = {
             'from_email': 'private',
-            'to_list': ['all_subscriptions', 'all'],
+            'to_list': ['all_subscriptions'],
             'to_members': [1],
             'subject': 'test',
         }
         if settings.ENABLE_SHARES:
             post_data['to_list'].append('all_shares')
         self.assertPost(reverse('email-write'), post_data, code=302)
-        self.assertEqual(len(mail.outbox), 25)  # check that email was split into batches
+        # check that email was split into batches
+        self.assertEqual(len(mail.outbox), 7 if settings.ENABLE_SHARES else 6)

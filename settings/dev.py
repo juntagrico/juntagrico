@@ -1,8 +1,8 @@
 import os
 
-from juntagrico.defaults import richtextfield_config
 from .minimal import *  # noqa: F401
 
+from juntagrico.defaults import richtextfield_config
 from juntagrico.util.settings import tinymce_lang
 
 
@@ -23,6 +23,8 @@ LOGGING = {
         'level': 'WARNING' if os.environ.get('GITHUB_WORKFLOW') else 'DEBUG',
     },
 }
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # enable only to test addon features
 # INSTALLED_APPS.insert(9, 'juntagrico_test_addon')

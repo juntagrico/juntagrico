@@ -94,6 +94,7 @@ class Config:
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
     enable_external_signup = _get_setting('ENABLE_EXTERNAL_SIGNUP', False)
+    enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
 
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')

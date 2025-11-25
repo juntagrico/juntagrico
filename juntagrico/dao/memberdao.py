@@ -60,10 +60,6 @@ class MemberDao:
         return Member.objects.filter(subscriptionmembership__subscription=subscription)
 
     @staticmethod
-    def members_for_email():
-        return Member.objects.exclude(q_deactivated())
-
-    @staticmethod
     def members_for_email_with_subscription():
         return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_canceled_subscription()).exclude(
             q_deactivated())

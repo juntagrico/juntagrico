@@ -353,6 +353,17 @@ SIGNUP_MANAGER
 
     "juntagrico.util.sessions.SignupManager"
 
+ENFORCE_MAIL_CONFIRMATION
+^^^^^^^^^^^^^^^^^^^
+  At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    True
 
 Membership
 ----------
