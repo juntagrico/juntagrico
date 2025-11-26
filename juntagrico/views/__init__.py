@@ -7,13 +7,14 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import Count, F
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
@@ -39,7 +40,14 @@ def home(request):
     next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
     num_missing = Config.jobs_frontpage_min_amount() - len(next_jobs) + len(pinned_jobs) + len(next_promotedjobs)
     if num_missing > 0:
-        add_jobs = []  # TODO: implement filler jobs query to reach min amount
+        exclude_ids = [j.id for j in next_jobs.union(pinned_jobs).union(next_promotedjobs)]
+        add_jobs = list(
+            Job.objects.exclude(id__in=exclude_ids)
+            .filter(time__gte=start)
+            .annotate(signups=Count('members'))
+            .filter(slots__gt=F('signups'))
+            .order_by('time')[:num_missing]
+        )
     else:
         add_jobs = []
     jobs = sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs).union(add_jobs),
