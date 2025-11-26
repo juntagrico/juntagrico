@@ -3,9 +3,8 @@ from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
-from django.http import Http404, HttpResponse, HttpResponseServerError
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
-from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
@@ -17,7 +16,6 @@ from juntagrico.config import Config
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
@@ -70,20 +68,6 @@ def future(request):
         'subscription_lines': iter(subscription_lines.values()),
     }
     return render(request, 'future.html', renderdict)
-
-
-@permission_required('juntagrico.can_load_templates')
-def get_mail_template(request, template_id):
-    renderdict = {}
-    template = MailTemplate.objects.get(id=template_id)
-    try:
-        exec(template.code)
-    except SyntaxError as e:
-        return HttpResponseServerError(str(e))
-    t = Template(template.template)
-    c = Context(renderdict)
-    result = t.render(c)
-    return HttpResponse(result)
 
 
 @permission_required('juntagrico.can_view_exports')

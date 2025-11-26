@@ -10,16 +10,3 @@ class ContactTests(JuntagricoTestCase):
 
     def testContactPost(self):
         self.assertPost(reverse('contact'), {'subject': 'subject', 'copy': 'copy'})
-
-    def testContactMember(self):
-        self.assertGet(reverse('contact-member', args=[self.member.pk]), 403, self.member2)
-        self.assertGet(reverse('contact-member', args=[self.area_admin.pk]))
-        self.assertGet(reverse('contact-member', args=[self.area_admin_contact.pk]))
-
-    def testContactMemberPost(self):
-        self.assertPost(reverse('contact-member', args=[self.member.pk]),
-                        {'subject': 'subject', 'copy': 'copy'}, 403, self.member2)
-        self.assertPost(reverse('contact-member', args=[self.area_admin.pk]),
-                        {'subject': 'subject', 'copy': 'copy'})
-        self.assertPost(reverse('contact-member', args=[self.area_admin_contact.pk]),
-                        {'subject': 'subject', 'copy': 'copy'})

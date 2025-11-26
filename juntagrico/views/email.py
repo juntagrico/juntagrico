@@ -3,12 +3,14 @@ from smtplib import SMTPException
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
+from django.template import Template, Context
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
     AreaRecipientsForm, JobForm, JobRecipientsForm
 from juntagrico.view_decorators import requires_permission_to_contact
@@ -141,3 +143,17 @@ def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, i
     return render(request, 'juntagrico/email/write.html', {
         'form': form,
     })
+
+
+@permission_required('juntagrico.can_load_templates')
+def get_template(request, template_id):
+    renderdict = {}
+    template = MailTemplate.objects.get(id=template_id)
+    try:
+        exec(template.code)
+    except SyntaxError as e:
+        return HttpResponseServerError(str(e))
+    t = Template(template.template)
+    c = Context(renderdict)
+    result = t.render(c)
+    return HttpResponse(result)

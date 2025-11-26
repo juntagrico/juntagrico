@@ -277,26 +277,6 @@ textarea#recipients[disabled=disabled] {
     content: ")";
 }
 
-/* mail attachement stuff checked */
-/* TODO: Obselete with the new email/write mailer */
-.file-upload {
-    line-height: 30px;
-}
-
-.file-upload-button {
-    display: inline-block;
-    position: relative;
-}
-
-.file-upload-button > input[type=file] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-}
-
 /* core assignment stuff checked */
 .core {
     color: #780fff;

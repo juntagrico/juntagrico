@@ -98,8 +98,8 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertEqual(len(mail.outbox), 1)
 
     def testMailTemplate(self):
-        self.assertGet(reverse('mail-template', args=[self.mail_template.pk]))
-        self.assertGet(reverse('mail-template', args=[self.mail_template.pk]), member=self.member2, code=302)
+        self.assertGet(reverse('email-template', args=[self.mail_template.pk]))
+        self.assertGet(reverse('email-template', args=[self.mail_template.pk]), member=self.member2, code=302)
 
     @override_settings(EMAIL_BACKEND='juntagrico.backends.email.LocmemBatchEmailBackend')
     @patch('juntagrico.backends.email.LocmemBatchEmailBackend.send_messages', mock_batch_mailer)

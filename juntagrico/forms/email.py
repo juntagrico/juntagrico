@@ -72,7 +72,7 @@ class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
 
     def label_from_instance(self, obj):
         label = super().label_from_instance(obj)
-        if obj.duplicate:
+        if getattr(obj, 'duplicate', False):
             label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
         return label
 
@@ -158,9 +158,9 @@ class RecipientsForm(BaseRecipientsForm):
         # filter available fields
         default_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
         features = features or {}
-        if features.get('fields'):
+        if fields := features.get('fields'):
             for field in default_fields:
-                if field not in features:
+                if field not in fields:
                     del self.fields[field]
         self.form_fields = features.get('fields') or default_fields
         # configure fields

@@ -2,10 +2,8 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -18,7 +16,6 @@ from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
-from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
@@ -171,40 +168,6 @@ def contact(request):
         'is_sent': is_sent
     }
     return render(request, 'contact.html', renderdict)
-
-
-@login_required
-def contact_member(request, member_id):
-    '''
-    member contact form
-    '''
-    sender = request.user.member
-    receiver = get_object_or_404(Member, id=int(member_id))
-    if not sender.can_contact(receiver):
-        raise PermissionDenied()
-
-    enable_attachments = request.user.has_perm('juntagrico.can_email_attachments')
-    back_url = request.META.get('HTTP_REFERER') or reverse('home')
-
-    is_sent = False
-    if request.method == 'POST':
-        # send mail to member
-        back_url = request.POST.get('back_url')
-        files = []
-        if enable_attachments:
-            append_attachements(request, files)
-        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), sender, receiver,
-                                  request.POST.get('copy'), files)
-        is_sent = True
-
-    return render(request, 'contact_member.html', {
-        'enable_attachments': enable_attachments,
-        'usernameAndEmail': sender.first_name + ' ' + sender.last_name + '<' + sender.email + '>',
-        'member_id': member_id,
-        'member_name': receiver.first_name + ' ' + receiver.last_name,
-        'is_sent': is_sent,
-        'back_url': back_url
-    })
 
 
 @login_required

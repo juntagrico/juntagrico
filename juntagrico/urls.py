@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
+import juntagrico.views.email
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_iso20022 as juntagrico_iso20022
@@ -125,7 +126,6 @@ urlpatterns = [
 
     # /contact
     path('my/contact', juntagrico.contact, name='contact'),
-    path('my/contact/member/<int:member_id>/', juntagrico.contact_member, name='contact-member'),
 
     # /cookies
     path('my/cookies', juntagrico.cookies, name='cookies'),
@@ -207,10 +207,11 @@ urlpatterns = [
     # /email/area
     path('email/area/<int:area_id>/', email.to_area, name='email-to-area'),
     path('email/area/<int:area_id>/recipients/count', email.count_area_recipients, name='email-count-area-recipients'),
+    # /email/job
     path('email/job/<int:job_id>/', email.to_job, name='email-to-job'),
     path('email/job/<int:job_id>/recipients/count', email.count_job_recipients, name='email-count-job-recipients'),
     # /email/template
-    path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
+    path('email/template/<int:template_id>/', email.get_template, name='email-template'),
 
     # /list
     path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),

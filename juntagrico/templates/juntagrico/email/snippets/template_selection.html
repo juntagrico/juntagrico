@@ -2,7 +2,7 @@
 <div class="my-2">
     <span>{% trans "Vorlage einfügen: " %}</span>
     {% for template in templates %}
-        <button class="btn btn-secondary mr-2" data-template-url="{% url 'mail-template' template.id %}">
+        <button class="btn btn-secondary mr-2" data-template-url="{% url 'email-template' template.id %}">
             {{ template.name }}
         </button>
     {% endfor %}

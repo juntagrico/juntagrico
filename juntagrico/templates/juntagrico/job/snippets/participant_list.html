@@ -21,7 +21,7 @@
             {% endif %}
             {% if can_contact or participant.reachable_by_email %}
                 {% spaceless %}
-                    <a class="contact-member" href="{% url 'contact-member' participant.id %}">
+                    <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
                         <i class="far fa-envelope"></i>
                     </a>
                 {% endspaceless %}
