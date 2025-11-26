@@ -3,14 +3,15 @@ from smtplib import SMTPException
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseServerError
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Template, Context
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.mailing import MailTemplate
+from juntagrico.entity.member import Member
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
     AreaRecipientsForm, JobForm, JobRecipientsForm
 from juntagrico.view_decorators import requires_permission_to_contact
@@ -55,7 +56,9 @@ def count_job_recipients(request, job_id):
 
 @login_required
 def to_member(request, member_id):
-    # TODO: Check if request.user.member can contact member_id
+    member = get_object_or_404(Member, id=member_id)
+    if not request.user.member.can_contact(member):
+        return HttpResponseForbidden(_('Du kannst diese Person nicht kontaktieren.'))
     return email_view(request, EmailForm, {
         'recipients': {
             'fields': ['to_members', 'copy']
