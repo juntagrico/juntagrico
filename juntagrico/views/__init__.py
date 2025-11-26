@@ -24,6 +24,7 @@ from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
+from juntagrico.config import Config
 
 
 @login_required
@@ -32,13 +33,19 @@ def home(request):
     Overview on juntagrico
     '''
     start = timezone.now()
-    end = start + timedelta(14)
+    end = start + timedelta(Config.jobs_frontpage_range_days())
     next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
     pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
     next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
-
+    num_missing = Config.jobs_frontpage_min_amount() - len(next_jobs) + len(pinned_jobs) + len(next_promotedjobs)
+    if num_missing > 0:
+        add_jobs = []  # TODO: implement filler jobs query to reach min amount
+    else:
+        add_jobs = []
+    jobs = sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs).union(add_jobs),
+                  key=lambda sort_job: sort_job.time)[:Config.jobs_frontpage_max_amount()]
     renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
+        'jobs': jobs,
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     }

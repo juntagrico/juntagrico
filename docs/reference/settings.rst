@@ -498,6 +498,41 @@ PROMOTED_JOBS_AMOUNT
 
     2
 
+JOBS_FRONTPAGE_RANGE_DAYS
+^^^^^^^^^^^^^^^^^^^^
+  Date range in days in the future to query for the frontpage job overview
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    14
+
+JOBS_FRONTPAGE_MIN_AMOUNT
+^^^^^^^^^^^^^^^^^^^^
+  Minimal/target amount of jobs to display in frontpage job overview. List will be filled with jobs on top of promoted jobs, pinned jobs and upcoming jobs
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    3
+
+JOBS_FRONTPAGE_MAX_AMOUNT
+^^^^^^^^^^^^^^^^^^^^
+  Max number of jobs to display in frontpage job overview. List will be cropped to this amount.
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    10
 
 .. _settings-depot:
 
