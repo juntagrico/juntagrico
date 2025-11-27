@@ -13,7 +13,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
-    AreaRecipientsForm, JobForm, JobRecipientsForm
+    AreaRecipientsForm, JobForm, JobRecipientsForm, MemberForm
 from juntagrico.view_decorators import requires_permission_to_contact
 
 
@@ -38,19 +38,19 @@ def count_recipients(request, form=None):
 
 @requires_permission_to_contact
 def count_depot_recipients(request, depot_id):
-    form = DepotRecipientsForm(request.user.member, {'depot': depot_id}, data=request.GET)
+    form = DepotRecipientsForm(request.user.member, depot_id, data=request.GET)
     return count_recipients(request, form)
 
 
 @requires_permission_to_contact
 def count_area_recipients(request, area_id):
-    form = AreaRecipientsForm(request.user.member, {'area': area_id}, data=request.GET)
+    form = AreaRecipientsForm(request.user.member, area_id, data=request.GET)
     return count_recipients(request, form)
 
 
 @requires_permission_to_contact
 def count_job_recipients(request, job_id):
-    form = JobRecipientsForm(request.user.member, {'job': job_id}, data=request.GET)
+    form = JobRecipientsForm(request.user.member, job_id, data=request.GET)
     return count_recipients(request, form)
 
 
@@ -59,11 +59,7 @@ def to_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     if not request.user.member.can_contact(member):
         return HttpResponseForbidden(_('Du kannst diese Person nicht kontaktieren.'))
-    return email_view(request, EmailForm, {
-        'recipients': {
-            'fields': ['to_members', 'copy']
-        }
-    }, {
+    return email_view(request, MemberForm, {
         'to_members': [member_id]
     })
 
@@ -72,9 +68,7 @@ def to_member(request, member_id):
 def to_depot(request, depot_id):
     # TODO: include an email footer that says "you receive this email because you are in the depot ..."
     members = request.GET.get('members', '')
-    return email_view(request, DepotForm, {
-        'recipients': {'depot': depot_id}
-    }, {
+    return email_view(request, DepotForm, depot_id=depot_id, initial={
         'to_depot': not members,
         'to_members': members.split('-')
     })
@@ -84,9 +78,7 @@ def to_depot(request, depot_id):
 def to_area(request, area_id):
     # TODO: include an email footer that says "you receive this email because you are in the area ..."
     members = request.GET.get('members', '')
-    return email_view(request, AreaForm, {
-        'recipients': {'area': area_id}
-    }, {
+    return email_view(request, AreaForm, area_id=area_id, initial={
         'to_area': not members,
         'to_members': members.split('-')
     })
@@ -96,9 +88,7 @@ def to_area(request, area_id):
 def to_job(request, job_id):
     # TODO: include an email footer that says "you receive this email because you are in the job ..."
     members = request.GET.get('members', '')
-    return email_view(request, JobForm, {
-        'recipients': {'job': job_id}
-    }, {
+    return email_view(request, JobForm, job_id=job_id, initial={
         'to_job': not members,
         'to_members': members.split('-')
     })
@@ -110,28 +100,33 @@ def write(request):
         to_jobs=[request.GET.get('job')],
         to_members=request.GET.get('members', '').split('-')
     )
-    return email_view(request, EmailForm, initial=initial)
+    return email_view(request, EmailForm, initial)
 
 
-def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, initial=None):
+def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **kwargs):
     user = request.user
     member = user.member
-    features = features or {}
-    features.setdefault('template', request.user.has_perm('juntagrico.can_load_templates'))
-    features.setdefault('attachment', request.user.has_perm('juntagrico.can_email_attachments'))
+    templates = kwargs.get('templates', request.user.has_perm('juntagrico.can_load_templates'))
+    attachments = kwargs.get('attachments', request.user.has_perm('juntagrico.can_email_attachments'))
 
     # limit available areas and depots if user can't send emails in general
+    depots = areas = None
     if not user.has_perm('juntagrico.can_send_mails'):
         depots = Depot.objects.none()
         if user.has_perm('juntagrico.is_depot_admin'):
-            depots = features.setdefault('depots', Depot.objects.filter(contact=member))
-        features.setdefault('recipients', {
-            'areas': member.coordinated_areas.filter(coordinator_access__can_contact_member=True),
-            'depots': depots,
-        })
+            depots = kwargs.get('depots', Depot.objects.filter(contact=member))
+        areas = kwargs.get('areas', member.coordinated_areas.filter(coordinator_access__can_contact_member=True))
+
+    kwargs.update(dict(
+        initial=initial,
+        depots=depots,
+        areas=areas,
+        templates=templates,
+        attachments=attachments
+    ))
 
     if request.method == 'POST':
-        form = form_class(member, features, request.POST, request.FILES, initial=initial)
+        form = form_class(member, data=request.POST, files=request.FILES, **kwargs)
         if form.is_valid():
             try:
                 if form.send():
@@ -141,7 +136,7 @@ def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, i
             except SMTPException as e:
                 messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
     else:
-        form = form_class(member, features, initial=initial)
+        form = form_class(member, **kwargs)
 
     return render(request, 'juntagrico/email/write.html', {
         'form': form,

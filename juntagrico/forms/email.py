@@ -85,10 +85,20 @@ class BaseRecipientsForm(forms.Form):
     #  and contain a link to open the form again with the same recipients.
     copy = forms.BooleanField(label=_('Kopie an mich'), required=False)
 
-    def __init__(self, sender, *args, **kwargs):
+    form_fields = ['to_members', 'copy']
+
+    def __init__(self, sender, *args, areas=None, depots=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.sender = sender
-        self.form_fields = ['to_members', 'copy']
+        if 'to_members' in self.fields:
+            if areas is not None or depots is not None:
+                members = Member.objects.filter(reachable_by_email=True)
+                if depots is not None:
+                    members |= Member.objects.has_active_subscription().in_depot(depots)
+                if areas is not None:
+                    members |= Member.objects.filter(areas__in=areas)
+                    members |= Member.objects.filter(assignment__job__in=Job.objects.in_areas(areas))
+                self.fields['to_members'].queryset = members.active().distinct()
 
     def get_form_layout(self):
         return Fieldset(
@@ -153,16 +163,10 @@ class RecipientsForm(BaseRecipientsForm):
         )
     )
 
-    def __init__(self, sender, features=None, *args, **kwargs):
-        super().__init__(sender, *args, **kwargs)
-        # filter available fields
-        default_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
-        features = features or {}
-        if fields := features.get('fields'):
-            for field in default_fields:
-                if field not in fields:
-                    del self.fields[field]
-        self.form_fields = features.get('fields') or default_fields
+    form_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
+
+    def __init__(self, sender, *args, areas=None, depots=None, **kwargs):
+        super().__init__(sender, *args, areas=areas, depots=depots, **kwargs)
         # configure fields
         if 'to_list' in self.fields:
             if choices := self.get_recipient_list_choices():
@@ -172,24 +176,15 @@ class RecipientsForm(BaseRecipientsForm):
                 self.form_fields.remove('to_list')
         # limit selectable values
         if 'to_areas' in self.fields:
-            self._set_field_queryset('to_areas', features.get('areas', ActivityArea.objects.all()).order_by('name'))
+            self._set_field_queryset('to_areas', (areas or ActivityArea.objects.all()).order_by('name'))
         if 'to_jobs' in self.fields:
-            if 'areas' in features:
-                self._set_field_queryset('to_jobs', Job.objects.in_areas(features['areas']))
+            if areas is not None:
+                self._set_field_queryset('to_jobs', Job.objects.in_areas(areas))
         if 'to_depots' in self.fields:
             self._set_field_queryset(
                 'to_depots',
-                features.get('depots', features.get('depots', Depot.objects).order_by('id'))
+                (depots or Depot.objects).order_by('id')
             )
-        if 'to_members' in self.fields:
-            if {'areas', 'depots'} & features.keys():  # areas or depots are defined
-                members = Member.objects.filter(reachable_by_email=True)
-                if 'depots' in features:
-                    members |= Member.objects.has_active_subscription().in_depot(features['depots'])
-                if 'areas' in features:
-                    members |= Member.objects.filter(areas__in=features['areas'])
-                    members |= Member.objects.filter(assignment__job__in=Job.objects.in_areas(features['areas']))
-                self.fields['to_members'].queryset = members.active().distinct()
 
     def _set_field_queryset(self, field, queryset):
         if not queryset.exists():
@@ -243,14 +238,15 @@ class DepotRecipientsForm(BaseRecipientsForm):
         required=False
     )
 
-    def __init__(self, sender, features=None, *args, **kwargs):
+    form_fields = ['to_depot', *BaseRecipientsForm.form_fields]
+
+    def __init__(self, sender, depot_id, *args, **kwargs):
         super().__init__(sender, *args, **kwargs)
-        self.depot_id = features['depot']
+        self.depot_id = depot_id
         depot = Depot.objects.get(pk=self.depot_id)
         self.fields['to_depot'].label = self.fields['to_depot'].label.format(depot.name)
         self.fields['to_members'].label = _('An diese Personen in {}').format(Config.vocabulary('depot'))
         self.fields['to_members'].queryset = Member.objects.active().has_active_subscription().in_depot(self.depot_id)
-        self.form_fields.insert(0, 'to_depot')
 
     def get_count_url(self):
         return reverse('email-count-depot-recipients', args=[self.depot_id])
@@ -267,14 +263,15 @@ class AreaRecipientsForm(BaseRecipientsForm):
         required=False
     )
 
-    def __init__(self, sender, features=None, *args, **kwargs):
+    form_fields = ['to_area', *BaseRecipientsForm.form_fields]
+
+    def __init__(self, sender, area_id, *args, **kwargs):
         super().__init__(sender, *args, **kwargs)
-        self.area_id = features['area']
+        self.area_id = area_id
         area = ActivityArea.objects.get(pk=self.area_id)
         self.fields['to_area'].label = self.fields['to_area'].label.format(area.name)
         self.fields['to_members'].label = _('An diese Personen im Tätigkeitsbereich')
         self.fields['to_members'].queryset = area.members.active()
-        self.form_fields.insert(0, 'to_area')
 
     def get_count_url(self):
         return reverse('email-count-area-recipients', args=[self.area_id])
@@ -291,15 +288,16 @@ class JobRecipientsForm(BaseRecipientsForm):
         required=False
     )
 
-    def __init__(self, sender, features=None, *args, **kwargs):
+    form_fields = ['to_job', *BaseRecipientsForm.form_fields]
+
+    def __init__(self, sender, job_id, *args, **kwargs):
         super().__init__(sender, *args, **kwargs)
-        self.job_id = features['job']
+        self.job_id = job_id
         job = Job.objects.get(pk=self.job_id)
         self.fields['to_job'].label = self.fields['to_job'].label.format(job.get_label())
         self.fields['to_members'].label = _('An diese Personen im Einsatz')
         self.fields['to_members'].widget.attrs['data-minimum-input-length'] = 0
         self.fields['to_members'].queryset = job.members.active()
-        self.form_fields.insert(0, 'to_job')
 
     def get_count_url(self):
         return reverse('email-count-job-recipients', args=[self.job_id])
@@ -315,13 +313,13 @@ class BaseForm(BaseRecipientsForm):
     subject = forms.CharField(label=_('Betreff'))
     body = forms.CharField(label=_('Nachricht'), required=False, widget=RichTextWidget(field_settings='juntagrico.mailer'))
 
-    def __init__(self, sender, features, *args, **kwargs):
-        super().__init__(sender, features.get('recipients'), *args, **kwargs)
+    def __init__(self, sender, *args, templates=False, attachments=False, **kwargs):
+        super().__init__(sender, *args, **kwargs)
         self.sender = sender
         self.fields['from_email'].choices = self.get_sender_choices()
-        if features['template']:
+        if templates:
             self.fields['body'].widget = RichTextWidgetWithTemplates(field_settings='juntagrico.mailer')
-        if features['attachment']:
+        if attachments:
             self.fields['attachments0'] = forms.FileField(label=_('Anhänge'), required=False, widget=MultipleFileInput)
             # collect attachments
             for attachments in self.files.keys():
@@ -391,6 +389,10 @@ class BaseForm(BaseRecipientsForm):
 
 
 class EmailForm(BaseForm, RecipientsForm):
+    pass
+
+
+class MemberForm(BaseForm):
     pass
 
 
