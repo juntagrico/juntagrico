@@ -1,7 +1,6 @@
 {% spaceless %}
 {% autoescape off %}
 {% block content %}{{ content }}{% endblock %}
+{% include 'juntagrico/mails/signature.txt' %}
 {% endautoescape %}
 {% endspaceless %}
-
-{% include 'juntagrico/mails/signature.txt' %}

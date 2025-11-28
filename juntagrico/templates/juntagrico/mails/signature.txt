@@ -1,5 +1,4 @@
 {% load juntagrico.config %}
-
 ============
 {{ footer }}
 {% config "organisation_address" as organisation_address %}{% config "organisation_phone" as organisation_phone %}

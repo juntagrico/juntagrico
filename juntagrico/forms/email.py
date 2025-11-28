@@ -10,6 +10,7 @@ from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.formats import date_format
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2MultipleWidget
 from djrichtextfield.widgets import RichTextWidget
@@ -370,7 +371,7 @@ class BaseForm(BaseRecipientsForm):
         footer = self.get_footer()
 
         html_body = get_template('mails/email.html').render({
-            'subject': subject, 'content': body, 'footer': footer
+            'subject': subject, 'content': mark_safe(body), 'footer': footer
         })
         text_body = get_template('mails/email.txt').render({
             'subject': subject, 'content': self._html_to_text(body), 'footer': self._html_to_text(footer.strip())
