@@ -66,7 +66,6 @@ def to_member(request, member_id):
 
 @permission_required('juntagrico.is_depot_admin')
 def to_depot(request, depot_id):
-    # TODO: include an email footer that says "you receive this email because you are in the depot ..."
     members = request.GET.get('members', '')
     return email_view(request, DepotForm, depot_id=depot_id, initial={
         'to_depot': not members,
@@ -76,7 +75,6 @@ def to_depot(request, depot_id):
 
 @requires_permission_to_contact
 def to_area(request, area_id):
-    # TODO: include an email footer that says "you receive this email because you are in the area ..."
     members = request.GET.get('members', '')
     return email_view(request, AreaForm, area_id=area_id, initial={
         'to_area': not members,
@@ -86,7 +84,6 @@ def to_area(request, area_id):
 
 @requires_permission_to_contact
 def to_job(request, job_id):
-    # TODO: include an email footer that says "you receive this email because you are in the job ..."
     members = request.GET.get('members', '')
     return email_view(request, JobForm, job_id=job_id, initial={
         'to_job': not members,

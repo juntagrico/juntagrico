@@ -25,3 +25,5 @@ class EmailHtmlParser(HTMLParser):
                 if not self.text.endswith(self.url):  # ignore if link text is link url
                     self.text += f' ( {self.url} )'
                 self.url = None
+        if tag == "p":
+            self.text += '\n\n'

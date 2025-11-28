@@ -334,7 +334,9 @@ class BaseForm(BaseRecipientsForm):
             Field('from_email', css_class='custom-select-lg'),
             super().get_form_layout(),
             Field('subject', css_class='form-control-lg'), 'body',
-            HTML(get_template('juntagrico/email/snippets/signature_display.html').render()),
+            HTML(get_template('juntagrico/email/snippets/signature_display.html').render({
+                'footer': self.get_footer()
+            })),
             FormActions(
                 Submit(
                     'submit', _('Senden'), css_class='btn-success btn-lg',
@@ -352,20 +354,26 @@ class BaseForm(BaseRecipientsForm):
         return [(identifier, base.format(email)) for identifier, email in self.sender.all_emails()]
 
     def _html_to_text(self, raw_html):
-        text = raw_html.replace('\n', '\n\n')
         parser = EmailHtmlParser()
-        parser.feed(text)
+        parser.feed(raw_html)
         return html.unescape(parser.text)
+
+    def get_footer(self):
+        """ Override to add a footer to the email
+        :return: html email footer
+        """
+        return ''
 
     def send(self):
         subject = self.cleaned_data['subject']
         body = self.cleaned_data['body']
+        footer = self.get_footer()
 
         html_body = get_template('mails/email.html').render({
-            'subject': subject, 'content': body
+            'subject': subject, 'content': body, 'footer': footer
         })
         text_body = get_template('mails/email.txt').render({
-            'subject': subject, 'content': self._html_to_text(body)
+            'subject': subject, 'content': self._html_to_text(body), 'footer': self._html_to_text(footer.strip())
         })
 
         email = EmailMultiAlternatives(
@@ -397,12 +405,21 @@ class MemberForm(BaseForm):
 
 
 class DepotForm(BaseForm, DepotRecipientsForm):
-    pass
+    def get_footer(self):
+        return get_template('juntagrico/mails/footer/depot.html').render({
+            'depot': Depot.objects.get(pk=self.depot_id)
+        })
 
 
 class AreaForm(BaseForm, AreaRecipientsForm):
-    pass
+    def get_footer(self):
+        return get_template('juntagrico/mails/footer/area.html').render({
+            'area': ActivityArea.objects.get(pk=self.area_id)
+        })
 
 
 class JobForm(BaseForm, JobRecipientsForm):
-    pass
+    def get_footer(self):
+        return get_template('juntagrico/mails/footer/job.html').render({
+            'job': Job.objects.get(pk=self.job_id)
+        })
