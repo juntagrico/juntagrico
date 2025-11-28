@@ -212,6 +212,7 @@ urlpatterns = [
     path('email/job/<int:job_id>/recipients/count', email.count_job_recipients, name='email-count-job-recipients'),
     # /email/template
     path('email/template/<int:template_id>/', email.get_template, name='email-template'),
+    path('email/sent', email.sent, name='email-sent'),
 
     # /list
     path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),

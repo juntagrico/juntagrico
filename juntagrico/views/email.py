@@ -137,7 +137,7 @@ def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **
             try:
                 if form.send():
                     messages.success(request, _('E-Mail(s) gesendet'))
-                    return redirect('.')  # TODO: redirect back to previous page ideally.
+                    return redirect('email-sent')
                 messages.error(request, _('E-Mail(s) konnten nicht gesendet werden.'))
             except SMTPException as e:
                 messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
@@ -147,6 +147,12 @@ def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **
     return render(request, 'juntagrico/email/write.html', {
         'form': form,
     })
+
+
+@requires_permission_to_contact
+def sent(request):
+    # show empty page with only success message
+    return render(request, 'base.html')
 
 
 @permission_required('juntagrico.can_load_templates')
