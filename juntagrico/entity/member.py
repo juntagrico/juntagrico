@@ -79,13 +79,34 @@ class Member(JuntagricoBaseModel):
     def inactive(self):
         return self.deactivation_date is not None and self.deactivation_date <= datetime.date.today()
 
-    def can_contact(self, member):
-        allowed_areas = self.coordinated_areas.filter(coordinator_access__can_contact_member=True)
+    def can_contact(self, member=None, area_id=None, depot_id=None):
+        if member is not None and member.inactive:
+            return False
+
+        if self.user.has_perm('juntagrico.can_send_mails'):
+            return True
+
+        if member is not None and member.reachable_by_email:
+            return True
+
+        allowed_areas = self.coordinated_areas.none()
+        if depot_id is None:
+            allowed_areas = self.coordinated_areas.filter(coordinator_access__can_contact_member=True)
+            if area_id is not None:
+                allowed_areas = allowed_areas.filter(id=area_id)
+
+        allowed_depots = self.depot_set.none()
+        if area_id is None and self.user.has_perm('juntagrico.is_depot_admin'):
+            allowed_depots = self.depot_set.all()
+            if depot_id is not None:
+                allowed_depots = allowed_depots.filter(id=depot_id)
+
+        if member is None:
+            return allowed_areas.exists() or allowed_depots.exists()
         return (
-            member.reachable_by_email
-            or self.user.has_perm('juntagrico.can_send_mails')
-            or (allowed_areas & member.areas.all()).exists()  # member is in area
-            or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of area
+            (allowed_areas & member.areas.all()).exists()  # member is in contactable area
+            or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of contactable area
+            or member.has_active_subscription().in_depot(allowed_depots).exists()  # member is in coordinated depot
         )
 
     @property

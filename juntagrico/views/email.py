@@ -3,13 +3,15 @@ from smtplib import SMTPException
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Template, Context
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
@@ -58,14 +60,16 @@ def count_job_recipients(request, job_id):
 def to_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     if not request.user.member.can_contact(member):
-        return HttpResponseForbidden(_('Du kannst diese Person nicht kontaktieren.'))
+        raise PermissionDenied
     return email_view(request, MemberForm, {
         'to_members': [member_id]
     })
 
 
-@permission_required('juntagrico.is_depot_admin')
+@login_required
 def to_depot(request, depot_id):
+    if not request.user.member.can_contact(depot_id=depot_id):
+        raise PermissionDenied
     members = request.GET.get('members', '')
     return email_view(request, DepotForm, depot_id=depot_id, initial={
         'to_depot': not members,
@@ -73,8 +77,10 @@ def to_depot(request, depot_id):
     })
 
 
-@requires_permission_to_contact
+@login_required
 def to_area(request, area_id):
+    if not request.user.member.can_contact(area_id=area_id):
+        raise PermissionDenied
     members = request.GET.get('members', '')
     return email_view(request, AreaForm, area_id=area_id, initial={
         'to_area': not members,
@@ -82,8 +88,11 @@ def to_area(request, area_id):
     })
 
 
-@requires_permission_to_contact
+@login_required
 def to_job(request, job_id):
+    job = get_object_or_404(Job, id=job_id)
+    if not request.user.member.can_contact(area_id=job.type.activityarea):
+        raise PermissionDenied
     members = request.GET.get('members', '')
     return email_view(request, JobForm, job_id=job_id, initial={
         'to_job': not members,
@@ -111,7 +120,7 @@ def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **
     if not user.has_perm('juntagrico.can_send_mails'):
         depots = Depot.objects.none()
         if user.has_perm('juntagrico.is_depot_admin'):
-            depots = kwargs.get('depots', Depot.objects.filter(contact=member))
+            depots = kwargs.get('depots', member.depot_set.all())  # coordinated depots
         areas = kwargs.get('areas', member.coordinated_areas.filter(coordinator_access__can_contact_member=True))
 
     kwargs.update(dict(

@@ -169,6 +169,7 @@ class RecipientsForm(BaseRecipientsForm):
     def __init__(self, sender, *args, areas=None, depots=None, **kwargs):
         super().__init__(sender, *args, areas=areas, depots=depots, **kwargs)
         # configure fields
+        self.form_fields = self.form_fields.copy()  # copy form fields from class to manipulate them later
         if 'to_list' in self.fields:
             if choices := self.get_recipient_list_choices():
                 self.fields['to_list'].choices = choices
@@ -176,16 +177,13 @@ class RecipientsForm(BaseRecipientsForm):
                 del self.fields['to_list']
                 self.form_fields.remove('to_list')
         # limit selectable values
-        if 'to_areas' in self.fields:
-            self._set_field_queryset('to_areas', (areas or ActivityArea.objects.all()).order_by('name'))
-        if 'to_jobs' in self.fields:
-            if areas is not None:
-                self._set_field_queryset('to_jobs', Job.objects.in_areas(areas))
-        if 'to_depots' in self.fields:
-            self._set_field_queryset(
-                'to_depots',
-                (depots or Depot.objects).order_by('id')
-            )
+        if areas is not None:
+            if 'to_areas' in self.fields:
+                self._set_field_queryset('to_areas', areas.order_by('name'))
+            if 'to_jobs' in self.fields:
+                self._set_field_queryset('to_jobs', Job.objects.in_areas(areas).order_by_recent())
+        if 'to_depots' in self.fields and depots is not None:
+            self._set_field_queryset('to_depots', depots.order_by('id'))
 
     def _set_field_queryset(self, field, queryset):
         if not queryset.exists():
