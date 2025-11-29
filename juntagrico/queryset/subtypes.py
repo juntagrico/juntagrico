@@ -24,7 +24,7 @@ class SubscriptionTypeQueryset(QuerySet):
 
     def annotate_content(self):
         return self.annotate(
-            bundle_name=F('bundle__name'),
+            bundle_name=F('bundle__long_name'),
             category_name=F('bundle__category__name'),
             amount=Sum('bundle_id')
         )
@@ -33,6 +33,9 @@ class SubscriptionTypeQueryset(QuerySet):
         return self.normal().visible().count() > 1
 
 
-class SubscriptionItemQueryset(QuerySet):
+class ProductSizeQueryset(QuerySet):
     def sorted(self):
         return self.order_by('units')
+
+    def on_depot_list(self):
+        return self.filter(show_on_depot_list=True)

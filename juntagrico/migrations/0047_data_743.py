@@ -20,11 +20,11 @@ def copy_category(apps, schema_editor):
         bundle.save()
 
 
-def initialize_items(apps, schema_editor):
+def initialize_products(apps, schema_editor):
     bundles = apps.get_model('juntagrico', 'SubscriptionBundle')
-    items = apps.get_model('juntagrico', 'SubscriptionItem')
+    product_size = apps.get_model('juntagrico', 'ProductSize')
     for bundle in bundles.objects.filter(depot_list=True):
-        items.objects.create(units=bundle.units, bundle=bundle, product=bundle.product)
+        product_size.objects.create(name=bundle.name, units=bundle.units, bundle=bundle, product=bundle.product)
 
 
 class Migration(migrations.Migration):
@@ -36,5 +36,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(move_is_extra),
         migrations.RunPython(copy_category),
-        migrations.RunPython(initialize_items),
+        migrations.RunPython(initialize_products),
     ]

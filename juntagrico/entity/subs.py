@@ -237,8 +237,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         try:
             return Config.sub_overview_format('part_format').format(
                 category=self.type.bundle.category.name,
-                bundle=self.type.bundle.name,
-                bundle_long=self.type.bundle.long_name,
+                bundle=self.type.bundle.long_name,
                 type=self.type.name,
                 type_long=self.type.long_name,
                 price=self.type.price

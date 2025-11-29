@@ -154,7 +154,8 @@ class Command(BaseCommand):
             sub_category, _ = SubscriptionCategory.objects.get_or_create(**subcategory_field)
             for bundle in categories_bundles:
                 bundle_fields = {
-                    'name': random.choice(['Tasche', 'Portion', '500g']),
+                    # TODO: use these for product size names and use different bundle names
+                    'long_name': random.choice(['Tasche', 'Portion', '500g']),
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
                     'category': sub_category
                 }

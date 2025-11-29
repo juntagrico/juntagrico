@@ -10,6 +10,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveConstraint(
+            model_name='subscriptionbundle',
+            name='unique_name_category',
+        ),
+        migrations.RemoveField(
+            model_name='subscriptionbundle',
+            name='name',
+        ),
         migrations.RemoveField(
             model_name='subscriptionbundle',
             name='depot_list',

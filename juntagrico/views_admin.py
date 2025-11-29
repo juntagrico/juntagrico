@@ -155,10 +155,10 @@ def amount_overview(request):
 def future(request):
     subscriptionbundles = []
     subscription_lines = dict({})
-    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'name'):
+    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'long_name'):
         subscriptionbundles.append(subscription_bundle.id)
         subscription_lines[subscription_bundle.id] = {
-            'name': subscription_bundle.category.name + '-' + subscription_bundle.name,
+            'name': str(subscription_bundle),
             'future': 0,
             'now': 0
         }

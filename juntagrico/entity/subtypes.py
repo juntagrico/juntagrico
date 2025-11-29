@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, SubscriptionItemQueryset
+from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset
 from juntagrico.util import temporal
 
 
@@ -25,15 +25,24 @@ class SubscriptionProduct(JuntagricoBaseModel):
         ordering = ['sort_order']
 
 
-class SubscriptionItem(JuntagricoBaseModel):
+class ProductSize(JuntagricoBaseModel):
     """
     Items inside a subscription bundle
     """
+    name = models.CharField(_('Name'), max_length=100)
     units = models.FloatField(_('Einheiten'), default=1.0)
-    product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='items', verbose_name=_('Produkt'))
+    show_on_depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
+    product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='sizes', verbose_name=_('Produkt'))
     bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.CASCADE, related_name='items', verbose_name=_('Grösse'))
 
-    objects = SubscriptionItemQueryset.as_manager()
+    objects = ProductSizeQueryset.as_manager()
+
+    class Meta:
+        verbose_name = _('Produktgrösse')
+        verbose_name_plural = _('Produktgrössen')
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
+        ]
 
 
 class SubscriptionCategory(JuntagricoBaseModel):
@@ -58,23 +67,19 @@ class SubscriptionBundle(JuntagricoBaseModel):
     '''
     Subscription Bundle
     '''
-    name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100)
     description = models.TextField(_('Beschreibung'), blank=True)
     category = models.ForeignKey('SubscriptionCategory', on_delete=models.SET_NULL,
                                  related_name='bundles', verbose_name=_('Kategorie'), null=True, blank=True,
                                  help_text=_('Wenn leer, kann dieses Paket nicht bestellt werden.'))
-    products = models.ManyToManyField('SubscriptionProduct', through='SubscriptionItem', related_name='bundles', verbose_name=_('Produkte'))
+    products = models.ManyToManyField('SubscriptionProduct', through='ProductSize', related_name='bundles', verbose_name=_('Produkte'))
 
     def __str__(self):
-        return f'{self.category or _("(Nicht Bestellbar)")} - {self.name}'
+        return f'{self.category or _("(Nicht Bestellbar)")} - {self.long_name}'
 
     class Meta:
         verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'category'], name='unique_name_category'),
-        ]
 
 
 class SubscriptionType(JuntagricoBaseModel):
@@ -122,13 +127,10 @@ class SubscriptionType(JuntagricoBaseModel):
 
     @property
     def display_name(self):
-        name_parts = [self.bundle.category.name, self.bundle.name]
-        if self.long_name:
-            name_parts.append(self.long_name)
-        return '-'.join(name_parts)
+        return '-'.join([self.bundle.category.name, self.bundle.long_name])
 
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.bundle.name + ' - ' + _('Kategorie') + ': ' + self.bundle.category.name
+        return self.name + ' - ' + _('Grösse') + ': ' + self.bundle.long_name + ' - ' + _('Kategorie') + ': ' + self.bundle.category.name
 
     def __lt__(self, other):
         return self.pk < other.pk

@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.depot_subscriptiontype_inline import DepotSubscriptionTypeInline
 from juntagrico.config import Config
-from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionItem
+from juntagrico.entity.subtypes import SubscriptionBundle, ProductSize
 
 
 class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
@@ -47,16 +47,16 @@ class SubscriptionCategoryAdmin(SortableAdminMixin, RichTextAdmin):
     inlines = [SubscriptionBundleInline]
 
 
-class SubscriptionItemInline(TabularInline):
-    model = SubscriptionItem
-    fields = ['product', 'units']
+class ProductSizeInline(TabularInline):
+    model = ProductSize
+    fields = ['name', 'product', 'units', 'show_in_depot_list']
 
 
 class SubscriptionBundleAdmin(RichTextAdmin):
-    list_display = ['name', 'long_name', 'category', 'orderable']
+    list_display = ['long_name', 'category', 'orderable']
     autocomplete_fields = ['category']
-    search_fields = ['name', 'long_name', 'description', 'category__name', 'products__name']
-    inlines = [SubscriptionItemInline]
+    search_fields = ['long_name', 'description', 'category__name', 'products__name']
+    inlines = [ProductSizeInline]
 
     @admin.display(
         boolean=True,

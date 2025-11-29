@@ -13,7 +13,7 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
-    SubscriptionItem
+    ProductSize
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -218,9 +218,8 @@ class JuntagricoTestCase(TestCase):
         cls.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
-    def create_bundle(name, category, long_name='', description='', **kwargs):
+    def create_bundle(long_name, category, description='', **kwargs):
         return SubscriptionBundle.objects.create(
-            name=name,
             long_name=long_name,
             category=category,
             description=description,
@@ -258,8 +257,8 @@ class JuntagricoTestCase(TestCase):
             'name': 'category'
         }
         cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
-        cls.bundle = cls.create_bundle('sub_name', cls.sub_category, long_name='sub_long_name', description='sub_desc')
-        SubscriptionItem.objects.create(bundle=cls.bundle, product=cls.sub_product, units=1.0)
+        cls.bundle = cls.create_bundle('sub_name', cls.sub_category, description='sub_desc')
+        ProductSize.objects.create(bundle=cls.bundle, product=cls.sub_product, units=1.0)
         cls.sub_type = cls.create_sub_type(cls.bundle)
         cls.sub_type2 = cls.create_sub_type(cls.bundle, shares=2)
         cls.sub_type3 = cls.create_sub_type(cls.bundle, shares=0)

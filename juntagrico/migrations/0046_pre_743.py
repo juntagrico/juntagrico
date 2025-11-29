@@ -32,17 +32,23 @@ class Migration(migrations.Migration):
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
         migrations.CreateModel(
-            name='SubscriptionItem',
+            name='ProductSize',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=100, verbose_name='Name')),
                 ('units', models.FloatField(default=1.0, verbose_name='Einheiten')),
+                ('show_on_depot_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Depotliste')),
                 ('bundle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionbundle', verbose_name='Grösse')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionproduct', verbose_name='Produkt')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sizes', to='juntagrico.subscriptionproduct', verbose_name='Produkt')),
             ],
             options={
-                'abstract': False,
+                'abstract': False, 'verbose_name': 'Produktgrösse', 'verbose_name_plural': 'Produktgrössen'
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
+        ),
+        migrations.AddConstraint(
+            model_name='productsize',
+            constraint=models.UniqueConstraint(fields=('name', 'product'), name='unique_name_product'),
         ),
         migrations.RemoveConstraint(
             model_name='delivery',
@@ -71,7 +77,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscriptionbundle',
             name='products',
-            field=models.ManyToManyField(related_name='bundles', through='juntagrico.SubscriptionItem', to='juntagrico.subscriptionproduct', verbose_name='Produkte'),
+            field=models.ManyToManyField(related_name='bundles', through='juntagrico.ProductSize', to='juntagrico.subscriptionproduct', verbose_name='Produkte'),
         ),
         migrations.RemoveConstraint(
             model_name='subscriptionbundle',

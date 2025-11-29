@@ -21,7 +21,7 @@
             <td style="width:200px"></td>
             <td style="width:200px"></td>
             {% for product in products %}
-                <th colspan="{{ product.items.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
+                <th colspan="{{ product.sizes.on_depot_list.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
                         style="font-size:11px">{{ product.description|safe }}</span></th>
             {% endfor %}
         </tr>
@@ -29,8 +29,8 @@
             <td class="small bottom-border left-border right-border">{% trans "Ausfahrt" %}</td>
             <td class="small bottom-border  right-border">{% trans "Total" %}</td>
             {% for product in products %}
-                {% for item in product.items.sorted %}
-                    <td class="small bottom-border {% if forloop.first %}left-border{% endif %}">{{ item.bundle.name }} ({{ item.units|floatformat:-3 }})</td>
+                {% for size in product.sizes.on_depot_list.sorted %}
+                    <td class="small bottom-border {% if forloop.first %}left-border{% endif %}">{{ size.name }} ({{ size.units|floatformat:-3 }})</td>
                 {% endfor %}
             {% endfor %}
         </tr>
@@ -39,8 +39,8 @@
                 <td>{{ tour.name }}</td>
                 <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
                 {% for product in products %}
-                    {% for item in product.items.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
+                    {% for size in product.sizes.on_depot_list.sorted %}
+                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_bundle:size.bundle|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -50,8 +50,8 @@
                 <td>{% trans "Keine" %}</td>
                 <td style="text-align:right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
                 {% for product in products %}
-                    {% for item in product.items.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:None|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
+                    {% for size in product.sizes.on_depot_list.sorted %}
+                        <td style="text-align:right">{{ subscriptions|by_tour:None|parts_by_bundle:size.bundle|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -60,8 +60,8 @@
             <td><b>{% trans "Alle" %}</b></td>
             <td style="text-align:right">{{ subscriptions|count_units:date|floatformat }}</td>
             {% for product in products %}
-                {% for item in product.items.sorted %}
-                    <td style="text-align:right">{{ subscriptions|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
+                {% for size in product.sizes.on_depot_list.sorted %}
+                    <td style="text-align:right">{{ subscriptions|parts_by_bundle:size.bundle|active_on:date|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>
