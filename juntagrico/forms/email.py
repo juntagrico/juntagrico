@@ -222,10 +222,6 @@ class RecipientsForm(BaseRecipientsForm):
         return super()._populate_recipients_queryset(recipients)
 
     def _get_recipients_queryset(self):
-        if 'all' in self.cleaned_data.get('to_list', []):
-            # return all members directly
-            return Member.objects.active()
-
         recipients = Member.objects.none()
         recipients = self._populate_recipients_queryset(recipients)
         return recipients.distinct()

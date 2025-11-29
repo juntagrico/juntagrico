@@ -91,7 +91,7 @@ def to_area(request, area_id):
 @login_required
 def to_job(request, job_id):
     job = get_object_or_404(Job, id=job_id)
-    if not request.user.member.can_contact(area_id=job.type.activityarea):
+    if not request.user.member.can_contact(area_id=job.type.activityarea.id):
         raise PermissionDenied
     members = request.GET.get('members', '')
     return email_view(request, JobForm, job_id=job_id, initial={

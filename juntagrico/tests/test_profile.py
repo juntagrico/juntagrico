@@ -102,15 +102,15 @@ class ProfileTests(JuntagricoTestCase):
         self.member.join_subscription(sub, True)
         # don't cancel while subscription is active
         self.assertPost(reverse('cancel-membership'), code=200, member=self.member, data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 0)
         self.member.refresh_from_db()
         self.assertFalse(self.member.canceled)
+        self.assertEqual(len(mail.outbox), 0)
         # succeed when canceled
         sub.cancel()
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member, data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
         self.member.refresh_from_db()
         self.assertTrue(self.member.canceled)
+        self.assertEqual(len(mail.outbox), 1)  # admin notification
 
     def _testDeactivateMembershipSingle(self, member):
         self.assertPost(reverse('manage-member-deactivate-single', args=(member.pk,)), member=self.admin, code=302)

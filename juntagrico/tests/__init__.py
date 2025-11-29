@@ -1,8 +1,10 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.core import mail
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition
@@ -46,6 +48,7 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def load_members(cls):
         cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6 = Member.objects.order_by('id')[:6]
+        cls.inactive_member = Member.objects.get(email='inactive_member@email.org')
         cls.admin = Member.objects.get(email='admin@email.org')
 
     @classmethod
@@ -195,10 +198,12 @@ class JuntagricoTestCase(TestCase):
         depots
         """
         cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
+        cls.depot_coordinator = cls.create_member('depot_coordinator@email.org')
+        cls.depot_coordinator.user.user_permissions.add(Permission.objects.get(codename='is_depot_admin'))
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
-            'contact': cls.member,
+            'contact': cls.depot_coordinator,
             'tour': cls.tour,
             'weekday': 1,
             'location': location,
@@ -215,6 +220,7 @@ class JuntagricoTestCase(TestCase):
             'fee': 55.0,
         }
         cls.depot2 = Depot.objects.create(**depot_data)
+        mail.outbox = []
 
     @staticmethod
     def create_sub_size(name, product, long_name='', units=1, visible=True, depot_list=True, description='', **kwargs):
@@ -379,10 +385,10 @@ class JuntagricoTestCase(TestCase):
         cls.delivery2 = Delivery.objects.create(**delivery_data)
         DeliveryItem.objects.create(delivery=cls.delivery1)
 
-    def assertGet(self, url, code=200, member=None):
+    def assertGet(self, url, code=200, member=None, data=None):
         login_member = member or self.default_member
         self.client.force_login(login_member.user)
-        response = self.client.get(url)
+        response = self.client.get(url, data)
         self.assertEqual(response.status_code, code)
         return response
 

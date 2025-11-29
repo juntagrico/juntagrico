@@ -106,7 +106,8 @@ class Member(JuntagricoBaseModel):
         return (
             (allowed_areas & member.areas.all()).exists()  # member is in contactable area
             or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of contactable area
-            or member.has_active_subscription().in_depot(allowed_depots).exists()  # member is in coordinated depot
+            # member is in coordinated depot
+            or member.subscription_current and member.subscription_current.depot in allowed_depots
         )
 
     @property
