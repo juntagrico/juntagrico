@@ -7,7 +7,6 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Count, F
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
@@ -33,32 +32,30 @@ def home(request):
     '''
     Overview on juntagrico
     '''
+    # collect upcoming jobs
     start = timezone.now()
-    end = start + timedelta(Config.jobs_frontpage_range_days())
-    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
-    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
-    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
-    num_missing = Config.jobs_frontpage_min_amount() - len(next_jobs) + len(pinned_jobs) + len(next_promotedjobs)
-    if num_missing > 0:
-        exclude_ids = [j.id for j in next_jobs.union(pinned_jobs).union(next_promotedjobs)]
-        add_jobs = list(
-            Job.objects.exclude(id__in=exclude_ids)
-            .filter(time__gte=start)
-            .annotate(signups=Count('members'))
-            .filter(slots__gt=F('signups'))
-            .order_by('time')[:num_missing]
-        )
-    else:
-        add_jobs = []
-    jobs = sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs).union(add_jobs),
-                  key=lambda sort_job: sort_job.time)[:Config.jobs_frontpage_max_amount()]
-    renderdict = {
-        'jobs': jobs,
+    jobs_base = Job.objects.filter(canceled=False, time__gte=start).with_free_slots()
+    # collect jobs that always show
+    show_jobs = jobs_base.filter(pinned=True)
+    show_jobs |= jobs_base.by_type_name(Config.promoted_job_types()).next(Config.promoted_jobs_amount())
+    show_jobs_count = show_jobs.count()
+    # fill with future jobs of next x days or until max
+    remaining_to_max = Config.jobs_frontpage_max_amount() - show_jobs_count
+    if remaining_to_max > 0:
+        end = start + timedelta(Config.jobs_frontpage_range_days())
+        next_jobs = jobs_base.filter(time__lte=end).next(remaining_to_max)
+        # if next x days are not enough to fill to min, load enough to fill to min
+        remaining_to_min = Config.jobs_frontpage_min_amount() - show_jobs_count - next_jobs.count()
+        if remaining_to_min > 0:
+            show_jobs |= jobs_base[:remaining_to_min]
+        else:
+            show_jobs |= next_jobs
+
+    return render(request, 'home.html', {
+        'jobs': show_jobs.order_by('time'),
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
-    }
-
-    return render(request, 'home.html', renderdict)
+    })
 
 
 @login_required

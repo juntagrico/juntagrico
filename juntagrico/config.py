@@ -101,7 +101,7 @@ class Config:
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
     promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
-    promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
+    promoted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
     jobs_frontpage_range_days = _get_setting('JOBS_FRONTPAGE_RANGE_DAYS', 14)
     jobs_frontpage_min_amount = _get_setting('JOBS_FRONTPAGE_MIN_AMOUNT', 3)
     jobs_frontpage_max_amount = _get_setting('JOBS_FRONTPAGE_MAX_AMOUNT', 10)

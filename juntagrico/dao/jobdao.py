@@ -3,7 +3,6 @@ from datetime import datetime, time, date
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
-from juntagrico.config import Config
 from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 
 
@@ -36,15 +35,6 @@ class JobDao:
     @staticmethod
     def get_current_recuring_jobs():
         return RecuringJob.objects.filter(time__gte=timezone.now()).order_by('time')
-
-    @staticmethod
-    def get_pinned_jobs():
-        return Job.objects.filter(pinned=True, time__gte=timezone.now())
-
-    @staticmethod
-    def get_promoted_jobs():
-        return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(),
-                                          time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
 
     @staticmethod
     def upcoming_jobs_for_member(member):
