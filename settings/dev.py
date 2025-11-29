@@ -23,6 +23,8 @@ LOGGING = {
     },
 }
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 INSTALLED_APPS.append('djrichtextfield')
 
 # enable only to test addon features

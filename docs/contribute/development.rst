@@ -39,6 +39,8 @@ the project.
    source .venv/bin/activate
    # Install python dependencies
    pip install -r requirements.txt
+   # install pre-commit hooks
+   pre-commit install
 
 Getting started
 ---------------
