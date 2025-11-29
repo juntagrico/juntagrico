@@ -36,23 +36,24 @@ def home(request):
     start = timezone.now()
     jobs_base = Job.objects.filter(canceled=False, time__gte=start).with_free_slots()
     # collect jobs that always show
-    show_jobs = jobs_base.filter(pinned=True)
-    show_jobs |= jobs_base.by_type_name(Config.promoted_job_types()).next(Config.promoted_jobs_amount())
-    show_jobs_count = show_jobs.count()
+    # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
+    pinned_jobs = jobs_base.filter(pinned=True)
+    promoted_jobs = jobs_base.by_type_name(Config.promoted_job_types()).next(Config.promoted_jobs_amount())
+    show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
+    show_jobs_count = len(show_job_ids)
     # fill with future jobs of next x days or until max
     remaining_to_max = Config.jobs_frontpage_max_amount() - show_jobs_count
     if remaining_to_max > 0:
         end = start + timedelta(Config.jobs_frontpage_range_days())
-        next_jobs = jobs_base.filter(time__lte=end).next(remaining_to_max)
+        next_jobs = jobs_base.exclude(id__in=show_job_ids).filter(time__lte=end).next(remaining_to_max)
         # if next x days are not enough to fill to min, load enough to fill to min
         remaining_to_min = Config.jobs_frontpage_min_amount() - show_jobs_count - next_jobs.count()
         if remaining_to_min > 0:
-            show_jobs |= jobs_base[:remaining_to_min]
-        else:
-            show_jobs |= next_jobs
+            next_jobs = jobs_base.exclude(id__in=show_job_ids).next(remaining_to_min)
+        show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
     return render(request, 'home.html', {
-        'jobs': show_jobs.order_by('time'),
+        'jobs': Job.objects.filter(id__in=show_job_ids).order_by('time'),
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     })
