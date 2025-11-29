@@ -47,8 +47,8 @@ def home(request):
         end = start + timedelta(Config.jobs_frontpage_range_days())
         next_jobs = jobs_base.exclude(id__in=show_job_ids).filter(time__lte=end).next(remaining_to_max)
         # if next x days are not enough to fill to min, load enough to fill to min
-        remaining_to_min = Config.jobs_frontpage_min_amount() - show_jobs_count - next_jobs.count()
-        if remaining_to_min > 0:
+        remaining_to_min = Config.jobs_frontpage_min_amount() - show_jobs_count
+        if remaining_to_min > next_jobs.count():
             next_jobs = jobs_base.exclude(id__in=show_job_ids).next(remaining_to_min)
         show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
