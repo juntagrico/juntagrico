@@ -223,12 +223,14 @@ class MailerTests(JuntagricoTestCaseWithShares):
             response = self.assertPost(reverse('email-write'), post_data, code=302)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].attachments[0][0], 'test_mailer.py')
-        self.assertListEqual(sorted(mail.outbox[0].bcc), [
-            'First_name4 Last_name4 <email4@email.org>',
+        expected = [
             'first_name1 last_name1 <email1@email.org>',
             'first_name3 last_name3 <email3@email.org>',
             'first_name6 last_name6 <member6@email.org>'
-        ])
+        ]
+        if settings.ENABLE_SHARES:
+            expected = ['First_name4 Last_name4 <email4@email.org>'] + expected
+        self.assertListEqual(sorted(mail.outbox[0].bcc), expected)
         self.assertRedirects(response, reverse('email-sent'))
 
     @tag('shares')
