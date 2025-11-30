@@ -45,10 +45,6 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
-        migrations.AddConstraint(
-            model_name='productsize',
-            constraint=models.UniqueConstraint(fields=('name', 'product'), name='unique_name_product'),
-        ),
         migrations.RemoveConstraint(
             model_name='delivery',
             name='unique_delivery',
@@ -92,6 +88,10 @@ class Migration(migrations.Migration):
         migrations.RemoveConstraint(
             model_name='subscriptionbundle',
             name='unique_name_product',
+        ),
+        migrations.AddConstraint(
+            model_name='productsize',
+            constraint=models.UniqueConstraint(fields=('name', 'product'), name='unique_name_product'),
         ),
         migrations.RemoveConstraint(
             model_name='subscriptionbundle',
