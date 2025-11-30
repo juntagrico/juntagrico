@@ -482,29 +482,29 @@ ALLOW_JOB_UNSUBSCRIBE
     False
 
 
-PROMOTED_JOB_TYPES
-^^^^^^^^^^^^^^^^^^
-  Types of jobs which should apear on start page
+JOBS_FRONTPAGE
+^^^^^^^^
 
-  Type: List of Strings
+  Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs.
 
-  default value
-
-  .. code-block:: python
-
-    []
-
-PROMOTED_JOBS_AMOUNT
-^^^^^^^^^^^^^^^^^^^^
-  Amount of jobs which should be promoted on the start page
-
-  Type: Integer
+  The setting takes a dictionary of key-value pairs:
+    - ``'days'``: date range in days into the future for next jobs
+    - ``'promoted_types'``: types of jobs (list of strings) to promote
+    - ``'promoted_count'``: number of promoted jobs to show
+    - ``'min'``: minimal number of jobs in list to reach by filling in more next jobs
+    - ``'max'``: maximal number of jobs in list to limit next jobs
 
   default value
 
   .. code-block:: python
 
-    2
+        {
+        'days': 14,
+        'min': 3,
+        'max': 10,
+        'promoted_types': [],
+        'promoted_count': 2
+        }
 
 
 .. _settings-depot:

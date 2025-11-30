@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Count, F
 from django.utils import timezone
 from polymorphic.query import PolymorphicQuerySet
 
@@ -43,6 +43,18 @@ class JobQueryset(PolymorphicQuerySet):
     def order_by_recent(self, days=7):
         cutoff = timezone.now() - timedelta(days=days)
         return self.annotate(is_old=Q(time__lt=cutoff)).order_by('is_old', 'time')
+
+    def with_free_slots(self, min_slots=1):
+        return self.annotate(assignments=Count('assignment')).filter(
+            Q(infinite_slots=True) |
+            Q(slots__gte=F('assignments') + min_slots)
+        )
+
+    def by_type_name(self, type_names):
+        return self.filter(RecuringJob___type__name__in=type_names)
+
+    def next(self, count):
+        return self.order_by('time')[:count]
 
     def in_areas(self, areas):
         return self.filter(

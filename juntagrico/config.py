@@ -101,8 +101,16 @@ class Config:
 
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
-    promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
-    promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
+    jobs_frontpage = _get_setting_with_key(
+        'JOBS_FRONTPAGE',
+        {
+            'days': 14,
+            'min': 3,
+            'max': 10,
+            'promoted_types': [],
+            'promoted_count': 2
+        }
+    )
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
