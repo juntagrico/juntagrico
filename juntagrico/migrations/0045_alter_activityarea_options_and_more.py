@@ -7,7 +7,7 @@ import django.db.models.deletion
 def has_perm(apps, user, perm):
     permission = apps.get_model('auth', 'Permission')
     perm = permission.objects.get(content_type__app_label='juntagrico', codename=perm)
-    return user.filter(user_permissions=perm).exists() or user.groups.filter(permissions=perm).exists()
+    return perm in user.user_permissions.all() or user.groups.filter(permissions=perm).exists()
 
 
 def migrate_coordinators(apps, schema_editor):
@@ -43,8 +43,11 @@ def migrate_email_attachment_permission(apps, schema_editor):
 
     # distribute new permission
     permission = apps.get_model('auth', 'Permission')
-    old_perm = permission.objects.filter(codename__in=('is_area_admin', 'is_operations_group'))
-    new_perm = permission.objects.get(codename='can_email_attachments')
+    old_perm = permission.objects.filter(
+        content_type__app_label='juntagrico',
+        codename__in=('is_area_admin', 'is_operations_group')
+    )
+    new_perm = permission.objects.get(content_type__app_label='juntagrico', codename='can_email_attachments')
 
     user = apps.get_model('auth', 'User')
     for u in user.objects.filter(user_permissions__in=old_perm):
