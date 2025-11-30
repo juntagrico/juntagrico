@@ -38,16 +38,16 @@ def home(request):
     # collect jobs that always show
     # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
     pinned_jobs = jobs_base.filter(pinned=True)
-    promoted_jobs = jobs_base.by_type_name(Config.promoted_job_types()).next(Config.promoted_jobs_amount())
+    promoted_jobs = jobs_base.by_type_name(Config.jobs_frontpage('promoted_types')).next(Config.jobs_frontpage('promoted_count'))
     show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
     show_jobs_count = len(show_job_ids)
     # fill with future jobs of next x days or until max
-    remaining_to_max = Config.jobs_frontpage_max_amount() - show_jobs_count
+    remaining_to_max = Config.jobs_frontpage('max') - show_jobs_count
     if remaining_to_max > 0:
-        end = start + timedelta(Config.jobs_frontpage_range_days())
+        end = start + timedelta(Config.jobs_frontpage('days'))
         next_jobs = jobs_base.exclude(id__in=show_job_ids).filter(time__lte=end).next(remaining_to_max)
         # if next x days are not enough to fill to min, load enough to fill to min
-        remaining_to_min = Config.jobs_frontpage_min_amount() - show_jobs_count
+        remaining_to_min = Config.jobs_frontpage('min') - show_jobs_count
         if remaining_to_min > next_jobs.count():
             next_jobs = jobs_base.exclude(id__in=show_job_ids).next(remaining_to_min)
         show_job_ids |= set(next_jobs.values_list('id', flat=True))
