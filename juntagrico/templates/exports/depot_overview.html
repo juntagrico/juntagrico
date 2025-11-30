@@ -38,7 +38,7 @@
                 <td style="width:360px;">{{ depot.name }}</td>
                 {% for product in products %}
                     {% for size in product.sizes.on_depot_list.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_depot:depot|parts_by_bundle:size.bundle|active_on:date|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_depot:depot|parts_by_size:size|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -47,7 +47,7 @@
             <td>{% trans "Total" %}</td>
             {% for product in products %}
                 {% for size in product.sizes.on_depot_list.sorted %}
-                    <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_bundle:size.bundle|active_on:date|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>

@@ -12,7 +12,7 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
-    ProductSize
+    ProductSize, SubscriptionBundleProductSize
 
 
 class Command(BaseCommand):
@@ -78,6 +78,7 @@ class Command(BaseCommand):
                 share_all_fields['member'] = member_3
                 Share.objects.create(**share_all_fields)
             subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
+            product_size, _ = ProductSize.objects.get_or_create(name='Gross', product=subproduct)
             category, _ = SubscriptionCategory.objects.get_or_create(name='Kategorie 1', description='Beschreibung 1')
             bundle_name = 'Normales Abo'
             bundle_fields = {'long_name': bundle_name,
@@ -89,7 +90,8 @@ class Command(BaseCommand):
             ).first()
             if not bundle:
                 bundle = SubscriptionBundle.objects.create(**bundle_fields)
-            ProductSize.objects.get_or_create(product=subproduct, bundle=bundle)
+            if product_size not in bundle.product_sizes.all():
+                SubscriptionBundleProductSize.objects.create(bundle=bundle, product_size=product_size)
             subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'bundle': bundle, 'shares': 2,
                               'visible': True, 'required_assignments': 10, 'price': 1000,
                               'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '

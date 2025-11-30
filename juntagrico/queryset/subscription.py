@@ -196,6 +196,9 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             )
         })
 
+    def on_depot_list(self):
+        return self.filter(parts__type__bundle__product_sizes__show_on_depot_list=True)
+
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
@@ -244,4 +247,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.filter(subscription__primary_member=member)
 
     def on_depot_list(self):
-        return self.filter(type__bundle__items__isnull=False)
+        return self.filter(type__bundle__product_sizes__show_on_depot_list=True)
+
+    def count_units(self):
+        return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']

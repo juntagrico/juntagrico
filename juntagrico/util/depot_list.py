@@ -17,11 +17,10 @@ def depot_list_data(days=0):
 
     return {
         'subscriptions':
-            Subscription.objects.filter(parts__type__bundle__products__isnull=False)
-            .active_on(date)
+            Subscription.objects.on_depot_list().active_on(date)
             .order_by(Lower('primary_member__first_name'), Lower('primary_member__last_name'))
             .distinct(),
-        'products': SubscriptionProduct.objects.filter(bundles__isnull=False).distinct(),
+        'products': SubscriptionProduct.objects.on_depot_list(),
         'depots': DepotDao.all_depots_for_list(),
         'date': date,
         'tours': Tour.objects.filter(visible_on_list=True),

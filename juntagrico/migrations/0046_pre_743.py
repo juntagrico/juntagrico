@@ -38,7 +38,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100, verbose_name='Name')),
                 ('units', models.FloatField(default=1.0, verbose_name='Einheiten')),
                 ('show_on_depot_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Depotliste')),
-                ('bundle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionbundle', verbose_name='Grösse')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sizes', to='juntagrico.subscriptionproduct', verbose_name='Produkt')),
             ],
             options={
@@ -74,10 +73,21 @@ class Migration(migrations.Migration):
             name='category',
             field=models.ForeignKey(blank=True, help_text='Wenn leer, kann dieses Paket nicht bestellt werden.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='bundles', to='juntagrico.subscriptioncategory', verbose_name='Kategorie'),
         ),
+        migrations.CreateModel(
+            name='SubscriptionBundleProductSize',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('bundle',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='juntagrico.subscriptionbundle')),
+                ('product_size',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='juntagrico.productsize')),
+            ],
+        ),
         migrations.AddField(
             model_name='subscriptionbundle',
-            name='products',
-            field=models.ManyToManyField(related_name='bundles', through='juntagrico.ProductSize', to='juntagrico.subscriptionproduct', verbose_name='Produkte'),
+            name='product_sizes',
+            field=models.ManyToManyField(related_name='bundles', through='juntagrico.SubscriptionBundleProductSize',
+                                         to='juntagrico.productsize', verbose_name='Produktgrössen'),
         ),
         migrations.RemoveConstraint(
             model_name='subscriptionbundle',

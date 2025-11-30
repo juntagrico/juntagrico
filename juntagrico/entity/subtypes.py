@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset
+from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset, SubscriptionProductQueryset
 from juntagrico.util import temporal
 
 
@@ -15,6 +15,8 @@ class SubscriptionProduct(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    objects = SubscriptionProductQueryset.as_manager()
 
     def __str__(self):
         return self.name
@@ -33,9 +35,11 @@ class ProductSize(JuntagricoBaseModel):
     units = models.FloatField(_('Einheiten'), default=1.0)
     show_on_depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='sizes', verbose_name=_('Produkt'))
-    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.CASCADE, related_name='items', verbose_name=_('Grösse'))
 
     objects = ProductSizeQueryset.as_manager()
+
+    def __str__(self):
+        return f'{self.name} {self.product.name}'
 
     class Meta:
         verbose_name = _('Produktgrösse')
@@ -43,6 +47,12 @@ class ProductSize(JuntagricoBaseModel):
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
         ]
+
+
+class SubscriptionBundleProductSize(models.Model):
+    # through model is needed to allow duplicate m2m relationships
+    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.CASCADE)
+    product_size = models.ForeignKey(ProductSize, on_delete=models.CASCADE)
 
 
 class SubscriptionCategory(JuntagricoBaseModel):
@@ -72,7 +82,10 @@ class SubscriptionBundle(JuntagricoBaseModel):
     category = models.ForeignKey('SubscriptionCategory', on_delete=models.SET_NULL,
                                  related_name='bundles', verbose_name=_('Kategorie'), null=True, blank=True,
                                  help_text=_('Wenn leer, kann dieses Paket nicht bestellt werden.'))
-    products = models.ManyToManyField('SubscriptionProduct', through='ProductSize', related_name='bundles', verbose_name=_('Produkte'))
+    product_sizes = models.ManyToManyField(
+        'ProductSize', related_name='bundles', verbose_name=_('Produktgrössen'),
+        through=SubscriptionBundleProductSize
+    )
 
     def __str__(self):
         return f'{self.category or _("(Nicht Bestellbar)")} - {self.long_name}'

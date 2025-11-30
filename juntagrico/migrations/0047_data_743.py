@@ -22,9 +22,11 @@ def copy_category(apps, schema_editor):
 
 def initialize_products(apps, schema_editor):
     bundles = apps.get_model('juntagrico', 'SubscriptionBundle')
-    product_size = apps.get_model('juntagrico', 'ProductSize')
+    bundle_product_sizes = apps.get_model('juntagrico', 'SubscriptionBundleProductSize')
+    product_sizes = apps.get_model('juntagrico', 'ProductSize')
     for bundle in bundles.objects.filter(depot_list=True):
-        product_size.objects.create(name=bundle.name, units=bundle.units, bundle=bundle, product=bundle.product)
+        product_size = product_sizes.objects.create(name=bundle.name, units=bundle.units, product=bundle.product)
+        bundle_product_sizes.objects.create(bundle=bundle, product_size=product_size)
 
 
 class Migration(migrations.Migration):

@@ -13,7 +13,7 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
-    ProductSize
+    ProductSize, SubscriptionBundleProductSize
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -218,7 +218,7 @@ class JuntagricoTestCase(TestCase):
         cls.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
-    def create_bundle(long_name, category, description='', **kwargs):
+    def create_bundle(long_name, category=None, description='', **kwargs):
         return SubscriptionBundle.objects.create(
             long_name=long_name,
             category=category,
@@ -245,20 +245,44 @@ class JuntagricoTestCase(TestCase):
         )
 
     @classmethod
+    def set_up_products(cls):
+        # products
+        cls.sub_product = SubscriptionProduct.objects.create(name='product')
+        cls.unused_product = SubscriptionProduct.objects.create(name='unused product')
+        # product sizes
+        cls.product_size = ProductSize.objects.create(
+            name='product size',
+            product=cls.sub_product,
+            units=1.0
+        )
+        cls.invisible_product_size = ProductSize.objects.create(
+            name='invisible product size',
+            product=cls.sub_product,
+            show_on_depot_list=False,
+        )
+        cls.unused_product_size = ProductSize.objects.create(
+            name='unused product size',
+            product=cls.unused_product
+        )
+
+    @classmethod
     def set_up_sub_types(cls):
         """
         subscription categories, bundles, types and products
         """
-        sub_product_data = {
-            'name': 'product'
-        }
-        cls.sub_product = SubscriptionProduct.objects.create(**sub_product_data)
+        cls.set_up_products()
+        # category
         sub_category_data = {
             'name': 'category'
         }
         cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
-        cls.bundle = cls.create_bundle('sub_name', cls.sub_category, description='sub_desc')
-        ProductSize.objects.create(bundle=cls.bundle, product=cls.sub_product, units=1.0)
+        # bundle
+        cls.bundle = cls.create_bundle('bundle', cls.sub_category, description='sub_desc')
+        SubscriptionBundleProductSize.objects.create(bundle=cls.bundle, product_size=cls.product_size)
+        SubscriptionBundleProductSize.objects.create(bundle=cls.bundle, product_size=cls.invisible_product_size)
+        cls.unused_bundle = cls.create_bundle('unused bundle', description='unused bundle description')
+        SubscriptionBundleProductSize.objects.create(bundle=cls.unused_bundle, product_size=cls.product_size)
+        # types
         cls.sub_type = cls.create_sub_type(cls.bundle)
         cls.sub_type2 = cls.create_sub_type(cls.bundle, shares=2)
         cls.sub_type3 = cls.create_sub_type(cls.bundle, shares=0)
