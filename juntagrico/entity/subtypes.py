@@ -140,10 +140,10 @@ class SubscriptionType(JuntagricoBaseModel):
 
     @property
     def display_name(self):
-        return '-'.join([self.bundle.category.name, self.bundle.long_name])
+        return '-'.join([str(self.bundle), self.long_name])
 
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.bundle.long_name + ' - ' + _('Kategorie') + ': ' + self.bundle.category.name
+        return '-'.join([str(self.bundle), self.name])
 
     def __lt__(self, other):
         return self.pk < other.pk

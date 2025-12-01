@@ -1,0 +1,42 @@
+{% load juntagrico.common %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% if type.long_name.strip %}
+    <strong>{{ type.long_name }}</strong>
+    <br/>
+{% endif %}
+{% if type.description.strip %}
+    {{ type.description|richtext|safe }}
+    <br/>
+{% endif %}
+{% if type.has_periods %}
+    {{ vocabulary.price }}:
+    {% for period in type.periods.all %}
+        <br/>
+        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+        {{ period.price }} {% config "currency" %}
+    {% endfor %}
+    {% include "juntagrico/snippets/subscription/depot_fee.html" %}
+{% else %}
+    {{ vocabulary.price }}: {{ type.price }} {% config "currency" %}
+    {% include "juntagrico/snippets/subscription/depot_fee.html" %}
+    <br/>
+    {% trans "Laufzeit" %}: {{ type.min_duration_info }}
+{% endif %}
+{% config "enable_shares" as c_enable_shares %}
+{% if c_enable_shares %}
+    <br/>
+    {{ vocabulary.share_pl }}: {{ type.shares }}
+{% endif %}
+<br/>
+{% trans "Arbeitseinsätze" %}: {{ type.required_assignments }}
+{% if hours_used %}
+    {% trans "Stunden" %}
+{% endif %}
+{% if type.required_core_assignments > 0 %}
+    <br/>
+    {% trans "Arbeitseinsätze in Kernbereichen" %}: {{ type.required_core_assignments }}
+    {% if hours_used %}
+        {% trans "Stunden" %}
+    {% endif %}
+{% endif %}

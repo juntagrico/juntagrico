@@ -1,4 +1,4 @@
-from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableAdminBase
 
 from django.contrib import admin
 from django.contrib.admin import RelatedOnlyFieldListFilter, TabularInline
@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.depot_subscriptiontype_inline import DepotSubscriptionTypeInline
 from juntagrico.config import Config
-from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionBundleProductSize
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionBundleProductSize, SubscriptionType
 
 
 class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
@@ -22,9 +22,10 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
                    ('bundle__category', RelatedOnlyFieldListFilter)]
 
     def get_exclude(self, request, obj=None):
+        exclude = super().get_exclude(request, obj)
         if not Config.enable_shares():
-            return ['shares'] if self.exclude is None else self.exclude.append('shares')
-        return self.exclude
+            exclude.append('shares')
+        return exclude
 
 
 if Config.enable_shares():
@@ -52,11 +53,36 @@ class ProductSizeInline(admin.TabularInline):
     extra = 1
 
 
-class SubscriptionBundleAdmin(RichTextAdmin):
+class SubscriptionTypeInline(SortableStackedInline):
+    model = SubscriptionType
+    extra = 0
+    fieldsets = [
+        (
+            None,
+            {
+                'fields': [
+                    ('name', 'long_name'),
+                    'description',
+                    ('price', 'shares', 'required_assignments', 'required_core_assignments'),
+                    ('visible', 'is_extra', 'trial_days'),
+                    ('interval', 'offset')
+                ],
+            },
+        ),
+    ]
+
+    def get_exclude(self, request, obj=None):
+        exclude = super().get_exclude(request, obj)
+        if not Config.enable_shares():
+            exclude.append('shares')
+        return exclude
+
+
+class SubscriptionBundleAdmin(SortableAdminBase, RichTextAdmin):
     list_display = ['long_name', 'category', 'orderable']
     autocomplete_fields = ['category']
     search_fields = ['long_name', 'description', 'category__name', 'product_sizes__name']
-    inlines = [ProductSizeInline]
+    inlines = [ProductSizeInline, SubscriptionTypeInline]
 
     @admin.display(
         boolean=True,
