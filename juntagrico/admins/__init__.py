@@ -22,7 +22,7 @@ class RichTextAdmin(BaseAdmin):
     def __init__(self, model, admin_site):
         if Config.using_richtext():
             self.formfield_overrides = self.formfield_overrides or {}
-            self.formfield_overrides.update({TextField: {'widget': RichTextWidget}})
+            self.formfield_overrides.update({TextField: {'widget': RichTextWidget(field_settings='juntagrico.admin')}})
         super().__init__(model, admin_site)
 
 

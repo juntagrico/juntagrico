@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.module_loading import import_string
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import AreaCoordinator
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.models import Subscription
 from juntagrico.util import temporal
@@ -88,11 +87,7 @@ def any_permission_required(*perms):
 def requires_permission_to_contact(func):
     def check_perms_to_contact(user):
         # check if user can contact members
-        return (
-            user.has_perm('juntagrico.is_depot_admin') or
-            user.has_perm('juntagrico.can_send_email') or
-            AreaCoordinator.objects.filter(member=user.member, can_contact_member=True).exists()
-        )
+        return user.member.can_contact()
     return user_passes_test(check_perms_to_contact)(func)
 
 

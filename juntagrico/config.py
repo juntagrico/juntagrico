@@ -48,6 +48,7 @@ class Config:
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
+            'from': _('{} von {}'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -150,7 +151,6 @@ class Config:
     )
     url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(
         'BATCH_MAILER',
         {
@@ -213,7 +213,13 @@ class Config:
 
     @classmethod
     def using_richtext(cls):
-        return 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG')
+        try:
+            return (
+                'djrichtextfield' in settings.INSTALLED_APPS
+                and isinstance(settings.DJRICHTEXTFIELD_CONFIG['profiles']['juntagrico.admin'], dict)
+            )
+        except (AttributeError, KeyError):
+            return False
 
     @classmethod
     def notifications(cls, name):

@@ -20,7 +20,7 @@ class ManageListTests(JuntagricoTestCase):
 
     def testDepotSubscription(self):
         url = reverse('manage-depot-subs', args=[self.depot.pk])
-        self.assertGet(url)
+        self.assertGet(url, member=self.depot_coordinator)
         # member2 has no access
         self.assertGet(url, member=self.member2, code=403)
 
@@ -30,9 +30,9 @@ class ManageListTests(JuntagricoTestCase):
         objects = list(response.context['object_list']().order_by('id'))
         self.assertListEqual(objects, [
             self.member, self.member2, self.member3, self.member4, self.member5, self.member6,
-            self.admin, self.area_admin, self.area_admin_modifier, self.area_admin_viewer,
+            self.admin, self.area_admin, self.inactive_member, self.area_admin_modifier, self.area_admin_viewer,
             self.area_admin_contact, self.area_admin_remover, self.area_admin_job_modifier,
-            self.area_admin_assignment_modifier
+            self.area_admin_assignment_modifier, self.depot_coordinator
         ])
         member = objects[0]
         self.assertEqual(member.subscription_current, self.sub)
