@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, time
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template.defaultfilters import date
@@ -7,6 +8,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, absolute_url
+from juntagrico.entity.contact import Contact, MemberContact, TextContact
 from juntagrico.entity.location import Location
 from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices
@@ -40,7 +42,7 @@ class Depot(JuntagricoBaseModel):
     Location where stuff is picked up.
     '''
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
-    contact = models.ForeignKey('Member', on_delete=models.PROTECT)
+    contact_set = GenericRelation(Contact)
     tour = models.ForeignKey(Tour, on_delete=models.PROTECT, related_name='depots',
                              verbose_name=_('Ausfahrt'), blank=True, null=True)
     weekday = models.PositiveIntegerField(_('Abholtag'), choices=weekday_choices)
@@ -67,6 +69,20 @@ class Depot(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s %s' % (self.id, self.name)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        # last resort: show depot coordinators as contact
+        return [MemberContact(member=m) for m in self.coordinators.all()]
+
+    def contact_names(self):
+        for contact in self.contacts:
+            if isinstance(contact, MemberContact):
+                yield contact.member
+            elif isinstance(contact, TextContact):
+                yield contact.text
 
     def active_subscriptions(self):
         return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name',

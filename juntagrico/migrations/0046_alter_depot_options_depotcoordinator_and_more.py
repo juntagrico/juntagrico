@@ -65,4 +65,8 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(fields=('depot', 'member'), name='unique_depot_member'),
         ),
         migrations.RunPython(migrate_coordinators),
+        migrations.RemoveField(
+            model_name='depot',
+            name='contact',
+        ),
     ]

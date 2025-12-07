@@ -6,7 +6,7 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
-from juntagrico.admins.inlines.contact_inline import ContactInline
+from juntagrico.admins.inlines.contact_inline import ContactInlineForJob
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForOnetimeJob
 from juntagrico.admins.job_admin import OnlyFutureJobMixin
 from juntagrico.admins.job_type_admin import JobTypeBaseAdmin
@@ -28,7 +28,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
     exclude = ['reminder_sent']
     autocomplete_fields = ['activityarea', 'location']
 
-    inlines = [ContactInline, AssignmentInline, JobExtraInlineForOnetimeJob]
+    inlines = [ContactInlineForJob, AssignmentInline, JobExtraInlineForOnetimeJob]
     readonly_fields = ['free_slots']
 
     @admin.action(description=_('EinzelJobs in Jobart konvertieren'))

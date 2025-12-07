@@ -106,9 +106,9 @@ class Command(BaseCommand):
                                                             defaults=depot2_location_fields)
         depot2_location.save()
         depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'location': depot1_location,
-                         'description': 'Hinter dem Migros', 'contact': member_2}
+                         'description': 'Hinter dem Migros'}
         depot2_fields = {'name': 'Siemens', 'weekday': 4, 'location': depot2_location,
-                         'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
+                         'description': 'Hinter dem Restaurant Cube'}
         depot1, _ = Depot.objects.get_or_create(name=depot1_fields['name'], defaults=depot1_fields)
         DepotCoordinator.objects.update_or_create(member=member_2, depot=depot1)
         depot2, _ = Depot.objects.get_or_create(name=depot2_fields['name'], defaults=depot2_fields)

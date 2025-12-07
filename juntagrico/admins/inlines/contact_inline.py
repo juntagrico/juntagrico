@@ -11,22 +11,22 @@ from juntagrico.entity.member import Member
 class ContactInlineForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # handle extra kwarg
-        self.area = kwargs.pop('area')
+        self.members = kwargs.pop('members')
         super().__init__(*args, **kwargs)
 
 
 class MemberContactInlineForm(ContactInlineForm):
     def __init__(self, *args, **kwargs):
-        # If user can't view members, limit options to members that are coordinators of that area
+        # If user can't view all members, limit options to specific members
         super().__init__(*args, **kwargs)
         if not isinstance(self.fields["member"].widget, ForeignKeyRawIdWidget):
-            qs = self.area.coordinators.all() if self.area else Member.objects.none()
+            qs = self.members or Member.objects.none()
             if self.instance.id:
                 qs = (qs | Member.objects.filter(pk=self.instance.member.pk)).distinct()
             self.fields["member"].queryset = qs
 
 
-class ContactInline(AreaCoordinatorInlineMixin, GenericStackedPolymorphicInline):
+class ContactInline(GenericStackedPolymorphicInline):
     class MemberContactInline(GenericStackedPolymorphicInline.Child):
         model = MemberContact
         fields = ('member', 'display', 'sort_order')
@@ -61,10 +61,13 @@ class ContactInline(AreaCoordinatorInlineMixin, GenericStackedPolymorphicInline)
         TextContactInline,
     )
 
+
+class ContactInlineForJob(AreaCoordinatorInlineMixin, ContactInline):
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
-        # pass parent objects area into formset
-        formset.get_form_kwargs = lambda s, i: {'area': self.get_area(obj)}
+        # pass available members for form
+        area = self.get_area(obj)
+        formset.get_form_kwargs = lambda s, i: {'members': area.coordinators.all() if area else None}
         return formset
 
     def get_max_num(self, request, obj=None, **kwargs):
@@ -75,5 +78,5 @@ class ContactInline(AreaCoordinatorInlineMixin, GenericStackedPolymorphicInline)
         return super().get_max_num(request, obj, **kwargs)
 
 
-class ContactInlineForArea(ContactInline):
+class ContactInlineForArea(ContactInlineForJob):
     coordinator_access = 'can_modify_area'

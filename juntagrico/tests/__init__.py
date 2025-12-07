@@ -201,23 +201,21 @@ class JuntagricoTestCase(TestCase):
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
-            'contact': cls.depot_coordinator,
             'tour': cls.tour,
             'weekday': 1,
             'location': location,
         }
         cls.depot = Depot.objects.create(**depot_data)
         depot_coordinator = {
-                "depot": cls.depot,
-                "member": cls.depot_coordinator,
-                "can_modify_depot": True,
-                "can_view_member": True,
-                "can_contact_member": True,
+            'depot': cls.depot,
+            'member': cls.depot_coordinator,
+            'can_modify_depot': True,
+            'can_view_member': True,
+            'can_contact_member': True,
         }
         DepotCoordinator.objects.create(**depot_coordinator)
         depot_data = {
             'name': 'depot2',
-            'contact': cls.member,
             'weekday': 1,
             'pickup_time': datetime.time(9, 0),
             'pickup_duration': 48,
@@ -226,8 +224,8 @@ class JuntagricoTestCase(TestCase):
             'fee': 55.0,
         }
         cls.depot2 = Depot.objects.create(**depot_data)
-        depot_coordinator["depot"] = cls.depot2
-        depot_coordinator["member"] = cls.member
+        depot_coordinator['depot'] = cls.depot2
+        depot_coordinator['member'] = cls.member
         DepotCoordinator.objects.create(**depot_coordinator)
         mail.outbox = []
 

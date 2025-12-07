@@ -95,7 +95,7 @@ class Member(JuntagricoBaseModel):
             if area_id is not None:
                 allowed_areas = allowed_areas.filter(id=area_id)
 
-        allowed_depots = self.depot_set.none()
+        allowed_depots = self.coordinated_depots.none()
         if area_id is None:
             allowed_depots = self.coordinated_depots.filter(coordinator_access__can_contact_member=True)
             if depot_id is not None:
