@@ -10,7 +10,6 @@ from django.template import Template, Context
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
-from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
@@ -118,9 +117,8 @@ def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **
     # limit available areas and depots if user can't send emails in general
     depots = areas = None
     if not user.has_perm('juntagrico.can_send_mails'):
-        depots = Depot.objects.none()
-        if user.has_perm('juntagrico.is_depot_admin'):
-            depots = kwargs.get('depots', member.depot_set.all())  # coordinated depots
+        # get contactable depots and areas
+        depots = kwargs.get('depots', member.coordinated_depots.filter(coordinator_access__can_contact_member=True))
         areas = kwargs.get('areas', member.coordinated_areas.filter(coordinator_access__can_contact_member=True))
 
     kwargs.update(dict(

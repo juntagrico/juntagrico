@@ -356,10 +356,12 @@ class DepotSubscriptionView(SubscriptionView):
     )
 
     def get_queryset(self):
-        self.depot = get_object_or_404(Depot,
-                                       id=int(self.kwargs['depot_id']),
-                                       coordinator_access__member=self.request.user.member,
-                                       coordinator_access__can_view_member=True)
+        self.depot = get_object_or_404(
+            Depot,
+            id=int(self.kwargs['depot_id']),
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
+        )
         return super().get_queryset()().filter(depot=self.depot)
 
     def get_context_data(self, **kwargs):

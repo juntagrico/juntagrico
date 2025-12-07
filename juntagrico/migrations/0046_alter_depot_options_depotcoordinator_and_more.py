@@ -29,7 +29,7 @@ def migrate_coordinators(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0045_alter_activityarea_options_and_more'),
+        ('juntagrico', '0046_alter_specialroles_options'),
     ]
 
     operations = [

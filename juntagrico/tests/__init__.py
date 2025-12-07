@@ -1,7 +1,6 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
@@ -199,7 +198,6 @@ class JuntagricoTestCase(TestCase):
         """
         cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
         cls.depot_coordinator = cls.create_member('depot_coordinator@email.org')
-        cls.depot_coordinator.user.user_permissions.add(Permission.objects.get(codename='is_depot_admin'))
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
@@ -211,7 +209,7 @@ class JuntagricoTestCase(TestCase):
         cls.depot = Depot.objects.create(**depot_data)
         depot_coordinator = {
                 "depot": cls.depot,
-                "member": cls.member,
+                "member": cls.depot_coordinator,
                 "can_modify_depot": True,
                 "can_view_member": True,
                 "can_contact_member": True,
@@ -229,6 +227,7 @@ class JuntagricoTestCase(TestCase):
         }
         cls.depot2 = Depot.objects.create(**depot_data)
         depot_coordinator["depot"] = cls.depot2
+        depot_coordinator["member"] = cls.member
         DepotCoordinator.objects.create(**depot_coordinator)
         mail.outbox = []
 

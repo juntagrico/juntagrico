@@ -96,8 +96,8 @@ class Member(JuntagricoBaseModel):
                 allowed_areas = allowed_areas.filter(id=area_id)
 
         allowed_depots = self.depot_set.none()
-        if area_id is None and self.user.has_perm('juntagrico.is_depot_admin'):
-            allowed_depots = self.depot_set.all()
+        if area_id is None:
+            allowed_depots = self.coordinated_depots.filter(coordinator_access__can_contact_member=True)
             if depot_id is not None:
                 allowed_depots = allowed_depots.filter(id=depot_id)
 
