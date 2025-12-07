@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
@@ -50,12 +51,14 @@ class ActivityArea(JuntagricoBaseModel):
         return [MemberContact(member=m) for m in self.coordinators.all()]
 
     def _get_email_fallback(self, get_member=False, exclude=None):
+        emails = []
         for coordinator in self.coordinators.all():
             if exclude is None or coordinator.email not in exclude:
                 if get_member:
-                    return [(coordinator.email, coordinator)]
-                return [coordinator.email]
-        return []
+                    emails.append((coordinator.email, coordinator))
+                else:
+                    emails.append(coordinator.email)
+        return emails
 
     def get_emails(self, get_member=False, exclude=None):
         """
@@ -222,6 +225,9 @@ class Job(JuntagricoBasePoly):
 
     def __str__(self):
         return _('Job {0}').format(self.id)
+
+    def get_label(self):
+        return f'{self.type.get_name} ({date_format(self.time, "SHORT_DATETIME_FORMAT")})'
 
     @property
     @admin.display(description=_('Freie Plätze'))

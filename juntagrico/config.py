@@ -48,6 +48,7 @@ class Config:
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
+            'from': _('{} von {}'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -93,14 +94,23 @@ class Config:
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
     enable_external_signup = _get_setting('ENABLE_EXTERNAL_SIGNUP', False)
+    enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
 
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
 
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
-    promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
-    promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
+    jobs_frontpage = _get_setting_with_key(
+        'JOBS_FRONTPAGE',
+        {
+            'days': 14,
+            'min': 3,
+            'max': 10,
+            'promoted_types': [],
+            'promoted_count': 2
+        }
+    )
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
@@ -141,7 +151,6 @@ class Config:
     )
     url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(
         'BATCH_MAILER',
         {
@@ -204,7 +213,13 @@ class Config:
 
     @classmethod
     def using_richtext(cls):
-        return 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG')
+        try:
+            return (
+                'djrichtextfield' in settings.INSTALLED_APPS
+                and isinstance(settings.DJRICHTEXTFIELD_CONFIG['profiles']['juntagrico.admin'], dict)
+            )
+        except (AttributeError, KeyError):
+            return False
 
     @classmethod
     def notifications(cls, name):

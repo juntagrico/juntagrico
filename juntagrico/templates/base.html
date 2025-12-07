@@ -31,6 +31,9 @@
         {% for static_style in static_styles %}
             <link href="{% static static_style %}" rel="stylesheet"/>
         {% endfor %}
+        {# include library early for form media #}
+        <script type="text/javascript" src="{% static 'juntagrico/external/jquery/jquery-3.7.1.min.js' %}">
+        </script>
     </head>
     <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
@@ -126,8 +129,6 @@
                 {% endblock %}
             </div>
         </div>
-        <script type="text/javascript" src="{% static 'juntagrico/external/jquery/jquery-3.7.1.min.js' %}">
-        </script>
         <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap/js/bootstrap.bundle.min.js' %}">
         </script>
         <script type="text/javascript" src="{% url 'js-i18n' %}">

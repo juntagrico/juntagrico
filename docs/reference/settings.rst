@@ -20,7 +20,16 @@ ORGANISATION_NAME
 
 ORGANISATION_NAME_CONFIG
 ^^^^^^^^^^^^^^^^^^^^^^^^
-  Additional information to enrich the organisation name with the type of the organisation and its corresponding article
+  Additional information to adjust the language around the organisation name:
+
+  - the type of the organisation e.g. "Genossenschaft" or "Verein"
+  - the gender i.e. "f", "m" or "n"
+
+  E.g.
+
+  .. code-block:: python
+
+    ORGANISATION_NAME_CONFIG = {"type" : "Genossenschaft", "gender" : "f"}
 
   Type: Dictionary
 
@@ -28,8 +37,7 @@ ORGANISATION_NAME_CONFIG
 
   .. code-block:: python
 
-    {"type" : "",
-        "gender" : ""}
+    {"type" : "", "gender" : ""}
 
 ORGANISATION_LONG_NAME
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -345,6 +353,17 @@ SIGNUP_MANAGER
 
     "juntagrico.util.sessions.SignupManager"
 
+ENFORCE_MAIL_CONFIRMATION
+^^^^^^^^^^^^^^^^^^^
+  At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    True
 
 Membership
 ----------
@@ -463,29 +482,29 @@ ALLOW_JOB_UNSUBSCRIBE
     False
 
 
-PROMOTED_JOB_TYPES
-^^^^^^^^^^^^^^^^^^
-  Types of jobs which should apear on start page
+JOBS_FRONTPAGE
+^^^^^^^^
 
-  Type: List of Strings
+  Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs.
 
-  default value
-
-  .. code-block:: python
-
-    []
-
-PROMOTED_JOBS_AMOUNT
-^^^^^^^^^^^^^^^^^^^^
-  Amount of jobs which should be promoted on the start page
-
-  Type: Integer
+  The setting takes a dictionary of key-value pairs:
+    - ``'days'``: date range in days into the future for next jobs
+    - ``'promoted_types'``: types of jobs (list of strings) to promote
+    - ``'promoted_count'``: number of promoted jobs to show
+    - ``'min'``: minimal number of jobs in list to reach by filling in more next jobs
+    - ``'max'``: maximal number of jobs in list to limit next jobs
 
   default value
 
   .. code-block:: python
 
-    2
+        {
+        'days': 14,
+        'min': 3,
+        'max': 10,
+        'promoted_types': [],
+        'promoted_count': 2
+        }
 
 
 .. _settings-depot:
@@ -530,6 +549,8 @@ VOCABULARY
 ^^^^^^^^^^
   Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
 
+  The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
+
   Type: Dictionary
 
   default value
@@ -553,6 +574,7 @@ VOCABULARY
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
         'package': 'Tasche',
+        'from': '{} von {}'
     }
 
 
@@ -700,22 +722,15 @@ MAIL_TEMPLATE
 
 DEFAULT_MAILER
 ^^^^^^^^^^^^^^
-  The code to send mails. for more info see the code specified in the default value
-  The setting ``'juntagrico.util.mailer.batch.Mailer'`` uses a built in batch mailer,
-  that sends the emails to the "bcc" recipients in separate emails.
-  See ``BATCH_MAILER`` to configure it.
-
-  default value
-
-  .. code-block:: python
-
-    'juntagrico.util.mailer.default.Mailer'
-
+  .. warning::
+    Removed in version 2.0.
+    Instead extend ``juntagrico.backends.email.BaseEmailBackend`` and set the EMAIL_BACKEND to customize how your emails are sent.
+    See ``juntagrico.backends.email.BaseBatchEmailBackend`` for reference.
 
 BATCH_MAILER
 ^^^^^^^^^^^^^^
   Configuration for the batch mailer. These are only effective, if
-  DEFAULT_MAILER is set to ``'juntagrico.util.mailer.batch.Mailer'``.
+  EMAIL_BACKEND is set to ``'juntagrico.backends.email.BatchEmailBackend'``.
   ``batch_size`` is the number of emails, that is sent in one batch.
   When set to 1, all emails are sent using "to" instead of "bcc".
   ``wait_time`` is the interval in which the batches are sent.
@@ -757,14 +772,8 @@ WHITELIST_EMAILS
 
 MAILER_RICHTEXT_OPTIONS
 ^^^^^^^^^^^^^^^^^^^^^^^
-  Configuration overrides of the tinyMCE editor of the mailer view.
-  See default config in ``static/juntagrico/js/initMailer.js``.
-
-  default value:
-
-  .. code-block:: python
-
-    {}
+  .. warning::
+    Removed in version 2.0. Configure using `DJRICHTEXTFIELD_CONFIG` instead. See :ref:`Richtext in Mailer <intro-richtext-mailer>`.
 
 Notifications
 -------------

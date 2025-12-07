@@ -2,10 +2,8 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -13,17 +11,17 @@ from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
-from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
+from juntagrico.config import Config
 
 
 @login_required
@@ -31,19 +29,31 @@ def home(request):
     '''
     Overview on juntagrico
     '''
+    # collect upcoming jobs
     start = timezone.now()
-    end = start + timedelta(14)
-    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
-    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
-    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
+    jobs_base = Job.objects.filter(canceled=False, time__gte=start).with_free_slots()
+    # collect jobs that always show
+    # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
+    pinned_jobs = jobs_base.filter(pinned=True)
+    promoted_jobs = jobs_base.by_type_name(Config.jobs_frontpage('promoted_types')).next(Config.jobs_frontpage('promoted_count'))
+    show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
+    show_jobs_count = len(show_job_ids)
+    # fill with future jobs of next x days or until max
+    remaining_to_max = Config.jobs_frontpage('max') - show_jobs_count
+    if remaining_to_max > 0:
+        end = start + timedelta(Config.jobs_frontpage('days'))
+        next_jobs = jobs_base.exclude(id__in=show_job_ids).filter(time__lte=end).next(remaining_to_max)
+        # if next x days are not enough to fill to min, load enough to fill to min
+        remaining_to_min = Config.jobs_frontpage('min') - show_jobs_count
+        if remaining_to_min > next_jobs.count():
+            next_jobs = jobs_base.exclude(id__in=show_job_ids).next(remaining_to_min)
+        show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
-    renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
+    return render(request, 'home.html', {
+        'jobs': Job.objects.filter(id__in=show_job_ids).order_by('time'),
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
-    }
-
-    return render(request, 'home.html', renderdict)
+    })
 
 
 @login_required
@@ -171,40 +181,6 @@ def contact(request):
         'is_sent': is_sent
     }
     return render(request, 'contact.html', renderdict)
-
-
-@login_required
-def contact_member(request, member_id):
-    '''
-    member contact form
-    '''
-    sender = request.user.member
-    receiver = get_object_or_404(Member, id=int(member_id))
-    if not sender.can_contact(receiver):
-        raise PermissionDenied()
-
-    enable_attachments = request.user.has_perm('juntagrico.can_email_attachments')
-    back_url = request.META.get('HTTP_REFERER') or reverse('home')
-
-    is_sent = False
-    if request.method == 'POST':
-        # send mail to member
-        back_url = request.POST.get('back_url')
-        files = []
-        if enable_attachments:
-            append_attachements(request, files)
-        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), sender, receiver,
-                                  request.POST.get('copy'), files)
-        is_sent = True
-
-    return render(request, 'contact_member.html', {
-        'enable_attachments': enable_attachments,
-        'usernameAndEmail': sender.first_name + ' ' + sender.last_name + '<' + sender.email + '>',
-        'member_id': member_id,
-        'member_name': receiver.first_name + ' ' + receiver.last_name,
-        'is_sent': is_sent,
-        'back_url': back_url
-    })
 
 
 @login_required

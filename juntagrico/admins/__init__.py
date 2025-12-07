@@ -22,7 +22,7 @@ class RichTextAdmin(BaseAdmin):
     def __init__(self, model, admin_site):
         if Config.using_richtext():
             self.formfield_overrides = self.formfield_overrides or {}
-            self.formfield_overrides.update({TextField: {'widget': RichTextWidget}})
+            self.formfield_overrides.update({TextField: {'widget': RichTextWidget(field_settings='juntagrico.admin')}})
         super().__init__(model, admin_site)
 
 
@@ -74,6 +74,8 @@ class AreaCoordinatorBaseMixin(BaseModelAdmin):
     coordinator_access = 'can_modify_jobs'
 
     def _has_permission(self, request, obj=None, access=None):
+        if not hasattr(request.user, 'member'):
+            return False
         if access is None or access in self.coordinator_permissions:
             area = {'area': self.get_area(obj)} if obj else {}
             return request.user.member.area_access.filter(**area, **{self.coordinator_access: True}).exists()
