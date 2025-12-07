@@ -39,7 +39,8 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
     def testDepot(self):
-        self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
+        self.assertGet(reverse('depot', args=[self.depot.pk]))
+        self.assertGet(reverse('depot', args=[self.depot2.pk]))
         self.assertGet(reverse('depot-landing'))
 
     def testNicknameChange(self):

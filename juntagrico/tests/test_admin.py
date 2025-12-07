@@ -127,7 +127,9 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.area_admin_modifier)
 
     def testDepotAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.depot_coordinator)
         self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.depot_coordinator)
 
     def testAssignmentAdmin(self):

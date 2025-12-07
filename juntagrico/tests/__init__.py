@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
 
+from juntagrico.entity.contact import EmailContact, TextContact
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
@@ -227,6 +228,14 @@ class JuntagricoTestCase(TestCase):
         depot_coordinator['depot'] = cls.depot2
         depot_coordinator['member'] = cls.member
         DepotCoordinator.objects.create(**depot_coordinator)
+        EmailContact.objects.create(
+            content_object=cls.depot2,
+            email='emailcontact@example.org',
+        )
+        TextContact.objects.create(
+            content_object=cls.depot2,
+            text='free text',
+        )
         mail.outbox = []
 
     @staticmethod

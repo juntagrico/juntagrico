@@ -93,7 +93,6 @@ class AreaCoordinator(JuntagricoBaseModel):
         constraints = [
             models.UniqueConstraint(fields=['area', 'member'], name='unique_area_member'),
         ]
-        ordering = ['sort_order']
 
 
 class JobExtraType(JuntagricoBaseModel):
