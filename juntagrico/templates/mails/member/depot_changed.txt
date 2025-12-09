@@ -13,7 +13,7 @@
 {% trans "Name" %}:            {{ depot.name }}
 {% trans "Ort" %}:             {{ depot.location.address }}
 {% trans "Abholung" %}:        {{ depot.pickup_display }}
-{% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
+{% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}:  {% for contact in depot.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
 {% trans "Beschreibung" %}:    {{ depot.description|striptags }}
 {% endwith %}
 

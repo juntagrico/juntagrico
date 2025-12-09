@@ -5,11 +5,11 @@ from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
@@ -68,7 +68,10 @@ def view_name(request):
 @register.simple_tag
 def depot_admin(request):
     if hasattr(request.user, 'member'):
-        return DepotDao.depots_for_contact(request.user.member)
+        return Depot.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 

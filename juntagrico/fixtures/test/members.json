@@ -15,11 +15,6 @@
                 "assignment"
             ],
             [
-                "is_depot_admin",
-                "juntagrico",
-                "depot"
-            ],
-            [
                 "can_email_attachments",
                 "juntagrico",
                 "specialroles"

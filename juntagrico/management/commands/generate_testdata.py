@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.test import override_settings
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
@@ -106,11 +106,13 @@ class Command(BaseCommand):
                                                             defaults=depot2_location_fields)
         depot2_location.save()
         depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'location': depot1_location,
-                         'description': 'Hinter dem Migros', 'contact': member_2}
+                         'description': 'Hinter dem Migros'}
         depot2_fields = {'name': 'Siemens', 'weekday': 4, 'location': depot2_location,
-                         'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
+                         'description': 'Hinter dem Restaurant Cube'}
         depot1, _ = Depot.objects.get_or_create(name=depot1_fields['name'], defaults=depot1_fields)
+        DepotCoordinator.objects.update_or_create(member=member_2, depot=depot1)
         depot2, _ = Depot.objects.get_or_create(name=depot2_fields['name'], defaults=depot2_fields)
+        DepotCoordinator.objects.update_or_create(member=member_1, depot=depot2)
 
         self.create_subscription(depot1, member_1, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
         self.create_subscription(depot2, member_2, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())

@@ -15,7 +15,7 @@ from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobMassCopyForm, JobMassCopyToFutureForm, \
     OnlyFutureJobForm, JobCopyForm, JobCopyToFutureForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
-from juntagrico.admins.inlines.contact_inline import ContactInline
+from juntagrico.admins.inlines.contact_inline import ContactInlineForJob
 from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.templatetags.juntagrico.common import richtext
 
@@ -120,7 +120,7 @@ class JobCopy(admin.ModelAdmin):
 
     def get_inlines(self, request, obj):
         if self.is_mass_copy_view(request) or self.is_copy_view(request):
-            return [ContactInline]  # special case for mass job copy action
+            return [ContactInlineForJob]  # special case for mass job copy action
         return super().get_inlines(request, obj)
 
     def save_related(self, request, form, formsets, change):
@@ -146,7 +146,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OnlyFutureJobMixin, AreaCoordinato
     date_hierarchy = 'time'
     exclude = ['reminder_sent']
     autocomplete_fields = ['type']
-    inlines = [ContactInline, AssignmentInline]
+    inlines = [ContactInlineForJob, AssignmentInline]
     readonly_fields = ['free_slots', 'type_description', 'type_duration']
     path_to_area = 'type__activityarea'
 
