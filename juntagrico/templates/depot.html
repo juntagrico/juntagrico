@@ -38,13 +38,12 @@
     {% block contact %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% trans "Kontaktperson" %}
+                {% trans "Kontaktperson(en)" %}
             </div>
             <div class="col-md-9">
-                {{ depot.contact.first_name }} {{ depot.contact.last_name }}
-                <a href="mailto:{{ depot.contact.email }}">
-                    {{ depot.contact.email }}
-                </a>
+                {% for contact in depot.contacts %}
+                    {{ contact.to_html }}
+                {% endfor %}
             </div>
         </div>
     {% endblock %}

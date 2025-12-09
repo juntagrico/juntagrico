@@ -9,7 +9,7 @@ class JuntagricoAdminSite(admin.AdminSite):
         return request.user.is_active and (
             request.user.is_staff or request.user.member.area_access.filter(
                 Q(can_modify_area=True) | Q(can_modify_jobs=True) | Q(can_modify_assignments=True)
-            ).exists()
+            ).exists() or request.user.member.depot_access.filter(can_modify_depot=True).exists()
         )
 
 

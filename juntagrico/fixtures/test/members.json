@@ -15,9 +15,9 @@
                 "assignment"
             ],
             [
-                "is_depot_admin",
+                "can_email_attachments",
                 "juntagrico",
-                "depot"
+                "specialroles"
             ],
             [
                 "can_load_templates",
@@ -288,6 +288,21 @@
     }
 },
 {
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": true,
+        "username": "inactive_member",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
     "model": "juntagrico.member",
     "pk": 1,
     "fields": {
@@ -435,7 +450,7 @@
         "mobile_phone": "phone",
         "iban": "",
         "confirmed": true,
-        "reachable_by_email": false,
+        "reachable_by_email": true,
         "cancellation_date": null,
         "deactivation_date": null,
         "end_date": null,
@@ -490,6 +505,32 @@
         "reachable_by_email": false,
         "cancellation_date": null,
         "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 22,
+    "fields": {
+        "user": [
+            "inactive_member"
+        ],
+        "first_name": "inactive",
+        "last_name": "member",
+        "email": "inactive_member@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": "2025-11-28",
+        "deactivation_date": "2025-11-28",
         "end_date": null,
         "notes": "",
         "number": null

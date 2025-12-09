@@ -3,10 +3,11 @@ import random
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.test import override_settings
 from faker import Faker
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
@@ -69,7 +70,6 @@ class Command(BaseCommand):
         }
         location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
-            'contact': member,
             'description': fake.random_element(elements=[
                 'Hinter dem Restaurant'
                 'Unter der Treppe',
@@ -80,6 +80,7 @@ class Command(BaseCommand):
             'location': location
         }
         depot, _ = Depot.objects.update_or_create(**depot_dict)
+        DepotCoordinator.objects.update_or_create(member=member, depot=depot)
         return depot
 
     def generate_subscription(self, main_member, co_member, depot, sub_types):
@@ -137,7 +138,8 @@ class Command(BaseCommand):
         parser.add_argument('--subs-per-depot', type=int, help='Subscriptions per depot', default=10)
         parser.add_argument('--job-amount', type=int, help='Jobs per area', default=10)
 
-    # entry point used by manage.py
+    # prevent sending emails while creating testdata
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.dummy.EmailBackend')
     def handle(self, *args, **options):
         sub_types = []
         default_bundle = options['sub_bundle']

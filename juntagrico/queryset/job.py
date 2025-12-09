@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.db.models import Q, QuerySet, Count, F
+from django.utils import timezone
 from polymorphic.query import PolymorphicQuerySet
 
 
@@ -37,6 +40,10 @@ class JobQueryset(PolymorphicQuerySet):
             ) | Q(time__icontains=search_value)
         )
 
+    def order_by_recent(self, days=7):
+        cutoff = timezone.now() - timedelta(days=days)
+        return self.annotate(is_old=Q(time__lt=cutoff)).order_by('is_old', 'time')
+
     def with_free_slots(self, min_slots=1):
         return self.annotate(assignments=Count('assignment')).filter(
             Q(infinite_slots=True) |
@@ -49,13 +56,14 @@ class JobQueryset(PolymorphicQuerySet):
     def next(self, count):
         return self.order_by('time')[:count]
 
+    def in_areas(self, areas):
+        return self.filter(
+            Q(OneTimeJob___activityarea__in=areas) |
+            Q(RecuringJob___type__activityarea__in=areas)
+        )
+
 
 class AssignmentQuerySet(QuerySet):
-    def by_areas(self, areas):
+    def in_areas(self, areas):
         from juntagrico.entity.jobs import Job
-        return self.filter(
-            job__in=Job.objects.filter(
-                Q(OneTimeJob___activityarea__in=areas) |
-                Q(RecuringJob___type__activityarea__in=areas)
-            )
-        )
+        return self.filter(job__in=Job.objects.in_areas(areas))
