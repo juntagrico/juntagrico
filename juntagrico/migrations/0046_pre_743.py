@@ -16,6 +16,10 @@ class Migration(migrations.Migration):
             old_name='SubscriptionSize',
             new_name='SubscriptionBundle',
         ),
+        migrations.AlterModelOptions(
+            name='subscriptionbundle',
+            options={'verbose_name': 'Abo-Paket', 'verbose_name_plural': 'Abo-Pakete'},
+        ),
         migrations.CreateModel(
             name='SubscriptionCategory',
             fields=[

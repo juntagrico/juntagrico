@@ -72,7 +72,6 @@ class SubscriptionCategory(JuntagricoBaseModel):
         ordering = ['sort_order']
 
 
-# TODO: Rename all instances from size to bundle
 class SubscriptionBundle(JuntagricoBaseModel):
     '''
     Subscription Bundle
@@ -91,8 +90,8 @@ class SubscriptionBundle(JuntagricoBaseModel):
         return f'{self.category or _("(Nicht Bestellbar)")} - {self.long_name}'
 
     class Meta:
-        verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
+        verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Pakete').format(Config.vocabulary('subscription'))
 
 
 class SubscriptionType(JuntagricoBaseModel):

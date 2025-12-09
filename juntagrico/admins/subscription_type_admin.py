@@ -35,7 +35,7 @@ if Config.enable_shares():
 
 class SubscriptionBundleInline(TabularInline):
     model = SubscriptionBundle
-    fields = ['name', 'long_name']
+    fields = ['long_name']
     extra = 0
     max_num = 0
     show_change_link = True
