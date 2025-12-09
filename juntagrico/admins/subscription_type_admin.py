@@ -71,8 +71,14 @@ class SubscriptionTypeInline(SortableStackedInline):
         ),
     ]
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if not Config.enable_shares():
+            fieldsets[0][1]['fields'][2] = ('price', 'required_assignments', 'required_core_assignments')
+        return fieldsets
+
     def get_exclude(self, request, obj=None):
-        exclude = super().get_exclude(request, obj)
+        exclude = super().get_exclude(request, obj) or []
         if not Config.enable_shares():
             exclude.append('shares')
         return exclude
