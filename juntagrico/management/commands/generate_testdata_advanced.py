@@ -13,7 +13,8 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionCategory
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionCategory, SubscriptionProduct, \
+    SubscriptionBundleProductSize, ProductSize
 
 fake = Faker()
 
@@ -128,8 +129,9 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
-        parser.add_argument('--categories', type=str, help='Categories[/bundle1,bundle2,...] to use', default=["Hof/1"], nargs="+")
-        parser.add_argument('--sub-bundle', type=int, help='Default bundle of subscription', default=1)
+        parser.add_argument('--categories', type=str, help='Categories[/bundle1,bundle2,...] to use', default=["Hof/Korb"], nargs="+")
+        parser.add_argument('--products', type=str, help='Products[/size1,size2,...] to use', default=["Gemüse/1"], nargs="+")
+        parser.add_argument('--sub-size', type=int, help='Default size of product', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
         parser.add_argument('--sub-price', type=int, help='Price of suscription', default=250)
@@ -142,26 +144,48 @@ class Command(BaseCommand):
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.dummy.EmailBackend')
     def handle(self, *args, **options):
         sub_types = []
-        default_bundle = options['sub_bundle']
-        # TODO: Also generate products here
+        product_sizes = []
+        default_size = options['sub_size']
+        # create products and sizes
+        for product_size_pairs in options['products']:
+            product_sizes_parts = product_size_pairs.split('/')
+            product = product_sizes_parts[0]
+            if product_sizes_parts[1:]:
+                sizes = map(int, product_sizes_parts[1].split(','))
+            else:
+                sizes = [default_size]
+
+            sub_product, _ = SubscriptionProduct.objects.get_or_create(name=product)
+            for size in sizes:
+                product_size, _ = ProductSize.objects.get_or_create(
+                    name=random.choice(['Tasche', 'Portion', '500g']),
+                    units=size,
+                    show_on_depot_list=True,
+                    product=sub_product
+                )
+                product_sizes.append(product_size)
+        # create categories and bundles
         for categories_bundles in options['categories']:
             category_bundle_parts = categories_bundles.split('/')
             category = category_bundle_parts[0]
             if category_bundle_parts[1:]:
-                categories_bundles = map(int, category_bundle_parts[1].split(','))
+                bundles_names = category_bundle_parts[1].split(',')
             else:
-                categories_bundles = [default_bundle]
+                bundles_names = ['Korb']
 
             subcategory_field = {'name': category}
             sub_category, _ = SubscriptionCategory.objects.get_or_create(**subcategory_field)
-            for bundle in categories_bundles:
+            for bundle_name in bundles_names:
                 bundle_fields = {
-                    # TODO: use these for product size names and use different bundle names
-                    'long_name': random.choice(['Tasche', 'Portion', '500g']),
+                    'long_name': bundle_name,
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
                     'category': sub_category
                 }
                 bundle, _ = SubscriptionBundle.objects.get_or_create(**bundle_fields)
+                # map bundle to some product sizes
+                for _ in range(random.randint(0, len(product_sizes) + 1)):
+                    size = random.choice(product_sizes)
+                    SubscriptionBundleProductSize.objects.create(bundle=bundle, product_size=size)
 
                 subtype_fields = {
                     'name': 'Abo {}'.format(category),
