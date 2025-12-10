@@ -35,6 +35,7 @@ class ProductSize(JuntagricoBaseModel):
     units = models.FloatField(_('Einheiten'), default=1.0)
     show_on_depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='sizes', verbose_name=_('Produkt'))
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     objects = ProductSizeQueryset.as_manager()
 
@@ -47,6 +48,7 @@ class ProductSize(JuntagricoBaseModel):
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
         ]
+        ordering = ['sort_order']
 
 
 class SubscriptionBundleProductSize(models.Model):
@@ -85,6 +87,7 @@ class SubscriptionBundle(JuntagricoBaseModel):
         'ProductSize', related_name='bundles', verbose_name=_('Produktgrössen'),
         through=SubscriptionBundleProductSize
     )
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
         return f'{self.category or _("(Nicht Bestellbar)")} - {self.long_name}'
@@ -92,6 +95,7 @@ class SubscriptionBundle(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Pakete').format(Config.vocabulary('subscription'))
+        ordering = ['sort_order']
 
 
 class SubscriptionType(JuntagricoBaseModel):

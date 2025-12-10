@@ -1,7 +1,6 @@
-from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableAdminBase
+from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, SortableTabularInline
 
 from django.contrib import admin
-from django.contrib.admin import RelatedOnlyFieldListFilter, TabularInline
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
@@ -18,8 +17,8 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     search_fields = ['name', 'long_name', 'bundle__name', 'bundle__long_name', 'bundle__products__name']
     autocomplete_fields = ['bundle']
     list_filter = ['visible',
-                   ('bundle', RelatedOnlyFieldListFilter),
-                   ('bundle__category', RelatedOnlyFieldListFilter)]
+                   ('bundle', admin.RelatedOnlyFieldListFilter),
+                   ('bundle__category', admin.RelatedOnlyFieldListFilter)]
 
     def get_exclude(self, request, obj=None):
         exclude = super().get_exclude(request, obj)
@@ -33,7 +32,7 @@ if Config.enable_shares():
     SubscriptionTypeAdmin.list_filter.insert(1, 'shares')
 
 
-class SubscriptionBundleInline(TabularInline):
+class SubscriptionBundleInline(SortableTabularInline):
     model = SubscriptionBundle
     fields = ['long_name']
     extra = 0
@@ -84,7 +83,7 @@ class SubscriptionTypeInline(SortableStackedInline):
         return exclude
 
 
-class SubscriptionBundleAdmin(SortableAdminBase, RichTextAdmin):
+class SubscriptionBundleAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['long_name', 'category', 'orderable']
     autocomplete_fields = ['category']
     search_fields = ['long_name', 'description', 'category__name', 'product_sizes__name']

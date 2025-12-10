@@ -1,11 +1,10 @@
-from adminsortable2.admin import SortableAdminMixin
-from django.contrib.admin import TabularInline
+from adminsortable2.admin import SortableAdminMixin, SortableTabularInline
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.entity.subtypes import ProductSize
 
 
-class ProductSizeInline(TabularInline):
+class ProductSizeInline(SortableTabularInline):
     model = ProductSize
     fields = ['name', 'product', 'units', 'show_on_depot_list']
     extra = 0

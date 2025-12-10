@@ -43,9 +43,10 @@ class Migration(migrations.Migration):
                 ('units', models.FloatField(default=1.0, verbose_name='Einheiten')),
                 ('show_on_depot_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Depotliste')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sizes', to='juntagrico.subscriptionproduct', verbose_name='Produkt')),
+                ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
             ],
             options={
-                'abstract': False, 'verbose_name': 'Produktgrösse', 'verbose_name_plural': 'Produktgrössen'
+                'abstract': False, 'ordering': ['sort_order'], 'verbose_name': 'Produktgrösse', 'verbose_name_plural': 'Produktgrössen'
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
