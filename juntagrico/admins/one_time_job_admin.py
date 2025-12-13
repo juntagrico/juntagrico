@@ -6,35 +6,30 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
-from juntagrico.admins.inlines.contact_inline import ContactInline
+from juntagrico.admins.inlines.contact_inline import ContactInlineForJob
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForOnetimeJob
-from juntagrico.dao.activityareadao import ActivityAreaDao
+from juntagrico.admins.job_admin import OnlyFutureJobMixin
+from juntagrico.admins.job_type_admin import JobTypeBaseAdmin
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.entity.location import Location
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin, OnlyFutureJobMixin,
+                      JobTypeBaseAdmin):
     fields = ('name', 'displayed_name', 'activityarea', 'location', 'time', 'default_duration', 'multiplier',
               ('slots', 'infinite_slots', 'free_slots'), 'description', 'pinned', 'canceled')
     list_display = ['__str__', 'time', 'default_duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
-    list_filter = ('activityarea', ('time', FutureDateTimeFilter))
+    list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     date_hierarchy = 'time'
     exclude = ['reminder_sent']
     autocomplete_fields = ['activityarea', 'location']
 
-    inlines = [ContactInline, AssignmentInline, JobExtraInlineForOnetimeJob]
+    inlines = [ContactInlineForJob, AssignmentInline, JobExtraInlineForOnetimeJob]
     readonly_fields = ['free_slots']
-
-    def has_change_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
-
-    def has_delete_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
 
     @admin.action(description=_('EinzelJobs in Jobart konvertieren'))
     def transform_job(self, request, queryset):
@@ -57,14 +52,3 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
 
     def get_location_queryset(self, request, obj):
         return Location.objects.exclude(Q(visible=False), ~Q(onetimejob=obj))
-
-    def get_queryset(self, request):
-        return queryset_for_coordinator(self, request, 'activityarea__coordinator')
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        kwargs = formfield_for_coordinator(request,
-                                           db_field.name,
-                                           'activityarea',
-                                           'juntagrico.is_area_admin',
-                                           ActivityAreaDao.areas_by_coordinator)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)

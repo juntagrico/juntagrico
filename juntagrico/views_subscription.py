@@ -18,7 +18,6 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
@@ -268,15 +267,16 @@ class MemberSignupView(SignupView, FormView):
 
 def confirm(request, member_hash):
     """
-    Confirm from a user that has been added as a co_subscription member
+    Confirm mail address from link with hash after signup or if user that has been added as a co_subscription member
     """
-
-    for member in MemberDao.all_members().filter(confirmed=False):
+    renderdict = {'error_message': _('Ungültiger Link.')}
+    for member in Member.objects.filter(confirmed=False):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
-
-    return redirect('home')
+            renderdict = {}
+            break
+    return render(request, 'mail_confirmation.html', renderdict)
 
 
 class AddCoMemberView(FormView, ModelFormMixin):

@@ -12,53 +12,41 @@
     {% config "currency" as c_currency %}
 
     {% block profile %}
-        <h4>{% trans "Personalien" %}
-            {% if not main_member.pk %}<a href="{% url 'signup' %}?mod" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
-        </h4>
-        <p>{{ main_member.first_name }} {{ main_member.last_name }}
-            <br>{{ main_member.addr_street }}
-            <br>{{ main_member.addr_zipcode }} {{ main_member.addr_location }}
-            <br>{% trans 'E-Mail' %}: <b>{{ main_member.email }}</b>
-            <br>{% trans 'Telefon' %}: {{ main_member.phone }}
-            <br>{% trans 'Mobil' %}: {{ main_member.mobile_phone|default:'-' }}
-            <br>{% trans 'Geburtstag' %}: {{ main_member.birthday|default:'-' }}
+        {% if main_member %}
+            <h4>{% trans "Personalien" %}
+                {% if not main_member.pk %}<a href="{% url 'signup' %}?mod" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
+            </h4>
+            <p>{{ main_member.first_name }} {{ main_member.last_name }}
+                <br>{{ main_member.addr_street }}
+                <br>{{ main_member.addr_zipcode }} {{ main_member.addr_location }}
+                <br>{% trans 'E-Mail' %}: <b>{{ main_member.email }}</b>
+                <br>{% trans 'Telefon' %}: {{ main_member.phone }}
+                <br>{% trans 'Mobil' %}: {{ main_member.mobile_phone|default:'-' }}
+                <br>{% trans 'Geburtstag' %}: {{ main_member.birthday|default:'-' }}
+            </p>
+        {% endif %}
+    {% endblock %}
+
+    {% block subscription %}
+        <h4>{{ vocabulary.subscription }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
+        <p>
+        {% for type, amount in subscriptions.items %}
+            {% include 'juntagrico/subscription/create/summary/snippets/part.html' %}
+            {% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+        {% if subscriptions|length == 0 %}
+            {% blocktrans with v_subscription_pl=vocabulary.subscription %}Keine {{ v_subscription_pl }}{%endblocktrans%}
+        {% endif %}
         </p>
     {% endblock %}
 
-        {% block subscription %}
-            <h4>{{ vocabulary.subscription }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
-            <p>
-            {% for type, amount in subscriptions.items %}
-                <strong>{{ amount }}</strong>&times; {{ type.name }}
-                {% if type.has_periods %}
-                    {% for period in type.periods.all %}
-                        <br/>
-                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
-                        {{ period.price }} {% config "currency" %}
-                    {% endfor %}
-                {% else %}
-                    <strong>
-                    {% if type.trial_days %}
-                        {%blocktrans trimmed with tp=type.price%}
-                         à {{ c_currency }} {{ tp }}.
-                        {%endblocktrans%}
-                    {% else %}
-                        {%blocktrans trimmed with tp=type.price%}
-                         à {{ c_currency }} {{ tp }}/Jahr.
-                        {%endblocktrans%}
-                    {% endif %}
-                    </strong>
-                    {{ type.min_duration_info }}
-                {% endif %}
-                {% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-            {% if subscriptions|length == 0 %}
-                {% blocktrans with v_subscription_pl=vocabulary.subscription %}Keine {{ v_subscription_pl }}{%endblocktrans%}
-            {% endif %}
-            </p>
-        {% endblock %}
-
     {% if subscriptions|length > 0 %}
+        {% if show_extras %}
+            {% block extras %}
+                {% include 'juntagrico/subscription/create/summary/extras.html' %}
+            {% endblock %}
+        {% endif %}
+
         {% block depot %}
             <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>{{ depot.name }}
@@ -117,7 +105,8 @@
             {% config "share_price" as c_share_price %}
             <h4>{% trans "Anteilscheine" %} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>
-                {{ main_member.first_name }} {{ main_member.last_name }}: <b>{{ shares.of_member|default:'Keine' }}</b>
+                {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
+                <b>{{ shares.of_member|default:'Keine' }}</b>
                 {% for co_member in co_members %}
                     <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
                 {% endfor %}

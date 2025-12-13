@@ -67,7 +67,7 @@ jobs:
         pip install psycopg2 mysqlclient
     - name: ruff
       run: |
-        ruff check juntagrico
+        ruff check --preview juntagrico
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
@@ -79,35 +79,29 @@ jobs:
         python -m django makemigrations --noinput
         coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
-    - name: format coverage
-      if: ${{ matrix.python-version  == '3.11' }}
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        coverage xml
-        ./cc-test-reporter format-coverage -t coverage.py -o coverage-${{ matrix.exclude-test }}.json
+    - run: coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
+      if: ${{ matrix.python-version  == '3.11' && github.event_name == 'push' }}
     - uses: actions/upload-artifact@v4
-      if: ${{ matrix.python-version  == '3.11' }}
+      if: ${{ matrix.python-version  == '3.11' && github.event_name == 'push' }}
       with:
         name: coverage-${{ matrix.exclude-test }}
-        path: coverage-${{ matrix.exclude-test }}.json
+        path: coverage-${{ matrix.exclude-test }}.lcov
 
   coverage:
     name: Coverage Report
+    if: ${{ github.event_name == 'push' }}
     needs: tests
     runs-on: ubuntu-latest
-    env:
-      CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: coverage
           merge-multiple: true
-      - name: collect and publish code coverage
-        if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' }}
-        run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
-          ./cc-test-reporter sum-coverage coverage/*.json -p 2
-          ./cc-test-reporter upload-coverage
+      - uses: qltysh/qlty-action/coverage@v2
+        with:
+          oidc: true
+          files: coverage/coverage*.lcov

@@ -3,11 +3,12 @@ import random
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.test import override_settings
 from faker import Faker
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -69,7 +70,6 @@ class Command(BaseCommand):
         }
         location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
-            'contact': member,
             'description': fake.random_element(elements=[
                 'Hinter dem Restaurant'
                 'Unter der Treppe',
@@ -80,6 +80,7 @@ class Command(BaseCommand):
             'location': location
         }
         depot, _ = Depot.objects.update_or_create(**depot_dict)
+        DepotCoordinator.objects.update_or_create(member=member, depot=depot)
         return depot
 
     def generate_subscription(self, main_member, co_member, depot, sub_types):
@@ -137,7 +138,8 @@ class Command(BaseCommand):
         parser.add_argument('--subs-per-depot', type=int, help='Subscriptions per depot', default=10)
         parser.add_argument('--job-amount', type=int, help='Jobs per area', default=10)
 
-    # entry point used by manage.py
+    # prevent sending emails while creating testdata
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.dummy.EmailBackend')
     def handle(self, *args, **options):
         sub_types = []
         default_size = options['sub_size']
@@ -191,15 +193,14 @@ class Command(BaseCommand):
                 self.generate_depot_sub(depot, options['sub_shares'], random_sub_types)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': self.members[0],
-                        'auto_add_new_members': True}
+                        'hidden': False, 'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': self.members[1],
-                        'auto_add_new_members': False}
+                        'hidden': False, 'auto_add_new_members': False}
         area_1, _ = ActivityArea.objects.get_or_create(
             name=area1_fields['name'],
             defaults=area1_fields
         )
+        AreaCoordinator.objects.update_or_create(member=self.members[0], area=area_1)
         if len(self.members) > 2:
             area_1.members.set(self.members[2:int((len(self.members)) / 2)])
         else:
@@ -209,6 +210,7 @@ class Command(BaseCommand):
             name=area2_fields['name'],
             defaults=area2_fields
         )
+        AreaCoordinator.objects.update_or_create(member=self.members[1], area=area_2)
         if len(self.members) > 2:
             area_2.members.set(self.members[int(
                 (len(self.members)) / 2) + 1:int((len(self.members)) / 2 - 1)])

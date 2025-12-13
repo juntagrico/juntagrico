@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Min, Max
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,12 +8,13 @@ from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
-from juntagrico.util.admin import get_job_admin_url
+from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
 
@@ -27,6 +28,7 @@ def jobs(request):
     renderdict = {
         'jobs': jobs,
         'show_all': True,
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
     }
     return render(request, 'jobs.html', renderdict)
 
@@ -101,12 +103,16 @@ def all_jobs(request):
     All jobs to be sorted etc.
     '''
     jobs = JobDao.jobs_ordered_by_time()
+    context = {
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
+    }
     if jobs.count() > 1000:
         # use server side processing when data set is too large
         return render(request, 'juntagrico/job/list/all.html', {
-            'jobs': Job.objects.none()
+            'jobs': Job.objects.none(),
+            **context
         })
-    return render(request, 'jobs.html', {'jobs': jobs})
+    return render(request, 'jobs.html', {'jobs': jobs, **context})
 
 
 @login_required
@@ -156,33 +162,51 @@ def job(request, job_id, form_class=JobSubscribeForm):
     else:
         form = form_class(member, job)
 
-    is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
+    permissions = job.check_if(request.user)
     renderdict = {
         'job': job,
-        'edit_url': get_job_admin_url(request, job),
-        'form': form,
+        'edit_url': permissions.get_edit_url(),
+        'can_copy': permissions.can_copy(),
+        'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
-        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
-        'error': request.method == 'POST'
+        'can_contact': permissions.can_contact_member(),
+        'can_edit_assignments': permissions.can_modify_assignments(),
+        'error': request.method == 'POST',
+        'form': form,
     }
     return render(request, 'job.html', renderdict)
+
+
+@require_POST
+@login_required
+def cancel(request):
+    job_id = request.POST.get('job_id')
+    if job_id is None:
+        raise BadRequest('job not specified')
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    if not job.check_if(request.user).can_cancel():
+        raise PermissionDenied
+    # cancel the job
+    job.canceled = True
+    job.save()
+    return return_to_previous_location(request)
 
 
 @login_required
 def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
-    editor = request.user.member
-    is_job_coordinator = job.type.activityarea.coordinator == editor and request.user.has_perm('juntagrico.is_area_admin')
-    if not (is_job_coordinator
+    is_assignment_coordinator = job.check_if(request.user).is_assignment_coordinator
+    if not (is_assignment_coordinator
             or request.user.has_perm('juntagrico.change_assignment')
             or request.user.has_perm('juntagrico.add_assignment')):
         raise PermissionDenied
-    can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    can_delete = is_assignment_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    editor = request.user.member
     member = get_object_or_404(Member, id=int(member_id))
-    success = False
 
+    success = False
     if request.method == 'POST':
         # handle submit
         form = form_class(editor, can_delete, member, job, request.POST, prefix='edit')
@@ -200,11 +224,10 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     else:
         form = form_class(editor, can_delete, member, job, prefix='edit')
 
-    renderdict = {
+    return render(request, 'juntagrico/job/snippets/edit_assignment.html', {
         'member': member,
         'other_job_contacts': job.get_emails(get_member=True, exclude=[editor.email]),
         'editor': editor,
         'form': form,
         'success': success,
-    }
-    return render(request, 'juntagrico/job/snippets/edit_assignment.html', renderdict)
+    })

@@ -3,6 +3,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
@@ -10,11 +11,12 @@ from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
@@ -92,7 +94,8 @@ class MemberActiveView(MemberView):
 
 
 class AreaMemberView(MemberView):
-    permission_required = 'juntagrico.is_area_admin'
+    permission_required = []  # checked in get_queryset
+    template_name = 'juntagrico/manage/member/show_for_area.html'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
@@ -101,17 +104,38 @@ class AreaMemberView(MemberView):
         self.area = get_object_or_404(
             ActivityArea,
             id=int(self.kwargs['area_id']),
-            coordinator=self.request.user.member
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
         )
         return self.area.members.active().prefetch_for_list
 
     def get_context_data(self, **kwargs):
+        access = AreaCoordinator.objects.filter(member=self.request.user.member, area=self.area).first()
         context = super().get_context_data(**kwargs)
+        context['area'] = self.area
         context['title'] = self.title.format(area_name=self.area.name)
-        context['mail_url'] = 'mail-area'
-        context['can_see_emails'] = True
+        context['mail_url'] = reverse('email-to-area', args=[self.area.id])
+        context['default_email_all'] = True
+        context['can_see_emails'] = access and access.can_contact_member
+        context['can_see_phone_numbers'] = context['can_see_emails']
+        context['can_remove_member'] = access and access.can_remove_member
         context['hide_areas'] = True
         return context
+
+
+@require_POST
+def remove_area_member(request, area_id):
+    member_id = request.POST.get('member_id')
+    if member_id is None:
+        raise BadRequest('member not specified')
+    area = get_object_or_404(
+        ActivityArea,
+        id=area_id,
+        coordinator_access__member=request.user.member,
+        coordinator_access__can_remove_member=True
+    )
+    area.members.remove(member_id)
+    return return_to_previous_location(request)
 
 
 class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
@@ -326,20 +350,27 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
 
 
 class DepotSubscriptionView(SubscriptionView):
-    permission_required = 'juntagrico.is_depot_admin'
+    permission_required = []
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
     )
 
     def get_queryset(self):
-        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']), contact=self.request.user.member)
+        self.depot = get_object_or_404(
+            Depot,
+            id=int(self.kwargs['depot_id']),
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
+        )
         return super().get_queryset()().filter(depot=self.depot)
 
     def get_context_data(self, **kwargs):
+        access = DepotCoordinator.objects.filter(member=self.request.user.member, depot=self.depot).first()
         context = super().get_context_data(**kwargs)
         context['title'] = self.title.format(depot_name=self.depot.name)
-        context['mail_url'] = 'mail-depot'
-        context['can_see_emails'] = True
+        context['mail_url'] = reverse('email-to-depot', args=[self.depot.id])
+        context['default_email_all'] = True
+        context['can_see_emails'] = access and access.can_contact_member
         context['hide_depots'] = True
         return context
 

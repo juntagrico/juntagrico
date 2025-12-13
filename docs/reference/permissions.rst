@@ -103,27 +103,36 @@ Also require at least view permission for members.
 
 Area and Depot Admins
 ---------------------
-juntagrico.is_depot_admin
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administrator of a depot, so that they can filter and communicate with the members in their depot.
+Depot Coordinators
+^^^^^^^^^^^^^^^^^
 
-Search Hints:
-    * German: Benutzer ist Depot Admin
+.. warning::
+    Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed.
 
-juntagrico.is_area_admin
-^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
-Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
-They also have the permission to modify assignments in jobs of their area.
+Depot coordinator permissions are configured for each depot and coordinator individually.
+These permissions can be set when editing a depot in the data management ("Datenverwaltung") -> Depots ("Depots").
+There you can add a coordinator and distribute the following permissions.
 
-people with this permission have limited access to certain fields. They can not:
+- Can modify depot: Coordinator can change the descriptions of this depot
+- Can see members: Coordinator can see the list of members with active subscriptions in this depot
+- Can contact members: Coordinator can see names, email addresses and phone numbers of members with active subscriptions in this depot
 
-- change name, core, hidden and coordinator fields of areas
-- see assignments of anybody but people from their areas
-- see job types which are not from their areas
+Area Coordinators
+^^^^^^^^^^^^^^^^^
 
-Search Hints:
-    * German: Benutzer ist Tätigkeitsbereichskoordinator
+.. warning::
+    Changed in 2.0: Permission `juntagrico.is_area_admin` was removed.
+
+Area coordinator permissions are configured for each area and coordinator individually.
+These permissions can be set when editing an area in the data management ("Datenverwaltung") -> Activity Area ("Tätigkeitsbereiche").
+There you can add a coordinator and distribute the following permissions.
+
+- Can modify area: Coordinator can change the description and the contact(s) of this area
+- Can see members: Coordinator can see the list of members that participate in this activity area
+- Can contact members: Coordinator can see names, email addresses and phone numbers of area participants and can contact participants of jobs in their area
+- Can remove members: Coordinator can remove participants from this area
+- Can manage jobs: Coordinator can create and modify all jobs of this area
+- Can manage assignments: Coordinator can change and remove assignments of jobs in this area
 
 
 .. _reference-permission-notifications:
@@ -270,7 +279,27 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can access the email form from the administration menu.
+Person can access the email form in the administration menu.
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_share
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can send emails to all users with active shares via the email form.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_sub
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person send emails to all users with active subscription via the email form.
+
+Requires:
+    * juntagrico.can_send_mails
 
 Search Hints:
     * German: Emails versenden
@@ -280,21 +309,21 @@ juntagrico.can_view_lists
 Person can open the generated lists in the administration menu.
 
 Search Hints:
-    * German: Benutzer kann Listen öffnen
+    * German: Kann Listen öffnen
 
 juntagrico.can_generate_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can generate lists (of depot etc.)
 
 Search Hints:
-    * German: Benutzer kann Listen erzeugen
+    * German: Kann Listen erzeugen
 
 juntagrico.can_view_exports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the exports entry in the administration menu.
 
 Search Hints:
-    * German: Benutzer kann Exporte öffnen
+    * German: Kann Exporte öffnen
 
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -320,35 +349,44 @@ juntagrico.can_use_general_email
 Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann allgemeine E-Mail-Adresse verwenden
+    * German: Kann allgemeine E-Mail-Adresse verwenden
 
 juntagrico.can_use_for_members_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_member" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_members" verwenden
+    * German: Kann E-Mail-Adresse "for_members" verwenden
 
 juntagrico.can_use_for_subscriptions_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_subscriptions" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_subscription" verwenden
+    * German: Kann E-Mail-Adresse "for_subscription" verwenden
 
 juntagrico.can_use_for_shares_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "for_shares" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann E-Mail-Adresse "for_shares" verwenden
+    * German: Kann E-Mail-Adresse "for_shares" verwenden
 
 juntagrico.can_use_technical_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "technical" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: Benutzer kann technische E-Mail-Adresse verwenden
+    * German: Kann technische E-Mail-Adresse verwenden
+
+juntagrico.can_email_attachments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Person can add attachments when sending an email via the member contact form.
+
+Search Hints:
+    * German: Kann Anhänge per E-Mail senden
+
 
 Edit Permissions
 ----------------
@@ -394,10 +432,6 @@ juntagrico.is_operations_group
 
 - Download payment file for shares
 - (De)activate subscriptions
-- Add attachments in the form to contact members
-
-In addition, the limitations applied by ``juntagrico.is_area_admin`` become ineffective,
-when this permission is also given.
 
 Search Hints:
-    * German: Benutzer ist in der BG
+    * German: Ist in der BG

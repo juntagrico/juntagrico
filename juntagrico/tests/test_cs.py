@@ -7,6 +7,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Share, Subscription
 from . import JuntagricoTestCase
+from ..config import Config
 
 
 class CreateSubscriptionTests(JuntagricoTestCase):
@@ -56,13 +57,24 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 for i, type_id in enumerate(sub_types_id)
             }
         )
+        if self.with_extra_subs:
+            self.assertRedirects(response, reverse('cs-extras'))
+            self.assertGet(reverse('cs-extras'))
+            sub_types_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)
+            response = self.client.post(
+                reverse('cs-extras'),
+                {
+                    f'amount[{type_id}]': 1 if i == 0 else 0
+                    for i, type_id in enumerate(sub_types_id)
+                }
+            )
         self.assertRedirects(response, reverse('cs-depot'))
         self.assertGet(reverse('cs-depot'))
-        depot_id = Depot.objects.values_list('id', flat=True)
+        depot_id = Depot.objects.values_list('id', flat=True)[0]
         response = self.client.post(
             reverse('cs-depot'),
             {
-                'depot': depot_id[0],
+                'depot': depot_id,
             }
         )
         self.assertRedirects(response, reverse('cs-start'))
@@ -84,15 +96,16 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertGet(reverse('cs-co-members'))
 
         response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
-        self.assertRedirects(response, reverse('cs-shares'))
-        self.assertGet(reverse('cs-shares'))
-        response = self.client.post(
-            reverse('cs-shares'),
-            {
-                'of_member': 1,
-                'of_co_member[0]': 0,
-            }
-        )
+        if Config.enable_shares():
+            self.assertRedirects(response, reverse('cs-shares'))
+            self.assertGet(reverse('cs-shares'))
+            response = self.client.post(
+                reverse('cs-shares'),
+                {
+                    'of_member': 1,
+                    'of_co_member[0]': 0,
+                }
+            )
         self.assertRedirects(response, reverse('cs-summary'))
         # confirm summary
         self.client.get(reverse('cs-summary'))
@@ -144,6 +157,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
 
     def testRedirect(self):
         self.assertGetAndPost('cs-subscription')
+        self.assertGetAndPost('cs-extras')
         self.assertGetAndPost('cs-depot')
         self.assertGetAndPost('cs-start')
         self.assertGetAndPost('cs-co-members')
@@ -216,3 +230,42 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.signup(False)
             response = self.assertGet(reverse('cs-cancel'), 302)
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
+
+    def testExternalSignup(self):
+        def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
+            if extra_only:
+                sub_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]
+            else:
+                sub_id = SubscriptionType.objects.values_list('id', flat=True)[0]
+            return {
+                'first_name': 'First Name',
+                'family_name': 'Last Name',
+                'street': 'Street',
+                'house_number': '1a',
+                'postal_code': '8000',
+                'city': 'Zurich',
+                'phone': '044',
+                'email': email,
+                'subscription_%s' % sub_id: 1,
+                'depot_id': Depot.objects.values_list('id', flat=True)[0],
+                'start_date': '1900-01-01',
+                'shares': shares,
+                'comment': comment,
+                'by_laws_accepted': 'True',
+                }
+        print(externalSignupDetails())
+        with self.settings(ENABLE_EXTERNAL_SIGNUP=False):
+            self.assertPost(reverse('signup-external'), externalSignupDetails(), code=404)
+        with self.settings(ENABLE_EXTERNAL_SIGNUP=True):
+            response = self.assertPost(reverse('signup-external'), externalSignupDetails())
+            self.assertRedirects(response, reverse('cs-summary'))
+            if settings.ENABLE_SHARES:
+                response = self.assertPost(reverse('signup-external'), externalSignupDetails(shares=0))
+                self.assertRedirects(response, reverse('cs-shares'))
+            if self.with_extra_subs:
+                response = self.assertPost(reverse('signup-external'), externalSignupDetails(extra_only=True))
+                self.assertRedirects(response, reverse('cs-subscription'))
+
+
+class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
+    with_extra_subs = False

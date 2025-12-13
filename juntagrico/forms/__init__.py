@@ -3,12 +3,12 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
+from crispy_forms.layout import Field, HTML, Layout, Submit, Fieldset, Div
 from crispy_forms.utils import TEMPLATE_PACK
+from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
-    DateTimeField, forms
+from django.forms import DateInput, forms, Form, CharField, PasswordInput, ModelForm, Textarea, BooleanField, \
+    IntegerField, HiddenInput, ChoiceField, DateField, FloatField, DateTimeField
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string, get_template
@@ -17,18 +17,18 @@ from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
+from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.entity.jobs import Assignment, Job, JobExtra
-from juntagrico.entity.subs import SubscriptionPart
+from juntagrico.entity.jobs import Assignment, Job, JobExtra, ActivityArea
+from juntagrico.entity.member import Member
+from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.mailer import adminnotification, membernotification
-from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
 from juntagrico.util.temporal import get_business_year, get_business_date_range
 
@@ -432,7 +432,11 @@ class SubscriptionTypeOption(Div):
 
     def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):
         template = self.get_template_name(template_pack)
-        return render_to_string(template, {"type": self.instance, "option": self})
+        return render_to_string(template, {
+            'type': self.instance,
+            'option': self,
+            'vocabulary': context['vocabulary']
+        })
 
 
 class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
@@ -478,17 +482,20 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
 
 class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
+
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
-        containers = self._collect_type_fields()
-
-        self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
+        self.containers = self._collect_type_fields()
+        self.fields['no_selection'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
                                                       initial=not any(selected.values()), required=False)
+        self.helper.layout = self.get_form_layout()
 
-        self.helper.layout = Layout(
-            *containers,
-            Field('no_subscription', template='forms/no_subscription_field.html'),
+    def get_form_layout(self):
+        return Layout(
+            *self.containers,
+            Field('no_selection', template=self.no_selection_template),
             FormActions(
                 Submit('submit', _('Weiter'), css_class='btn-success'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
@@ -497,6 +504,13 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
 
     def _get_initial(self, subscription_type):
         return self.selected.get(str(subscription_type.id), 0)
+
+
+class SubscriptionExtraPartSelectForm(SubscriptionPartSelectForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_extras_field.html'
+
+    def __init__(self, selected, *args, **kwargs):
+        super().__init__(selected, *args, product_method=SubscriptionProductDao.all_visible_extra_products, **kwargs)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
@@ -797,6 +811,26 @@ class GenerateListForm(Form):
             del self.fields['future']
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
+
+
+class AreaDescriptionForm(ModelForm):
+    class Meta:
+        model = ActivityArea
+        fields = ['description']
+        labels = {'description': ''}
+        if Config.using_richtext():
+            widgets = {'description': RichTextWidget()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            'description',
+            FormActions(
+                Submit('submit', _('Speichern')),
+            ),
+        )
 
 
 class JobSubscribeForm(Form):

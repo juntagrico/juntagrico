@@ -1,15 +1,15 @@
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, include
 
+import juntagrico.views.email
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
-from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, manage, email, job, api
+from juntagrico.views import subscription, create_subscription, manage, email, job, api
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -19,16 +19,22 @@ from juntagrico.views_admin import ShiftTimeFormView
 
 urlpatterns = [
     # /signup
-    path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
-    path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
-    path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
-    path('my/create/subscription/start/', juntagrico_cs.cs_select_start_date, name='cs-start'),
-    path('my/create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
-    path('my/create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
-    path('my/create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
-    path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
-    path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
-    path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
+    path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
+    path('signup/welcome/', create_subscription.welcome, name='welcome'),
+    path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('signup/external', create_subscription.create_external, name='signup-external'),
+
+    # /subscription/create
+    path('subscription/create/parts/', create_subscription.select_parts, name='cs-subscription'),
+    path('subscription/create/extras/', create_subscription.select_extras, name='cs-extras'),
+    path('subscription/create/depot/', create_subscription.select_depot, name='cs-depot'),
+    path('subscription/create/start/', create_subscription.select_start_date, name='cs-start'),
+    path('subscription/create/comembers/', create_subscription.AddMemberView.as_view(), name='cs-co-members'),
+    path('subscription/create/shares/', create_subscription.SelectSharesView.as_view(), name='cs-shares'),
+    path('subscription/create/summary/', create_subscription.SummaryView.as_view(), name='cs-summary'),
+    path('subscription/create/cancel/', create_subscription.cancel, name='cs-cancel'),
+
     path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
 
     # login/
@@ -100,6 +106,7 @@ urlpatterns = [
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
     path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
+    path('job/cancel', job.cancel, name='job-cancel'),
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
@@ -119,7 +126,6 @@ urlpatterns = [
 
     # /contact
     path('my/contact', juntagrico.contact, name='contact'),
-    path('my/contact/member/<int:member_id>/', juntagrico.contact_member, name='contact-member'),
 
     # /cookies
     path('my/cookies', juntagrico.cookies, name='cookies'),
@@ -189,23 +195,24 @@ urlpatterns = [
          name='manage-depot-subs'),
     # /manage/area
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
+    path('manage/area/<int:area_id>/member/remove', manage.remove_area_member, name='manage-area-member-remove'),
 
     # /email
-    path('my/mails', juntagrico_admin.mails, name='mail'),
-    path('email/to/<int:member_id>', email.to_member, name='email-to-member'),
-    path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),
-    path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),
+    path('email/write/', email.write, name='email-write'),
+    path('email/to/<int:member_id>/', email.to_member, name='email-to-member'),
+    path('email/recipients/count', email.count_recipients, name='email-count-recipients'),
     # /email/depot
-    path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
-    path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
+    path('email/depot/<int:depot_id>/', email.to_depot, name='email-to-depot'),
+    path('email/depot/<int:depot_id>/recipients/count', email.count_depot_recipients, name='email-count-depot-recipients'),
     # /email/area
-    path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
-    path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
+    path('email/area/<int:area_id>/', email.to_area, name='email-to-area'),
+    path('email/area/<int:area_id>/recipients/count', email.count_area_recipients, name='email-count-area-recipients'),
     # /email/job
-    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
-    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
+    path('email/job/<int:job_id>/', email.to_job, name='email-to-job'),
+    path('email/job/<int:job_id>/recipients/count', email.count_job_recipients, name='email-count-job-recipients'),
     # /email/template
-    path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
+    path('email/template/<int:template_id>/', email.get_template, name='email-template'),
+    path('email/sent', email.sent, name='email-sent'),
 
     # /list
     path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),
@@ -233,6 +240,12 @@ urlpatterns = [
     # /api/jobtype
     path('api/jobtype/<int:id>/description', api.job_type_description, name='api-jobtype-description'),
     path('api/jobtype/<int:id>/duration', api.job_type_duration, name='api-jobtype-duration'),
+
+    # richtext
+    path('djrichtextfield/', include('djrichtextfield.urls')),
+
+    # autocomplete
+    path("select2/fields/auto.json", email.InternalSelect2View.as_view(), name="internal-select2-view"),
 
     # /js
     path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),

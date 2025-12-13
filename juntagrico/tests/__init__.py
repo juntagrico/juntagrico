@@ -3,9 +3,11 @@ import datetime
 from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.core import mail
 
+from juntagrico.entity.contact import EmailContact, TextContact
 from juntagrico.entity.delivery import Delivery, DeliveryItem
-from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition
+from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
@@ -18,6 +20,7 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
     fixtures = ['test/members', 'test/areas']
+    with_extra_subs = True
 
     _count_sub_types = 0
 
@@ -32,8 +35,9 @@ class JuntagricoTestCase(TestCase):
         cls.set_up_depots()
         cls.set_up_sub_types()
         cls.set_up_sub()
-        cls.set_up_extra_sub_types()
-        cls.set_up_extra_sub()
+        if cls.with_extra_subs:
+            cls.set_up_extra_sub_types()
+            cls.set_up_extra_sub()
         cls.set_up_mail_template()
         cls.set_up_deliveries()
         # Use this command here to create fixtures fast:
@@ -44,11 +48,15 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def load_members(cls):
         cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6 = Member.objects.order_by('id')[:6]
+        cls.inactive_member = Member.objects.get(email='inactive_member@email.org')
         cls.admin = Member.objects.get(email='admin@email.org')
 
     @classmethod
     def load_areas(cls):
         cls.area_admin = Member.objects.get(email='areaadmin@email.org')
+        (cls.area_admin_modifier, cls.area_admin_viewer,
+         cls.area_admin_contact, cls.area_admin_remover,
+         cls.area_admin_job_modifier, cls.area_admin_assignment_modifier) = Member.objects.filter(email__startswith='area_admin').order_by('id')
         cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod
@@ -190,18 +198,25 @@ class JuntagricoTestCase(TestCase):
         depots
         """
         cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
+        cls.depot_coordinator = cls.create_member('depot_coordinator@email.org')
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
-            'contact': cls.member,
             'tour': cls.tour,
             'weekday': 1,
             'location': location,
         }
         cls.depot = Depot.objects.create(**depot_data)
+        depot_coordinator = {
+            'depot': cls.depot,
+            'member': cls.depot_coordinator,
+            'can_modify_depot': True,
+            'can_view_member': True,
+            'can_contact_member': True,
+        }
+        DepotCoordinator.objects.create(**depot_coordinator)
         depot_data = {
             'name': 'depot2',
-            'contact': cls.member,
             'weekday': 1,
             'pickup_time': datetime.time(9, 0),
             'pickup_duration': 48,
@@ -210,6 +225,18 @@ class JuntagricoTestCase(TestCase):
             'fee': 55.0,
         }
         cls.depot2 = Depot.objects.create(**depot_data)
+        depot_coordinator['depot'] = cls.depot2
+        depot_coordinator['member'] = cls.member
+        DepotCoordinator.objects.create(**depot_coordinator)
+        EmailContact.objects.create(
+            content_object=cls.depot2,
+            email='emailcontact@example.org',
+        )
+        TextContact.objects.create(
+            content_object=cls.depot2,
+            text='free text',
+        )
+        mail.outbox = []
 
     @staticmethod
     def create_sub_size(name, product, long_name='', units=1, visible=True, depot_list=True, description='', **kwargs):
@@ -374,10 +401,10 @@ class JuntagricoTestCase(TestCase):
         cls.delivery2 = Delivery.objects.create(**delivery_data)
         DeliveryItem.objects.create(delivery=cls.delivery1)
 
-    def assertGet(self, url, code=200, member=None):
+    def assertGet(self, url, code=200, member=None, data=None):
         login_member = member or self.default_member
         self.client.force_login(login_member.user)
-        response = self.client.get(url)
+        response = self.client.get(url, data)
         self.assertEqual(response.status_code, code)
         return response
 

@@ -20,17 +20,19 @@ class ManageListTests(JuntagricoTestCase):
 
     def testDepotSubscription(self):
         url = reverse('manage-depot-subs', args=[self.depot.pk])
-        self.assertGet(url)
+        self.assertGet(url, member=self.depot_coordinator)
         # member2 has no access
-        self.assertGet(url, member=self.member2, code=403)
+        self.assertGet(url, member=self.member2, code=404)
 
     def testMember(self):
         response = self.assertGet(reverse('manage-member'))
         # check that member list is correct
         objects = list(response.context['object_list']().order_by('id'))
-        self.assertEqual(objects, [
+        self.assertListEqual(objects, [
             self.member, self.member2, self.member3, self.member4, self.member5, self.member6,
-            self.admin, self.area_admin
+            self.admin, self.area_admin, self.inactive_member, self.area_admin_modifier, self.area_admin_viewer,
+            self.area_admin_contact, self.area_admin_remover, self.area_admin_job_modifier,
+            self.area_admin_assignment_modifier, self.depot_coordinator
         ])
         member = objects[0]
         self.assertEqual(member.subscription_current, self.sub)
@@ -42,8 +44,25 @@ class ManageListTests(JuntagricoTestCase):
     def testAreaMember(self):
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), code=404)
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin)
+        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin_viewer)
         # member2 has no access
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=403)
+        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=404)
+
+    def testAreaMemberRemove(self):
+        # incomplete and unpriviledged requests should fail
+        self.assertGet(reverse('manage-area-member-remove', args=[self.area.pk]), code=405)
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), code=400)
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), {
+            'member_id': 1
+        }, code=404)
+        self.area.refresh_from_db()
+        self.assertTrue(self.area.members.filter(id=1).exists())
+        # area admin with removal rights can remove
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), {
+            'member_id': 1
+        }, member=self.area_admin_remover, code=302)
+        self.area.refresh_from_db()
+        self.assertFalse(self.area.members.filter(id=1).exists())
 
     def testSubWaitingList(self):
         self.assertGet(reverse('sub-mgmt-waitinglist'))

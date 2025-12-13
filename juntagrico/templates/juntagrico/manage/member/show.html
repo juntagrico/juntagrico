@@ -42,23 +42,25 @@
         </thead>
         <tfoot>
             <tr>
-                <th>
-                    {% trans "Kontakt" %}
-                </th>
-                {% if not hide_areas %}
+                {% block list_foot %}
                     <th>
-                        {% trans "Tätigkeitsbereiche" %}
+                        {% trans "Kontakt" %}
                     </th>
-                {% endif %}
-                <th>
-                    {% vocabulary "subscription" %}
-                </th>
-                <th>
-                    {% trans "Inhalt" %}
-                </th>
-                <th>
-                    {% vocabulary "depot" %}
-                </th>
+                    {% if not hide_areas %}
+                        <th>
+                            {% trans "Tätigkeitsbereiche" %}
+                        </th>
+                    {% endif %}
+                    <th>
+                        {% vocabulary "subscription" %}
+                    </th>
+                    <th>
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th>
+                        {% vocabulary "depot" %}
+                    </th>
+                {% endblock %}
             </tr>
         </tfoot>
         <tbody>

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from juntagrico.defaults import richtextfield_config
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Core Settings
@@ -15,21 +17,23 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
+    'juntagrico.admin_sites.JuntagricoAdminConfig',
     'fontawesomefree',
     'impersonate',
     'juntagrico',
     'crispy_forms',
     'crispy_bootstrap4',
     'adminsortable2',
+    'django_select2',
     'polymorphic',
     'import_export',
+    'djrichtextfield',
 ]
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.781.db',
+        'NAME': 'dev.340.db',
     }
 }
 
@@ -69,6 +73,8 @@ LOCALE_PATHS = (
     BASE_DIR / 'juntagrico/locale',
 )
 
+EMAIL_BACKEND = 'juntagrico.backends.email.EmailBackend'
+
 # Auth Settings
 
 AUTHENTICATION_BACKENDS = (
@@ -88,3 +94,7 @@ STATIC_URL = '/static/'
 # Crispy Forms Settings
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Rich Text Editor Settings
+
+DJRICHTEXTFIELD_CONFIG = richtextfield_config('en')

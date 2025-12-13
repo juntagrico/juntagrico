@@ -1,0 +1,10 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% server_url as server_url %}
+{% url 'job' job.id as job_url %}
+{% spaceless %}
+    <span>{% blocktrans trimmed with job_name=job.type.name job_date=job.time|date %}
+        Du erhältst dieses E-Mail, weil du beim Einsatz
+        <a href="{{ server_url }}{{ job_url }}">"{{ job_name }}" am {{ job_date }}</a> dabei bist.
+    {% endblocktrans %}</span>
+{% endspaceless %}

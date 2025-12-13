@@ -84,6 +84,13 @@ def any_permission_required(*perms):
     return user_passes_test(check_perms)
 
 
+def requires_permission_to_contact(func):
+    def check_perms_to_contact(user):
+        # check if user can contact members
+        return user.member.can_contact()
+    return user_passes_test(check_perms_to_contact)(func)
+
+
 def using_change_date(view):
     @wraps(view)
     def wrapper(request, *args, **kwargs):

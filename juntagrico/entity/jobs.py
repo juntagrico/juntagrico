@@ -5,7 +5,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Count
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
@@ -16,7 +18,7 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.queryset.job import JobQueryset
+from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
 
 
 @absolute_url(name='area')
@@ -27,7 +29,8 @@ class ActivityArea(JuntagricoBaseModel):
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    coordinators = models.ManyToManyField('Member', verbose_name=_('Koordinatoren'), through='AreaCoordinator',
+                                          related_name='coordinated_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -44,13 +47,18 @@ class ActivityArea(JuntagricoBaseModel):
     def contacts(self):
         if self.contact_set.count():
             return self.contact_set.all()
-        return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
+        # last resort: show area admins as contact
+        return [MemberContact(member=m) for m in self.coordinators.all()]
 
     def _get_email_fallback(self, get_member=False, exclude=None):
-        if exclude is None or self.coordinator.email not in exclude:
-            if get_member:
-                return [(self.coordinator.email, self.coordinator)]
-            return [self.coordinator.email]
+        emails = []
+        for coordinator in self.coordinators.all():
+            if exclude is None or coordinator.email not in exclude:
+                if get_member:
+                    emails.append((coordinator.email, coordinator))
+                else:
+                    emails.append(coordinator.email)
+        return emails
 
     def get_emails(self, get_member=False, exclude=None):
         """
@@ -65,8 +73,26 @@ class ActivityArea(JuntagricoBaseModel):
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
         ordering = ['sort_order']
-        permissions = (
-            ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
+
+
+class AreaCoordinator(JuntagricoBaseModel):
+    area = models.ForeignKey(ActivityArea, related_name='coordinator_access', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', related_name='area_access', on_delete=models.PROTECT)
+    can_modify_area = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
+    can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
+    can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
+    can_remove_member = models.BooleanField(_('Kann {0} entfernen').format(Config.vocabulary('member_pl')), default=True)
+    can_modify_jobs = models.BooleanField(_('Kann Jobs verwalten'), default=True)
+    can_modify_assignments = models.BooleanField(_('Kann Einsatzanmeldungen verwalten'), default=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    class Meta:
+        verbose_name = _('Koordinator')
+        verbose_name_plural = _('Koordinatoren')
+        ordering = ['sort_order']
+        constraints = [
+            models.UniqueConstraint(fields=['area', 'member'], name='unique_area_member'),
+        ]
 
 
 class JobExtraType(JuntagricoBaseModel):
@@ -199,6 +225,9 @@ class Job(JuntagricoBasePoly):
     def __str__(self):
         return _('Job {0}').format(self.id)
 
+    def get_label(self):
+        return f'{self.type.get_name} ({date_format(self.time, "SHORT_DATETIME_FORMAT")})'
+
     @property
     @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
@@ -328,18 +357,62 @@ class Job(JuntagricoBasePoly):
     def clean(self):
         check_job_consistency(self)
 
-    def can_modify(self, request):
-        job_is_in_past = self.end_time() < timezone.now()
-        job_is_running = self.start_time() < timezone.now()
-        job_canceled = self.canceled
-        job_read_only = job_canceled or job_is_running or job_is_in_past
-        return not job_read_only or (
-            request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))
+    def check_if(self, user):
+        return CheckJobCapabilities(user, self)
 
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
         permissions = (('can_edit_past_jobs', _('kann vergangene Jobs editieren')),)
+
+
+class CheckJobCapabilities:
+    def __init__(self, user, job):
+        self.user = user
+        self.job = job
+        self.access = self.job.type.activityarea.coordinator_access.filter(member__user=self.user).first()
+
+    @cached_property
+    def job_model_name(self):
+        return self.job.get_real_instance_class().__name__.lower()
+
+    @property
+    def is_coordinator(self):
+        return self.access and self.access.can_modify_jobs
+
+    @property
+    def is_assignment_coordinator(self):
+        return self.access and self.access.can_modify_assignments
+
+    def can_modify_assignments(self):
+        return self.user.has_perm('juntagrico.change_assignment') or self.is_assignment_coordinator
+
+    def can_contact_member(self):
+        return self.user.has_perm('juntagrico.can_send_mails') or self.access and self.access.can_contact_member
+
+    def get_edit_url(self):
+        if self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator:
+            return reverse(f'admin:juntagrico_{self.job_model_name}_change', args=(self.job.id,))
+        return ''
+
+    def can_modify(self):
+        job_read_only = self.job.canceled or self.job.has_started()
+        return not job_read_only or self.user.has_perm('juntagrico.can_edit_past_jobs')
+
+    def can_copy(self):
+        is_recurring = isinstance(self.job.get_real_instance(), RecuringJob)
+        return is_recurring and (self.user.has_perm('juntagrico.add_recuringjob') or self.is_coordinator)
+
+    def can_cancel(self):
+        can_change = self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
+        return not (self.job.canceled or self.job.has_started()) and can_change
+
+
+def get_job_admin_url(request, job, has_perm=False):
+    model = job.get_real_instance_class().__name__.lower()
+    if has_perm or request.user.has_perm(f'juntagrico.change_{model}'):
+        return reverse(f'admin:juntagrico_{model}_change', args=(job.id,))
+    return ''
 
 
 class RecuringJob(Job):
@@ -409,6 +482,8 @@ class Assignment(JuntagricoBaseModel):
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))
 
+    objects = AssignmentQuerySet.as_manager()
+
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
@@ -425,7 +500,7 @@ class Assignment(JuntagricoBaseModel):
             instance.core_cache = instance.is_core()
 
     def can_modify(self, request):
-        return self.job.get_real_instance().can_modify(request)
+        return self.job.get_real_instance().check_if(request.user).can_modify()
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')

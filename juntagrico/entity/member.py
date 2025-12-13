@@ -79,6 +79,37 @@ class Member(JuntagricoBaseModel):
     def inactive(self):
         return self.deactivation_date is not None and self.deactivation_date <= datetime.date.today()
 
+    def can_contact(self, member=None, area_id=None, depot_id=None):
+        if member is not None and member.inactive:
+            return False
+
+        if self.user.has_perm('juntagrico.can_send_mails'):
+            return True
+
+        if member is not None and member.reachable_by_email:
+            return True
+
+        allowed_areas = self.coordinated_areas.none()
+        if depot_id is None:
+            allowed_areas = self.coordinated_areas.filter(coordinator_access__can_contact_member=True)
+            if area_id is not None:
+                allowed_areas = allowed_areas.filter(id=area_id)
+
+        allowed_depots = self.coordinated_depots.none()
+        if area_id is None:
+            allowed_depots = self.coordinated_depots.filter(coordinator_access__can_contact_member=True)
+            if depot_id is not None:
+                allowed_depots = allowed_depots.filter(id=depot_id)
+
+        if member is None:
+            return allowed_areas.exists() or allowed_depots.exists()
+        return (
+            (allowed_areas & member.areas.all()).exists()  # member is in contactable area
+            or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of contactable area
+            # member is in coordinated depot
+            or member.subscription_current and member.subscription_current.depot in allowed_depots
+        )
+
     @property
     def active_shares(self):
         """ :return: shares that have been paid by member and not canceled AND paid back yet
@@ -225,16 +256,21 @@ class Member(JuntagricoBaseModel):
 
     def all_emails(self):
         """
-        :return: a list of all email addresses this member is allowed to send from
+        :return: a list of tuples (identifier, email) with all unique email addresses this member is allowed to send from
         """
-        emails = []
-        for area in self.activityarea_set.all():  # areas that this member coordinates
-            emails += area.get_emails()
+        # first build dict with emails as key to ensure they are unique
+        emails = {}
+        # from areas that this member coordinates
+        for area in self.coordinated_areas.filter(coordinator_access__can_contact_member=True):
+            for email, member in area.get_emails(get_member=True):
+                emails[email] = f'area{area.id}-m{member.id if member else 0}'
+        # from email permissions
         for target in ['general', 'for_members', 'for_subscriptions', 'for_shares', 'technical']:
             if self.user.has_perm(f'juntagrico.can_use_{target}_email'):
-                emails.append(Config.contacts(target))
-        emails.append(self.email)
-        return list(dict.fromkeys(emails))  # make emails unique and return
+                emails[Config.contacts(target)] = target
+        # own email address
+        emails[self.email] = 'private'
+        return [(identifier, email) for email, identifier in emails.items()]
 
     def get_hash(self):
         return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
