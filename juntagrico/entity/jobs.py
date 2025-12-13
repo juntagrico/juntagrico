@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, Exists, OuterRef
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -316,10 +316,6 @@ class Job(JuntagricoBasePoly):
     @property
     def participants(self):
         return self.members.all()
-
-    @property
-    def unique_participants(self):
-        return self.participants.annotate(slots=Count('id')).distinct()
 
     @cached_property
     def all_participant_extras(self):

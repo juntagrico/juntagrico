@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q
+from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
 from django.utils.decorators import method_decorator
 from django.utils.itercompat import is_iterable
 
@@ -63,6 +63,15 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=on_date),
             share__isnull=False,
         )
+
+    def annotate_job_slots(self):
+        return self.annotate(slots=Count('id')).distinct()
+
+    def annotate_first_job(self):
+        from juntagrico.entity.jobs import Assignment
+        return self.annotate(is_first_job=~Exists(
+            Assignment.objects.filter(member=OuterRef('pk'), job__time__lt=OuterRef('jobs__time'))
+        ))
 
     def prefetch_for_list(self):
         members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
