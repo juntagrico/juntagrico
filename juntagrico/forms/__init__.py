@@ -408,6 +408,11 @@ class CategoryContainer(Div):
         self.description = description or instance.description
 
 
+class SizeContainer(CategoryContainer):
+    # allows overriding template only for sizes
+    template = ["forms/layout/size_container.html", "forms/layout/category_container.html"]
+
+
 class SubscriptionTypeField(Field):
     template = 'forms/subscription_type_field.html'
 
@@ -459,7 +464,7 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
         for product in self._product_method().all():
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
-                size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
+                size_container = SizeContainer(instance=subscription_size, name=subscription_size.long_name)
                 for subscription_type in self.type_filter(subscription_size.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
