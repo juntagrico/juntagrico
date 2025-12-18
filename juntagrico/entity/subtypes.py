@@ -90,7 +90,10 @@ class SubscriptionBundle(JuntagricoBaseModel):
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
-        return f'{self.category or _("(Nicht Bestellbar)")} - {self.long_name}'
+        return f'{self.get_category_name()} - {self.long_name}'
+
+    def get_category_name(self):
+        return str(self.category or _("(Nicht Bestellbar)"))
 
     class Meta:
         verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))

@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, F, Q
+from django.db.models import QuerySet, F, Q, Count
 
 
 class SubscriptionTypeQueryset(QuerySet):
@@ -23,7 +23,7 @@ class SubscriptionTypeQueryset(QuerySet):
         return self.annotate(
             bundle_name=F('bundle__long_name'),
             category_name=F('bundle__category__name'),
-            amount=Sum('bundle_id')
+            amount=Count('bundle_id')
         )
 
     def can_change(self):

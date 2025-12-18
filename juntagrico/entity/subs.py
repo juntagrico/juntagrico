@@ -236,7 +236,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def __str__(self):
         try:
             return Config.sub_overview_format('part_format').format(
-                category=self.type.bundle.category.name,
+                category=self.type.bundle.get_category_name(),
                 bundle=self.type.bundle.long_name,
                 type=self.type.name,
                 type_long=self.type.long_name,
