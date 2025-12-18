@@ -14,7 +14,7 @@ class Delivery(JuntagricoBaseModel):
     delivery_date = models.DateField(_('Lieferdatum'))
     tour = models.ForeignKey(Tour, verbose_name=_('Ausfahrt'), on_delete=models.PROTECT, null=True, blank=True, default=None)
     subscription_bundle = models.ForeignKey(SubscriptionBundle,
-                                            verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
+                                            verbose_name=_('{0}-Paket').format(Config.vocabulary('subscription')),
                                             on_delete=models.PROTECT)
 
     def __str__(self):
