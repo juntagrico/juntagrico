@@ -84,6 +84,9 @@ class Depot(JuntagricoBaseModel):
             elif isinstance(contact, TextContact):
                 yield contact.text
 
+    def get_contact_options(self):
+        return self.coordinators.all()
+
     def active_subscriptions(self):
         return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name',
                                                                    'primary_member__last_name')

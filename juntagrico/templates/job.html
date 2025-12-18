@@ -42,21 +42,28 @@
                     {% endif %}
 
                     {% if can_copy %}
-                        <div class="btn-group">
-                            <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                        {% if is_recurring %}
+                            <div class="btn-group">
+                                <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                                    <i class="fa-solid fa-copy"></i>
+                                    {% trans "Einsatz kopieren" %}
+                                </a>
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" data-reference="parent" aria-expanded="false">
+                                    <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
+                                        {% trans "Mehrfach kopieren" %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
                                 <i class="fa-solid fa-copy"></i>
                                 {% trans "Einsatz kopieren" %}
                             </a>
-                            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                                    data-toggle="dropdown" data-reference="parent" aria-expanded="false">
-                                <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
-                                    {% trans "Mehrfach kopieren" %}
-                                </a>
-                            </div>
-                        </div>
+                        {% endif %}
                     {% endif %}
 
                     {% if can_cancel %}

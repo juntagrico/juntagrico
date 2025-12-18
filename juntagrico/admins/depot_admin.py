@@ -58,12 +58,7 @@ class DepotCoordinatorMixin(DepotCoordinatorBaseMixin, CoordinatorQuerysetMixin)
 
 
 class ContactInlineForDepot(DepotCoordinatorInlineMixin, ContactInline):
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        # pass available members for form
-        depot = self.get_depot(obj)
-        formset.get_form_kwargs = lambda s, i: {'members': depot.coordinators.all() if depot else None}
-        return formset
+    pass
 
 
 class DepotAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, DepotCoordinatorMixin, RichTextAdmin):

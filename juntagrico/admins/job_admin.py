@@ -38,7 +38,8 @@ class OnlyFutureJobMixin(admin.ModelAdmin):
         return (obj is None or obj.check_if(request.user).can_modify()) and super().has_delete_permission(request, obj)
 
     def get_form(self, request, obj=None, **kwds):
-        if not request.user.has_perm('juntagrico.can_edit_past_jobs'):
+        # set form if it hasn't been set by other Mixin already
+        if not request.user.has_perm('juntagrico.can_edit_past_jobs') and not kwds.get('form'):
             kwds['form'] = OnlyFutureJobForm
         return super().get_form(request, obj, **kwds)
 
@@ -60,17 +61,12 @@ class JobCopy(admin.ModelAdmin):
     copy_readonly_fields = ['type_description', 'type_duration']
 
     def get_urls(self):
-        hide_buttons = {
-            'show_save_and_continue': False,
-            'show_save_and_add_another': False,
-            'show_delete': False,
-        }
         copy_urls = [
             path('<str:object_id>/copy/multiple', self.admin_site.admin_view(self.change_view), {
-                'extra_context': {'title': _('Job mehrfach kopieren'), **hide_buttons}
+                'extra_context': {'title': _('Job mehrfach kopieren'), 'is_mass_copy_view': True}
             }, name='action-mass-copy-job'),
             path('<str:object_id>/copy/', self.admin_site.admin_view(self.change_view), {
-                'extra_context': {'title': _('Job kopieren'), **hide_buttons}
+                'extra_context': {'title': _('Job kopieren'), 'is_copy_view': True}
             }, name='action-copy-job'),
         ]
         return copy_urls + super().get_urls()
@@ -98,13 +94,12 @@ class JobCopy(admin.ModelAdmin):
         return super().get_form(request, obj, **kwds)
 
     def has_change_permission(self, request, obj=None):
-        can_copy = self.is_mass_copy_view(request) and super().has_add_permission(request)
+        any_copy_view = self.is_mass_copy_view(request) or self.is_copy_view(request)
+        can_copy = any_copy_view and super().has_add_permission(request)
         return can_copy or super().has_change_permission(request, obj)
 
     def get_fields(self, request, obj=None):
-        if self.is_mass_copy_view(request):
-            return None
-        elif self.is_copy_view(request):
+        if self.is_copy_view(request):
             return self.copy_fields
         return super().get_fields(request, obj)
 
@@ -115,28 +110,28 @@ class JobCopy(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if self.is_mass_copy_view(request):
-            return self.copy_readonly_fields  # special case for mass job copy action
+            return self.copy_readonly_fields
         return super().get_readonly_fields(request, obj)
 
     def get_inlines(self, request, obj):
         if self.is_mass_copy_view(request) or self.is_copy_view(request):
-            return [ContactInlineForJob]  # special case for mass job copy action
+            return [ContactInlineForJob]
         return super().get_inlines(request, obj)
 
     def save_related(self, request, form, formsets, change):
-        if self.is_mass_copy_view(request) or self.is_copy_view(request):
+        if self.is_mass_copy_view(request):
             form.save_related(formsets)
         else:
             super().save_related(request, form, formsets, change)
 
-    def response_change(self, request, obj):
+    def response_add(self, request, obj, post_url_continue=None):
         if self.is_copy_view(request):
             # show new job on page
             return HttpResponseRedirect(reverse('job', args=[obj.id]))
-        return super().response_change(request, obj)
+        return super().response_add(request, obj, post_url_continue)
 
 
-class JobAdmin(PolymorphicInlineSupportMixin, OnlyFutureJobMixin, AreaCoordinatorMixin, RichTextAdmin, JobCopy):
+class JobAdmin(PolymorphicInlineSupportMixin, JobCopy, OnlyFutureJobMixin, AreaCoordinatorMixin, RichTextAdmin):
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
     list_display = ['__str__', 'type', 'time', 'slots', 'duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
