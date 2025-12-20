@@ -29,6 +29,27 @@ It provides the basic functionality like
 Detailed documentation how to install and configure juntagrico can be
 found in [juntagrico.readthedocs.io](https://juntagrico.readthedocs.io)
 
+## Quickstart: Local Dev with docker (no installed python required)
+
+Execute the tests
+```bash
+docker run --rm -v $(pwd):/app -w /app python:3.11-slim bash -c "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && export DJANGO_SETTINGS_MODULE=settings.dev && export PYTHONPATH=. && coverage run -m manage test && coverage report"
+```
+
+Execute the linter:
+
+```bash
+docker run --rm -v $(pwd):/app -w /app python:3.11-slim bash -c "pip install ruff && ruff check juntagrico"
+```
+
+Start the application (using an integrated sqlite database):
+
+```bash
+docker run --rm -it -v $(pwd):/app -w /app -p 8000:8000 python:3.11-slim bash -c "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && export DJANGO_SETTINGS_MODULE=settings.dev && export PYTHONPATH=. && python -m manage migrate && python -m manage createadmin && python -m manage runserver 0.0.0.0:8000"
+```
+
+During the process you can specify the admin credentials. Access the application under http://localhost:8000
+
 ## Demo
 [demo.juntagrico.science](https://demo.juntagrico.science/)
 
