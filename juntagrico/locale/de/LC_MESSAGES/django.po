@@ -1612,6 +1612,12 @@ msgstr ""
 msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
 msgstr ""
 
+#: juntagrico/lifecycle/job.py:39
+msgid ""
+"Ein Job muss entweder mehr als 0 Plätze haben oder \"Unendlich Plätze\" "
+"aktiviert haben."
+msgstr ""
+
 #: juntagrico/lifecycle/member.py:30
 msgid "Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}"
 msgstr ""
