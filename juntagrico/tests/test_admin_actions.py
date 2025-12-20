@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -10,33 +11,12 @@ from juntagrico.admins.forms.delivery_copy_form import DeliveryCopyForm
 from juntagrico.admins.forms.job_copy_form import JobMassCopyForm, JobMassCopyToFutureForm
 from juntagrico.admins.forms.location_replace_form import LocationReplaceForm
 from juntagrico.entity.delivery import Delivery
-from juntagrico.entity.jobs import RecuringJob
+from juntagrico.entity.jobs import RecuringJob, OneTimeJob, JobType
 from juntagrico.entity.location import Location
-from . import JuntagricoTestCase
-from ..entity.contact import EmailContact, MemberContact
+from . import JuntagricoTestCase, JuntagricoJobTestCase
 
 
-class JobFormTests(JuntagricoTestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        time = timezone.now() + timezone.timedelta(hours=2)
-        cls.complex_job_data = {
-            'slots': 1,
-            'time': time,
-            'type': cls.job_type,
-            'infinite_slots': True,
-            'multiplier': 2,
-            'additional_description': 'Extra Description',
-            'duration_override': 6
-        }
-        cls.complex_job = RecuringJob.objects.create(**cls.complex_job_data)
-        cls.email_contact = EmailContact(email='test@test.org')
-        cls.member_contact = MemberContact(member=cls.member2, display=MemberContact.DISPLAY_EMAIL)
-        cls.complex_job.contact_set.add(cls.email_contact, bulk=False)
-        cls.complex_job.contact_set.add(cls.member_contact, bulk=False)
-
+class JobFormTests(JuntagricoJobTestCase):
     def testCopyJobForm(self):
         # test 0 copies (fails)
         initial_count = RecuringJob.objects.all().count()
@@ -195,6 +175,53 @@ class JobFormTests(JuntagricoTestCase):
 @override_settings(USE_TZ=False)
 class JobFormWoTimezoneTests(JobFormTests):
     pass
+
+
+class JobConvertionTests(JuntagricoJobTestCase):
+    def testConvertionToRecurringJob(self):
+        selected_items = [self.complex_one_time_job.pk]
+        self.assertPost(
+            reverse('admin:juntagrico_onetimejob_changelist'),
+            data={'action': 'transform_job', '_selected_action': selected_items},
+            member=self.admin,
+            code=302
+        )
+        # check that original job was removed
+        self.assertFalse(OneTimeJob.objects.filter(pk=self.complex_one_time_job.pk).exists())
+        # check if new job is complete
+        new_type = JobType.objects.last()
+        self.assertEqual(new_type.displayed_name, 'one_time_job')
+        self.assertEqual(new_type.default_duration, 3)
+        self.assertListEqual(new_type.get_emails(), ['test@test.org', self.member3.email])
+        new_job = RecuringJob.objects.last()
+        self.assertEqual(new_job.slots, 1)
+        self.assertEqual(new_job.additional_description, '')
+        self.assertEqual(new_job.duration_override, None)
+        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
+        self.assertSetEqual(new_job.participant_emails, {self.member.email})
+
+    def testConvertionToOneTimeJobs(self):
+        selected_items = [self.complex_job_type.pk]
+        self.assertPost(
+            reverse('admin:juntagrico_jobtype_changelist'),
+            data={'action': 'transform_job_type', '_selected_action': selected_items},
+            member=self.admin,
+            code=302
+        )
+        # check that original job was removed
+        self.assertFalse(JobType.objects.filter(pk=self.complex_job_type.pk).exists())
+        self.assertFalse(RecuringJob.objects.filter(pk=self.complex_job.pk).exists())
+        # check if new job is complete
+        new_job = OneTimeJob.objects.last()
+        self.assertEqual(new_job.displayed_name, 'complex_job_type_name')
+        self.assertEqual(new_job.default_duration, 6)  # override from job
+        self.assertEqual(new_job.activityarea, self.area2)
+        self.assertEqual(new_job.slots, 1)
+        self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
+        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertSetEqual(new_job.participant_emails, {self.member2.email})
+        # somehow the database integrity checks fail, if the transaction is not rolled back explicitly
+        transaction.set_rollback(True)
 
 
 class AdminTests(JuntagricoTestCase):

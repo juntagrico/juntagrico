@@ -7,12 +7,8 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin, AreaCoordinatorMixin, can_see_all
 from juntagrico.admins.inlines.contact_inline import ContactInlineForJob
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForJobType
-from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobextradao import JobExtraDao
-from juntagrico.entity.jobs import OneTimeJob, ActivityArea
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.location import Location
-from juntagrico.util.models import attribute_copy
 
 
 class JobTypeBaseAdmin(AreaCoordinatorMixin):
@@ -38,7 +34,7 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
     list_display = ['__str__', 'default_duration', 'location', 'contacts_text', 'visible', 'last_used']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']
-    search_fields = ['name', 'activityarea__name', 'last_used']
+    search_fields = ['name', 'displayed_name', 'activityarea__name', 'last_used']
     actions = ['transform_job_type', 'action_hide', 'action_make_visible']
     inlines = [ContactInlineForJob, JobExtraInlineForJobType]
 
@@ -56,25 +52,11 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
     @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
-            i = 0
-            for rj in JobDao.recurings_by_type(inst.id):
-                oj = OneTimeJob()
-                attribute_copy(inst, oj)
-                attribute_copy(rj, oj)
-                oj.name += str(i)
-                i += 1
-                oj.save()
-                for je in JobExtraDao.by_type(inst.id):
-                    je.recuring_type = None
-                    je.onetime_type = oj
-                    je.pk = None
-                    je.save()
-                for b in AssignmentDao.assignments_for_job(rj.id):
-                    b.job = oj
-                    b.save()
-                rj.delete()
-            for je in JobExtraDao.by_type(inst.id):
-                je.delete()
+            # convert all jobs of this type
+            for recurring_job in inst.recuringjob_set.all():
+                recurring_job.convert()
+            # delete type
+            inst.job_extras_set.all().delete()
             inst.delete()
 
     @admin.action(description=_('Verstecken'))

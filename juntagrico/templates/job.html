@@ -59,6 +59,27 @@
                         </div>
                     {% endif %}
 
+                    {% if can_convert %}
+                        {% if is_recurring %}
+                            <form action="{% url 'job-convert-to-one-time' %}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz in einen einmaligen Einsatz umwandeln möchtest?" %}')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
+                                        title="{% trans "in einmaligen Einsatz umwandeln" %}">
+                                    <i class="fa-solid fa-repeat"></i>
+                                    {% trans "Umwandeln" %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <a class="convert-to-recurring-job btn btn-outline-primary"
+                               title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
+                               data-url="{% url 'job-convert-to-recurring' job.id %}">
+                                <i class="fa-solid fa-repeat"></i>
+                                {% trans "Umwandeln" %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
                     {% if can_cancel %}
                         <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
                               onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
@@ -72,6 +93,9 @@
                 </div>
             </div>
         {% endif %}
+
+        {# Modals #}
+        {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
     {% endblock %}
 
     {% block time %}
@@ -236,6 +260,6 @@
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
     {% include 'snippets/scripts/leaflet.html' %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJob.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/js/initJob.js' %}">
     </script>
 {% endblock %}

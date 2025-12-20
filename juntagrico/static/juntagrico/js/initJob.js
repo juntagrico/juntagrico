@@ -1,6 +1,4 @@
-/*global define */
-define([], function () {
-
+$(function () {
     const location = JSON.parse(document.getElementById('location_data').textContent)
     if (location.latitude && location.longitude) {
         $('.open-map').on('click', function() {
@@ -69,4 +67,15 @@ define([], function () {
             }
         }
     }
+
+    // open modal to convert to recurring job
+    $('.convert-to-recurring-job').on('click', function (event) {
+        let modal = $('#convert_to_recurring_job_modal')
+        modal.modal('show')
+        // re-apply select2 to calculate correct width of fields
+        modal.find('.django-select2').not('[name*=__prefix__]').djangoSelect2({
+            dropdownParent: modal  // https://stackoverflow.com/a/33884094
+        })
+        return false
+    })
 });

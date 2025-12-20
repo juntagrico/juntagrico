@@ -11,9 +11,10 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
+from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob
 from juntagrico.entity.member import Member
-from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
+from juntagrico.forms import BusinessYearForm
+from juntagrico.forms.job import JobSubscribeForm, EditAssignmentForm, ConvertToRecurringJobForm
 from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
@@ -165,16 +166,58 @@ def job(request, job_id, form_class=JobSubscribeForm):
     permissions = job.check_if(request.user)
     renderdict = {
         'job': job,
+        'is_recurring': isinstance(job.get_real_instance(), RecuringJob),
         'edit_url': permissions.get_edit_url(),
         'can_copy': permissions.can_copy(),
+        'can_convert': permissions.can_convert(),
         'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
         'can_contact': permissions.can_contact_member(),
         'can_edit_assignments': permissions.can_modify_assignments(),
         'error': request.method == 'POST',
         'form': form,
+        'convertion_form': ConvertToRecurringJobForm()
     }
     return render(request, 'job.html', renderdict)
+
+
+@require_POST
+@login_required
+def convert_to_recurring(request, job_id, form_class=ConvertToRecurringJobForm, redirect_on_post=True):
+    one_time_job = get_object_or_404(OneTimeJob, id=job_id)
+    # check permission
+    if not one_time_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    # evaluate form
+    success = False
+    form = form_class(request.POST)
+    if form.is_valid():
+        new_job = form.save(one_time_job)
+        success = True
+    if redirect_on_post:
+        if success:
+            messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                                _("Umwandlung erfolgreich")))
+        else:
+            messages.error(request, _('Umwandlung fehlgeschlagen'))
+        return redirect('job', new_job.id if success else job_id)
+
+
+@require_POST
+@login_required
+def convert_to_one_time(request):
+    job_id = request.POST.get('job_id')
+    if job_id is None:
+        raise BadRequest('job not specified')
+    recurring_job = get_object_or_404(RecuringJob, id=job_id)
+    # check permission
+    if not recurring_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    # convert the job
+    new_job = recurring_job.convert()
+    messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                        _("Umwandlung erfolgreich")))
+    return redirect('job', new_job.id)
 
 
 @require_POST
