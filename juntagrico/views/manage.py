@@ -3,7 +3,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.exceptions import BadRequest
+from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
@@ -170,8 +170,10 @@ def share_payout(request, change_date, share_id=None):
     else:
         shares = Share.objects.filter(id__in=request.POST.get('share_ids').split('_'))
     for share in shares:
-        # TODO: capture validation errors and display them. Continue with other shares
-        share.payback(change_date)
+        try:
+            share.payback(change_date)
+        except ValidationError as e:
+            messages.error(request, f'{share}: {e.message}')
     return return_to_previous_location(request)
 
 
