@@ -486,6 +486,10 @@ class RecuringJob(Job):
                 extra_type=job_extra.extra_type,
                 per_member=job_extra.per_member,
             )
+        # workaround: deletion of polymorphic relations is unreliable.
+        # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+        for contact in self.contact_set.all():
+            contact.delete()
         self.delete()
         # TODO: add option to delete type if it isn't used anymore.
         return one_time_job
@@ -559,6 +563,10 @@ class OneTimeJob(Job, AbstractJobType):
                         recurring_job.contact_set.add(contact.copy(), bulk=False)
                     break
         self.job_extras_set.all().delete()  # delete protected related items first
+        # workaround: deletion of polymorphic relations is unreliable.
+        # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+        for contact in self.contact_set.all():
+            contact.delete()
         self.delete()
         return recurring_job
 

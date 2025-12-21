@@ -1,5 +1,4 @@
 from django.core import mail
-from django.db import transaction
 from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
@@ -164,8 +163,6 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertEqual(new_job.duration_override, 3)
         self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
         self.assertSetEqual(new_job.participant_emails, {self.member.email})
-        # somehow the database integrity checks fail, if the transaction is not rolled back explicitly
-        transaction.set_rollback(True)
 
     def testConvertionToRecurringJobOfNotCoordinatedArea(self):
         # fails
@@ -207,8 +204,6 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
         self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member2.email])
         self.assertSetEqual(new_job.participant_emails, {self.member2.email})
-        # somehow the database integrity checks fail, if the transaction is not rolled back explicitly
-        transaction.set_rollback(True)
 
 
 @override_settings(ALLOW_JOB_UNSUBSCRIBE=True)

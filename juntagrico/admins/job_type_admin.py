@@ -56,7 +56,11 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
             for recurring_job in inst.recuringjob_set.all():
                 recurring_job.convert()
             # delete type
-            inst.job_extras_set.all().delete()
+            inst.job_extras_set.all().delete()  # delete protected relations first
+            # workaround: deletion of polymorphic relations is unreliable.
+            # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+            for contact in inst.contact_set.all():
+                contact.delete()
             inst.delete()
 
     @admin.action(description=_('Verstecken'))

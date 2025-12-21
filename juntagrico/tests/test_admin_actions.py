@@ -1,7 +1,6 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -220,8 +219,6 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
         self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member2.email])
         self.assertSetEqual(new_job.participant_emails, {self.member2.email})
-        # somehow the database integrity checks fail, if the transaction is not rolled back explicitly
-        transaction.set_rollback(True)
 
 
 class AdminTests(JuntagricoTestCase):
