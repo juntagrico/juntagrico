@@ -412,7 +412,6 @@ class CheckJobCapabilities:
         return ''
 
     def can_convert(self):
-        # TODO: needs permission of one_time_job, recuring_job and job_type?
         return self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
 
     def can_modify(self):

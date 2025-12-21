@@ -208,9 +208,9 @@ class EditAssignmentForm(JobSubscribeForm):
 
 class ConvertToRecurringJobForm(Form):
     job_type = ModelChoiceField(
-        JobType.objects.filter(visible=True),  # TODO: limit selection to coordinated areas
+        JobType.objects.filter(visible=True),
         required=False,
-        label=_('Umwandlung der Job-Art'),
+        label=_('Umwandlung in Job-Art'),
         help_text=_('Falls eine bestehende Job-Art gewählt wird, werden einige Daten vom Einzeljob überschrieben.'
                     'Ohne Auswahl wird eine neue Job-Art aus den Angaben des Einzeljobs erstellt'),
         empty_label=_('Neue Job-Art erstellen'),
@@ -222,6 +222,12 @@ class ConvertToRecurringJobForm(Form):
             data_view='internal-select2-view'
         )
     )
+
+    def __init__(self, editor, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not editor.user.has_perm('juntagrico_change_onetimejob'):
+            allowed_areas = editor.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
+            self.fields['job_type'].queryset = JobType.objects.filter(activityarea__in=allowed_areas, visible=True)
 
     def save(self, one_time_job):
         return one_time_job.convert(self.cleaned_data['job_type'])

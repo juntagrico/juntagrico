@@ -140,6 +140,18 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
         self.assertSetEqual(new_job.participant_emails, {self.member.email})
 
+    def testConvertionToRecurringJobUsingExistingButNotCoordinatedJobType(self):
+        # area admin can't convert to job type of area2
+        response = self.assertPost(
+            reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),
+            data={'job_type': self.job_type2.pk, 'submit': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=302
+        )
+        # check redirect and no changes
+        self.assertRedirects(response, reverse('job', args=[self.complex_one_time_job.pk]), 302)
+        self.assertTrue(OneTimeJob.objects.filter(pk=self.complex_one_time_job.pk).exists())
+
     def testConvertionToRecurringJobUsingExistingJobType(self):
         response = self.assertPost(
             reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),

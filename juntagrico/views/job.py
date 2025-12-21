@@ -176,7 +176,7 @@ def job(request, job_id, form_class=JobSubscribeForm):
         'can_edit_assignments': permissions.can_modify_assignments(),
         'error': request.method == 'POST',
         'form': form,
-        'convertion_form': ConvertToRecurringJobForm()
+        'convertion_form': ConvertToRecurringJobForm(member)
     }
     return render(request, 'job.html', renderdict)
 
@@ -190,7 +190,7 @@ def convert_to_recurring(request, job_id, form_class=ConvertToRecurringJobForm, 
         raise PermissionDenied
     # evaluate form
     success = False
-    form = form_class(request.POST)
+    form = form_class(request.user.member, request.POST)
     if form.is_valid():
         new_job = form.save(one_time_job)
         success = True
