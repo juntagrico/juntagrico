@@ -210,9 +210,9 @@ class ConvertToRecurringJobForm(Form):
     job_type = ModelChoiceField(
         JobType.objects.filter(visible=True),
         required=False,
-        label=_('Umwandlung in Job-Art'),
-        help_text=_('Falls eine bestehende Job-Art gewählt wird, werden einige Daten vom Einzeljob überschrieben.'
-                    'Ohne Auswahl wird eine neue Job-Art aus den Angaben des Einzeljobs erstellt'),
+        label=_('Umwandlung in Job-Art (optional)'),
+        help_text=_('Falls eine bestehende Job-Art gewählt wird, werden einige Daten vom Einzeljob überschrieben. '
+                    'Ohne Auswahl wird eine neue Job-Art aus den Angaben des Einzeljobs erstellt.'),
         empty_label=_('Neue Job-Art erstellen'),
         widget=ModelSelect2Widget(
             model=JobType,
@@ -225,7 +225,7 @@ class ConvertToRecurringJobForm(Form):
 
     def __init__(self, editor, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not editor.user.has_perm('juntagrico_change_onetimejob'):
+        if not editor.user.has_perm('juntagrico.change_onetimejob'):
             allowed_areas = editor.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
             self.fields['job_type'].queryset = JobType.objects.filter(activityarea__in=allowed_areas, visible=True)
 

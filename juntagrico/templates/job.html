@@ -95,7 +95,9 @@
         {% endif %}
 
         {# Modals #}
-        {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
+        {% if convertion_form %}
+            {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
+        {% endif %}
     {% endblock %}
 
     {% block time %}

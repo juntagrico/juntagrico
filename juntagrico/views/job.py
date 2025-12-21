@@ -8,10 +8,10 @@ from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob
+from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob, JobType
 from juntagrico.entity.member import Member
 from juntagrico.forms import BusinessYearForm
 from juntagrico.forms.job import JobSubscribeForm, EditAssignmentForm, ConvertToRecurringJobForm
@@ -164,9 +164,10 @@ def job(request, job_id, form_class=JobSubscribeForm):
         form = form_class(member, job)
 
     permissions = job.check_if(request.user)
+    is_recurring = isinstance(job.get_real_instance(), RecuringJob)
     renderdict = {
         'job': job,
-        'is_recurring': isinstance(job.get_real_instance(), RecuringJob),
+        'is_recurring': is_recurring,
         'edit_url': permissions.get_edit_url(),
         'can_copy': permissions.can_copy(),
         'can_convert': permissions.can_convert(),
@@ -176,8 +177,12 @@ def job(request, job_id, form_class=JobSubscribeForm):
         'can_edit_assignments': permissions.can_modify_assignments(),
         'error': request.method == 'POST',
         'form': form,
-        'convertion_form': ConvertToRecurringJobForm(member)
     }
+    if not is_recurring:
+        renderdict.update({
+            'convertion_form': ConvertToRecurringJobForm(member),
+            'convertion_suggestions': job.similar_job_types(5),
+        })
     return render(request, 'job.html', renderdict)
 
 
@@ -201,6 +206,29 @@ def convert_to_recurring(request, job_id, form_class=ConvertToRecurringJobForm, 
         else:
             messages.error(request, _('Umwandlung fehlgeschlagen'))
         return redirect('job', new_job.id if success else job_id)
+
+
+@require_GET
+@login_required
+def convert_to_recurring_preview(request, job_id):
+    member = request.user.member
+    one_time_job = get_object_or_404(OneTimeJob, id=job_id)
+    job_type_id = request.GET.get('job_type_id')
+    if job_type_id is None or job_type_id == '':
+        raise BadRequest('job type not specified')
+    job_type = get_object_or_404(JobType, id=job_type_id)
+    # check permission
+    if not one_time_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    if not request.user.has_perm('juntagrico.change_onetimejob'):
+        allowed_areas = member.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
+        if job_type.activityarea not in allowed_areas:
+            raise PermissionDenied
+
+    return render(request, 'juntagrico/job/snippets/conversion_preview.html', {
+        'one_time_job': one_time_job,
+        'job_type': job_type,
+    })
 
 
 @require_POST

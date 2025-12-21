@@ -107,6 +107,7 @@ urlpatterns = [
     path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
     path('job/<int:job_id>/convert/recurring', job.convert_to_recurring, name='job-convert-to-recurring'),
+    path('job/<int:job_id>/convert/preview', job.convert_to_recurring_preview, name='job-conversion-preview'),
     path('job/convert/onetime', job.convert_to_one_time, name='job-convert-to-one-time'),
     path('job/cancel', job.cancel, name='job-cancel'),
 

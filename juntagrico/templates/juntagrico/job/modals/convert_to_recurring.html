@@ -10,8 +10,20 @@
     <form action="{% url 'job-convert-to-recurring' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
         {% crispy convertion_form %}
     </form>
-    {# TODO: Show job types (dynamically) that match or almost match the data of the one-time job and thus are good candidates for a convertion. #}
-    {# TODO: Show which fields would change with the selected type. #}
+    {% if convertion_suggestions.count %}
+        <div>
+            {% trans "Ähnliche Job-Arten:" %}
+            <ul>
+                {% for job_type in convertion_suggestions %}
+                    <li><a href="#" class="suggested-job-type" data-id="{{ job_type.id }}">{{ job_type }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="spinner-grow" id="job_conversion_preview_loader" role="status" style="display: none;">
+        <span class="sr-only">{% trans "Lädt..." %}</span>
+    </div>
+    <div id="job_conversion_preview" data-url="{% url 'job-conversion-preview' job.id %}"></div>
 {% endblock %}
 
 {% block buttons %}

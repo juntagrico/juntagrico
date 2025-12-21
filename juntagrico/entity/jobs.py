@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, Max, F
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -140,6 +140,10 @@ class JobExtra(JuntagricoBaseModel):
     def __str__(self):
         target = self.recuring_type or self.onetime_type
         return '%s:%s' % (self.extra_type, target)
+
+    def display(self):
+        per_member = ' (M)' if self.per_member else ''
+        return str(self.extra_type) + per_member
 
     class Meta:
         verbose_name = _('JobExtra')
@@ -458,11 +462,12 @@ class RecuringJob(Job):
 
     def convert(self):
         job_type = self.type
+        additional_description = '\n' + self.additional_description if self.additional_description else ''
         one_time_job = OneTimeJob.objects.create(
             # from job type (mostly)
             name=OneTimeJob.make_unique_name(job_type.get_name),
             displayed_name=job_type.get_name,
-            description=job_type.description + '\n' + self.additional_description,
+            description=job_type.description + additional_description,
             activityarea=job_type.activityarea,
             default_duration=self.duration,
             location=job_type.location,
@@ -568,6 +573,12 @@ class OneTimeJob(Job, AbstractJobType):
             contact.delete()
         self.delete()
         return recurring_job
+
+    def similar_job_types(self, limit):
+        return JobType.objects.filter(
+            activityarea=self.activityarea,
+            location=self.location,
+        ).annotate(last_used=Max('recuringjob__time')).order_by(F('last_used').desc(nulls_last=True))[:limit]
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

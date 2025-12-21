@@ -78,4 +78,31 @@ $(function () {
         })
         return false
     })
+
+    // apply suggested job types on click
+    $('.suggested-job-type').on('click', function (event) {
+        let suggestion = $(this)
+        $("#id_job_type").select2("trigger", "select", {
+            data: { id: suggestion.data('id'), text: suggestion.text() }
+        });
+    })
+
+    // conversion preview
+    $('#id_job_type').on('change', function(event) {
+        let content = $('#job_conversion_preview')
+        content.empty()
+        if (this.value === '') {
+            // selected no type. nothing to compare
+            return false
+        }
+        let url = content.data('url') + '?job_type_id=' + this.value
+        $('#job_conversion_preview_loader').show()
+        content.load(url, function (response, status, xhr) {
+            $('#job_conversion_preview_loader').hide()
+            if (status === 'error') {
+                $(this).text(xhr.status + ' ' + xhr.statusText)
+            }
+        })
+        return false
+    })
 });
