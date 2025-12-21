@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import OnetimeJobCopyForm, OneTimeJobCopyToFutureForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
@@ -80,7 +81,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
               ('slots', 'infinite_slots', 'free_slots'), 'description', 'pinned', 'canceled')
     list_display = ['__str__', 'time', 'default_duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
-    actions = ['transform_job']
+    actions = ['copy_job', 'transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     date_hierarchy = 'time'
     exclude = ['reminder_sent']
@@ -88,6 +89,12 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
 
     inlines = [ContactInlineForJob, AssignmentInline, JobExtraInlineForOnetimeJob]
     readonly_fields = ['free_slots']
+
+    @admin.action(description=_('Job kopieren...'))
+    @single_element_action('Genau 1 Job auswählen!')
+    def copy_job(self, request, queryset):
+        inst = queryset.first()
+        return HttpResponseRedirect(reverse('admin:action-copy-onetime-job', args=[inst.id]))
 
     @admin.action(description=_('EinzelJobs in Jobart konvertieren'))
     def transform_job(self, request, queryset):

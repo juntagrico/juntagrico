@@ -136,7 +136,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, JobCopy, OnlyFutureJobMixin, AreaC
               'type_description', 'additional_description', 'pinned', 'canceled')
     list_display = ['__str__', 'type', 'time', 'slots', 'duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
-    actions = ['copy_job', 'mass_copy_job']
+    actions = ['duplicate_job', 'copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     date_hierarchy = 'time'
     exclude = ['reminder_sent']
@@ -160,8 +160,14 @@ class JobAdmin(PolymorphicInlineSupportMixin, JobCopy, OnlyFutureJobMixin, AreaC
         inst = queryset.first()
         return HttpResponseRedirect(reverse('admin:action-mass-copy-job', args=[inst.id]))
 
-    @admin.action(description=_('Jobs kopieren'))
+    @admin.action(description=_('Job kopieren...'))
+    @single_element_action('Genau 1 Job auswählen!')
     def copy_job(self, request, queryset):
+        inst = queryset.first()
+        return HttpResponseRedirect(reverse('admin:action-copy-job', args=[inst.id]))
+
+    @admin.action(description=_('Jobs duplizieren'))
+    def duplicate_job(self, request, queryset):
         for instance in queryset.all():
             time = instance.time
             if not request.user.has_perm('juntagrico.can_edit_past_jobs') and time <= timezone.now():
