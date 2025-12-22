@@ -12,27 +12,28 @@ readme = "README.md"
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.10"
 dependencies = [
-    "Django~=4.2.22",
+    "Django~=5.2.3",
     "django-admin-sortable2~=2.3.0",
-    "django-crispy-forms~=1.14.0",
-    "django-impersonate~=1.9.1",
-    "django-polymorphic~=3.1.0",
+    "django-crispy-forms~=2.5.0",
+    "crispy-bootstrap4~=2025.6.0",
+    "django-impersonate~=1.9.5",
+    "django-polymorphic~=4.4.1",
     "django-richtextfield~=1.6.1",
     "django-select2~=8.4.1",
-    "django-import-export~=4.2.0",
-    "icalendar~=5.0.0",
-    "schwifty==2023.6.0",
+    "django-import-export~=4.3.6",
+    "icalendar~=6.3.0",
+    "schwifty==2025.09.0",
     "xhtml2pdf==0.2.17",
     "svglib<1.6.0",
-    "XlsxWriter==3.1.4",
-    "python-dateutil~=2.8.2",
-    "fontawesomefree~=6.4.2",
+    "XlsxWriter~=3.2.3",
+    "python-dateutil~=2.9.0",
+    "fontawesomefree~=6.6.0",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Framework :: Django",
-    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
     "Intended Audience :: Other Audience",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
@@ -40,6 +41,8 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Internet :: WWW/HTTP :: Site Management",
 ]
 dynamic = ["version"]
