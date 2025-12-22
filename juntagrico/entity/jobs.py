@@ -69,6 +69,9 @@ class ActivityArea(JuntagricoBaseModel):
         """
         return get_emails(self.contact_set, self._get_email_fallback, get_member, exclude)
 
+    def get_contact_options(self):
+        return self.coordinators.all()
+
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
@@ -166,6 +169,9 @@ class AbstractJobType(JuntagricoBaseModel):
         if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name
         return self.name
+
+    def get_contact_options(self):
+        return self.activityarea.coordinators.all() if hasattr(self, 'activityarea') else None
 
     class Meta:
         abstract = True
@@ -400,8 +406,7 @@ class CheckJobCapabilities:
         return not job_read_only or self.user.has_perm('juntagrico.can_edit_past_jobs')
 
     def can_copy(self):
-        is_recurring = isinstance(self.job.get_real_instance(), RecuringJob)
-        return is_recurring and (self.user.has_perm('juntagrico.add_recuringjob') or self.is_coordinator)
+        return self.user.has_perm(f'juntagrico.add_{self.job_model_name}') or self.is_coordinator
 
     def can_cancel(self):
         can_change = self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
@@ -436,6 +441,9 @@ class RecuringJob(Job):
 
     def get_emails(self, get_member=False, exclude=None):
         return get_emails(self.contact_set, self.type.get_emails, get_member, exclude)
+
+    def get_contact_options(self):
+        return self.type.activityarea.coordinators.all() if hasattr(self, 'type') else None
 
     class Meta:
         verbose_name = _('Job')
