@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.queryset.subtypes import SubscriptionTypeQueryset
+from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset, SubscriptionProductQueryset
 from juntagrico.util import temporal
 
 
@@ -15,14 +15,11 @@ class SubscriptionProduct(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
-    is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
+
+    objects = SubscriptionProductQueryset.as_manager()
 
     def __str__(self):
         return self.name
-
-    @property
-    def sizes_for_depot_list(self):
-        return self.sizes.filter(depot_list=True).order_by('units')
 
     class Meta:
         verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
@@ -30,30 +27,78 @@ class SubscriptionProduct(JuntagricoBaseModel):
         ordering = ['sort_order']
 
 
-class SubscriptionSize(JuntagricoBaseModel):
-    '''
-    Subscription sizes
-    '''
+class ProductSize(JuntagricoBaseModel):
+    """
+    Items inside a subscription bundle
+    """
     name = models.CharField(_('Name'), max_length=100)
-    long_name = models.CharField(_('Langer Name'), max_length=100)
-    units = models.FloatField(_('Einheiten'))
-    depot_list = models.BooleanField(
-        _('Sichtbar auf Depotliste'), default=True)
-    visible = models.BooleanField(_('Sichtbar'), default=True)
-    description = models.TextField(_('Beschreibung'), blank=True)
-    product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
-                                related_name='sizes', verbose_name=_('Produkt'))
+    units = models.FloatField(_('Einheiten'), default=1.0)
+    show_on_depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
+    product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='sizes', verbose_name=_('Produkt'))
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    objects = ProductSizeQueryset.as_manager()
 
     def __str__(self):
-        return self.name
+        return f'{self.name} {self.product.name}'
 
     class Meta:
-        verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
+        verbose_name = _('Produktgrösse')
+        verbose_name_plural = _('Produktgrössen')
         constraints = [
             models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
-            models.UniqueConstraint(fields=['units', 'product'], name='unique_units_product'),
         ]
+        ordering = ['sort_order']
+
+
+class SubscriptionBundleProductSize(models.Model):
+    # through model is needed to allow duplicate m2m relationships
+    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.CASCADE)
+    product_size = models.ForeignKey(ProductSize, on_delete=models.CASCADE)
+
+
+class SubscriptionCategory(JuntagricoBaseModel):
+    """
+    category of subscription for grouping in order process
+    """
+    name = models.CharField(_('Name'), max_length=100, unique=True, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    def __str__(self):
+        return self.name or _('(Ohne Namen)')
+
+    class Meta:
+        verbose_name = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
+        ordering = ['sort_order']
+
+
+class SubscriptionBundle(JuntagricoBaseModel):
+    '''
+    Subscription Bundle
+    '''
+    long_name = models.CharField(_('Langer Name'), max_length=100)
+    description = models.TextField(_('Beschreibung'), blank=True)
+    category = models.ForeignKey('SubscriptionCategory', on_delete=models.SET_NULL,
+                                 related_name='bundles', verbose_name=_('Kategorie'), null=True, blank=True,
+                                 help_text=_('Wenn leer, kann dieses Paket nicht bestellt werden.'))
+    product_sizes = models.ManyToManyField(
+        'ProductSize', related_name='bundles', verbose_name=_('Produktgrössen'),
+        through=SubscriptionBundleProductSize
+    )
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    def __str__(self):
+        return f'{self.get_category_name()} - {self.long_name}'
+
+    def get_category_name(self):
+        return str(self.category or _("(Nicht Bestellbar)"))
+
+    class Meta:
+        verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Pakete').format(Config.vocabulary('subscription'))
+        ordering = ['sort_order']
 
 
 class SubscriptionType(JuntagricoBaseModel):
@@ -62,14 +107,15 @@ class SubscriptionType(JuntagricoBaseModel):
     '''
     name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
-    size = models.ForeignKey('SubscriptionSize', on_delete=models.PROTECT,
-                             related_name='types', verbose_name=_('Grösse'))
+    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.PROTECT,
+                               related_name='types', verbose_name=_('Paket'))
     shares = models.PositiveIntegerField(
         _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)
     visible = models.BooleanField(_('Sichtbar'), default=True)
+    is_extra = models.BooleanField(_('Ist Zusatzabo'), default=False)
     trial = models.BooleanField(_('Probe-Abo'), default=False)  # Deprecated
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
@@ -100,13 +146,10 @@ class SubscriptionType(JuntagricoBaseModel):
 
     @property
     def display_name(self):
-        name_parts = [self.size.product.name, self.size.name]
-        if self.long_name:
-            name_parts.append(self.long_name)
-        return '-'.join(name_parts)
+        return '-'.join([str(self.bundle), self.long_name])
 
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name + ' - ' + _('Produkt') + ': ' + self.size.product.name
+        return '-'.join([str(self.bundle), self.name])
 
     def __lt__(self, other):
         return self.pk < other.pk
