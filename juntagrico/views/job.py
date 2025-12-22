@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
+from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, RecuringJob
 from juntagrico.entity.member import Member
 from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
 from juntagrico.util import return_to_previous_location
@@ -165,6 +165,7 @@ def job(request, job_id, form_class=JobSubscribeForm):
     permissions = job.check_if(request.user)
     renderdict = {
         'job': job,
+        'is_recurring': isinstance(job.get_real_instance(), RecuringJob),
         'edit_url': permissions.get_edit_url(),
         'can_copy': permissions.can_copy(),
         'can_cancel': permissions.can_cancel(),
