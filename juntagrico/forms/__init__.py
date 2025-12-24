@@ -428,7 +428,7 @@ class SubscriptionTypeOption(Div):
         self.value = instance.id
         self.name = name
 
-    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
+    def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):
         template = self.get_template_name(template_pack)
         return render_to_string(template, {
             'type': self.instance,

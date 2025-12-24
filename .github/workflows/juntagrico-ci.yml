@@ -25,6 +25,8 @@ jobs:
           - python-version: '3.11'
           - python-version: '3.11'
             exclude-test: shares
+          - python-version: '3.12'
+          - python-version: '3.13'
 
     services:
       postgres:

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'impersonate',
     'juntagrico',
     'crispy_forms',
+    'crispy_bootstrap4',
     'adminsortable2',
     'django_select2',
     'polymorphic',

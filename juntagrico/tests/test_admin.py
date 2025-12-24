@@ -18,6 +18,11 @@ class AdminTests(JuntagricoTestCaseWithShares):
                        member=self.area_admin_job_modifier)
         url = reverse('admin:juntagrico_onetimejob_changelist')
         self.assertGet(url, member=self.admin)
+        selected_items = [self.one_time_job1.pk]
+        # copy action
+        response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
+                                   member=self.admin, code=302)
+        self.assertGet(response.url, member=self.admin)
 
     def testJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)), member=self.admin)
@@ -27,8 +32,13 @@ class AdminTests(JuntagricoTestCaseWithShares):
         url = reverse('admin:juntagrico_recuringjob_changelist')
         self.assertGet(url, member=self.admin)
         selected_items = [self.job1.pk]
-        self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items}, member=self.admin,
+        self.assertPost(url, data={'action': 'duplicate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
+        # copy action
+        response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
+                                   member=self.admin, code=302)
+        self.assertGet(response.url, member=self.admin)
+        # mass copy action
         response = self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items},
                                    member=self.admin, code=302)
         self.assertGet(response.url, member=self.admin)
@@ -92,7 +102,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin_job_modifier)
         self.assertPost(reverse('admin:juntagrico_recuringjob_changelist'), data={
-            'action': 'copy_job', '_selected_action': [self.past_job.pk]
+            'action': 'duplicate_job', '_selected_action': [self.past_job.pk]
         }, member=self.area_admin_job_modifier, code=302)
         self.assertGreater(RecuringJob.objects.last().time, timezone.now())
 
