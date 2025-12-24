@@ -43,3 +43,4 @@ It provides the basic functionality like
    :hidden:
 
    contribute/development.rst
+   contribute/documentation.rst
