@@ -62,7 +62,7 @@ Setup using Docker
 
 You can also use a docker container instead of installing python directly.
 
-Execute the tests
+Execute the tests:
 
 .. code:: bash
 
@@ -73,6 +73,20 @@ Execute the linter:
 .. code:: bash
 
    docker run --rm -v $(pwd):/app -w /app python:3.11-slim bash -c "pip install ruff && ruff check juntagrico"
+
+Generate the documentation:
+
+.. code:: bash
+
+    docker run --rm -v $(pwd):/app -w /app python:3.11-slim bash -c "pip install sphinx sphinx-rtd-theme docutils && sphinx-build -b html docs _build/html"
+
+You find the generated documentation in the _build/html folder.
+
+Display an example of all mail texts:
+
+.. code:: bash
+
+    docker run --rm -v $(pwd):/app -w /app python:3.11-slim bash -c "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt && export DJANGO_SETTINGS_MODULE=settings.dev && export PYTHONPATH=. && python -m manage mailtexts"
 
 Start the application (using an integrated sqlite database):
 
