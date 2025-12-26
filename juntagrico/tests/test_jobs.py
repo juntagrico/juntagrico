@@ -169,6 +169,7 @@ class AssignmentTests(JuntagricoTestCase):
             # if member edits their own assignment, no notification is sent to them
             self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+        self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
         mail.outbox.clear()
         self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
 
@@ -191,7 +192,6 @@ class AssignmentTests(JuntagricoTestCase):
     def testAssignmentEditByCoordinator(self):
         self.testAssignmentEdit(self.area_admin)
         self.testAssignmentDelete(self.area_admin)
-
 
 class JobValidationTests(JuntagricoTestCase):
     """
