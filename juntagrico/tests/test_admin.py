@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.jobs import Assignment, RecuringJob
+from juntagrico.entity.jobs import RecuringJob
 from . import JuntagricoTestCaseWithShares
 
 
@@ -19,10 +19,6 @@ class AdminTests(JuntagricoTestCaseWithShares):
         url = reverse('admin:juntagrico_onetimejob_changelist')
         self.assertGet(url, member=self.admin)
         selected_items = [self.one_time_job1.pk]
-        # transform action
-        Assignment.objects.create(job=self.one_time_job1, member=self.member, amount=1.0)
-        self.assertPost(url, data={'action': 'transform_job', '_selected_action': selected_items}, member=self.admin,
-                        code=302)
         # copy action
         response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
                                    member=self.admin, code=302)
@@ -126,10 +122,6 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.area_admin)
         self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.area_admin_job_modifier)
-        url = reverse('admin:juntagrico_jobtype_changelist')
-        selected_items = [self.job_type.pk]
-        self.assertPost(url, data={'action': 'transform_job_type', '_selected_action': selected_items},
-                        member=self.admin, code=302)
 
     def testAreaAdmin(self):
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.admin)
