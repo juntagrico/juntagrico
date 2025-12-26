@@ -20,3 +20,4 @@ static/*
 static/medias/photologue/temp
 testsettings2.py
 venv/*
+_build

@@ -33,7 +33,13 @@ found in [juntagrico.readthedocs.io](https://juntagrico.readthedocs.io)
 [demo.juntagrico.science](https://demo.juntagrico.science/)
 
 The username is "admin" and the password is "admin" too. Please do not
-change the password!
+change the password 💚
+
+## Contribute
+- Report issues on [github](https://github.com/juntagrico/juntagrico/issues)
+- [Translate](https://explore.transifex.com/juntagrico/juntagrico/)
+- Get started with the [development setup](https://juntagrico.readthedocs.io/en/latest/contribute/development.html)
+
 
 [![image](https://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![image](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
