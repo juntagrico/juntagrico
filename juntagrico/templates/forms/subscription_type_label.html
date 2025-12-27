@@ -3,37 +3,83 @@
 {% load juntagrico.config %}
 {% load juntagrico.snippets %}
 {% load crispy_forms_field %}
-<label for="type{{ type.id }}" class="{{ class }}">
+
+<div class="mb-3">
     {% if type.long_name.strip %}
-        <strong>{{ type.long_name }}</strong>
-        <br/>
+        {% block name %}
+            <h4>{{ type.long_name }}{% if type.trial_days %} <span class="badge badge-warning">Probe</span>{% endif %}</h4>
+        {% endblock %}
     {% endif %}
     {% if type.description.strip %}
-        {{ type.description|richtext|safe }}
-        <br/>
+        {% block description %}
+            <div class="type-description">{{ type.description|richtext|safe }}</div>
+        {% endblock %}
     {% endif %}
-    {% if type.has_periods %}
-        {% vocabulary "price" %}:
-        {% for period in type.periods.all %}
-            <br/>
-            {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
-            {{ period.price }} {% config "currency" %}
-        {% endfor %}
-        {% include "juntagrico/snippets/subscription/depot_fee.html" %}
-    {% else %}
-        {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
-        {% include "juntagrico/snippets/subscription/depot_fee.html" %}
-        <br/>
-        {% trans "Laufzeit" %}: {{ type.min_duration_info }}
-    {% endif %}
+
+    {% block price %}
+        {% if type.has_periods %}
+            {% for period in type.periods.all %}
+                <div>
+                    <strong>{{ period.price|price }}</strong>
+                    {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}
+                </div>
+            {% endfor %}
+            {% include "juntagrico/snippets/subscription/depot_fee.html" %}
+        {% else %}
+            <div class="type-details type-price">
+                <strong>{{ type.price|price }}</strong>
+                {% if type.trial_days %}
+                    {% blocktrans with days=type.trial_days %}für {{ days }} Tage{% endblocktrans %}
+                {% else %}
+                    {% trans "pro Jahr" %}
+                {% endif %}
+                {% include "juntagrico/snippets/subscription/depot_fee.html" %}
+            </div>
+        {% endif %}
+    {% endblock %}
+
+    {% block required_assignments %}
+        <div class="type-details type-required-assignments">
+            {% if hours_used %}
+                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3 %}
+                    <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz
+                {% plural %}
+                    <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze
+                {% endblocktranslate %}
+            {% else %}
+                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3 %}
+                    <strong>{{ assignments_float }}</strong> Arbeitseinsatz
+                {% plural %}
+                    <strong>{{ assignments_float }}</strong> Arbeitseinsätze
+                {% endblocktranslate %}
+            {% endif %}
+        </div>
+    {% endblock %}
+
     {% config "enable_shares" as c_enable_shares %}
     {% if c_enable_shares %}
-        <br/>
-        {% vocabulary "share_pl" %}: {{ type.shares }}
+        {% block shares %}
+            <div class="type-details type-shares">
+                {% blocktranslate trimmed count shares=type.shares with v_share=vocabulary.share v_share_pl=vocabulary.share_pl %}
+                    <strong>{{ shares }}</strong> {{ v_share }}
+                {% plural %}
+                    <strong>{{ shares }}</strong> {{ v_share_pl }}
+                {% endblocktranslate %}
+            </div>
+        {% endblock %}
     {% endif %}
-    <br/>
-    {% trans "Arbeitseinsätze" %}: {{ type.required_assignments }}
-    {% if hours_used %}
-        {% trans "Stunden" %}
-    {% endif %}
-</label>
+
+    {% block duration %}
+        {% if not type.has_periods %}
+            <div class="type-duration mt-3">
+                {% trans "Laufzeit" %}: {{ type.min_duration_info }}
+            </div>
+        {% endif %}
+    {% endblock %}
+</div>
+
+{% block label %}
+    <label for="type{{ type.id }}" class="{{ class }} d-none">
+        {% trans "Anzahl:" %}
+    </label>
+{% endblock %}
