@@ -65,7 +65,7 @@ def check_sub_membership_consistency_ms(sub_membership):
     if join_date is None:
         check = Q(join_date__isnull=True)
     elif leave_date is None:
-        check = Q(leave_date__isnull=True) | Q(leave_date__gte=join_date)
+        check = Q(join_date__isnull=False, leave_date__isnull=True) | Q(leave_date__gte=join_date)
     else:
         check = Q(join_date__lte=leave_date, leave_date__gte=leave_date) | \
             Q(join_date__lte=join_date, leave_date__gte=join_date)
