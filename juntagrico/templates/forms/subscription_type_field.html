@@ -1,6 +1,8 @@
-<div class="form-group row">
-    <div class="col-md-3">
-        {{ field }}
+<div class="col-lg-6">
+    <div class="card mb-3">
+        <div class="card-body">
+            {% include 'forms/subscription_type_label.html'%}
+            {{ field }}
+        </div>
     </div>
-    {% include 'forms/subscription_type_label.html' with class='col-md-9' %}
 </div>

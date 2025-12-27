@@ -460,9 +460,13 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def _collect_type_fields(self):
         containers = []
         for product in self._product_method().all():
-            product_container = CategoryContainer(instance=product)
+            product_container = CategoryContainer(instance=product, css_class='subscription-category')
             for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
-                size_container = SizeContainer(instance=subscription_size, name=subscription_size.long_name)
+                size_container = SizeContainer(
+                    instance=subscription_size,
+                    name=subscription_size.long_name,
+                    css_class='subscription-size'
+                )
                 for subscription_type in self.type_filter(subscription_size.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
@@ -500,7 +504,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
             *self.containers,
             Field('no_selection', template=self.no_selection_template),
             FormActions(
-                Submit('submit', _('Weiter'), css_class='btn-success'),
+                Submit('submit', _('Weiter'), css_class='btn-success btn-lg'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
             )
         )

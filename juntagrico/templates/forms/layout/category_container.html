@@ -1,12 +1,10 @@
-{% load crispy_forms_field %}
 {% load juntagrico.common %}
 
-<div class="form-group row">
-    <div class="col-md-12">
+<div class="row">
+    <div class="col-md-12 {{ div.css_class }}">
         {% block head %}
-            <strong>{{ div.name }}</strong>
-            <br/>
-            {{ div.description|richtext|safe }}
+            <h2>{{ div.name }}</h2>
+            <div>{{ div.description|richtext|safe }}</div>
         {% endblock %}
     </div>
 </div>

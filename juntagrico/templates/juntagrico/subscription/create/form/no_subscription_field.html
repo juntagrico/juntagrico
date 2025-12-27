@@ -3,12 +3,13 @@
 {% load i18n %}
 
 {% block label %}
-    <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Kein {{ v_subscription }}{% endblocktrans %}</strong>
+    <h2>{% blocktrans with v_subscription=vocabulary.subscription %}Oder ohne {{ v_subscription }}{% endblocktrans %}</h2>
 {% endblock %}
 
 {% block description %}
     {% block main_description %}
         {% config "organisation_name" as c_organisation_name %}
+        <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Mitgliedschaft ohne {{ v_subscription }}{% endblocktrans %}</strong>:
         {% blocktrans trimmed with v_subscription=vocabulary.subscription v_member_type=vocabulary.member_type %}
             Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
             sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
