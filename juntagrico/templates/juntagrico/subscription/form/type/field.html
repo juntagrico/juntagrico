@@ -2,7 +2,7 @@
 <div class="col-lg-6 sub-type-container sub-type-container-{{ type.id }}">
     <div class="card mb-3">
         <div class="card-body">
-            {% include 'forms/subscription_type_label.html'%}
+            {% include './label.html' %}
             <label for="type{{ type.id }}" class="d-none">
                 <span>{% trans "Anzahl:" %}</span>
             </label>

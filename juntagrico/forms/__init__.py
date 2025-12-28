@@ -33,7 +33,7 @@ from juntagrico.util.temporal import get_business_year, get_business_date_range
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, template='forms/slider.html', css_class='slider', **kwargs)
+        super().__init__(*args, template='juntagrico/form/slider.html', css_class='slider', **kwargs)
 
 
 class JuntagricoDateWidget(DateInput):
@@ -397,7 +397,7 @@ class EditCoMemberForm(CoMemberBaseForm):
 
 
 class CategoryContainer(Div):
-    template = "forms/layout/category_container.html"
+    template = "juntagrico/form/layout/category_container.html"
 
     def __init__(self, *fields, instance, name=None, description=None, **kwargs):
         super().__init__(*fields, **kwargs)
@@ -408,11 +408,11 @@ class CategoryContainer(Div):
 
 class SizeContainer(CategoryContainer):
     # allows overriding template only for sizes
-    template = ["forms/layout/size_container.html", "forms/layout/category_container.html"]
+    template = ["juntagrico/form/layout/size_container.html", "juntagrico/form/layout/category_container.html"]
 
 
 class SubscriptionTypeField(Field):
-    template = 'forms/subscription_type_field.html'
+    template = 'juntagrico/subscription/form/type/field.html'
 
     def __init__(self, *args, instance, **kwargs):
         super().__init__(*args, **kwargs)
@@ -425,7 +425,7 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionTypeOption(Div):
-    template = 'forms/subscription_type_option.html'
+    template = 'juntagrico/subscription/form/type/option.html'
 
     def __init__(self, name, *args, instance, **kwargs):
         super().__init__(*args, **kwargs)
@@ -723,7 +723,7 @@ class TrialCloseoutForm(Form):
 
 
 class ShareOrderForm(Form):
-    field_template = 'forms/share_field.html'
+    field_template = 'juntagrico/share/form/field.html'
     text = dict(
         member_info='Du brauchst als HauptbezieherIn mindestens {0} {1}.',
         member_existing='Du hast bereits {0} {1}.',

@@ -3,7 +3,7 @@
     <div class="card mb-3">
         <div class="card-body">
             {% include 'bootstrap4/layout/field_errors_block.html' %}
-            {% include 'forms/subscription_type_label.html' %}
+            {% include './label.html' %}
             <div class="text-center">
                 <span class="switch switch-lg">
                     <input type="radio" class="switch" name="{{ option.name }}" value="{{ option.value }}" id="type{{ option.value }}" required="">
