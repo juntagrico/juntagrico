@@ -193,6 +193,7 @@ class AssignmentTests(JuntagricoTestCase):
         self.testAssignmentEdit(self.area_admin)
         self.testAssignmentDelete(self.area_admin)
 
+
 class JobValidationTests(JuntagricoTestCase):
     """
     Test validation rules for jobs
