@@ -164,8 +164,9 @@ Blocks:
 juntagrico/form/layout/size_container.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If defined, this template is used for the structure of subscription sizes in the subscription/part order and change forms.
-Otherwise ``category_container.html`` is used.
+Defines the structure to display subscription sizes in the subscription/part order and change forms.
+
+Has the same blocks as ``category_container.html``.
 
 juntagrico/subscription/create/form/no_subscription_field.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
