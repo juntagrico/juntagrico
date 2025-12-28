@@ -7,22 +7,26 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, Job
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.util.temporal import end_of_business_year
 
 
 class Command(BaseCommand):
     help = "Generate test data for development environments. DO NOT USE IN PRODUCTION."
 
     @staticmethod
-    def create_subscription(depot, member, subtype, activation_date=None,):
-        sub_fields = {'depot': depot, 'future_depot': None,
-                      'activation_date': activation_date,
-                      'deactivation_date': None, 'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
+    def create_subscription(depot, member, subtype, activation_date=None, **kwargs):
+        sub_fields = {
+            'depot': depot, 'future_depot': None,
+            'activation_date': activation_date,
+            'deactivation_date': None, 'creation_date': '2017-03-27', 'start_date': '2018-01-01',
+            **kwargs
+        }
         subscription = Subscription.objects.create(**sub_fields)
         member.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(1))
         if member.subscription_future:
@@ -61,11 +65,17 @@ class Command(BaseCommand):
                            'addr_zipcode': '8032', 'addr_location': 'Zürich', 'birthday': '2022-02-02',
                            'phone': '076 927 78 55', 'mobile_phone': '', 'confirmed': True,
                            'reachable_by_email': False}
+            mem6_fields = {'first_name': 'Emmie', 'last_name': 'Gjesdal',
+                           'email': 'emmie.gjesdal@juntagico.juntagrico', 'addr_street': 'Schaffhauserstrasse 153',
+                           'addr_zipcode': '8007', 'addr_location': 'Zürich', 'birthday': '2001-01-12',
+                           'phone': '079 927 78 00', 'mobile_phone': '', 'confirmed': True,
+                           'reachable_by_email': False}
             member_1, _ = Member.objects.get_or_create(email=mem1_fields['email'], defaults=mem1_fields)
             member_2, _ = Member.objects.get_or_create(email=mem2_fields['email'], defaults=mem2_fields)
             member_3, _ = Member.objects.get_or_create(email=mem3_fields['email'], defaults=mem3_fields)
             member_4, _ = Member.objects.get_or_create(email=mem4_fields['email'], defaults=mem4_fields)
             Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
+            member_6, _ = Member.objects.get_or_create(email=mem6_fields['email'], defaults=mem6_fields)
             if Config.enable_shares():
                 share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,
                                     'cancelled_date': None, 'termination_date': None, 'payback_date': None, 'number': None,
@@ -117,6 +127,11 @@ class Command(BaseCommand):
             self.create_subscription(depot2, member_2, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
             self.create_subscription(depot1, member_3, subtype)
             self.create_subscription(depot2, member_4, subtype)
+            self.create_subscription(
+                depot2, member_6, subtype,
+                cancellation_date=datetime.date.today(),
+                end_date=end_of_business_year()
+            )
 
             area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
                             'hidden': False, 'coordinator': member_1,
@@ -152,5 +167,6 @@ class Command(BaseCommand):
             for _ in range(0, 10):
                 job1_all_fields['time'] += timezone.timedelta(days=7)
                 RecuringJob.objects.create(**job2_all_fields)
+            Assignment.objects.create(job=Job.objects.first(), member=member_1, amount=1.0)
         finally:
             del settings.TMP_DISABLE_EMAILS
