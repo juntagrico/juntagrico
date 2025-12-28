@@ -203,7 +203,7 @@ class JobCopyTests(JobCopyTestCase):
         self.assertEqual(new_job.multiplier, 3.0)
         self.assertEqual(new_job.additional_description, "New Description")
         self.assertEqual(new_job.duration_override, 9)
-        self.assertListEqual(new_job.get_emails(), [self.new_contact.email, 'test2@test.org'])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.new_contact.email, 'test2@test.org'])
 
     def testMassCopyJob(self):
         self.assertGet(reverse('admin:action-mass-copy-job', args=(self.complex_job.pk,)))
@@ -265,7 +265,7 @@ class JobCopyTests(JobCopyTestCase):
             self.assertEqual(new_job.multiplier, 3.0)
             self.assertEqual(new_job.additional_description, "New Description")
             self.assertEqual(new_job.duration_override, 9)
-            self.assertListEqual(new_job.get_emails(), [self.new_contact.email, 'test2@test.org'])
+            self.assertListEqual(sorted(new_job.get_emails()), [self.new_contact.email, 'test2@test.org'])
 
 
 class JobCopyByAreaAdminTests(AreaAdminTestMixin, JobCopyTests):
@@ -369,7 +369,7 @@ class OnetimeJobCopyTests(JuntagricoTestCase):
             dt = dt.astimezone(timezone.get_default_timezone())
         self.assertEqual(new_job.time, dt)
         self.assertEqual(new_job.multiplier, 3.0)
-        self.assertListEqual(new_job.get_emails(), [self.new_contact.email, 'test2@test.org'])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.new_contact.email, 'test2@test.org'])
 
 
 class OnetimeJobCopyByAreaAdminTests(AreaAdminTestMixin, OnetimeJobCopyTests):
@@ -391,12 +391,12 @@ class JobConvertionTests(JuntagricoJobTestCase):
         new_type = JobType.objects.last()
         self.assertEqual(new_type.displayed_name, 'one_time_job')
         self.assertEqual(new_type.default_duration, 3)
-        self.assertListEqual(new_type.get_emails(), ['test@test.org', self.member3.email])
+        self.assertListEqual(sorted(new_type.get_emails()), [self.member3.email, 'test@test.org'])
         new_job = RecuringJob.objects.last()
         self.assertEqual(new_job.slots, 1)
         self.assertEqual(new_job.additional_description, '')
         self.assertEqual(new_job.duration_override, None)
-        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member3.email, 'test@test.org'])
         self.assertSetEqual(new_job.participant_emails, {self.member.email})
 
     def testConvertionToOneTimeJobs(self):
@@ -417,7 +417,7 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertEqual(new_job.activityarea, self.area2)
         self.assertEqual(new_job.slots, 1)
         self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
-        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member2.email, 'test@test.org'])
         self.assertSetEqual(new_job.participant_emails, {self.member2.email})
 
 
