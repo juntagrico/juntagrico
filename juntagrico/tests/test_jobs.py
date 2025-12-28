@@ -132,12 +132,12 @@ class JobConvertionTests(JuntagricoJobTestCase):
         new_type = JobType.objects.last()
         self.assertEqual(new_type.displayed_name, 'one_time_job')
         self.assertEqual(new_type.default_duration, 3)
-        self.assertListEqual(new_type.get_emails(), ['test@test.org', self.member3.email])
+        self.assertListEqual(sorted(new_type.get_emails()), [self.member3.email, 'test@test.org'])
         new_job = RecuringJob.objects.last()
         self.assertEqual(new_job.slots, 1)
         self.assertEqual(new_job.additional_description, '')
         self.assertEqual(new_job.duration_override, None)
-        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member3.email, 'test@test.org'])
         self.assertSetEqual(new_job.participant_emails, {self.member.email})
 
     def testConvertionToRecurringJobUsingExistingButNotCoordinatedJobType(self):
@@ -168,12 +168,12 @@ class JobConvertionTests(JuntagricoJobTestCase):
         new_type = new_job.type
         self.assertEqual(new_type.name, 'nameot')
         self.assertEqual(new_type.default_duration, 2)
-        self.assertListEqual(new_type.get_emails(), ['email_contact@example.org'])
+        self.assertListEqual(sorted(new_type.get_emails()), ['email_contact@example.org'])
         # check if new job is complete
         self.assertEqual(new_job.slots, 1)
         self.assertEqual(new_job.additional_description, '')
         self.assertEqual(new_job.duration_override, 3)
-        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member3.email])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member3.email, 'test@test.org'])
         self.assertSetEqual(new_job.participant_emails, {self.member.email})
 
     def testConvertionToRecurringJobOfNotCoordinatedArea(self):
@@ -214,7 +214,7 @@ class JobConvertionTests(JuntagricoJobTestCase):
         self.assertEqual(new_job.activityarea, self.area)
         self.assertEqual(new_job.slots, 1)
         self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
-        self.assertListEqual(new_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member2.email, 'test@test.org'])
         self.assertSetEqual(new_job.participant_emails, {self.member2.email})
 
 
