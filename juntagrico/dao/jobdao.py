@@ -8,10 +8,6 @@ from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 
 class JobDao:
     @staticmethod
-    def recurings_by_type(type_id):
-        return RecuringJob.objects.filter(type__id=type_id)
-
-    @staticmethod
     def jobs_ordered_by_time():
         return Job.objects.all().order_by('time')
 

@@ -3,8 +3,8 @@ from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
 
-from . import JuntagricoTestCase
-from ..entity.jobs import Job, Assignment
+from . import JuntagricoTestCase, JuntagricoJobTestCase
+from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob
 from ..entity.member import Member
 from ..signals import subscribed, assignment_changed
 
@@ -116,6 +116,106 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
         self.job1.refresh_from_db()
         self.assertTrue(self.job1.canceled)
+
+
+class JobConvertionTests(JuntagricoJobTestCase):
+    def testConvertionToRecurringJob(self):
+        self.assertPost(
+            reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),
+            data={'submit': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=302
+        )
+        # check that original job was removed
+        self.assertFalse(OneTimeJob.objects.filter(pk=self.complex_one_time_job.pk).exists())
+        # check if new job is complete
+        new_type = JobType.objects.last()
+        self.assertEqual(new_type.displayed_name, 'one_time_job')
+        self.assertEqual(new_type.default_duration, 3)
+        self.assertListEqual(sorted(new_type.get_emails()), [self.member3.email, 'test@test.org'])
+        new_job = RecuringJob.objects.last()
+        self.assertEqual(new_job.slots, 1)
+        self.assertEqual(new_job.additional_description, '')
+        self.assertEqual(new_job.duration_override, None)
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member3.email, 'test@test.org'])
+        self.assertSetEqual(new_job.participant_emails, {self.member.email})
+
+    def testConvertionToRecurringJobUsingExistingButNotCoordinatedJobType(self):
+        # area admin can't convert to job type of area2
+        response = self.assertPost(
+            reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),
+            data={'job_type': self.job_type2.pk, 'submit': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=302
+        )
+        # check redirect and no changes
+        self.assertRedirects(response, reverse('job', args=[self.complex_one_time_job.pk]), 302)
+        self.assertTrue(OneTimeJob.objects.filter(pk=self.complex_one_time_job.pk).exists())
+
+    def testConvertionToRecurringJobUsingExistingJobType(self):
+        response = self.assertPost(
+            reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),
+            data={'job_type': self.job_type.pk, 'submit': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=302
+        )
+        # check success and redirect
+        new_job = RecuringJob.objects.last()
+        self.assertRedirects(response, reverse('job', args=[new_job.pk]), 302)
+        # check that original job was removed
+        self.assertFalse(OneTimeJob.objects.filter(pk=self.complex_one_time_job.pk).exists())
+        # check that existing type is unchanged
+        new_type = new_job.type
+        self.assertEqual(new_type.name, 'nameot')
+        self.assertEqual(new_type.default_duration, 2)
+        self.assertListEqual(sorted(new_type.get_emails()), ['email_contact@example.org'])
+        # check if new job is complete
+        self.assertEqual(new_job.slots, 1)
+        self.assertEqual(new_job.additional_description, '')
+        self.assertEqual(new_job.duration_override, 3)
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member3.email, 'test@test.org'])
+        self.assertSetEqual(new_job.participant_emails, {self.member.email})
+
+    def testConvertionToRecurringJobOfNotCoordinatedArea(self):
+        # fails
+        self.complex_one_time_job.activityarea = self.area2
+        self.complex_one_time_job.save()
+        self.assertPost(
+            reverse('job-convert-to-recurring', args=[self.complex_one_time_job.id]),
+            data={'submit': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=403
+        )
+
+    def testConvertionToOneTimeJobsOfNotCoordinatedArea(self):
+        # fails
+        self.assertPost(
+            reverse('job-convert-to-one-time'),
+            data={'job_id': self.complex_job.pk},
+            member=self.area_admin_job_modifier,
+            code=403
+        )
+
+    def testConvertionToOneTimeJobsOfCoordinatedArea(self):
+        self.complex_job_type.activityarea = self.area
+        self.complex_job_type.save()
+        self.assertPost(
+            reverse('job-convert-to-one-time'),
+            data={'job_id': self.complex_job.pk},
+            member=self.area_admin_job_modifier,
+            code=302
+        )
+        # check that original job was removed
+        self.assertFalse(RecuringJob.objects.filter(pk=self.complex_job.pk).exists())
+        # check if new job is complete
+        new_job = OneTimeJob.objects.last()
+        self.assertEqual(new_job.displayed_name, 'complex_job_type_name')
+        self.assertEqual(new_job.default_duration, 6)  # override from job
+        self.assertEqual(new_job.activityarea, self.area)
+        self.assertEqual(new_job.slots, 1)
+        self.assertEqual(new_job.description, 'complex_job_type_description\nExtra Description')
+        self.assertListEqual(sorted(new_job.get_emails()), [self.member2.email, 'test@test.org'])
+        self.assertSetEqual(new_job.participant_emails, {self.member2.email})
 
 
 @override_settings(ALLOW_JOB_UNSUBSCRIBE=True)
