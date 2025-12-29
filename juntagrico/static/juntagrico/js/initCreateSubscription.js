@@ -29,10 +29,12 @@ $(function () {
     })
     $("input[type='number'][name^='amount']").change(function(){
         $("input[name='no_selection']").prop('checked', total_selected_subs() == 0)
-    })
+        // highlight card, if value != 0
+        $(this).closest('.card').toggleClass('bg-primary', parseInt(this.value) !== 0)
+    }).change()
 
     // show Spinner in multi selection
     if($().inputSpinner) {
-        $("input[type='number']").inputSpinner();
+        $("input[type='number']").inputSpinner({groupClass : 'subscription-order'});
     }
 });

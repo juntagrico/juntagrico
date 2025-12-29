@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="col-lg-6 sub-type-container sub-type-container-{{ type.id }}">
+    <div class="card mb-3">
+        <div class="card-body">
+            {% include 'bootstrap4/layout/field_errors_block.html' %}
+            {% include './label.html' %}
+            <div class="text-center">
+                <span class="switch switch-lg">
+                    <input type="radio" class="switch" name="{{ option.name }}" value="{{ option.value }}" id="type{{ option.value }}" required="">
+                    <label for="type{{ option.value }}">
+                        <span class="d-none">{% trans "Auswahl:" %}</span>
+                    </label>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
