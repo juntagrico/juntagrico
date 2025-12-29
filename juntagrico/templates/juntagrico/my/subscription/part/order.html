@@ -17,6 +17,10 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}"></script>
     <script>
-        $("input[type='number']").inputSpinner();
+        $("input[type='number'][name^='amount']").change(function(){
+            // highlight card, if value != 0
+            $(this).closest('.card').toggleClass('bg-primary', parseInt(this.value) !== 0)
+        }).change()
+        $("input[type='number']").inputSpinner({groupClass : 'subscription-order'});
     </script>
 {% endblock %}

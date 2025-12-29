@@ -31,7 +31,7 @@ from juntagrico.util.temporal import get_business_year, get_business_date_range
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, template='forms/slider.html', css_class='slider', **kwargs)
+        super().__init__(*args, template='juntagrico/form/slider.html', css_class='slider', **kwargs)
 
 
 class JuntagricoDateWidget(DateInput):
@@ -395,7 +395,7 @@ class EditCoMemberForm(CoMemberBaseForm):
 
 
 class CategoryContainer(Div):
-    template = "forms/layout/category_container.html"
+    template = 'juntagrico/form/layout/category_container.html'
 
     def __init__(self, *fields, instance, name=None, description=None, **kwargs):
         super().__init__(*fields, **kwargs)
@@ -404,8 +404,13 @@ class CategoryContainer(Div):
         self.description = description or instance.description
 
 
+class BundleContainer(CategoryContainer):
+    # allows overriding template only for bundles
+    template = 'juntagrico/form/layout/bundle_container.html'
+
+
 class SubscriptionTypeField(Field):
-    template = 'forms/subscription_type_field.html'
+    template = 'juntagrico/subscription/form/type/field.html'
 
     def __init__(self, *args, instance, **kwargs):
         super().__init__(*args, **kwargs)
@@ -418,7 +423,7 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionTypeOption(Div):
-    template = 'forms/subscription_type_option.html'
+    template = 'juntagrico/subscription/form/type/option.html'
 
     def __init__(self, name, *args, instance, **kwargs):
         super().__init__(*args, **kwargs)
@@ -453,9 +458,13 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def _collect_type_fields(self):
         containers = []
         for category in SubscriptionCategory.objects.exclude(bundles=None):
-            category_container = CategoryContainer(instance=category)
+            category_container = CategoryContainer(instance=category, css_class='subscription-category')
             for bundle in category.bundles.exclude(types=None):
-                bundle_container = CategoryContainer(instance=bundle, name=bundle.long_name)
+                bundle_container = BundleContainer(
+                    instance=bundle,
+                    name=bundle.long_name,
+                    css_class='subscription-bundle'
+                )
                 for subscription_type in self.type_filter(bundle.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         bundle_container.append(type_field)
@@ -494,7 +503,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
             *self.containers,
             Field('no_selection', template=self.no_selection_template),
             FormActions(
-                Submit('submit', _('Weiter'), css_class='btn-success'),
+                Submit('submit', _('Weiter'), css_class='btn-success btn-lg'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
             )
         )
@@ -713,7 +722,7 @@ class TrialCloseoutForm(Form):
 
 
 class ShareOrderForm(Form):
-    field_template = 'forms/share_field.html'
+    field_template = 'juntagrico/share/form/field.html'
     text = dict(
         member_info='Du brauchst als HauptbezieherIn mindestens {0} {1}.',
         member_existing='Du hast bereits {0} {1}.',

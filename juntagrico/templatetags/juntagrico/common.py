@@ -1,5 +1,5 @@
 from django import template
-from django.template.defaultfilters import urlize, linebreaksbr
+from django.template.defaultfilters import urlize, linebreaksbr, floatformat
 
 from juntagrico import __version__
 from juntagrico.config import Config
@@ -98,3 +98,18 @@ def richtext(value):
 @register.filter
 def values_list(queryset, keys):
     return queryset.values_list(keys, flat=isinstance(keys, str))
+
+
+@register.filter
+def price(value):
+    """
+    formats the number as a price.
+    if cents are 0, they are omitted, otherwise 2 decimals are shown.
+    """
+    value = floatformat(value, '-2u')
+    try:
+        if len(value.split('.')[1]) == 1:
+            value += '0'
+    except IndexError:
+        pass
+    return value + ' ' + Config.currency()

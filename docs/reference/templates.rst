@@ -151,9 +151,27 @@ signup.html
 - ``intro_2``  Last part of intro
 - ``read_instructions``: Text on documents that should be read
 
-forms/no_subscription_field.html
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/form/layout/category_container.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Defines the structure to display subscription categories in the subscription/part order and change forms
+
+Blocks:
+
+- ``head``: Name and description of category
+- ``fields``: Nested fields
+
+
+juntagrico/form/layout/bundle_container.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Defines the structure to display subscription bundles in the subscription/part order and change forms.
+
+Has the same blocks as ``category_container.html``.
+
+
+juntagrico/subscription/create/form/no_subscription_field.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``description``: Textlabel on signup option without subscription
 - ``base_fee``: Base fee description on signup option without subscription

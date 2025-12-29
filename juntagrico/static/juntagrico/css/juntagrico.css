@@ -479,3 +479,39 @@ a.phone-number {
 .text-no-changes:not(:nth-of-type(2)) {
     display: none;
 }
+
+
+/* subscription creation/order */
+.subscription-bundle h2 {
+    font-family: "Source Sans Pro Light";
+}
+
+.type-details strong {
+    font-size: larger;
+}
+
+.type-duration {
+    font-size: smaller;
+}
+
+.subscription-order {
+    max-width: 9em;
+    margin: 0 auto;
+
+}
+
+.subscription-order .btn {
+    padding: .5rem 1rem;
+    font-size: 1.40625rem;
+    line-height: 1.5;
+    border-radius: .3rem;
+    background-color: #fff6;
+}
+
+.subscription-order .form-control{
+    height: calc(1.5em + 1rem + 2px);
+    padding: .5rem 1rem;
+    font-size: 1.40625rem;
+    line-height: 1.5;
+    background-color: #fff6;
+}
