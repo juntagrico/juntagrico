@@ -42,24 +42,11 @@
                     {% endif %}
                     <li class="list-group-item">
                         <h5 class="card-title">{% trans "Konditionen/Typen" %}</h5>
-                        <ul>
+                        <div class="row">
                         {% for type in bundle.types.all %}
-                            <li>
-                                <div><strong>{{ type.name }}</strong></div>
-                                <div>
-                                {% if type.is_extra %}
-                                    <i class="fa-regular fa-square-plus"></i>
-                                    {% trans "Zusatz-Abo" %}
-                                {% endif %}
-                                {% if not type.visible %}
-                                    <i class="fa-regular fa-circle-xmark"></i>
-                                    {% trans "Nicht bestellbar" %}
-                                {% endif %}
-                                </div>
-                                {% include "juntagrico/snippets/subscription/type.html" %}
-                            </li>
+                            {% include "./type.html" %}
                         {% endfor %}
-                        </ul>
+                        </div>
                     </li>
                 </ul>
             </div>

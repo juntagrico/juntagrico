@@ -1,12 +1,10 @@
+{% extends 'juntagrico/snippets/subscription/type_container.html' %}
 {% load i18n %}
-<div class="col-lg-6 sub-type-container sub-type-container-{{ type.id }}">
-    <div class="card mb-3">
-        <div class="card-body">
-            {% include 'juntagrico/snippets/subscription/type.html' %}
-            <label for="type{{ type.id }}" class="d-none">
-                <span>{% trans "Anzahl:" %}</span>
-            </label>
-            {{ field }}
-        </div>
-    </div>
-</div>
+
+{% block content %}
+    {{ block.super }}
+    <label for="type{{ type.id }}" class="d-none">
+        <span>{% trans "Anzahl:" %}</span>
+    </label>
+    {{ field }}
+{% endblock %}

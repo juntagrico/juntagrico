@@ -523,6 +523,8 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
     def __init__(self, subscription=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subscription = subscription
+        self.helper.label_class = ''
+        self.helper.field_class = 'col-md-12'
         self.helper.layout = Layout(
             *self._collect_type_fields(),
             FormActions(
