@@ -17,7 +17,8 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm
+    RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, \
+    SubscriptionPartSelectRequiredForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView
@@ -28,8 +29,11 @@ def select_parts(
         request, signup_manager,
         key='subscriptions',
         form_class=SubscriptionPartSelectForm,
+        required_subscription_form_class=SubscriptionPartSelectRequiredForm,
         template_name='juntagrico/subscription/create/select_subscription.html'
-    ):
+):
+    if Config.require_subscription():
+        form_class = required_subscription_form_class
     subscriptions = signup_manager.get(key, {})
     if request.method == 'POST':
         form = form_class(subscriptions, request.POST)
@@ -51,6 +55,7 @@ def select_extras(request):
         request,
         key='extras',
         form_class=SubscriptionExtraPartSelectForm,
+        required_subscription_form_class=SubscriptionExtraPartSelectForm,
         template_name='juntagrico/subscription/create/select_extras.html'
     )
 

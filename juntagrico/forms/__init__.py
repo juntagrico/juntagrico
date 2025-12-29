@@ -486,21 +486,15 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
         }
 
 
-class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
-    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
-
+class SubscriptionPartSelectRequiredForm(SubscriptionPartBaseForm):
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
-        self.containers = self._collect_type_fields()
-        self.fields['no_selection'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
-                                                      initial=not any(selected.values()), required=False)
         self.helper.layout = self.get_form_layout()
 
     def get_form_layout(self):
         return Layout(
-            *self.containers,
-            Field('no_selection', template=self.no_selection_template),
+            *self._collect_type_fields(),
             FormActions(
                 Submit('submit', _('Weiter'), css_class='btn-success btn-lg'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
@@ -509,6 +503,34 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
 
     def _get_initial(self, subscription_type):
         return self.selected.get(str(subscription_type.id), 0)
+
+    def clean(self):
+        # check that at least one subscription type was selected
+        if sum(self.get_selected().values()) == 0:
+            selection_error_message = mark_safe(_('Wähle mindestens 1 {} aus.').format(
+                Config.vocabulary('subscription')
+            ))
+            raise ValidationError(selection_error_message, code='selection_error')
+
+
+class SubscriptionPartSelectForm(SubscriptionPartSelectRequiredForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['no_selection'] = BooleanField(
+            label=_('Kein {}').format(Config.vocabulary('subscription')),
+            initial=not any(self.selected.values()),
+            required=False
+        )
+
+    def _collect_type_fields(self):
+        fields = super()._collect_type_fields()
+        fields.append(Field('no_selection', template=self.no_selection_template))
+        return fields
+
+    def clean(self):
+        return super(SubscriptionPartSelectRequiredForm, self).clean()  # bypass checking for selected type
 
 
 class SubscriptionExtraPartSelectForm(SubscriptionPartSelectForm):

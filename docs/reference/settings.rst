@@ -323,6 +323,20 @@ ENABLE_REGISTRATION
 
     True
 
+
+REQUIRE_SUBSCRIPTION
+^^^^^^^^^^^^^^^^^^^^
+  Requires selection of a subscription during signup. The option to sign up without subscription is removed.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+
 ENABLE_EXTERNAL_SIGNUP
 ^^^^^^^^^^^^^^^^^^^
   Activates the external signup API and exposes internal depot and subscription info as json.
