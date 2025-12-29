@@ -13,7 +13,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.html import escape
+from django.utils.html import escape, format_html_join, format_html
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _, gettext_lazy
@@ -262,15 +262,13 @@ class RegisterMemberForm(MemberBaseForm):
 
     @classmethod
     def agb_label(cls):
-        documents_html = []
-        for text, link in cls.documents.items():
-            if link().strip():
-                documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
+        documents_html = format_html_join(
+            ' ' + cls.text['and'] + ' ',
+            '<a target="_blank" href="{}">{}</a>',
+            ((link(), _(text)) for text, link in cls.documents.items())
+        )
         if documents_html:
-            return cls.text['accept_with_docs'].format(
-                (' ' + cls.text['and'] + ' ').join(documents_html),
-                Config.organisation_long_name()
-            )
+            return format_html(cls.text['accept_with_docs'], documents_html, Config.organisation_long_name())
         else:
             return cls.text['accept_wo_docs'].format(Config.organisation_long_name())
 
