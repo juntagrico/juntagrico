@@ -115,7 +115,8 @@ class Config:
     )
 
     @staticmethod
-    def depot_lists():
+    def depot_lists(default_names=None):
+        default_names = default_names or {}
         values = getattr(settings, 'DEPOT_LISTS', defaults.DEPOT_LISTS)
         # normalize
         for file_name, conf in values.items():
@@ -125,6 +126,8 @@ class Config:
                 conf['extra_context'] = conf['extra_context']()
             elif 'extra_context' not in conf:
                 conf['extra_context'] = {}
+            if 'name' not in conf:
+                conf['name'] = default_names.get(file_name, file_name)
             yield dict(file_name=file_name, **conf)
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
