@@ -156,6 +156,7 @@ def _template_assignment_changed(job, subject, template_name, **kwargs):
     to = job.get_emails(exclude=kwargs['editor'].email)
     if to:
         kwargs['job'] = job
+        kwargs['member'] = kwargs.get('instance')  # templates expect 'member', signal sends 'instance'
         EmailSender.get_sender(
             organisation_subject(subject),
             get_template(f'juntagrico/mails/admin/assignment/{template_name}.txt').render(base_dict(kwargs)),
