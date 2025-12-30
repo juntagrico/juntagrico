@@ -53,7 +53,7 @@
                             <span class="badge badge-success full-width">{% trans "Neuer Bestandteil" %}</span>
                             <p>
                                 {% blocktrans trimmed %}
-                                    Probe-Bestandteil und neue bestellter Bestandteil "{{ follow_up_part }}" haben die gleiche Grösse.
+                                    Probe-Bestandteil und neue bestellter Bestandteil "{{ follow_up_part }}" sind vom selben Paket.
                                 {% endblocktrans %}
                                 {% blocktrans trimmed with ad=trial_part.activation_date %}
                                     Der Probe-Bestandteil wird storniert und der neue Bestandteil wird so verrechnet,
@@ -61,7 +61,7 @@
                                 {% endblocktrans %}
                             </p>
                         {% else %}
-                            {% trans "Diese Option steht nicht zur Verfügung, weil der neue Bestandteil nicht die gleiche Grösse hat, wie der Probe-Bestandteil." %}
+                            {% trans "Diese Option steht nicht zur Verfügung, weil der neue Bestandteil nicht vom selben Paket ist, wie der Probe-Bestandteil." %}
                         {% endif %}
                     </div>
                 </div>

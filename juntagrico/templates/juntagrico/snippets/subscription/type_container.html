@@ -1,0 +1,11 @@
+<div class="col-lg-6 sub-type-container sub-type-container-{{ type.id }}">
+    <div class="card mb-3">
+        {% block outer %}
+            <div class="card-body">
+                {% block content %}
+                    {% include './type.html' %}
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+</div>

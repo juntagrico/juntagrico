@@ -196,13 +196,16 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             )
         })
 
+    def on_depot_list(self):
+        return self.filter(parts__type__bundle__product_sizes__show_on_depot_list=True)
+
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
-        return self.filter(type__size__product__is_extra=False)
+        return self.filter(type__is_extra=False)
 
     def is_extra(self):
-        return self.filter(type__size__product__is_extra=True)
+        return self.filter(type__is_extra=True)
 
     def is_trial(self):
         return self.filter(type__trial_days__gt=0)
@@ -235,7 +238,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
                                                      output_field=PositiveIntegerField())).filter(week_mod=0))
 
     def sorted(self):
-        return self.order_by('type__size__product__is_extra', 'type__size__product',
+        return self.order_by('type__is_extra', 'type__bundle__category',
                              F('deactivation_date').desc(nulls_first=True),
                              F('cancellation_date').desc(nulls_first=True),
                              F('activation_date').desc(nulls_first=True))
@@ -244,4 +247,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.filter(subscription__primary_member=member)
 
     def on_depot_list(self):
-        return self.filter(type__size__depot_list=True)
+        return self.filter(type__bundle__product_sizes__show_on_depot_list=True)
+
+    def count_units(self):
+        return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']

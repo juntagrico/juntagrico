@@ -1,7 +1,6 @@
 import datetime
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q
 from django.utils import timezone
 from django.test import override_settings
 
@@ -12,7 +11,8 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
+    ProductSize, SubscriptionBundleProductSize
 
 
 class Command(BaseCommand):
@@ -77,19 +77,23 @@ class Command(BaseCommand):
             share_all_fields['member'] = member_3
             Share.objects.create(**share_all_fields)
         subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
-        subsize_name = 'Normales Abo'
-        subsize_fields = {'long_name': 'Ganz Normales Abo', 'units': 1, 'visible': True, 'depot_list': True,
-                          'product': subproduct,
-                          'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
+        product_size, _ = ProductSize.objects.get_or_create(name='Gross', product=subproduct)
+        category, _ = SubscriptionCategory.objects.get_or_create(name='Kategorie 1', description='Beschreibung 1')
+        bundle_name = 'Normales Abo'
+        bundle_fields = {'long_name': bundle_name,
+                          'category': category,
+                          'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                          'Zwei personen Haushalt für eine Woche.'}
-        subsize = SubscriptionSize.objects.filter(
-            Q(units=subsize_fields['units']) | Q(name=subsize_name), product=subsize_fields['product']
+        bundle = SubscriptionBundle.objects.filter(
+            long_name=bundle_name, category=bundle_fields['category']
         ).first()
-        if not subsize:
-            subsize = SubscriptionSize.objects.create(**subsize_fields)
-        subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
+        if not bundle:
+            bundle = SubscriptionBundle.objects.create(**bundle_fields)
+        if product_size not in bundle.product_sizes.all():
+            SubscriptionBundleProductSize.objects.create(bundle=bundle, product_size=product_size)
+        subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'bundle': bundle, 'shares': 2,
                           'visible': True, 'required_assignments': 10, 'price': 1000,
-                          'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
+                          'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                          'Zwei personen Haushalt für eine Woche.'}
         subtype, _ = SubscriptionType.objects.get_or_create(name=subtype_fields['name'], defaults=subtype_fields)
         depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',

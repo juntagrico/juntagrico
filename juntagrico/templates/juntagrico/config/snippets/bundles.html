@@ -1,0 +1,61 @@
+{% load juntagrico.common %}
+{% load i18n %}
+<h4>{% blocktrans with v_subscription=vocabulary.subscription%}{{ v_subscription }}-Pakete &amp; Typen{% endblocktrans %}</h4>
+<p>
+    {% trans "Produkte können in Paketen beliebig zusammengestellt werden." %}
+    {% trans "Diese Pakete können wiederum zu verschiedenen Konditionen (Typen) angeboten werden." %}
+</p>
+<div class="row">
+    <div class="col-12">
+        {% for bundle in bundles %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <strong>{{ bundle }}</strong>
+                    {% if perms.juntagrico.change_subscriptionbundle %}
+                        <a href="{% url 'admin:juntagrico_subscriptionbundle_change' bundle.id %}">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                {% if bundle.description|striptags|wordcount %}
+                    <div class="card-body">
+                        <div>{{ bundle.description|richtext|safe }}</div>
+                    </div>
+                {% endif %}
+                <ul class="list-group list-group-flush">
+                    {% if bundle.product_sizes.exists %}
+                        <li class="list-group-item">
+                            <h5 class="card-title">{% trans "Inhalt" %}</h5>
+                            <ul>
+                                {% for size in bundle.product_sizes.all %}
+                                    <li>
+                                        {{ size }}
+                                        {% if size.show_on_depot_list %}
+                                            <i class="fa-solid fa-file-circle-check"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-file-circle-xmark"></i>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <h5 class="card-title">{% trans "Konditionen/Typen" %}</h5>
+                        <div class="row">
+                        {% for type in bundle.types.all %}
+                            {% include "./type.html" %}
+                        {% endfor %}
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        {% endfor %}
+        {% if perms.juntagrico.add_subscriptionproduct %}
+            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionbundle_add' %}">
+                <i class="fas fa-plus mr-1"></i>
+                Pakete & Typen hinzufügen
+            </a>
+        {% endif %}
+    </div>
+</div>
