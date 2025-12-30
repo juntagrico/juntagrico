@@ -1,7 +1,12 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 from django.utils.module_loading import import_string
 
 from juntagrico.config import Config
+from juntagrico.entity.subs import Subscription
+from juntagrico.signals import called
+from juntagrico.util.depot_list import depot_list_data
 
 
 class Command(BaseCommand):
@@ -46,7 +51,25 @@ class Command(BaseCommand):
         )
 
     # entry point used by manage.py
-    def handle(self, *args, **options):
+    def handle(self, *args, force=False, future=False, no_future=False, days=0, **options):
+        weekday = datetime.date.today().weekday()
+        if not force and weekday not in Config.depot_list_generation_days():
+            self.stderr.write('Not the specified day for depot list generation. Use --force to override.')
+            return
+
+        if not no_future or future:
+            if not future:
+                self.stderr.write(
+                    'DEPRECATION WARNING: Running depot list generation without --future flag will change behaviour in an upcoming release. '
+                    'See release notes of Juntagrico version 1.6.0. Run this command with --future or with --no-future to remove this warning.'
+                )
+            if future or weekday in Config.depot_list_generation_days():
+                Subscription.objects.activate_future_depots()
+            else:
+                self.stdout.write('Future depots ignored. Use --future to override.')
+
         for generator in Config.default_depot_list_generators():
             gen = import_string(generator)
-            gen(*args, **options)
+            gen(depot_list_data(days))
+
+        called.send(Command)

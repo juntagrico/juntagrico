@@ -5,6 +5,8 @@ from django.contrib.sites.models import Site
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+from juntagrico import defaults
+
 
 def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
@@ -111,6 +113,19 @@ class Config:
             'promoted_count': 2
         }
     )
+
+    @staticmethod
+    def depot_lists():
+        values = getattr(settings, 'DEPOT_LISTS', defaults.DEPOT_LISTS)
+        # normalize
+        for file_name, conf in values.items():
+            if not isinstance(conf, dict):
+                conf = dict(template=conf)
+            if callable(conf.get('extra_context')):
+                conf['extra_context'] = conf['extra_context']()
+            elif 'extra_context' not in conf:
+                conf['extra_context'] = {}
+            yield dict(file_name=file_name, **conf)
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
