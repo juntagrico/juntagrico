@@ -463,6 +463,26 @@ ASSIGNMENT_UNIT
 
     "ENTITY"
 
+
+FIRST_JOB_INFO
+^^^^^^^^^^^^^^
+  Defines if participants list of job indicates if this is the first job of member.
+  If multiple cases apply for one member, only the most generic case is shown.
+
+  Multiple options can be combined:
+    - ``'overall'``: show if this is the first job of this member ever
+    - ``'per_area'``: show if this is the first job of this member in this area
+    - ``'per_type'``: show if this is the first job of this member in this job type
+
+  Type: List of strings
+
+  default value
+
+  .. code-block:: python
+
+    ["overall"]
+
+
 ALLOW_JOB_UNSUBSCRIBE
 ^^^^^^^^^^^^^^^^^^^^^
   If set to true, members can unsubscribe themselves (or reduce the slots they reserved)

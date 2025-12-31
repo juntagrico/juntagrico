@@ -111,6 +111,7 @@ class Config:
             'promoted_count': 2
         }
     )
+    first_job_info = _get_setting('FIRST_JOB_INFO', ['overall'])
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])

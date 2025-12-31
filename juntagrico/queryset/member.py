@@ -67,11 +67,18 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def annotate_job_slots(self):
         return self.annotate(slots=Count('id')).distinct()
 
-    def annotate_first_job(self):
+    def annotate_first_job(self, suffix='', of_jobs=None):
         from juntagrico.entity.jobs import Assignment
-        return self.annotate(is_first_job=~Exists(
-            Assignment.objects.filter(member=OuterRef('pk'), job__time__lt=OuterRef('jobs__time'))
-        ))
+        of_jobs = {'job__in': of_jobs} if of_jobs is not None else {}
+        return self.annotate(**{
+            f'is_first_job{suffix}': ~Exists(
+                Assignment.objects.filter(
+                    member=OuterRef('pk'),
+                    job__time__lt=OuterRef('jobs__time'),
+                    **of_jobs
+                )
+            )
+        })
 
     def prefetch_for_list(self):
         members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))

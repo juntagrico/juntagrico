@@ -56,6 +56,12 @@ class JobQueryset(PolymorphicQuerySet):
     def next(self, count):
         return self.order_by('time')[:count]
 
+    def in_area(self, area):
+        return self.filter(
+            Q(OneTimeJob___activityarea=area.pk) |
+            Q(RecuringJob___type__activityarea=area.pk)
+        )
+
     def in_areas(self, areas):
         return self.filter(
             Q(OneTimeJob___activityarea__in=areas) |
