@@ -1,9 +1,11 @@
 from functools import cached_property
+from itertools import zip_longest
 
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Max, F
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -67,6 +69,9 @@ class ActivityArea(JuntagricoBaseModel):
                  if `get_member` is true, a list of tuples with email and member object
         """
         return get_emails(self.contact_set, self._get_email_fallback, get_member, exclude)
+
+    def get_contact_options(self):
+        return self.coordinators.all()
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -139,6 +144,10 @@ class JobExtra(JuntagricoBaseModel):
         target = self.recuring_type or self.onetime_type
         return '%s:%s' % (self.extra_type, target)
 
+    def display(self):
+        per_member = ' (M)' if self.per_member else ''
+        return str(self.extra_type) + per_member
+
     class Meta:
         verbose_name = _('JobExtra')
         verbose_name_plural = _('JobExtras')
@@ -165,6 +174,24 @@ class AbstractJobType(JuntagricoBaseModel):
         if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name
         return self.name
+
+    @classmethod
+    def make_unique_name(cls, name, start=2):
+        def candidates():
+            time_str = date_format(timezone.now(), "SHORT_DATETIME_FORMAT")
+            yield name
+            yield name + f' ({time_str})'
+            index = start
+            while True:
+                yield name + f' ({time_str}/{index})'
+                index += 1
+        for name in candidates():
+            if not cls.objects.filter(name=name).exists():
+                return name
+        return name + ' 42'
+
+    def get_contact_options(self):
+        return self.activityarea.coordinators.all() if hasattr(self, 'activityarea') else None
 
     class Meta:
         abstract = True
@@ -390,13 +417,15 @@ class CheckJobCapabilities:
             return reverse(f'admin:juntagrico_{self.job_model_name}_change', args=(self.job.id,))
         return ''
 
+    def can_convert(self):
+        return self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
+
     def can_modify(self):
         job_read_only = self.job.canceled or self.job.has_started()
         return not job_read_only or self.user.has_perm('juntagrico.can_edit_past_jobs')
 
     def can_copy(self):
-        is_recurring = isinstance(self.job.get_real_instance(), RecuringJob)
-        return is_recurring and (self.user.has_perm('juntagrico.add_recuringjob') or self.is_coordinator)
+        return self.user.has_perm(f'juntagrico.add_{self.job_model_name}') or self.is_coordinator
 
     def can_cancel(self):
         can_change = self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
@@ -432,6 +461,47 @@ class RecuringJob(Job):
     def get_emails(self, get_member=False, exclude=None):
         return get_emails(self.contact_set, self.type.get_emails, get_member, exclude)
 
+    def get_contact_options(self):
+        return self.type.activityarea.coordinators.all() if hasattr(self, 'type') else None
+
+    def convert(self):
+        job_type = self.type
+        additional_description = '\n' + self.additional_description if self.additional_description else ''
+        one_time_job = OneTimeJob.objects.create(
+            # from job type (mostly)
+            name=OneTimeJob.make_unique_name(job_type.get_name),
+            displayed_name=job_type.get_name,
+            description=job_type.description + additional_description,
+            activityarea=job_type.activityarea,
+            default_duration=self.duration,
+            location=job_type.location,
+            # from recurring job
+            slots=self.slots,
+            infinite_slots=self.infinite_slots,
+            time=self.time,
+            multiplier=self.multiplier,
+            pinned=self.pinned,
+            reminder_sent=self.reminder_sent,
+            canceled=self.canceled,
+        )
+        one_time_job.assignment_set.set(self.assignment_set.all())
+        contacts = self.contact_set if self.contact_set.count() else job_type.contact_set
+        for contact in contacts.all():
+            one_time_job.contact_set.add(contact.copy(), bulk=False)
+        for job_extra in job_type.job_extras_set.all():
+            JobExtra.objects.create(
+                onetime_type=one_time_job,
+                extra_type=job_extra.extra_type,
+                per_member=job_extra.per_member,
+            )
+        # workaround: deletion of polymorphic relations is unreliable.
+        # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+        for contact in self.contact_set.all():
+            contact.delete()
+        self.delete()
+        # TODO: add option to delete type if it isn't used anymore.
+        return one_time_job
+
     class Meta:
         verbose_name = _('Job')
         verbose_name_plural = _('Jobs')
@@ -457,6 +527,62 @@ class OneTimeJob(Job, AbstractJobType):
 
     def get_emails(self, get_member=False, exclude=None):
         return get_emails(self.contact_set, self.activityarea.get_emails, get_member, exclude)
+
+    def convert(self, to_job_type=None):
+        is_new_type = to_job_type is None
+        if is_new_type:
+            # create new job type
+            to_job_type = JobType.objects.create(
+                name=JobType.make_unique_name(self.get_name),
+                displayed_name=self.get_name,
+                description=self.description,
+                activityarea=self.activityarea,
+                default_duration=self.default_duration,
+                location=self.location,
+            )
+            for contact in self.contact_set.all():
+                to_job_type.contact_set.add(contact, bulk=False)
+            for job_extra in self.job_extras_set.all():
+                job_extra.onetime_type = None
+                job_extra.recuring_type = to_job_type
+                job_extra.save()
+        # create recurring job
+        recurring_job = RecuringJob.objects.create(
+            type=to_job_type,
+            slots=self.slots,
+            infinite_slots=self.infinite_slots,
+            time=self.time,
+            multiplier=self.multiplier,
+            pinned=self.pinned,
+            reminder_sent=self.reminder_sent,
+            canceled=self.canceled,
+        )
+        recurring_job.assignment_set.set(self.assignment_set.all())
+        if not is_new_type:
+            # make new recurring job as close as possible to previous one time job
+            if to_job_type.default_duration != self.default_duration:
+                recurring_job.duration_override = self.default_duration
+            # TODO: keep description somehow?
+            recurring_job.save()
+            # apply contact(s) of one time job if it doesn't match the existing types contact(s)
+            for type_contact, job_contact in zip_longest(to_job_type.contacts, self.contacts):
+                if type_contact is None or job_contact is None or type_contact.to_html() != job_contact.to_html():
+                    for contact in self.contacts:
+                        recurring_job.contact_set.add(contact.copy(), bulk=False)
+                    break
+        self.job_extras_set.all().delete()  # delete protected related items first
+        # workaround: deletion of polymorphic relations is unreliable.
+        # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+        for contact in self.contact_set.all():
+            contact.delete()
+        self.delete()
+        return recurring_job
+
+    def similar_job_types(self, limit):
+        return JobType.objects.filter(
+            activityarea=self.activityarea,
+            location=self.location,
+        ).annotate(last_used=Max('recuringjob__time')).order_by(F('last_used').desc(nulls_last=True))[:limit]
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

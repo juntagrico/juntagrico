@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
 
-from juntagrico.entity.contact import EmailContact, TextContact
+from juntagrico.entity.contact import EmailContact, TextContact, MemberContact, PhoneContact
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
@@ -121,6 +121,8 @@ class JuntagricoTestCase(TestCase):
                           'default_duration': 4,
                           'location': cls.create_location('area_location2')}
         cls.job_type2 = JobType.objects.create(**job_type_data2)
+        cls.job_type2.contact_set.add(MemberContact(member=cls.member4, display=MemberContact.DISPLAY_EMAIL),
+                                             bulk=False)
         """
         job_extra
         """
@@ -418,3 +420,69 @@ class JuntagricoTestCase(TestCase):
 
 class JuntagricoTestCaseWithShares(JuntagricoTestCase):
     fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if getattr(settings, 'ENABLE_SHARES', False) else [])
+
+
+class JuntagricoJobTestCase(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # create complex job type
+        cls.complex_job_type = JobType.objects.create(
+            name='complex_job_type',
+            displayed_name='complex_job_type_name',
+            description='complex_job_type_description',
+            activityarea=cls.area2,
+            default_duration=4,
+            location=cls.create_location('complex_location'),
+        )
+        cls.job_type_contact = PhoneContact(phone='01233556')
+        cls.complex_job_type.contact_set.add(cls.job_type_contact, bulk=False)
+        JobExtra.objects.create(
+            recuring_type=cls.complex_job_type,
+            extra_type=cls.job_extra_type,
+        )
+
+        # create complex recurring job
+        time = timezone.now() + timezone.timedelta(hours=2)
+        cls.complex_job_data = {
+            'slots': 1,
+            'time': time,
+            'type': cls.complex_job_type,
+            'infinite_slots': True,
+            'multiplier': 2,
+            'additional_description': 'Extra Description',
+            'duration_override': 6
+        }
+        cls.complex_job = RecuringJob.objects.create(**cls.complex_job_data)
+        cls.email_contact = EmailContact(email='test@test.org')
+        cls.complex_job.contact_set.add(cls.email_contact, bulk=False)
+        cls.member_contact = MemberContact(member=cls.member2, display=MemberContact.DISPLAY_EMAIL)
+        cls.complex_job.contact_set.add(cls.member_contact, bulk=False)
+        Assignment.objects.create(job=cls.complex_job, member=cls.member2, amount=1.2)
+
+        # create complex one_time_job
+        time = timezone.now() + timezone.timedelta(hours=2)
+        cls.other_location = cls.create_location('other_location')
+        cls.complex_one_time_job_data = {
+            'name': 'one_time_job',
+            'activityarea': cls.area,
+            'description': 'one_time_job_description',
+            'default_duration': 3,
+            'location': cls.create_location('one_time_location'),
+            'slots': 1,
+            'time': time,
+            'infinite_slots': True,
+            'multiplier': 2,
+        }
+        cls.complex_one_time_job = OneTimeJob.objects.create(**cls.complex_one_time_job_data)
+        cls.complex_one_time_job.contact_set.add(EmailContact(email='test@test.org'), bulk=False)
+        cls.complex_one_time_job.contact_set.add(
+            MemberContact(member=cls.member3, display=MemberContact.DISPLAY_EMAIL),
+            bulk=False
+        )
+        JobExtra.objects.create(
+            onetime_type=cls.complex_one_time_job,
+            extra_type=cls.job_extra_type,
+            per_member=True,
+        )
+        Assignment.objects.create(job=cls.complex_one_time_job, member=cls.member, amount=1.3)

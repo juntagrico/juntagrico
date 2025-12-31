@@ -1,14 +1,13 @@
 from django import template
-from django.template.defaultfilters import urlize, linebreaksbr
+from django.template.defaultfilters import urlize, linebreaksbr, floatformat
 
 from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, JobExtra
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
 
@@ -44,7 +43,7 @@ def requires_core():
 
 @register.simple_tag
 def show_job_extras():
-    return JobExtraDao.all_job_extras().count() > 0
+    return JobExtra.objects.count() > 0
 
 
 @register.simple_tag
@@ -101,3 +100,18 @@ def richtext(value):
 @register.filter
 def values_list(queryset, keys):
     return queryset.values_list(keys, flat=isinstance(keys, str))
+
+
+@register.filter
+def price(value):
+    """
+    formats the number as a price.
+    if cents are 0, they are omitted, otherwise 2 decimals are shown.
+    """
+    value = floatformat(value, '-2u')
+    try:
+        if len(value.split('.')[1]) == 1:
+            value += '0'
+    except IndexError:
+        pass
+    return value + ' ' + Config.currency()

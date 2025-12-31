@@ -159,5 +159,5 @@ def absolute_url(*args, **kwargs):
 
 
 def validate_iban(value):
-    if value != '' and not IBAN(value, True).is_valid:
+    if value != '' and not IBAN(value, allow_invalid=True).is_valid:
         raise ValidationError(_('IBAN ist nicht gültig'))

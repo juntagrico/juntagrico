@@ -1,0 +1,32 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans %}In wiederkehrenden Einsatz umwandeln{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <form action="{% url 'job-convert-to-recurring' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
+        {% crispy convertion_form %}
+    </form>
+    {% if convertion_suggestions.count %}
+        <div>
+            {% trans "Ähnliche Job-Arten:" %}
+            <ul>
+                {% for job_type in convertion_suggestions %}
+                    <li><a href="#" class="suggested-job-type" data-id="{{ job_type.id }}">{{ job_type }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="spinner-grow" id="job_conversion_preview_loader" role="status" style="display: none;">
+        <span class="sr-only">{% trans "Lädt..." %}</span>
+    </div>
+    <div id="job_conversion_preview" data-url="{% url 'job-conversion-preview' job.id %}"></div>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="submit" form="convert_to_recurring_job_form" class="btn btn-primary"
+           value="{% trans "Umwandeln" %}">
+{% endblock %}

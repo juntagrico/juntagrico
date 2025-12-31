@@ -42,21 +42,49 @@
                     {% endif %}
 
                     {% if can_copy %}
-                        <div class="btn-group">
-                            <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                        {% if is_recurring %}
+                            <div class="btn-group">
+                                <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                                    <i class="fa-solid fa-copy"></i>
+                                    {% trans "Einsatz kopieren" %}
+                                </a>
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" data-reference="parent" aria-expanded="false">
+                                    <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
+                                        {% trans "Mehrfach kopieren" %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
                                 <i class="fa-solid fa-copy"></i>
                                 {% trans "Einsatz kopieren" %}
                             </a>
-                            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                                    data-toggle="dropdown" data-reference="parent" aria-expanded="false">
-                                <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
-                                    {% trans "Mehrfach kopieren" %}
-                                </a>
-                            </div>
-                        </div>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if can_convert %}
+                        {% if is_recurring %}
+                            <form action="{% url 'job-convert-to-one-time' %}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz in einen einmaligen Einsatz umwandeln möchtest?" %}')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
+                                        title="{% trans "in einmaligen Einsatz umwandeln" %}">
+                                    <i class="fa-solid fa-repeat"></i>
+                                    {% trans "Umwandeln" %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <a class="convert-to-recurring-job btn btn-outline-primary"
+                               title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
+                               data-url="{% url 'job-convert-to-recurring' job.id %}">
+                                <i class="fa-solid fa-repeat"></i>
+                                {% trans "Umwandeln" %}
+                            </a>
+                        {% endif %}
                     {% endif %}
 
                     {% if can_cancel %}
@@ -71,6 +99,11 @@
                     {% endif %}
                 </div>
             </div>
+        {% endif %}
+
+        {# Modals #}
+        {% if convertion_form %}
+            {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
         {% endif %}
     {% endblock %}
 
@@ -236,6 +269,6 @@
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
     {% include 'snippets/scripts/leaflet.html' %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJob.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/js/initJob.js' %}">
     </script>
 {% endblock %}

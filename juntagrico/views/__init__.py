@@ -9,9 +9,8 @@ from django.utils import timezone
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, Job
+from juntagrico.entity.jobs import ActivityArea, Job, JobType
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
@@ -107,7 +106,7 @@ def show_area(request, area_id):
         else:
             edit_form = AreaDescriptionForm(instance=area)
 
-    job_types = JobTypeDao.types_by_area(area_id)
+    job_types = JobType.objects.filter(activityarea=area_id)
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
     jobs = list(rjobs)
