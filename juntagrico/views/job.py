@@ -173,8 +173,6 @@ def job(request, job_id, form_class=JobSubscribeForm):
         'can_convert': permissions.can_convert(),
         'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
-        'can_contact': permissions.can_contact_member(),
-        'can_edit_assignments': permissions.can_modify_assignments(),
         'error': request.method == 'POST',
         'form': form,
     }

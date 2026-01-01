@@ -24,25 +24,6 @@ class JobTests(JuntagricoTestCase):
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
 
-    def testJobPost(self):
-        self.signal_called = False
-
-        @receiver(subscribed, sender=Job)
-        def handler(instance, member, count, *args, **kwargs):
-            self.signal_called = True
-            self.assertEqual(count, 1)
-            self.assertEqual(instance.pk, self.job1.pk)
-            self.assertEqual(member, self.member)
-
-        self.assertPost(reverse('job', args=[self.job1.pk]), {'slots': 1, 'subscribe': True, 'message': 'hello'}, 302)
-        self.assertEqual(self.job1.free_slots, 0)
-        self.assertEqual(self.job1.assignment_set.first().amount, 1)
-        self.assertTrue(self.signal_called)
-        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
-        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
-        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
-        self.assertTrue(subscribed.disconnect(handler, sender=Job))
-
     def testJobExtras(self):
         self.assertPost(reverse('job', args=[self.job3.pk]), {'slots': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id), 'subscribe': True}, 302)
         self.assertEqual(self.job3.assignment_set.first().job_extras.count(), 1)
@@ -116,6 +97,89 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
         self.job1.refresh_from_db()
         self.assertTrue(self.job1.canceled)
+
+
+class JobSignupAndNotificationTests(JuntagricoTestCase):
+    def testJobSignup(self):
+        self.signal_called = False
+
+        @receiver(subscribed, sender=Job)
+        def handler(instance, member, count, *args, **kwargs):
+            self.signal_called = True
+            self.assertEqual(count, 1)
+            self.assertEqual(instance.pk, self.job1.pk)
+            self.assertEqual(member, self.member)
+
+        self.assertPost(reverse('job', args=[self.job1.pk]), {'slots': 1, 'subscribe': True, 'message': 'hello'}, 302)
+        self.assertEqual(self.job1.free_slots, 0)
+        self.assertEqual(self.job1.assignment_set.first().amount, 1)
+        self.assertTrue(self.signal_called)
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Neue Anmeldung zum Einsatz mit Mitteilung', mail.outbox[1].subject)
+        self.assertTrue(subscribed.disconnect(handler, sender=Job))
+
+    def _firstJobSignup(self, message=None):
+        message = {'message': message} if message is not None else {}
+        self.assertPost(reverse('job', args=[self.job1.pk]), {
+            'slots': 1, 'subscribe': True
+        } | message, 302, self.member2)
+        self.assertEqual(mail.outbox[0].recipients(), [self.member2.email])
+
+    @override_settings(ENABLE_NOTIFICATIONS=['job_subscribed'], FIRST_JOB_INFO=[])
+    def testNotificationOnJobSignup(self):
+        self._firstJobSignup()
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Neue Anmeldung zum Einsatz', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['overall', 'per_area', 'per_type'])
+    def testFirstJobSignup(self):
+        self._firstJobSignup()
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['overall', 'per_area', 'per_type'])
+    def testFirstJobSignupWithMessage(self):
+        self._firstJobSignup('hello')
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz (mit Mitteilung)', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['per_area', 'per_type'])
+    def testFirstJobInAreaSignup(self):
+        self._firstJobSignup()
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz im Tätigkeitsbereich "name"', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['per_area', 'per_type'])
+    def testFirstJobInAreaSignupWithMessage(self):
+        self._firstJobSignup('hello')
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz im Tätigkeitsbereich "name" (mit Mitteilung)', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['per_type'])
+    def testFirstJobInTypeSignup(self):
+        self._firstJobSignup()
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz in Job-Art "nameot"', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=['per_type'])
+    def testFirstJobInTypeSignupWithMessage(self):
+        self._firstJobSignup('hello')
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual('Juntagrico - Erster Einsatz in Job-Art "nameot" (mit Mitteilung)', mail.outbox[1].subject)
+
+    @override_settings(FIRST_JOB_INFO=[])
+    def testNoNotificationOnFirstJobSignup(self):
+        self._firstJobSignup()
+        self.assertEqual(len(mail.outbox), 1)  # only member notification
 
 
 class JobConvertionTests(JuntagricoJobTestCase):
@@ -229,6 +293,7 @@ class UnsubscribableJobTests(JobTests):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        self.assertEqual(mail.outbox[1].subject, 'Juntagrico - Abmeldung vom Einsatz')
         mail.outbox = []
 
         # now we have no sign ups, so a repeated unsubscribe should return 200

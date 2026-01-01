@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load juntagrico.snippets %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.common %}
@@ -33,7 +34,7 @@
     {% block admin_actions %}
         {% if edit_url.strip or can_copy or can_cancel %}
             <div class="row pb-4">
-                <div class="col-md-12">
+                <div class="col-12">
                     {% if edit_url.strip %}
                         <a href="{{ edit_url }}" class="btn btn-primary">
                             <i class="fas fa-pen mr-1"></i>
@@ -109,10 +110,10 @@
 
     {% block time %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Zeitpunkt" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
                 <br/>
                 {% if job_is_in_past %}
@@ -129,11 +130,11 @@
     {% if not job.infinite_slots %}
         {% block status %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% trans "Status" %}:
                 </div>
                 {% with slots_taken=job.occupied_slots %}
-                    <div class="col-md-5" title="{{ slots_taken }} von {{ job.slots }} gebucht">
+                    <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
                         {% spaceless %}
                             {% for _ in ''|ljust:job.slots %}
                                 {% if forloop.counter <= slots_taken %}
@@ -152,10 +153,10 @@
     {% block multiplier %}
         {% if job.multiplier == 0 %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% vocabulary "assignment_pl" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% blocktrans trimmed with jm=job.multiplier %}
                     Du erhältst für diese Veranstaltung keine {{ v_assignment_pl }} gutgeschrieben.
                     {% endblocktrans %}
@@ -163,10 +164,10 @@
             </div>
         {% elif job.multiplier != 1 %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% vocabulary "assignment_pl" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% blocktrans trimmed with jm=job.multiplier %}
                     Du erhältst für diesen Einsatz das {{ jm }}-Fache an {{ v_assignment_pl }} gutgeschrieben.
                     {% endblocktrans %}
@@ -178,10 +179,10 @@
     {% if job.extras.strip %}
         {% block extras %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% trans "Extras" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% for extra in job.empty_per_job_extras %}
                         {{ extra.extra_type.display_empty|safe }}
                     {% endfor %}
@@ -195,10 +196,10 @@
 
     {% block location %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Ort" %}:
             </div>
-            <div class="col-md-5" id="map-container">
+            <div class="col-lg-9" id="map-container">
                 {{ job.type.location.to_html|safe }}
                 {% if job.type.location.google_maps_query %}
                     <br>
@@ -215,10 +216,10 @@
 
     {% block description %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Beschreibung" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 <div class="job-description">{{ job.type.description|richtext|safe }}</div>
                 {% if job.additional_description %}
                     <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
@@ -229,10 +230,10 @@
 
     {% block contact %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Kontakt" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {% for contact in job.contacts %}
                     {{ contact.to_html }}
                 {% endfor %}
@@ -242,14 +243,14 @@
 
     {% block participants %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Dabei sind" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {% if job.occupied_slots == 0 and job.free_slots != 0 %}
                     {% trans "Noch niemand" %} 🥺
                 {% else %}
-                    {% include "juntagrico/job/snippets/participant_list.html" %}
+                    {% job_participant_list request.user job %}
                 {% endif %}
             </div>
         </div>

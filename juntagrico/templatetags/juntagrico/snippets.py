@@ -3,6 +3,9 @@ import datetime
 from django import template
 from impersonate.helpers import check_allow_for_user
 
+from juntagrico.config import Config
+from juntagrico.entity.jobs import Job, RecuringJob
+
 register = template.Library()
 
 
@@ -12,6 +15,25 @@ def impersonate_start(request, member):
     return {
         'can_impersonate': check_allow_for_user(request, user),
         'user': user
+    }
+
+
+@register.inclusion_tag('juntagrico/job/snippets/participant_list.html')
+def job_participant_list(user, job):
+    participants = job.participants.annotate_job_slots()
+    show_first_job = Config.first_job_info()
+    if 'overall' in show_first_job:
+        participants = participants.annotate_first_job()
+    if 'per_area' in show_first_job:
+        participants = participants.annotate_first_job('_in_area', Job.objects.in_area(job.type.activityarea))
+    if 'per_type' in show_first_job and isinstance(job, RecuringJob):
+        participants = participants.annotate_first_job('_of_type', job.type.recuringjob_set.all())
+    permissions = job.check_if(user)
+    return {
+        'job': job,
+        'participants': participants,
+        'can_contact': permissions.can_contact_member(),
+        'can_edit_assignments': permissions.can_modify_assignments(),
     }
 
 
