@@ -361,6 +361,14 @@ class Job(JuntagricoBasePoly):
     def participant_emails(self):
         return set(m.email for m in self.participants)
 
+    def is_first_for(self, member, of_jobs=None):
+        of_jobs = {'job__in': of_jobs} if of_jobs else {}
+        return not Assignment.objects.filter(
+            member=member,
+            job__time__lt=self.time,
+            **of_jobs,
+        ).exists()
+
     def get_emails(self, get_member=False, exclude=None):
         """
         :param get_member: If true returns a member (or None) in addition to the email address

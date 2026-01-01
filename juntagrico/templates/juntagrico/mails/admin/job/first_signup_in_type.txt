@@ -1,0 +1,3 @@
+{% extends "juntagrico/mails/admin/job/signup.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans with job_type=job.type.get_name %}Soeben hat sich {{ member }} zum ersten Mal zu einem Einsatz in der Job-Art {{ job_type }} angemeldet.{% endblocktrans %}{% endblock %}

@@ -133,13 +133,44 @@ def _template_member_in_job(job, subject, template_name, **kwargs):
 
 def member_subscribed_to_job(job, **kwargs):
     # TODO: Allow contacts to subscribe/unsubscribe from notifications
-    if kwargs.get('message'):
-        subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
+    from juntagrico.entity.jobs import Job, RecuringJob
+    member = kwargs['member']
+    message = kwargs.get('message')
+    if Config.notifications('first_job_subscribed') and job.is_first_for(member):
+        # notification on first job signup of member
+        template_name = 'first_signup'
+        if message:
+            subject = _('Erster Einsatz (mit Mitteilung)')
+        else:
+            subject = _('Erster Einsatz')
+    elif Config.notifications('first_job_in_area_subscribed') and job.is_first_for(
+            member, Job.objects.in_area(job.type.activityarea)
+    ):
+        # notification on first job signup of member in this area
+        template_name = 'first_signup_in_area'
+        if message:
+            subject = _('Erster Einsatz im Tätigkeitsbereich "{}" (mit Mitteilung)').format(job.type.activityarea)
+        else:
+            subject = _('Erster Einsatz im Tätigkeitsbereich "{}"').format(job.type.activityarea)
+    elif Config.notifications('first_job_in_type_subscribed') and isinstance(job, RecuringJob) and job.is_first_for(
+            member, job.type.recuringjob_set.all()
+    ):
+        # notification on first job signup of member in this job type
+        template_name = 'first_signup_in_type'
+        if message:
+            subject = _('Erster Einsatz in Job-Art "{}" (mit Mitteilung)').format(job.type.get_name)
+        else:
+            subject = _('Erster Einsatz in Job-Art "{}"').format(job.type.get_name)
     else:
-        if not Config.notifications('job_subscribed'):
-            return
-        subject = _('Neue Anmeldung zum Einsatz')
-    _template_member_in_job(job, subject, 'signup', **kwargs)
+        # normal signup notification
+        template_name = 'signup'
+        if message:
+            subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
+        else:
+            if not Config.notifications('job_subscribed'):
+                return
+            subject = _('Neue Anmeldung zum Einsatz')
+    _template_member_in_job(job, subject, template_name, **kwargs)
 
 
 def member_changed_job_subscription(job, **kwargs):

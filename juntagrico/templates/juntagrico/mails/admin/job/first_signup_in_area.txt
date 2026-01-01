@@ -1,0 +1,3 @@
+{% extends "juntagrico/mails/admin/job/signup.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans with area=job.type.activityarea %}Soeben hat sich {{ member }} zum ersten Mal zu einem Einsatz im Tätigkeitsbereich {{ area }} angemeldet.{% endblocktrans %}{% endblock %}

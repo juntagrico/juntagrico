@@ -162,6 +162,15 @@ class Command(BaseCommand):
             print('*** admin/job/signup ***')
             print(get_template('juntagrico/mails/admin/job/signup.txt').render(admin_job_dict), end='\n\n')
 
+            print('*** admin/job/first_signup ***')
+            print(get_template('juntagrico/mails/admin/job/first_signup.txt').render(admin_job_dict), end='\n\n')
+
+            print('*** admin/job/first_signup_in_area ***')
+            print(get_template('juntagrico/mails/admin/job/first_signup_in_area.txt').render(admin_job_dict), end='\n\n')
+
+            print('*** admin/job/first_signup_in_type ***')
+            print(get_template('juntagrico/mails/admin/job/first_signup_in_type.txt').render(admin_job_dict), end='\n\n')
+
             print('*** admin/job/subscription_changed ***')
             print(get_template('juntagrico/mails/admin/job/changed_subscription.txt').render(admin_job_dict), end='\n\n')
 
