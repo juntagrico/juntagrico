@@ -214,6 +214,19 @@
         </div>
     {% endblock %}
 
+    {% block activity_area %}
+        <div class="row pb-4">
+            <div class="col-lg-3">
+                {% trans "Tätigkeitsbereich" %}:
+            </div>
+            <div class="col-lg-9">
+                <a href="{% url 'area' job.type.activityarea.id %}">
+                    {{ job.type.activityarea }}
+                </a>
+            </div>
+        </div>
+    {% endblock %}
+
     {% block description %}
         <div class="row pb-4">
             <div class="col-lg-3">
