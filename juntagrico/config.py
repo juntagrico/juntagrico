@@ -94,6 +94,7 @@ class Config:
     enable_shares = _get_setting('ENABLE_SHARES', True)
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
+    require_subscription = _get_setting('REQUIRE_SUBSCRIPTION', False)
     signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
     enable_external_signup = _get_setting('ENABLE_EXTERNAL_SIGNUP', False)
     enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
