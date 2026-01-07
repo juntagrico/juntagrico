@@ -40,7 +40,7 @@ def mail_send_permissions_backward(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('juntagrico', '0050_alter_activityarea_options_and_more'),
+        ('juntagrico', '0045_alter_activityarea_options_and_more'),
     ]
 
     operations = [

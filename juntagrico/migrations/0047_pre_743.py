@@ -8,7 +8,7 @@ import juntagrico.entity
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0045_job_members'),
+        ('juntagrico', '0046_alter_depot_options_depotcoordinator_and_more'),
     ]
 
     operations = [

@@ -63,7 +63,7 @@ def migrate_email_attachment_permission(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0049_merge_20250504_1052'),
+        ('juntagrico', '0042_alter_subscriptiontype_required_assignments_and_more'),
     ]
 
     operations = [

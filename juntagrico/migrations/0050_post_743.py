@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0047_data_743'),
+        ('juntagrico', '0049_data_743'),
     ]
 
     operations = [

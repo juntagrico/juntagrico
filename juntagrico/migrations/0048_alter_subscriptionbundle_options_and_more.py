@@ -13,7 +13,7 @@ def set_bundle_sort_order(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0046_alter_depot_options_depotcoordinator_and_more'),
+        ('juntagrico', '0047_pre_743'),
     ]
 
     operations = [
