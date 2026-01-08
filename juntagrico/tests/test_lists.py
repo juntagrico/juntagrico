@@ -89,7 +89,6 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             </tr>
         """, rendered_html)
 
-
     def testManualDepotListGeneration(self):
         url = reverse('lists')
         data = {
