@@ -407,14 +407,14 @@ class JuntagricoTestCase(TestCase):
         login_member = member or self.default_member
         self.client.force_login(login_member.user)
         response = self.client.get(url, data)
-        self.assertEqual(response.status_code, code)
+        self.assertEqual(response.status_code, code, msg=f'url: {url}, data: {data}')
         return response
 
     def assertPost(self, url, data=None, code=200, member=None):
         login_member = member or self.default_member
         self.client.force_login(login_member.user)
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, code)
+        self.assertEqual(response.status_code, code, msg=f'url: {url}, data: {data}')
         return response
 
 
