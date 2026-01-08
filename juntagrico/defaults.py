@@ -1,6 +1,8 @@
 from juntagrico.util.settings import tinymce_lang
 
 
+# Rich text field defaults
+
 RICHTEXTFIELD_DEFAULT_SETTINGS = {
     'menubar': False,
     'plugins': 'link  lists',
@@ -47,3 +49,12 @@ def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, 
     if use_in_admin or admin is not None:
         conf['profiles']['juntagrico.admin'] = admin or {}
     return conf
+
+
+# depot list defaults
+
+DEPOT_LISTS = {
+    'depotlist': 'exports/depotlist.html',
+    'depot_overview': 'exports/depot_overview.html',
+    'amount_overview': 'exports/amount_overview.html',
+}

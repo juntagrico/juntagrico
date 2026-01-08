@@ -221,12 +221,8 @@ urlpatterns = [
     path('email/sent', email.sent, name='email-sent'),
 
     # /list
-    path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),
-    path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
-    path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
-
-    # /manage/list
-    path('manage/list', juntagrico_admin.manage_list, name='manage-list'),
+    path('list', juntagrico_admin.manage_list, name='lists'),
+    path('list/<str:name>', juntagrico_admin.download_list, name='lists-download'),
 
     # /export
     path('my/export', juntagrico_admin.export, name='export'),

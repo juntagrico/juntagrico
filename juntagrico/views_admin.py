@@ -1,9 +1,11 @@
 import datetime
 from io import BytesIO
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
+from django.core.files.storage import default_storage
 from django.core.management import call_command
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -24,22 +26,8 @@ from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
+from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
-
-
-@permission_required('juntagrico.can_view_lists')
-def depotlist(request):
-    return return_pdf_http('depotlist.pdf')
-
-
-@permission_required('juntagrico.can_view_lists')
-def depot_overview(request):
-    return return_pdf_http('depot_overview.pdf')
-
-
-@permission_required('juntagrico.can_view_lists')
-def amount_overview(request):
-    return return_pdf_http('amount_overview.pdf')
 
 
 @permission_required('juntagrico.change_subscription')
@@ -290,20 +278,58 @@ def unset_change_date(request):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.can_generate_lists')
-def manage_list(request):
-    success = False
-    can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
-    if request.method == 'POST':
-        form = GenerateListForm(request.POST, show_future=can_change_subscription)
-        if form.is_valid():
-            # generate list
-            f = can_change_subscription and form.cleaned_data['future']
-            call_command('generate_depot_list', force=True, future=f, no_future=not f, days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
-            success = True
-    else:
-        form = GenerateListForm(show_future=can_change_subscription)
-    return render(request, 'juntagrico/manage/list.html', {'form': form, 'success': success})
+@any_permission_required('juntagrico.can_generate_lists', 'juntagrico.can_view_lists')
+def manage_list(request, extra_lists=None):
+    extra_lists = extra_lists or []
+    depot_lists = []
+    if request.user.has_perm('juntagrico.can_view_lists'):
+        default_names = dict(
+            depotlist=_('{}-Listen').format(Config.vocabulary('depot')),
+            depot_overview=_('{} Übersicht').format(Config.vocabulary('depot')),
+            amount_overview=_('Mengen Übersicht')
+        )
+        for depot_list in list(Config.depot_lists(default_names)) + extra_lists:
+            file_name = depot_list['file_name'] + '.pdf'
+            exists = default_storage.exists(file_name)
+            creation_time = None
+            if exists:
+                try:
+                    creation_time = default_storage.get_created_time(file_name)
+                except NotImplementedError:
+                    pass
+            depot_lists.append({
+                **depot_list,
+                'exists': exists,
+                'creation_time': creation_time,
+            })
+
+    form = None
+    if request.user.has_perm('juntagrico.can_generate_lists'):
+        can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
+        if request.method == 'POST':
+            form = GenerateListForm(request.POST, show_future=can_change_subscription)
+            if form.is_valid():
+                # generate list
+                f = can_change_subscription and form.cleaned_data['future']
+                call_command('generate_depot_list', force=True, future=f, no_future=not f,
+                             days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
+                messages.success(request, 'Listen erfolgreich erstellt.')
+                return HttpResponseRedirect('')
+        else:
+            form = GenerateListForm(show_future=can_change_subscription)
+
+    return render(request, 'juntagrico/manage/list.html', {
+        'depot_lists': depot_lists,
+        'form': form,
+    })
+
+
+@permission_required('juntagrico.can_view_lists')
+def download_list(request, name, extra_lists=None):
+    extra_lists = extra_lists or []
+    if name not in [depot_list['file_name'] for depot_list in Config.depot_lists()] + extra_lists:
+        raise Http404
+    return return_pdf_http(name + '.pdf')
 
 
 @login_required
