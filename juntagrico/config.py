@@ -5,6 +5,8 @@ from django.contrib.sites.models import Site
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+from juntagrico import defaults
+
 
 FIRST_JOB_NOTIFICATION_MAP = {
     'overall': 'first_job_subscribed',
@@ -121,6 +123,22 @@ class Config:
     )
     first_job_info = _get_setting('FIRST_JOB_INFO', ['overall'])
 
+    @staticmethod
+    def depot_lists(default_names=None):
+        default_names = default_names or {}
+        values = getattr(settings, 'DEPOT_LISTS', defaults.DEPOT_LISTS)
+        # normalize
+        for file_name, conf in values.items():
+            if not isinstance(conf, dict):
+                conf = dict(template=conf)
+            if callable(conf.get('extra_context')):
+                conf['extra_context'] = conf['extra_context']()
+            elif 'extra_context' not in conf:
+                conf['extra_context'] = {}
+            if 'name' not in conf:
+                conf['name'] = default_names.get(file_name, file_name)
+            yield dict(file_name=file_name, **conf)
+
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
@@ -141,8 +159,8 @@ class Config:
         'SUB_OVERVIEW_FORMAT',
         {
             'delimiter': '|',
-            'format': '{product}:{size}:{type}={amount}',
-            'part_format': '{size}'
+            'format': '{category}:{bundle}:{type}={amount}',
+            'part_format': '{bundle}'
         }
     )
 

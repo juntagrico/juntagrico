@@ -8,5 +8,5 @@ class DeliveryDao:
         if subscription is not None:
             return Delivery.objects.all().order_by("-delivery_date").\
                 filter(tour=subscription.depot.tour).\
-                filter(subscription_size__types__subscription_parts__in=subscription.active_parts.all()).distinct()
+                filter(subscription_bundle__types__subscription_parts__in=subscription.active_parts.all()).distinct()
         return Delivery.objects.none()

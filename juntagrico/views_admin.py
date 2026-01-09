@@ -1,9 +1,11 @@
 import datetime
 from io import BytesIO
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
+from django.core.files.storage import default_storage
 from django.core.management import call_command
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -15,53 +17,39 @@ from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
+from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
-
-
-@permission_required('juntagrico.can_view_lists')
-def depotlist(request):
-    return return_pdf_http('depotlist.pdf')
-
-
-@permission_required('juntagrico.can_view_lists')
-def depot_overview(request):
-    return return_pdf_http('depot_overview.pdf')
-
-
-@permission_required('juntagrico.can_view_lists')
-def amount_overview(request):
-    return return_pdf_http('amount_overview.pdf')
 
 
 @permission_required('juntagrico.change_subscription')
 def future(request):
-    subscriptionsizes = []
+    subscriptionbundles = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
-        subscriptionsizes.append(subscription_size.id)
-        subscription_lines[subscription_size.id] = {
-            'name': subscription_size.product.name + '-' + subscription_size.name,
+    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'long_name'):
+        subscriptionbundles.append(subscription_bundle.id)
+        subscription_lines[subscription_bundle.id] = {
+            'name': str(subscription_bundle),
             'future': 0,
             'now': 0
         }
     for subscription in SubscriptionDao.all_active_subscritions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['now'] += subscription.subscription_amount(
+                subscription_bundle)
 
     for subscription in SubscriptionDao.future_subscriptions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['future'] += subscription.subscription_amount_future(
+                subscription_bundle)
 
     renderdict = {
         'changed': request.GET.get('changed'),
@@ -290,20 +278,58 @@ def unset_change_date(request):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.can_generate_lists')
-def manage_list(request):
-    success = False
-    can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
-    if request.method == 'POST':
-        form = GenerateListForm(request.POST, show_future=can_change_subscription)
-        if form.is_valid():
-            # generate list
-            f = can_change_subscription and form.cleaned_data['future']
-            call_command('generate_depot_list', force=True, future=f, no_future=not f, days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
-            success = True
-    else:
-        form = GenerateListForm(show_future=can_change_subscription)
-    return render(request, 'juntagrico/manage/list.html', {'form': form, 'success': success})
+@any_permission_required('juntagrico.can_generate_lists', 'juntagrico.can_view_lists')
+def manage_list(request, extra_lists=None):
+    extra_lists = extra_lists or []
+    depot_lists = []
+    if request.user.has_perm('juntagrico.can_view_lists'):
+        default_names = dict(
+            depotlist=_('{}-Listen').format(Config.vocabulary('depot')),
+            depot_overview=_('{} Übersicht').format(Config.vocabulary('depot')),
+            amount_overview=_('Mengen Übersicht')
+        )
+        for depot_list in list(Config.depot_lists(default_names)) + extra_lists:
+            file_name = depot_list['file_name'] + '.pdf'
+            exists = default_storage.exists(file_name)
+            creation_time = None
+            if exists:
+                try:
+                    creation_time = default_storage.get_created_time(file_name)
+                except NotImplementedError:
+                    pass
+            depot_lists.append({
+                **depot_list,
+                'exists': exists,
+                'creation_time': creation_time,
+            })
+
+    form = None
+    if request.user.has_perm('juntagrico.can_generate_lists'):
+        can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
+        if request.method == 'POST':
+            form = GenerateListForm(request.POST, show_future=can_change_subscription)
+            if form.is_valid():
+                # generate list
+                f = can_change_subscription and form.cleaned_data['future']
+                call_command('generate_depot_list', force=True, future=f, no_future=not f,
+                             days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
+                messages.success(request, 'Listen erfolgreich erstellt.')
+                return HttpResponseRedirect('')
+        else:
+            form = GenerateListForm(show_future=can_change_subscription)
+
+    return render(request, 'juntagrico/manage/list.html', {
+        'depot_lists': depot_lists,
+        'form': form,
+    })
+
+
+@permission_required('juntagrico.can_view_lists')
+def download_list(request, name, extra_lists=None):
+    extra_lists = extra_lists or []
+    if name not in [depot_list['file_name'] for depot_list in Config.depot_lists()] + extra_lists:
+        raise Http404
+    return return_pdf_http(name + '.pdf')
 
 
 @login_required

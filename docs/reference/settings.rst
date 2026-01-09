@@ -553,6 +553,48 @@ JOBS_FRONTPAGE
 Depot
 -----
 
+
+.. _settings-depot-lists:
+
+DEPOT_LISTS
+^^^^^^^^^^^
+
+  Define which depot lists should be created and how
+
+  Type: Dict of depot lists
+
+  Example: Generate exiting or new depot list with custom template and context
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    def extra_context():
+        from juntagrico.entity.subs import Subscription
+        # pass a custom set to subscriptions
+        return dict(subscriptions=Subscription.objects.filter(...))
+
+    DEPOT_LISTS = defaults.DEPOT_LISTS | {
+        'depotlist': {  # overwrite existing depotlist definition.
+            'name': 'Meine Depotliste',
+            'template': 'exports/my_depotlist.html',
+            'extra_context': extra_context
+        },
+        # minimal definition for an additional list
+        'new_list': 'export/new_list_template.html'
+    }
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'depotlist': 'exports/depotlist.html',
+        'depot_overview': 'exports/depot_overview.html',
+        'amount_overview': 'exports/amount_overview.html',
+    }
+
+
 .. _settings-depot-list-generation-days:
 
 DEPOT_LIST_GENERATION_DAYS
@@ -570,9 +612,16 @@ DEPOT_LIST_GENERATION_DAYS
 
 .. _settings-default-depotlist-generators:
 
+
 DEFAULT_DEPOTLIST_GENERATORS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  Generators used to generate the depot list. Generators need the method signature ``generator_name(*args, **options)``
+  .. warning::
+    Deprecated since version 2.0. :ref:`Use DEPOT_LISTS instead <settings-depot-lists>`.
+
+  .. warning::
+    Changed in version 2.0: Takes ``context`` as argument instead of ``*args, **options``.
+
+  Generators used to generate the depot list. Generators need the method signature ``generator_name(context)``
 
   Type: List of Strings which define the different generators to be invoked
 
@@ -630,8 +679,8 @@ SUB_OVERVIEW_FORMAT
   .. code-block:: python
 
     {'delimiter': '|',
-     'format': '{product}:{size}:{type}={amount}',
-     'part_format': '{size}'
+     'format': '{category}:{bundle}:{type}={amount}',
+     'part_format': '{bundle}'
     }
 
 STYLES

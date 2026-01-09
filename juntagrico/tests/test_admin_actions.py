@@ -424,7 +424,7 @@ class JobConvertionTests(JuntagricoJobTestCase):
 class AdminTests(JuntagricoTestCase):
     def testDeliveryCopyForm(self):
         initial_count = Delivery.objects.all().count()
-        data = {'subscription_size': self.sub_size.pk,
+        data = {'subscription_bundle': self.bundle.pk,
                 'delivery_date': '26.07.2020',
                 }
         form = DeliveryCopyForm(instance=self.delivery1, data=data)

@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from juntagrico.config import Config
 from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartOrderForm
 from juntagrico.util.management import create_subscription_parts
 from juntagrico.view_decorators import primary_member_of_subscription
@@ -68,7 +68,7 @@ def single(request, subscription_id=None):
         'member': member,
         'subscription': subscription,
         'subscription_membership': subscription_membership,
-        'can_change_part': SubscriptionType.objects.normal().visible().count() > 1,
+        'can_change_part': SubscriptionType.objects.can_change(),
         'has_extra': SubscriptionType.objects.is_extra().visible().exists(),
         'unit': 'h' if Config.assignment_unit() == 'HOURS' else '',
     })
@@ -80,14 +80,13 @@ def part_order(request, subscription_id, extra=False):
     Order parts on a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    products = SubscriptionProduct.objects.filter(is_extra=extra).all
     if request.method == 'POST':
-        form = SubscriptionPartOrderForm(subscription, request.POST, product_method=products)
+        form = SubscriptionPartOrderForm(subscription, request.POST, extra=extra)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
             return redirect('subscription-single', subscription_id=subscription_id)
     else:
-        form = SubscriptionPartOrderForm(product_method=products)
+        form = SubscriptionPartOrderForm(extra=extra)
     return render(request, 'juntagrico/my/subscription/part/order.html', {
         'extra': extra,
         'form': form,

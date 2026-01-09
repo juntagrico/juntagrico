@@ -4,6 +4,7 @@ from juntagrico.mailer import adminnotification, membernotification
 
 subscribed = Signal()
 canceled = Signal()
+called = Signal()
 
 ''' job related signals'''
 job_canceled = Signal()
@@ -38,7 +39,6 @@ member_created = Signal()
 member_canceled = Signal()  # DEPRECATED
 member_deactivated = Signal()
 assignment_changed = Signal()
-
 
 ''' Signal Receivers '''
 
@@ -88,3 +88,7 @@ def on_assignment_changed(sender, **kwargs):
         adminnotification.assignment_removed(**kwargs)
     else:
         adminnotification.assignment_changed(**kwargs)
+
+
+def on_depot_list_generated(sender, **kwargs):
+    adminnotification.depot_list_generated()

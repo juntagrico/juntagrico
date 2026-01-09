@@ -2,35 +2,39 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
-        {% trans "Manuelle Listenerzeugung" %}
+        {% blocktrans with v_depot=vocabulary.depot %}{{ v_depot }}-Listen{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
-    {% vocabulary "member_pl" as v_member_pl %}
-    {% vocabulary "share_pl" as v_share_pl %}
-    {% vocabulary "assignment_pl" as v_assignment_pl %}
-    {% if success %}
-        <div class="alert alert-success">
-            {% trans "Listen erstellt" %}
-            {% if perms.juntagrico.can_view_lists %}
-                <br>
-                <a href="{% url 'lists-depot-amountoverview' %}">
-                    {% trans "Mengen Übersicht" %}
-                </a><br>
-                <a href="{% url 'lists-depotlist' %}">
-                    {% vocabulary "depot" %}-{% trans "Listen" %}
-                </a><br>
-                <a href="{% url 'lists-depot-overview' %}">
-                    {% vocabulary "depot" %} {% trans "Übersicht" %}
-                </a>
-            {% endif %}
+    {% if depot_lists %}
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <ul>
+                    {% for depot_list in depot_lists %}
+                        <li>
+                            {% if depot_list.exists %}
+                                <a href="{% url 'lists-download' depot_list.file_name %}">{{ depot_list.name }}</a>
+                                {% if depot_list.creation_time %}({{ depot_list.creation_time }}){% endif %}
+                            {% else %}
+                                {{ depot_list.name }} ({% trans "Noch nicht erstellt" %})
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     {% endif %}
-    <div class="row mb-4">
-        <div class="col-md-6">
-            {% crispy form %}
+
+    {% if form %}
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <h4>{% trans "Manuelle Listenerzeugung" %}</h4>
+                {% crispy form %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

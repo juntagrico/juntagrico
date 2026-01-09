@@ -322,3 +322,22 @@ Arguments:
 Default receivers:
 
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
+
+
+Management Command signals
+--------------------------
+
+.. _reference-signals-management-command-called:
+
+called
+^^^^^^
+
+Sender: generate_depot_list.Command
+
+Trigger: Management command is called
+
+Arguments: None
+
+Default receivers:
+
+* on_depot_list_generated: :ref:`Inform admin <reference-notifications-depot-list-generated>` when Depot list is generated.

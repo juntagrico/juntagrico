@@ -11,7 +11,7 @@ class AssignmentTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.sub_trial_type = cls.create_sub_type(cls.sub_size, trial_days=30)
+        cls.sub_trial_type = cls.create_sub_type(cls.bundle, trial_days=30)
         cls.subs = [
             # sub in second half of the year
             cls.create_sub(cls.depot, cls.sub_type, date(day=1, month=7, year=cls.year)),

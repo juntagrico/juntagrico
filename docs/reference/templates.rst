@@ -161,16 +161,17 @@ Blocks:
 - ``head``: Name and description of category
 - ``fields``: Nested fields
 
-juntagrico/form/layout/size_container.html
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Defines the structure to display subscription sizes in the subscription/part order and change forms.
+juntagrico/form/layout/bundle_container.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Defines the structure to display subscription bundles in the subscription/part order and change forms.
 
 Has the same blocks as ``category_container.html``.
 
+
 juntagrico/subscription/create/form/no_subscription_field.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 - ``description``: Textlabel on signup option without subscription
 - ``base_fee``: Base fee description on signup option without subscription
