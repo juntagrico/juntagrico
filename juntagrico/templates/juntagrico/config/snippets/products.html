@@ -1,0 +1,55 @@
+{% load juntagrico.common %}
+{% load i18n %}
+<h4>{% trans "Produkte" %}</h4>
+<p>
+    {% trans "Produkte können in verschiedenen Grössen definiert werden." %}
+    {% trans "Diese erscheinen, wenn aktiviert, auf den Depotlisten." %}
+</p>
+<div class="row row-cols-1 row-cols-md-2">
+    {% for product in products %}
+        <div class="col mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <strong>{{ product }}</strong>
+                    {% if perms.juntagrico.change_subscriptionproduct %}
+                    <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                {% endif %}
+                </div>
+                {% if product.description|striptags|wordcount %}
+                    <div class="card-body">
+                        <div class="card-text">
+                            {{ product.description|richtext|safe }}
+                        </div>
+                    </div>
+                {% endif %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <h5 class="card-title">{% trans "Grössen" %}</h5>
+                        <ul>
+                            {% for size in product.sizes.all %}
+                                <li>
+                                    {{ size.name }} ({{ size.units|floatformat:-3 }})
+                                    {% if size.show_on_depot_list %}
+                                        <i class="fa-solid fa-file-circle-check"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-file-circle-xmark"></i>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+    {% if perms.juntagrico.add_subscriptionproduct %}
+        <div class="col mb-3">
+            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionproduct_add' %}">
+                <i class="fas fa-plus mr-1"></i>
+                {% trans "Produkt hinzufügen" %}
+            </a>
+        </div>
+    {% endif %}
+</div>

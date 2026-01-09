@@ -153,4 +153,13 @@ class AdminTests(JuntagricoTestCaseWithShares):
                         code=302)
 
     def testSubtypeAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_subscriptiontype_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionbundle_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionbundle_change', args=(self.bundle.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptioncategory_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptioncategory_change', args=(self.sub_category.pk,)), member=self.admin)
+
+    def testSubProductAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionproduct_change', args=(self.sub_product.pk,)), member=self.admin)

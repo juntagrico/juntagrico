@@ -9,7 +9,7 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api
+from juntagrico.views import subscription, create_subscription, manage, email, job, api, config
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -132,6 +132,9 @@ urlpatterns = [
 
     # /cookies
     path('my/cookies', juntagrico.cookies, name='cookies'),
+
+    # /configuration
+    path('config/', config.overview, name='config'),
 
     # /manage (administration stuff)
     # /manage/changedate

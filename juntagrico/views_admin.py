@@ -17,9 +17,9 @@ from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
@@ -32,24 +32,24 @@ from juntagrico.views_subscription import error_page
 
 @permission_required('juntagrico.change_subscription')
 def future(request):
-    subscriptionsizes = []
+    subscriptionbundles = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
-        subscriptionsizes.append(subscription_size.id)
-        subscription_lines[subscription_size.id] = {
-            'name': subscription_size.product.name + '-' + subscription_size.name,
+    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'long_name'):
+        subscriptionbundles.append(subscription_bundle.id)
+        subscription_lines[subscription_bundle.id] = {
+            'name': str(subscription_bundle),
             'future': 0,
             'now': 0
         }
     for subscription in SubscriptionDao.all_active_subscritions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['now'] += subscription.subscription_amount(
+                subscription_bundle)
 
     for subscription in SubscriptionDao.future_subscriptions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['future'] += subscription.subscription_amount_future(
+                subscription_bundle)
 
     renderdict = {
         'changed': request.GET.get('changed'),

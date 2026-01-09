@@ -5,8 +5,6 @@ from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import ActivityArea, JobExtra
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
@@ -23,7 +21,7 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def has_extra_subscriptions():
-    return SubscriptionProductDao.all_extra_products().count() > 0
+    return SubscriptionType.objects.is_extra().exists()
 
 
 @register.simple_tag
@@ -38,7 +36,7 @@ def show_core():
 
 @register.simple_tag
 def requires_core():
-    return SubscriptionTypeDao.get_with_core().count() > 0
+    return SubscriptionType.objects.filter(required_core_assignments__gt=0).exists()
 
 
 @register.simple_tag

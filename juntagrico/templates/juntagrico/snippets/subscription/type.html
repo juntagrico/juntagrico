@@ -1,8 +1,6 @@
-{% load i18n %}
 {% load juntagrico.common %}
+{% load i18n %}
 {% load juntagrico.config %}
-{% load juntagrico.snippets %}
-{% load crispy_forms_field %}
 
 <div class="mb-3">
     {% if type.long_name.strip %}
@@ -55,6 +53,24 @@
             {% endif %}
         </div>
     {% endblock %}
+
+    {% if type.required_core_assignments > 0 %}
+        <div class="type-details type-required-core-assignments">
+            {% if hours_used %}
+                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3 %}
+                    <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz in Kernbereichen
+                {% plural %}
+                    <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze in Kernbereichen
+                {% endblocktranslate %}
+            {% else %}
+                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3 %}
+                    <strong>{{ assignments_float }}</strong> Arbeitseinsatz in Kernbereichen
+                {% plural %}
+                    <strong>{{ assignments_float }}</strong> Arbeitseinsätze in Kernbereichen
+                {% endblocktranslate %}
+            {% endif %}
+        </div>
+    {% endif %}
 
     {% config "enable_shares" as c_enable_shares %}
     {% if c_enable_shares %}
