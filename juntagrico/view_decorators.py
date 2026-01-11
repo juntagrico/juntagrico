@@ -1,12 +1,14 @@
+import datetime
 from functools import wraps
 
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.module_loading import import_string
 
+from juntagrico.config import Config
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.models import Subscription
 from juntagrico.util import temporal
-from juntagrico.util.sessions import SessionObjectManager, CSSessionObject
 from juntagrico.util.views_admin import date_from_get
 
 
@@ -44,34 +46,28 @@ def primary_member_of_subscription_of_part(view):
 
 
 def highlighted_menu(menu):
-    def view_wrappe(view):
+    def view_wrapper(view):
         @wraps(view)
         def wrapper(request, *args, **kwargs):
             request.active_menu = menu
             return view(request, *args, **kwargs)
         return wrapper
-    return view_wrappe
+    return view_wrapper
 
 
-def create_subscription_session(view):
+def signup_session(view):
     """ wrapper for views that are part of the registration procedure
     the registration information is passed to the view as the second argument and changes to it are stored in the
     session automatically
     """
     @wraps(view)
     def wrapper(request, *args, **kwargs):
-        som = SessionObjectManager(request, 'create_subscription', CSSessionObject)
-        session_object = som.data
-        # check if main member information is given. If not forward to first signup page.
-        is_signup = request.resolver_match.url_name == 'signup'
-        if request.user.is_authenticated:
-            if not request.user.member.can_order_subscription and not is_signup:
-                return redirect('subscription-landing')
-            session_object.main_member = request.user.member
-        if session_object.main_member is None and not is_signup:
-            return redirect('signup')
-        response = view(request, som.data, *args, **kwargs)
-        som.store()
+        signup_manager = import_string(Config.signup_manager())(request)
+        # make sure signup process is followed
+        next_page = signup_manager.get_next_page()
+        if next_page != request.resolver_match.url_name:
+            return redirect(next_page)
+        response = view(request, signup_manager, *args, **kwargs)
         return response
     return wrapper
 
@@ -86,6 +82,27 @@ def any_permission_required(*perms):
             return True
         return False
     return user_passes_test(check_perms)
+
+
+def requires_permission_to_contact(func):
+    def check_perms_to_contact(user):
+        # check if user can contact members
+        return user.member.can_contact()
+    return user_passes_test(check_perms_to_contact)(func)
+
+
+def using_change_date(view):
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        raw_date = request.session.get('changedate', None)
+        date = None
+        if raw_date:
+            try:
+                date = datetime.date.fromisoformat(raw_date)
+            except ValueError:
+                pass
+        return view(request, date, *args, **kwargs)
+    return wrapper
 
 
 def date_range_view(view):

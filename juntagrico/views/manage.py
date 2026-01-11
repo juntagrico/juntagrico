@@ -1,24 +1,33 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
+from django.utils.dateparse import parse_date
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import DateRangeForm
+from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
+from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
+from juntagrico.util.management_list import get_changedate
 from juntagrico.util.views_admin import date_from_get
+from juntagrico.view_decorators import using_change_date
 
 
 class DateRangeMixin:
@@ -85,7 +94,8 @@ class MemberActiveView(MemberView):
 
 
 class AreaMemberView(MemberView):
-    permission_required = 'juntagrico.is_area_admin'
+    permission_required = []  # checked in get_queryset
+    template_name = 'juntagrico/manage/member/show_for_area.html'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
@@ -94,17 +104,38 @@ class AreaMemberView(MemberView):
         self.area = get_object_or_404(
             ActivityArea,
             id=int(self.kwargs['area_id']),
-            coordinator=self.request.user.member
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
         )
         return self.area.members.active().prefetch_for_list
 
     def get_context_data(self, **kwargs):
+        access = AreaCoordinator.objects.filter(member=self.request.user.member, area=self.area).first()
         context = super().get_context_data(**kwargs)
+        context['area'] = self.area
         context['title'] = self.title.format(area_name=self.area.name)
-        context['mail_url'] = 'mail-area'
-        context['can_see_emails'] = True
+        context['mail_url'] = reverse('email-to-area', args=[self.area.id])
+        context['default_email_all'] = True
+        context['can_see_emails'] = access and access.can_contact_member
+        context['can_see_phone_numbers'] = context['can_see_emails']
+        context['can_remove_member'] = access and access.can_remove_member
         context['hide_areas'] = True
         return context
+
+
+@require_POST
+def remove_area_member(request, area_id):
+    member_id = request.POST.get('member_id')
+    if member_id is None:
+        raise BadRequest('member not specified')
+    area = get_object_or_404(
+        ActivityArea,
+        id=area_id,
+        coordinator_access__member=request.user.member,
+        coordinator_access__can_remove_member=True
+    )
+    area.members.remove(member_id)
+    return return_to_previous_location(request)
 
 
 class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
@@ -114,8 +145,8 @@ class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_member')
-def member_deactivate(request, member_id=None):
-    change_date = request.session.get('changedate', None)
+@using_change_date
+def member_deactivate(request, change_date, member_id=None):
     if member_id:
         members = [get_object_or_404(Member, id=member_id)]
     else:
@@ -132,15 +163,17 @@ class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_share')
-def share_payout(request, share_id=None):
-    change_date = request.session.get('changedate', None)
+@using_change_date
+def share_payout(request, change_date, share_id=None):
     if share_id:
         shares = [get_object_or_404(Share, id=share_id)]
     else:
         shares = Share.objects.filter(id__in=request.POST.get('share_ids').split('_'))
     for share in shares:
-        # TODO: capture validation errors and display them. Continue with other shares
-        share.payback(change_date)
+        try:
+            share.payback(change_date)
+        except ValidationError as e:
+            messages.error(request, f'{share}: {e.message}')
     return return_to_previous_location(request)
 
 
@@ -180,7 +213,7 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
         kwargs.update(dict(
             ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
             activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
-            cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
+            canceled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
             deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
             joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
             left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
@@ -200,9 +233,9 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def parts_apply(request):
+@using_change_date
+def parts_apply(request, change_date):
     parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
-    change_date = request.session.get('changedate', None)
     with transaction.atomic():
         for part in parts:
             if part.activation_date is None and part.deactivation_date is None:
@@ -219,21 +252,127 @@ def parts_apply(request):
     return return_to_previous_location(request)
 
 
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def activate_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    if part.activation_date is None and part.deactivation_date is None:
+        part.activate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def cancel_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.cancel(change_date)
+    membernotification.part_canceled_for_you(part)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def deactivate_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.deactivate(change_date)
+    return return_to_previous_location(request)
+
+
+class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.change_subscriptionpart']
+    template_name = 'juntagrico/manage/subscription/trial.html'
+    queryset = SubscriptionPart.objects.is_trial().waiting_or_active
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_changedate(self.request, datetime.date.today))
+        return context
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def activate_trial(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.subscription.activate(change_date)  # automatically activate subscription, if it isn't already
+    part.activate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def continue_trial(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    if request.method == 'POST':
+        form = SubscriptionPartContinueByAdminForm(part, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('manage-sub-trial'))
+    else:
+        form = SubscriptionPartContinueByAdminForm(part)
+    return render(request, 'juntagrico/my/subscription/trial/continue.html', {
+        'form': form,
+    })
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def deactivate_trial(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    end_date = parse_date(request.POST.get('end_date') or '') or part.end_of_trial_date
+    part.deactivate(end_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_post=True):
+    trial_part = get_object_or_404(SubscriptionPart, id=part_id)
+
+    success = False
+    if request.method == 'POST':
+        # handle submit
+        form = form_class(trial_part, request.POST)
+        if form.is_valid():
+            form.save()
+            success = True
+        if redirect_on_post:
+            if success:
+                messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                                    _("Änderungen angewendet")))
+            else:
+                messages.error(request, _('Änderungen fehlgeschlagen.'))
+            return redirect('manage-sub-trial')
+    else:
+        form = form_class(trial_part)
+
+    return render(request, 'juntagrico/manage/subscription/snippets/closeout_trial.html', {
+        'trial_part': trial_part,
+        'follow_up_part': form.follow_up_part,
+        'other_parts': form.other_new_parts,
+        'form': form,
+        **get_changedate(request, datetime.date.today),
+    })
+
+
 class DepotSubscriptionView(SubscriptionView):
-    permission_required = 'juntagrico.is_depot_admin'
+    permission_required = []
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
     )
 
     def get_queryset(self):
-        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']), contact=self.request.user.member)
+        self.depot = get_object_or_404(
+            Depot,
+            id=int(self.kwargs['depot_id']),
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
+        )
         return super().get_queryset()().filter(depot=self.depot)
 
     def get_context_data(self, **kwargs):
+        access = DepotCoordinator.objects.filter(member=self.request.user.member, depot=self.depot).first()
         context = super().get_context_data(**kwargs)
         context['title'] = self.title.format(depot_name=self.depot.name)
-        context['mail_url'] = 'mail-depot'
-        context['can_see_emails'] = True
+        context['mail_url'] = reverse('email-to-depot', args=[self.depot.id])
+        context['default_email_all'] = True
+        context['can_see_emails'] = access and access.can_contact_member
         context['hide_depots'] = True
         return context
 

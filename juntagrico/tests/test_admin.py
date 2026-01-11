@@ -1,31 +1,44 @@
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.jobs import Assignment, RecuringJob
+from juntagrico.entity.jobs import RecuringJob
 from . import JuntagricoTestCaseWithShares
 
 
 class AdminTests(JuntagricoTestCaseWithShares):
+    def testAdminLogin(self):
+        response = self.client.get(reverse('admin:login'))
+        self.assertEqual(response.status_code, 200)
+
     def testOneTimeJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)),
                        member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)),
+                       member=self.area_admin_job_modifier)
         url = reverse('admin:juntagrico_onetimejob_changelist')
         self.assertGet(url, member=self.admin)
         selected_items = [self.one_time_job1.pk]
-        Assignment.objects.create(job=self.one_time_job1, member=self.member, amount=1.0)
-        self.assertPost(url, data={'action': 'transform_job', '_selected_action': selected_items}, member=self.admin,
-                        code=302)
+        # copy action
+        response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
+                                   member=self.admin, code=302)
+        self.assertGet(response.url, member=self.admin)
 
     def testJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)), member=self.area_admin_job_modifier)
         self.assertGet(reverse('admin:juntagrico_recuringjob_add'), member=self.admin)
         url = reverse('admin:juntagrico_recuringjob_changelist')
         self.assertGet(url, member=self.admin)
         selected_items = [self.job1.pk]
-        self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items}, member=self.admin,
+        self.assertPost(url, data={'action': 'duplicate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
+        # copy action
+        response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
+                                   member=self.admin, code=302)
+        self.assertGet(response.url, member=self.admin)
+        # mass copy action
         response = self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items},
                                    member=self.admin, code=302)
         self.assertGet(response.url, member=self.admin)
@@ -41,39 +54,56 @@ class AdminTests(JuntagricoTestCaseWithShares):
         url = reverse('admin:autocomplete') + '?app_label=juntagrico&model_name=recuringjob&field_name=type'
         self.assertGet(url, member=self.admin)
         self.assertGet(url, member=self.area_admin)
+        self.assertGet(url, member=self.area_admin_job_modifier)
         url += '&term=a'
         self.assertGet(url, member=self.admin)
         self.assertGet(url, member=self.area_admin)
+        self.assertGet(url, member=self.area_admin_job_modifier)
 
     def testPastJobAdmin(self):
         add_url = reverse('admin:juntagrico_recuringjob_add')
         self.assertGet(add_url, member=self.area_admin)
+        self.assertGet(add_url, member=self.area_admin_job_modifier)
         # post shows error if no time is passed
         self.assertPost(add_url,
-                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
-                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
-                        member=self.area_admin)
+                        data={
+                            'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                            'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-TOTAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-INITIAL_FORMS': 0
+                        },
+                        member=self.area_admin_job_modifier)
         # post shows error if past time is passed
         past = timezone.now() - timezone.timedelta(days=2)
         self.assertPost(add_url,
-                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
-                              'time_0': past.date(), 'time_1': past.time(),
-                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
-                        member=self.area_admin)
+                        data={
+                            'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                            'time_0': past.date(), 'time_1': past.time(),
+                            'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-TOTAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-INITIAL_FORMS': 0
+                        },
+                        member=self.area_admin_job_modifier)
         # post works for future time
         future = timezone.now() + timezone.timedelta(days=2)
         self.assertPost(add_url,
-                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
-                              'time_0': future.date(), 'time_1': future.time(),
-                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
-                        member=self.area_admin, code=302)
+                        data={
+                            'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                            'time_0': future.date(), 'time_1': future.time(),
+                            'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-TOTAL_FORMS': 0,
+                            'juntagrico-contact-content_type-object_id-INITIAL_FORMS': 0
+                        },
+                        member=self.area_admin_job_modifier, code=302)
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin_job_modifier)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin_job_modifier)
         self.assertPost(reverse('admin:juntagrico_recuringjob_changelist'), data={
-            'action': 'copy_job', '_selected_action': [self.past_job.pk]
-        }, member=self.area_admin, code=302)
+            'action': 'duplicate_job', '_selected_action': [self.past_job.pk]
+        }, member=self.area_admin_job_modifier, code=302)
         self.assertGreater(RecuringJob.objects.last().time, timezone.now())
 
     def testDeliveryAdmin(self):
@@ -91,19 +121,25 @@ class AdminTests(JuntagricoTestCaseWithShares):
     def testJobTypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.area_admin)
-        url = reverse('admin:juntagrico_jobtype_changelist')
-        selected_items = [self.job_type.pk]
-        self.assertPost(url, data={'action': 'transform_job_type', '_selected_action': selected_items},
-                        member=self.admin, code=302)
+        self.assertGet(reverse('admin:juntagrico_jobtype_change', args=(self.job1.type.pk,)), member=self.area_admin_job_modifier)
 
     def testAreaAdmin(self):
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.area_admin_modifier)
+
+    def testDepotAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.depot_coordinator)
+        self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.depot_coordinator)
 
     def testAssignmentAdmin(self):
         self.assertGet(reverse('admin:juntagrico_assignment_change', args=(self.assignment.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_assignment_change', args=(self.assignment.pk,)),
                        member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_assignment_change', args=(self.assignment.pk,)),
+                       member=self.area_admin_assignment_modifier)
 
     def testMemberAdmin(self):
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
@@ -117,4 +153,13 @@ class AdminTests(JuntagricoTestCaseWithShares):
                         code=302)
 
     def testSubtypeAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_subscriptiontype_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionbundle_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionbundle_change', args=(self.bundle.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptioncategory_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptioncategory_change', args=(self.sub_category.pk,)), member=self.admin)
+
+    def testSubProductAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionproduct_change', args=(self.sub_product.pk,)), member=self.admin)

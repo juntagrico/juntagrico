@@ -1,0 +1,21 @@
+{% load crispy_forms_field %}
+<div class="form-group row">
+    <label class="col-md-3 col-form-label">
+        {{ field.label|safe }}
+    </label>
+    <div class="col-md-3">
+        {% if field.errors %}
+            {% crispy_field field 'class' 'form-control is-invalid' %}
+        {% else %}
+            {% crispy_field field 'class' 'form-control' %}
+        {% endif %}
+    {% if error_text_inline %}
+        {% include 'bootstrap4/layout/field_errors.html' %}
+    {% else %}
+        {% include 'bootstrap4/layout/field_errors_block.html' %}
+    {% endif %}
+    </div>
+    <label class="col-md-6 col-form-label">
+        {{ field.help_text|safe }}
+    </label>
+</div>

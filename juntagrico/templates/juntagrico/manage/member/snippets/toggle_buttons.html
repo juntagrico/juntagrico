@@ -1,13 +1,17 @@
 {% load i18n %}
 <div class="toggle-button-container mt-3 mb-3">
-    <span class="switch switch-sm">
-        <input class="switch toggle-display" type="checkbox" id="show_emails" data-filter=".email" checked="checked">
-        <label for="show_emails">{% trans "E-Mail-Adressen anzeigen" %}</label>
-    </span>
-    <span class="switch switch-sm">
-        <input class="switch toggle-display" type="checkbox" id="show_phone_numbers" data-filter=".phone-number">
-        <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
-    </span>
+    {% if can_see_emails or perms.juntagrico.can_send_mails %}
+        <span class="switch switch-sm">
+            <input class="switch toggle-display" type="checkbox" id="show_emails" data-filter=".email" checked="checked">
+            <label for="show_emails">{% trans "E-Mail-Adressen anzeigen" %}</label>
+        </span>
+    {% endif %}
+    {% if can_see_phone_numbers or perms.juntagrico.view_member or perms.juntagrico.change_member %}
+        <span class="switch switch-sm">
+            <input class="switch toggle-display" type="checkbox" id="show_phone_numbers" data-filter=".phone-number">
+            <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
+        </span>
+    {% endif %}
     {% if co_members %}
         <span class="switch switch-sm">
             <input class="switch toggle-display" type="checkbox" id="show_co_members" data-filter=".co-member">

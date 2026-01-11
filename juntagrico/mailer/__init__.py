@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.utils.module_loading import import_string
 
 from juntagrico.config import Config
 from juntagrico.util.decorators import chainable
@@ -87,6 +86,11 @@ class EmailSender:
 
     def __init__(self, email):
         self.email = email
+        self.email.body = self.trim_newlines(self.email.body)
+
+    @staticmethod
+    def trim_newlines(text):
+        return re.sub(r'((?:\r?\n|\r){,2})(?:\r?\n|\r)*', r'\1', text).strip()
 
     def send_to(self, to, **kwargs):
         to = [to] if isinstance(to, str) else to
@@ -96,21 +100,7 @@ class EmailSender:
         self.send()
 
     def send(self):
-        if getattr(settings, "TMP_DISABLE_EMAILS", False):
-            return  # prevent sending emails during generation of test data
-        # only send to whitelisted emails in dev
-        self.email.to = filter_whitelist_emails(self.email.to)
-        self.email.cc = filter_whitelist_emails(self.email.cc)
-        self.email.bcc = filter_whitelist_emails(self.email.bcc)
-        # apply from filter
-        if not re.match(Config.from_filter('filter_expression'), self.email.from_email):
-            reply_to = self.email.reply_to or [self.email.from_email]
-            self.email.from_email = Config.from_filter('replacement_from')
-            self.email.reply_to = reply_to
-        # send with juntagrico mailer or custom mailer
-        log.info(('Mail sent to ' + ', '.join(self.email.recipients()) + (', on whitelist' if settings.DEBUG else '')))
-        mailer = import_string(Config.default_mailer())
-        mailer.send(self.email)
+        self.email.send()
 
     @chainable
     def attach_html(self, html):
@@ -123,7 +113,6 @@ class EmailSender:
 
     @chainable
     def attach_ics(self, ics):
-
         self.email.attach(ics.name, ics.content)
 
     @chainable

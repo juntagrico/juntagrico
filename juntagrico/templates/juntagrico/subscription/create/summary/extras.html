@@ -1,0 +1,11 @@
+{% load i18n %}
+<h4>Zusatz-Abos <a href="{% url 'cs-extras' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
+<p>
+{% for type, amount in extras.items %}
+    {% include './snippets/part.html' %}
+    {% if not forloop.last %}<br>{% endif %}
+{% endfor %}
+{% if extras|length == 0 %}
+    {% blocktrans %}Keine Zusatz-Abos{%endblocktrans%}
+{% endif %}
+</p>

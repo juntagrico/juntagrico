@@ -48,6 +48,11 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         return Round(number)
 
     def active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions active on the given date.
+        """
         on_date = on_date or datetime.date.today()
         return self.in_date_range(on_date, on_date).exclude(activation_date=None)
 
@@ -153,12 +158,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
-            required_assignments=self._assignment_rounding(
-                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
-            ),
-            required_core_assignments=self._assignment_rounding(
+            required_core_assignments=Greatest(0.0, self._assignment_rounding(
                 Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
-            ),
+            )),
+            required_assignments=Greatest(F('required_core_assignments'), self._assignment_rounding(
+                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            )),
         )
 
     @method_decorator(default_to_business_year)
@@ -191,19 +196,35 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             )
         })
 
+    def on_depot_list(self):
+        return self.filter(parts__type__bundle__product_sizes__show_on_depot_list=True)
+
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
-        return self.filter(type__size__product__is_extra=False)
+        return self.filter(type__is_extra=False)
 
     def is_extra(self):
-        return self.filter(type__size__product__is_extra=True)
+        return self.filter(type__is_extra=True)
+
+    def is_trial(self):
+        return self.filter(type__trial_days__gt=0)
+
+    def non_trial(self):
+        return self.filter(type__trial_days=0)
 
     def ordered(self):
         return self.filter(activation_date=None)
 
-    def cancelled(self):
+    def waiting(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(activation_date__lte=date)
+
+    def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
+
+    def not_canceled(self):
+        return self.filter(cancellation_date=None)
 
     def waiting_or_active(self, date=None):
         date = date or datetime.date.today()
@@ -217,7 +238,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
                                                      output_field=PositiveIntegerField())).filter(week_mod=0))
 
     def sorted(self):
-        return self.order_by('type__size__product__is_extra', 'type__size__product',
+        return self.order_by('type__is_extra', 'type__bundle__category',
                              F('deactivation_date').desc(nulls_first=True),
                              F('cancellation_date').desc(nulls_first=True),
                              F('activation_date').desc(nulls_first=True))
@@ -226,4 +247,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.filter(subscription__primary_member=member)
 
     def on_depot_list(self):
-        return self.filter(type__size__depot_list=True)
+        return self.filter(type__bundle__product_sizes__show_on_depot_list=True)
+
+    def count_units(self):
+        return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']

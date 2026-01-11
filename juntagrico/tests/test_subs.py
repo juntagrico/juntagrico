@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership
+from ..entity.subs import SubscriptionPart
 from ..entity.subtypes import SubscriptionType
 
 
@@ -38,7 +39,8 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
     def testDepot(self):
-        self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
+        self.assertGet(reverse('depot', args=[self.depot.pk]))
+        self.assertGet(reverse('depot', args=[self.depot2.pk]))
         self.assertGet(reverse('depot-landing'))
 
     def testNicknameChange(self):
@@ -59,15 +61,15 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             if settings.ENABLE_SHARES:
                 self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
                 self.sub.refresh_from_db()
-                self.assertEqual(self.sub.future_parts.first().type, self.sub_type)
                 self.assertEqual(self.sub.future_parts.count(), 1)
-            # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
+                self.assertFalse(self.sub.future_parts.filter(type=self.sub_type2).exists())
+            # Add 2 shares. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
-            self.assertGet(reverse('part-cancel', args=[self.sub.parts.first().id, self.sub.pk]), code=302)
+            self.create_paid_share(self.member)
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.first().type, self.sub_type2)
-            self.assertEqual(self.sub.future_parts.count(), 1)
+            self.assertEqual(self.sub.future_parts.count(), 2)
+            self.assertTrue(self.sub.future_parts.filter(type=self.sub_type2).exists())
 
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):
@@ -109,15 +111,24 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
+    def cancelPart(self, part):
+        today = datetime.date.today()
+        self.assertGet(reverse('part-cancel', args=[part.id]), code=302)
+        part.refresh_from_db()
+        self.assertTrue(part.canceled)
+        self.assertEqual(part.cancellation_date, today)
+
+    def testCancelPart(self):
+        part = self.sub.parts.first()
+        self.cancelPart(part)
+
     def testCancelWaitingPart(self):
-        with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
-            # activate part with future date
-            part = self.sub.parts.all()[0]
-            part.activate(datetime.date.today() + datetime.timedelta(3))
-            # should be able to cancel part today
-            self.assertGet(reverse('part-cancel', args=[part.id, self.sub.pk]), code=302)
-            self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.count(), 0)
+        # activate part in the future. Cancellation should still be possible today.
+        part = self.sub.parts.first()
+        part.activation_date = datetime.date.today() + datetime.timedelta(3)
+        part.save()
+        self.cancelPart(part)
+        self.assertLess(part.cancellation_date, part.activation_date)
 
     def testLeave(self):
         if settings.ENABLE_SHARES:
@@ -194,6 +205,15 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
+
+    def testPartDeActivation(self):
+        new_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        self.assertGet(reverse('part-activate', args=[new_part.pk]), 302)
+        new_part.refresh_from_db()
+        self.assertTrue(new_part.active)
+        self.assertGet(reverse('part-deactivate', args=[new_part.pk]), 302)
+        new_part.refresh_from_db()
+        self.assertTrue(new_part.inactive)
 
     def testFuture(self):
         self.assertGet(reverse('future'))

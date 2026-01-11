@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from import_export import resources
@@ -62,10 +61,7 @@ class MemberAssignmentsPerArea(DateRangeResourceMixin, ModQuerysetModelResource)
             queryset = queryset.annotate_assignment_count(
                 self.start_date, self.end_date,
                 prefix=str(area.id),
-                assignment__job__in=Job.objects.filter(
-                    Q(RecuringJob___type__activityarea=area.pk) |
-                    Q(OneTimeJob___activityarea=area.pk)
-                )
+                assignment__job__in=Job.objects.in_area(area)
             )
         return queryset
 

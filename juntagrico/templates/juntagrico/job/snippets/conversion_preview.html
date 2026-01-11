@@ -1,0 +1,63 @@
+{% load i18n %}
+
+<div>
+    <h4>{% trans "Vorschau" %}</h4>
+    <div>
+        {% trans "Änderungen im wiederkehrenden Einsatz:" %}
+    </div>
+    <div>
+        {% if one_time_job.get_name != job_type.get_name %}
+            <div>
+                {% trans "Name: " %}
+                <span class="diff-remove">{{ one_time_job.get_name }}</span> &rarr;
+                <span class="diff-add">{{ job_type.get_name }}</span>
+            </div>
+        {% endif %}
+        {% if one_time_job.description != job_type.description %}
+            <div class="diff-remove">
+                {% trans "Beschreibung wird gelöscht und von Job-Art übernommen" %}
+            </div>
+        {% endif %}
+        {% if one_time_job.activityarea != job_type.activityarea %}
+            <div>
+                {% trans "Tätigkeitsbereich: " %}
+                <span class="diff-remove">{{ one_time_job.activityarea }}</span>  &rarr;
+                <span class="diff-add">{{ job_type.activityarea }}</span>
+            </div>
+        {% endif %}
+        {% if one_time_job.location != job_type.location %}
+            <div>
+                {% trans "Ort: " %}
+                <span class="diff-remove">{{ one_time_job.location }}</span>&rarr;
+                <span class="diff-add">{{ job_type.location }}</span>
+            </div>
+        {% endif %}
+        {% if one_time_job.job_extras_set.count or job_type.job_extras_set.count %}
+            <div>
+                {% trans "Job Extras: " %}
+                <span class="diff-remove">
+                    {% for extra in one_time_job.job_extras_set.all %}
+                        {{ extra.display }}
+                        {% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        {% trans "Keine" %}
+                    {% endfor %}
+                </span>&rarr;
+                <span class="diff-add">
+                    {% for extra in job_type.job_extras_set.all %}
+                        {{ extra.display }}
+                        {% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        {% trans "Keine" %}
+                    {% endfor %}
+                </span>
+            </div>
+        {% endif %}
+        <div class="text-others-unchanged">
+            {% trans "Alles Andere bleibt bestehen." %}
+        </div>
+        <div class="text-no-changes diff-add">
+            {% trans "keine Änderung. Alle Werte können übernommen werden." %}
+        </div>
+    </div>
+</div>

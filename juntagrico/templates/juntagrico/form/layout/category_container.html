@@ -1,0 +1,14 @@
+{% load juntagrico.common %}
+
+<div class="row">
+    <div class="col-md-12 {{ div.css_class }}">
+        {% block head %}
+            <h2>{{ div.name }}</h2>
+            <div>{{ div.description|richtext|safe }}</div>
+        {% endblock %}
+    </div>
+</div>
+
+{% block fields %}
+    {{ fields|safe }}
+{% endblock %}

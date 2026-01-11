@@ -1,0 +1,14 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% spaceless %}
+    <span>{% blocktrans trimmed with area_name=area.name %}
+        Du erhältst dieses E-Mail, weil du im Tätigkeitsbereich "{{ area_name }}" mitmachst.
+    {% endblocktrans %}</span>
+    <br/>
+
+    {% server_url as server_url %}
+    {% url 'area' area.id as area_url %}
+    <span>{% blocktrans trimmed with area_name=area.name %}
+        Du kannst das <a href="{{ server_url }}{{ area_url }}">hier einstellen</a>.
+    {% endblocktrans %}</span>
+{% endspaceless %}

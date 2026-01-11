@@ -2,8 +2,8 @@
 {% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% load juntagrico.menu %}
-{% messages request as l_messages %}
 {% widgets_menu request as widgets_menu %}
 
 <!DOCTYPE html>
@@ -31,6 +31,9 @@
         {% for static_style in static_styles %}
             <link href="{% static static_style %}" rel="stylesheet"/>
         {% endfor %}
+        {# include library early for form media #}
+        <script type="text/javascript" src="{% static 'juntagrico/external/jquery/jquery-3.7.1.min.js' %}">
+        </script>
     </head>
     <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
@@ -87,6 +90,7 @@
                 {% block all_page_title %}
                     <div class="page-title offset-md-3 col-md-9">
                         {% block page_title %}
+                            <h3>{{ page_title }}</h3>
                         {% endblock %}
                     </div>
                 {% endblock %}
@@ -102,9 +106,10 @@
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
                             <div class="col-md-12">
-                                {% for message in l_messages %}
-                                    {{ message }}
+                                {% for message in messages %}
+                                    {% alert message %}
                                 {% endfor %}
+                                {% block messages %}{% endblock %}
                             </div>
                         </div>
                         <div class="content row">
@@ -124,8 +129,6 @@
                 {% endblock %}
             </div>
         </div>
-        <script type="text/javascript" src="{% static 'juntagrico/external/jquery/jquery-3.7.1.min.js' %}">
-        </script>
         <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap/js/bootstrap.bundle.min.js' %}">
         </script>
         <script type="text/javascript" src="{% url 'js-i18n' %}">

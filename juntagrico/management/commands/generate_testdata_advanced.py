@@ -3,16 +3,18 @@ import random
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.test import override_settings
 from faker import Faker
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionCategory, SubscriptionProduct, \
+    SubscriptionBundleProductSize, ProductSize
 
 fake = Faker()
 
@@ -69,7 +71,6 @@ class Command(BaseCommand):
         }
         location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
-            'contact': member,
             'description': fake.random_element(elements=[
                 'Hinter dem Restaurant'
                 'Unter der Treppe',
@@ -80,6 +81,7 @@ class Command(BaseCommand):
             'location': location
         }
         depot, _ = Depot.objects.update_or_create(**depot_dict)
+        DepotCoordinator.objects.update_or_create(member=member, depot=depot)
         return depot
 
     def generate_subscription(self, main_member, co_member, depot, sub_types):
@@ -127,8 +129,9 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
+        parser.add_argument('--categories', type=str, help='Categories[/bundle1,bundle2,...] to use', default=["Hof/Korb"], nargs="+")
         parser.add_argument('--products', type=str, help='Products[/size1,size2,...] to use', default=["Gemüse/1"], nargs="+")
-        parser.add_argument('--sub-size', type=int, help='Default size of subscription', default=1)
+        parser.add_argument('--sub-size', type=int, help='Default size of product', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
         parser.add_argument('--sub-price', type=int, help='Price of suscription', default=250)
@@ -137,37 +140,61 @@ class Command(BaseCommand):
         parser.add_argument('--subs-per-depot', type=int, help='Subscriptions per depot', default=10)
         parser.add_argument('--job-amount', type=int, help='Jobs per area', default=10)
 
-    # entry point used by manage.py
+    # prevent sending emails while creating testdata
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.dummy.EmailBackend')
     def handle(self, *args, **options):
         sub_types = []
+        product_sizes = []
         default_size = options['sub_size']
-        for product_sizes in options['products']:
-            product_sizes_parts = product_sizes.split('/')
+        # create products and sizes
+        for product_size_pairs in options['products']:
+            product_sizes_parts = product_size_pairs.split('/')
             product = product_sizes_parts[0]
             if product_sizes_parts[1:]:
-                product_sizes = map(int, product_sizes_parts[1].split(','))
+                sizes = map(int, product_sizes_parts[1].split(','))
             else:
-                product_sizes = [default_size]
+                sizes = [default_size]
 
-            subprod_field = {'name': product}
-            sub_product, _ = SubscriptionProduct.objects.get_or_create(**subprod_field)
-            for size in product_sizes:
-                subsize_fields = {
-                    'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
-                    'depot_list': True,
+            sub_product, _ = SubscriptionProduct.objects.get_or_create(name=product)
+            for size in sizes:
+                product_size, _ = ProductSize.objects.get_or_create(
+                    name=random.choice(['Tasche', 'Portion', '500g']),
+                    units=size,
+                    show_on_depot_list=True,
+                    product=sub_product
+                )
+                product_sizes.append(product_size)
+        # create categories and bundles
+        for categories_bundles in options['categories']:
+            category_bundle_parts = categories_bundles.split('/')
+            category = category_bundle_parts[0]
+            if category_bundle_parts[1:]:
+                bundles_names = category_bundle_parts[1].split(',')
+            else:
+                bundles_names = ['Korb']
+
+            subcategory_field = {'name': category}
+            sub_category, _ = SubscriptionCategory.objects.get_or_create(**subcategory_field)
+            for bundle_name in bundles_names:
+                bundle_fields = {
+                    'long_name': bundle_name,
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
-                    'product': sub_product
+                    'category': sub_category
                 }
-                size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
+                bundle, _ = SubscriptionBundle.objects.get_or_create(**bundle_fields)
+                # map bundle to some product sizes
+                for _ in range(random.randint(0, len(product_sizes) + 1)):
+                    size = random.choice(product_sizes)
+                    SubscriptionBundleProductSize.objects.create(bundle=bundle, product_size=size)
 
                 subtype_fields = {
-                    'name': 'Abo {}'.format(product),
-                    'long_name': 'Ganz Normales {} Abo'.format(product),
+                    'name': 'Abo {}'.format(category),
+                    'long_name': 'Ganz Normales {} Abo'.format(category),
                     'shares': options['sub_shares'],
                     'required_assignments': options['sub_assignments'],
                     'price': options['sub_price'],
                     'description': '',
-                    'size': size
+                    'bundle': bundle
                 }
                 sub_type, _ = SubscriptionType.objects.get_or_create(
                     name=subtype_fields['name'],
@@ -191,15 +218,14 @@ class Command(BaseCommand):
                 self.generate_depot_sub(depot, options['sub_shares'], random_sub_types)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': self.members[0],
-                        'auto_add_new_members': True}
+                        'hidden': False, 'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': self.members[1],
-                        'auto_add_new_members': False}
+                        'hidden': False, 'auto_add_new_members': False}
         area_1, _ = ActivityArea.objects.get_or_create(
             name=area1_fields['name'],
             defaults=area1_fields
         )
+        AreaCoordinator.objects.update_or_create(member=self.members[0], area=area_1)
         if len(self.members) > 2:
             area_1.members.set(self.members[2:int((len(self.members)) / 2)])
         else:
@@ -209,6 +235,7 @@ class Command(BaseCommand):
             name=area2_fields['name'],
             defaults=area2_fields
         )
+        AreaCoordinator.objects.update_or_create(member=self.members[1], area=area_2)
         if len(self.members) > 2:
             area_2.members.set(self.members[int(
                 (len(self.members)) / 2) + 1:int((len(self.members)) / 2 - 1)])

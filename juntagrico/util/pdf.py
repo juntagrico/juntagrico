@@ -36,13 +36,13 @@ def return_pdf_http(filename):
         return HttpResponseServerError()
 
 
-def render_to_pdf_storage(template_name, renderdict, filename):
+def render_to_pdf_storage(template_name, context, filename):
     '''
-    Take a string of rendered html and pack it into a pdfand save it
+    Take a string of rendered html and pack it into a pdf and save it
     '''
     if default_storage.exists(filename):
         default_storage.delete(filename)
-    rendered_html = get_template(template_name).render(renderdict)
+    rendered_html = get_template(template_name).render(context)
     pdf = BytesIO()
     pisa.CreatePDF(BytesIO(str(rendered_html).encode('utf-8')), dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))

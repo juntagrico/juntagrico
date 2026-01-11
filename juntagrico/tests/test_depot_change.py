@@ -71,4 +71,5 @@ class DepotChangeTests(JuntagricoTestCase):
         self.another_sub.refresh_from_db()
         self.assertEqual(self.another_sub.depot, self.depot2)
         self.assertIsNone(self.another_sub.future_depot)
-        self.assertEqual(len(mail.outbox), 1)  # member notification of depot change
+        self.assertEqual(mail.outbox.pop(0).subject, 'Juntagrico - Depot geändert')  # member depot changed notification
+        self.assertEqual(mail.outbox.pop(0).subject, 'Juntagrico - Neue Depot-Liste generiert')  # Admin notification on list generation

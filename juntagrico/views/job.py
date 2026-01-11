@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Min, Max
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,13 +8,14 @@ from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST, require_GET
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
+from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob, JobType
 from juntagrico.entity.member import Member
-from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
-from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.messages import alert, error_message, job_messages
+from juntagrico.forms import BusinessYearForm
+from juntagrico.forms.job import JobSubscribeForm, EditAssignmentForm, ConvertToRecurringJobForm
+from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
 
@@ -28,6 +29,7 @@ def jobs(request):
     renderdict = {
         'jobs': jobs,
         'show_all': True,
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
     }
     return render(request, 'jobs.html', renderdict)
 
@@ -102,12 +104,16 @@ def all_jobs(request):
     All jobs to be sorted etc.
     '''
     jobs = JobDao.jobs_ordered_by_time()
+    context = {
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
+    }
     if jobs.count() > 1000:
         # use server side processing when data set is too large
         return render(request, 'juntagrico/job/list/all.html', {
-            'jobs': Job.objects.none()
+            'jobs': Job.objects.none(),
+            **context
         })
-    return render(request, 'jobs.html', {'jobs': jobs})
+    return render(request, 'jobs.html', {'jobs': jobs, **context})
 
 
 @login_required
@@ -147,10 +153,6 @@ def job(request, job_id, form_class=JobSubscribeForm):
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
-    member_messages = getattr(request, 'member_messages', []) or []
-    for message in messages.get_messages(request):
-        member_messages.append(alert(message))
-
     if request.method == 'POST':
         form = form_class(member, job, request.POST)
         if form.is_valid():
@@ -161,37 +163,119 @@ def job(request, job_id, form_class=JobSubscribeForm):
     else:
         form = form_class(member, job)
 
-    if request.method == 'POST':
-        member_messages.append(error_message())
-
-    member_messages.extend(job_messages(request, job))
-    request.member_messages = member_messages
-    is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
+    permissions = job.check_if(request.user)
+    is_recurring = isinstance(job.get_real_instance(), RecuringJob)
     renderdict = {
         'job': job,
-        'edit_url': get_job_admin_url(request, job),
-        'form': form,
+        'is_recurring': is_recurring,
+        'edit_url': permissions.get_edit_url(),
+        'can_copy': permissions.can_copy(),
+        'can_convert': permissions.can_convert(),
+        'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
-        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
+        'error': request.method == 'POST',
+        'form': form,
     }
+    if not is_recurring:
+        renderdict.update({
+            'convertion_form': ConvertToRecurringJobForm(member),
+            'convertion_suggestions': job.similar_job_types(5),
+        })
     return render(request, 'job.html', renderdict)
+
+
+@require_POST
+@login_required
+def convert_to_recurring(request, job_id, form_class=ConvertToRecurringJobForm, redirect_on_post=True):
+    one_time_job = get_object_or_404(OneTimeJob, id=job_id)
+    # check permission
+    if not one_time_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    # evaluate form
+    success = False
+    form = form_class(request.user.member, request.POST)
+    if form.is_valid():
+        new_job = form.save(one_time_job)
+        success = True
+    if redirect_on_post:
+        if success:
+            messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                                _("Umwandlung erfolgreich")))
+        else:
+            messages.error(request, _('Umwandlung fehlgeschlagen'))
+        return redirect('job', new_job.id if success else job_id)
+
+
+@require_GET
+@login_required
+def convert_to_recurring_preview(request, job_id):
+    member = request.user.member
+    one_time_job = get_object_or_404(OneTimeJob, id=job_id)
+    job_type_id = request.GET.get('job_type_id')
+    if job_type_id is None or job_type_id == '':
+        raise BadRequest('job type not specified')
+    job_type = get_object_or_404(JobType, id=job_type_id)
+    # check permission
+    if not one_time_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    if not request.user.has_perm('juntagrico.change_onetimejob'):
+        allowed_areas = member.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
+        if job_type.activityarea not in allowed_areas:
+            raise PermissionDenied
+
+    return render(request, 'juntagrico/job/snippets/conversion_preview.html', {
+        'one_time_job': one_time_job,
+        'job_type': job_type,
+    })
+
+
+@require_POST
+@login_required
+def convert_to_one_time(request):
+    job_id = request.POST.get('job_id')
+    if job_id is None:
+        raise BadRequest('job not specified')
+    recurring_job = get_object_or_404(RecuringJob, id=job_id)
+    # check permission
+    if not recurring_job.check_if(request.user).can_convert():
+        raise PermissionDenied
+    # convert the job
+    new_job = recurring_job.convert()
+    messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                        _("Umwandlung erfolgreich")))
+    return redirect('job', new_job.id)
+
+
+@require_POST
+@login_required
+def cancel(request):
+    job_id = request.POST.get('job_id')
+    if job_id is None:
+        raise BadRequest('job not specified')
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    if not job.check_if(request.user).can_cancel():
+        raise PermissionDenied
+    # cancel the job
+    job.canceled = True
+    job.save()
+    return return_to_previous_location(request)
 
 
 @login_required
 def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
-    editor = request.user.member
-    is_job_coordinator = job.type.activityarea.coordinator == editor and request.user.has_perm('juntagrico.is_area_admin')
-    if not (is_job_coordinator
+    is_assignment_coordinator = job.check_if(request.user).is_assignment_coordinator
+    if not (is_assignment_coordinator
             or request.user.has_perm('juntagrico.change_assignment')
             or request.user.has_perm('juntagrico.add_assignment')):
         raise PermissionDenied
-    can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    can_delete = is_assignment_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    editor = request.user.member
     member = get_object_or_404(Member, id=int(member_id))
-    success = False
 
+    success = False
     if request.method == 'POST':
         # handle submit
         form = form_class(editor, can_delete, member, job, request.POST, prefix='edit')
@@ -209,11 +293,10 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     else:
         form = form_class(editor, can_delete, member, job, prefix='edit')
 
-    renderdict = {
+    return render(request, 'juntagrico/job/snippets/edit_assignment.html', {
         'member': member,
         'other_job_contacts': job.get_emails(get_member=True, exclude=[editor.email]),
         'editor': editor,
         'form': form,
         'success': success,
-    }
-    return render(request, 'juntagrico/job/snippets/edit_assignment.html', renderdict)
+    })
