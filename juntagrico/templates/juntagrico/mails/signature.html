@@ -2,7 +2,7 @@
 
 <hr>
 
-{{ footer }}{% if footer %}<br/><br/>{% endif %}
+{% if footer %}{{ footer }}<br/><br/>{% endif %}
 
 {% config "organisation_address" as organisation_address %}
 <span>{{ organisation_address.name }}</span><br/>
