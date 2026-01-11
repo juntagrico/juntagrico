@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Count, Max, F
+from django.db.models import Max, F
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
@@ -343,10 +343,6 @@ class Job(JuntagricoBasePoly):
     def participants(self):
         return self.members.all()
 
-    @property
-    def unique_participants(self):
-        return self.participants.annotate(slots=Count('id')).distinct()
-
     @cached_property
     def all_participant_extras(self):
         extras = {}
@@ -364,6 +360,14 @@ class Job(JuntagricoBasePoly):
     @property
     def participant_emails(self):
         return set(m.email for m in self.participants)
+
+    def is_first_for(self, member, of_jobs=None):
+        of_jobs = {'job__in': of_jobs} if of_jobs else {}
+        return not Assignment.objects.filter(
+            member=member,
+            job__time__lt=self.time,
+            **of_jobs,
+        ).exists()
 
     def get_emails(self, get_member=False, exclude=None):
         """

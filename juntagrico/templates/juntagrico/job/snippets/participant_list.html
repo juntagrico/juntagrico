@@ -1,11 +1,24 @@
 {% load juntagrico.common %}
 {% load i18n %}
 <ul>
-    {% for participant in job.unique_participants %}
+    {% for participant in participants %}
         <li class="participant">
             <span class="participant-name">{{ participant }}</span>
             {% if participant.slots > 1 %}
                 <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
+            {% endif %}
+            {% if participant.is_first_job %}
+                <span class="badge badge-success participant-first-time">
+                    {% blocktrans %}Erster Einsatz{% endblocktrans %}
+                </span>
+            {% elif participant.is_first_job_in_area %}
+                <span class="badge badge-success participant-first-time-in-area">
+                    {% blocktrans %}Erster Einsatz im Tätigkeitsbereich{% endblocktrans %}
+                </span>
+            {% elif participant.is_first_job_of_type %}
+                <span class="badge badge-success participant-first-time-of-type">
+                    {% blocktrans %}Erster Einsatz dieser Art{% endblocktrans %}
+                </span>
             {% endif %}
             <span class="participant-job-extras">
             {% for extra in job.all_participant_extras|get_item:participant %}

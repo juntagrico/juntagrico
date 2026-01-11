@@ -8,6 +8,13 @@ from django.utils.translation import gettext_lazy as _
 from juntagrico import defaults
 
 
+FIRST_JOB_NOTIFICATION_MAP = {
+    'overall': 'first_job_subscribed',
+    'per_area': 'first_job_in_area_subscribed',
+    'per_type': 'first_job_in_type_subscribed',
+}
+
+
 def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
 
@@ -114,6 +121,7 @@ class Config:
             'promoted_count': 2
         }
     )
+    first_job_info = _get_setting('FIRST_JOB_INFO', ['overall'])
 
     @staticmethod
     def depot_lists(default_names=None):
@@ -245,6 +253,9 @@ class Config:
         default_notifications = [
             'job_subscription_changed',
             'job_unsubscribed',
+        ] + [
+            # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
+            FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
         ]
         enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
         disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])

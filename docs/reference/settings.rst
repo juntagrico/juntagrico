@@ -477,6 +477,33 @@ ASSIGNMENT_UNIT
 
     "ENTITY"
 
+
+FIRST_JOB_INFO
+^^^^^^^^^^^^^^
+  Defines if participants list of job indicates if this is the first job of member.
+  If multiple cases apply for one member, only the most generic case is shown.
+
+  Multiple options can be combined:
+    - ``'overall'``: show if this is the first job of this member ever
+    - ``'per_area'``: show if this is the first job of this member in this area
+    - ``'per_type'``: show if this is the first job of this member in this job type
+
+  This setting will automatically enable admin notifications for the indicated first jobs.
+  Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
+  or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+    - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
+    - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
+    - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type
+
+  Type: List of strings
+
+  default value
+
+  .. code-block:: python
+
+    ["overall"]
+
+
 ALLOW_JOB_UNSUBSCRIBE
 ^^^^^^^^^^^^^^^^^^^^^
   If set to true, members can unsubscribe themselves (or reduce the slots they reserved)
@@ -841,6 +868,8 @@ MAILER_RICHTEXT_OPTIONS
 Notifications
 -------------
 
+.. _reference-settings-enable-notifications:
+
 ENABLE_NOTIFICATIONS
 ^^^^^^^^^^^^^^^^^^^^
   List of strings, of notifications that should be enabled:
@@ -859,6 +888,8 @@ ENABLE_NOTIFICATIONS
 
     []
 
+
+.. _reference-settings-disable-notifications:
 
 DISABLE_NOTIFICATIONS
 ^^^^^^^^^^^^^^^^^^^^^

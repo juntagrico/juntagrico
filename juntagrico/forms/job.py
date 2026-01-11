@@ -117,12 +117,15 @@ class JobSubscribeForm(Form):
         return self.job.start_time() > timezone.now() and not self.job.canceled and (can_subscribe or self.can_unsubscribe)
 
     def clean(self):
+        cleaned_data = super().clean()
         if not self.can_interact:
             raise ValidationError(_("Du kannst an diesem Einsatz nichts ändern"), code='interaction_error')
-        self.cleaned_data[self.UNSUBSCRIBE] = self.UNSUBSCRIBE in self.data
-        if (self.cleaned_data[self.UNSUBSCRIBE] or self.cleaned_data.get('slots') == '0') and not self.can_unsubscribe:
+        cleaned_data[self.UNSUBSCRIBE] = self.UNSUBSCRIBE in self.data
+        if cleaned_data[self.UNSUBSCRIBE]:
+            cleaned_data['slots'] = 0  # normalize input
+        if cleaned_data.get('slots') == 0 and not self.can_unsubscribe:
             raise ValidationError(_("Du kannst dich nicht aus dem Einsatz austragen"), code='unsubscribe_error')
-        return super().clean()
+        return cleaned_data
 
     def save(self):
         slots = int(self.cleaned_data['slots'])
