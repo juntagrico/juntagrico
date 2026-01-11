@@ -109,6 +109,14 @@
     </div>
 {% endif %}
 
+{% config "extra_sub_info" as extra_sub_info %}
+{% if extra_sub_info.strip %}
+    <a href="{{ extra_sub_info }}" target="_blank">
+        {% trans "Infos zu den Zusatz-Abos" %}
+        <i class="fa-solid fa-arrow-up-right-from-square small"></i>
+    </a>
+{% endif %}
+
 {% if not subscription.inactive %}
     <div class="mt-3">
         {% if subscription.primary_member == member %}

@@ -24,20 +24,20 @@ class Command(BaseCommand):
                             default='signup subscription share password job depot member')
 
     # entry point used by manage.py
+    @transaction.atomic(durable=True)
     def handle(self, selected, *args, **options):
-        with transaction.atomic(durable=True):
-            # generate temporary test data to ensure that required objects are available
-            management.call_command('generate_testdata')
-            subscription = Subscription.objects.filter(parts__isnull=False).first()
-            future_parts = subscription.parts.all()
-            canceled_part = subscription.parts.first()
-            if Config.enable_shares():
-                shares = list(Share.objects.all()[:2])
-            job = RecuringJob.objects.all()[0]
-            member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
-            member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
-            depot, new_depot = Depot.objects.all()[:2]
-            transaction.set_rollback(True)  # force rollback
+        # generate temporary test data to ensure that required objects are available
+        management.call_command('generate_testdata')
+        subscription = Subscription.objects.filter(parts__isnull=False).first()
+        canceled_subscription = Subscription.objects.filter(end_date__isnull=False).first()
+        future_parts = subscription.parts.all()
+        canceled_part = subscription.parts.first()
+        if Config.enable_shares():
+            shares = list(Share.objects.all()[:2])
+        job = RecuringJob.objects.filter(members__isnull=False)[0]
+        member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
+        member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
+        depot, new_depot = Depot.objects.all()[:2]
 
         if 'signup' in selected:
             print('*** welcome  mit abo***')
@@ -82,7 +82,7 @@ class Command(BaseCommand):
 
             print('*** s_canceled ***')
             print(get_email_content('s_canceled', base_dict({
-                'subscription': subscription,
+                'subscription': canceled_subscription,
                 'message': 'Nachricht'
             })))
             print()
@@ -200,17 +200,17 @@ class Command(BaseCommand):
 
         if 'depot' in selected:
             print('*** d_changed ***')
-            print(get_email_content('d_changed', base_dict({'depot': depot})))
+            print(get_email_content('d_changed', base_dict({'subscription': subscription})))
             print()
 
             print('*** juntagrico/mails/admin/depot_changed.txt ***')
-            print(get_template('juntagrico/mails/admin/depot_changed.txt').render({
+            print(get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict({
                 'subscription': subscription,
                 'member': member,
                 'old_depot': depot,
                 'new_depot': new_depot,
                 'immediate': False,
-            }), end='\n\n')
+            })), end='\n\n')
 
         if 'member' in selected:
             print('*** a_member_created ***')
@@ -226,3 +226,5 @@ class Command(BaseCommand):
                 'message': 'Nachricht'
             })))
             print()
+
+        transaction.set_rollback(True)  # force rollback

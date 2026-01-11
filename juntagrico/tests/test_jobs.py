@@ -1,4 +1,5 @@
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
@@ -345,6 +346,7 @@ class AssignmentTests(JuntagricoTestCase):
             # if member edits their own assignment, no notification is sent to them
             self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+        self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
         mail.outbox.clear()
         self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
 
@@ -370,3 +372,87 @@ class AssignmentTests(JuntagricoTestCase):
         self.testAssignmentDelete(self.area_admin)
         self.testAssignmentEdit(self.area_admin_assignment_modifier)
         self.testAssignmentDelete(self.area_admin_assignment_modifier)
+
+
+class JobValidationTests(JuntagricoTestCase):
+    """
+    Test validation rules for jobs
+    """
+    def testOneTimeJobWithZeroSlotsAndNoInfiniteSlots(self):
+        """Test that OneTimeJob with slots=0 and infinite_slots=False raises ValidationError"""
+        job = OneTimeJob(
+            name='Invalid Job',
+            description='Test job with zero slots and no infinite slots',
+            activityarea=self.area,
+            default_duration=2,
+            slots=0,
+            infinite_slots=False,
+            time=self.job1.time,
+            location=self.job_type.location
+        )
+        with self.assertRaises(ValidationError) as cm:
+            job.full_clean()
+        self.assertIn('Ein Job muss entweder mehr als 0 Plätze haben oder "Unendlich Plätze" aktiviert haben', str(cm.exception))
+
+    def testOneTimeJobWithZeroSlotsButInfiniteSlots(self):
+        """Test that OneTimeJob with slots=0 but infinite_slots=True is valid"""
+        job = OneTimeJob(
+            name='Valid Infinite Job',
+            description='Test job with infinite slots',
+            activityarea=self.area,
+            default_duration=2,
+            slots=0,
+            infinite_slots=True,
+            time=self.job1.time,
+            location=self.job_type.location
+        )
+        # Should not raise ValidationError
+        job.full_clean()
+        job.save()
+        self.assertEqual(job.slots, 0)
+        self.assertTrue(job.infinite_slots)
+
+    def testOneTimeJobWithPositiveSlots(self):
+        """Test that OneTimeJob with slots > 0 is valid"""
+        job = OneTimeJob(
+            name='Valid Job',
+            description='Test job with positive slots',
+            activityarea=self.area,
+            default_duration=2,
+            slots=5,
+            infinite_slots=False,
+            time=self.job1.time,
+            location=self.job_type.location
+        )
+        # Should not raise ValidationError
+        job.full_clean()
+        job.save()
+        self.assertEqual(job.slots, 5)
+        self.assertFalse(job.infinite_slots)
+
+    def testRecuringJobWithZeroSlotsAndNoInfiniteSlots(self):
+        """Test that RecuringJob with slots=0 and infinite_slots=False raises ValidationError"""
+        job = RecuringJob(
+            slots=0,
+            infinite_slots=False,
+            time=self.job1.time,
+            type=self.job_type
+        )
+        with self.assertRaises(ValidationError) as cm:
+            job.full_clean()
+        self.assertIn('Ein Job muss entweder mehr als 0 Plätze haben oder "Unendlich Plätze" aktiviert haben', str(cm.exception))
+
+    def testRecuringJobWithZeroSlotsButInfiniteSlots(self):
+        """Test that RecuringJob with slots=0 but infinite_slots=True is valid"""
+        job = RecuringJob(
+            slots=0,
+            infinite_slots=True,
+            time=self.job1.time,
+            type=self.job_type
+        )
+        # Should not raise ValidationError
+        job.full_clean()
+        job.save()
+        self.assertEqual(job.slots, 0)
+        self.assertTrue(job.infinite_slots)
+

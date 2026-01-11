@@ -1628,6 +1628,13 @@ msgstr "Show"
 msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
 msgstr "Canceled jobs can not be reactivated"
 
+#: juntagrico/lifecycle/job.py:39
+msgid ""
+"Ein Job muss entweder mehr als 0 Plätze haben oder \"Unendlich Plätze\" "
+"aktiviert haben."
+msgstr ""
+"A job must either have more than 0 slots or have \"Infinite slots\" enabled."
+
 #: juntagrico/lifecycle/member.py:30
 msgid "Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}"
 msgstr "This {} still has at least one active {}"
