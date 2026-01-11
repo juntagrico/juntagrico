@@ -1,5 +1,6 @@
 from io import StringIO
 
+from django.core import mail
 from django.core.files.storage import default_storage
 from django.template.loader import get_template
 from django.test import override_settings
@@ -33,6 +34,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         self.assertTrue(default_storage.exists('depotlist.pdf'))
         self.assertTrue(default_storage.exists('depot_overview.pdf'))
         self.assertTrue(default_storage.exists('amount_overview.pdf'))
+        self.assertEqual(mail.outbox[0].subject, 'Juntagrico - Neue Depot-Liste generiert')  # admin notification email
 
     def testDepotListData(self):
         data = depot_list_data()
@@ -113,13 +115,14 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             'submit': 'yes',
         }
         self.assertPost(url, data, code=302, member=self.admin)
+        self.assertEqual(mail.outbox.pop(0).subject, 'Juntagrico - Depot geändert')  # member depot changed notification
         self.assertListsCreated()
         self.sub4.refresh_from_db()
         self.assertEqual(self.sub4.depot, self.depot2)
 
     def testGenerateDepotListCommand(self):
         out = StringIO()
-        call_command('generate_depot_list', '--force', stdout=out)
+        call_command('generate_depot_list', '--force', '--no-future', stdout=out)
         self.assertEqual(out.getvalue(), '')
         self.assertListsCreated()
 

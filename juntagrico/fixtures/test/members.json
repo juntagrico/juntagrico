@@ -90,6 +90,11 @@
                 "specialroles"
             ],
             [
+                "depot_list_notification",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
                 "can_filter_subscriptions",
                 "juntagrico",
                 "subscription"
