@@ -1,5 +1,4 @@
-/*global define*/
-define([], function () {
+$(function () {
     let table = $("#filter-table").DataTable();
 
     // update on slot filter field

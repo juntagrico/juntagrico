@@ -83,6 +83,6 @@
 {% block scripts %}
     {{ depot.map_info|json_script:'depot_data' }}
     {% include 'snippets/scripts/leaflet.html' %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initDepot.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/js/initDepot.js' %}">
     </script>
 {% endblock %}
