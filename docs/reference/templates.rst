@@ -143,8 +143,8 @@ The signup templates are located in the folder ``createsubscription``.
 
 Some pages have additional blocks listed below.
 
-signup.html
-^^^^^^^^^^^
+juntagrico/signup/member.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``intro_1``: First part of intro
 - ``intro_with_shares``: Part of intro, about shares
@@ -177,25 +177,25 @@ juntagrico/subscription/create/form/no_subscription_field.html
 - ``base_fee``: Base fee description on signup option without subscription
 
 
-select_depot.html|label
-^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_depot.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Labeltext of depot selection field
+- ``label``: of depot selection field
 
-select_start_date.html
-^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_start_date.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``label``: Label of date selection field
 - ``hint``: text below selection field
 
-select_shares.html
-^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_shares.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``intro_1``: First part of intro
-- ``intro_2``  Last part of intro
+- ``intro_2``:  Last part of intro
 
-summary.html
-^^^^^^^^^^^^
+juntagrico/subscription/create/summary.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each section has a block:
 
@@ -205,8 +205,8 @@ Each section has a block:
 - ``start_date``
 - ``co_member``
 - ``activity_areas``
-- ``shares``:
-- ``comment``:
+- ``shares``
+- ``comment``
 
 Subscription Templates
 ----------------------
@@ -230,8 +230,8 @@ Add content to the subscription overview page, for members that have no subscrip
 Depot Templates
 ---------------
 
-depot.html
-^^^^^^^^^^
+juntagrico/my/depot/show.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each section has a block to overwrite or extend it:
 
@@ -246,22 +246,22 @@ Each section has a block to overwrite or extend it:
 Activity Area Templates
 -----------------------
 
-juntagrico/my/area/snippets/intro.html|all
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/area/snippets/intro.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Override the intro text on the activity area overview page
+- ``all``: Override the intro text on the activity area overview page
 
 
 Membership Templates
 --------------------
 
-cancelmembership.html|intro
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/membership/cancel.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Text after title
+- ``intro``: Text after title
 
-profile.html
-^^^^^^^^^^^^
+juntagrico/my/membership/profile.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Blocks exist for the text in the info banner on top and for the buttons
 

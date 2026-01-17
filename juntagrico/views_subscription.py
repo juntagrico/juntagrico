@@ -238,7 +238,7 @@ class SignupView(View):
 
 
 class MemberSignupView(SignupView, FormView):
-    template_name = 'signup.html'
+    template_name = 'juntagrico/signup/member.html'
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
