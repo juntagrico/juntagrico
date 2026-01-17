@@ -236,7 +236,6 @@ class Config:
             'core': fallback_static('juntagrico/img/core.png')
         }
     )
-    mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
     @classmethod
     def using_richtext(cls):

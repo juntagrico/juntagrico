@@ -87,7 +87,7 @@ Example:
 
     {% extends 'juntagrico/menu/user.html' %}
     {% block extend %}
-        {% include 'your/own/admin_menu.html' %}
+        {% include 'your/own/user_menu.html' %}
         {{ block.super }}
     {% endblock %}
 
