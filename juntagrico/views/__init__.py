@@ -74,7 +74,7 @@ def depot(request, depot_id):
         'show_access': request.user.member.subscriptionmembership_set.filter(
             subscription__depot=depot).count() > 0
     }
-    return render(request, 'depot.html', renderdict)
+    return render(request, 'juntagrico/my/depot/show.html', renderdict)
 
 
 @login_required
@@ -210,7 +210,7 @@ def profile(request):
         'success': success,
         'member': member
     }
-    return render(request, 'profile.html', renderdict)
+    return render(request, 'juntagrico/my/membership/profile.html', renderdict)
 
 
 @login_required
@@ -249,7 +249,7 @@ def cancel_membership(request):
         'share_error': share_error,
         'form': form
     }
-    return render(request, 'cancelmembership.html', renderdict)
+    return render(request, 'juntagrico/my/membership/cancel.html', renderdict)
 
 
 @login_required
