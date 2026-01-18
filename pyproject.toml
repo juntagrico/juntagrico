@@ -17,7 +17,7 @@ dependencies = [
     "django-crispy-forms~=2.5.0",
     "crispy-bootstrap4~=2025.6.0",
     "django-impersonate~=1.9.5",
-    "django-polymorphic~=4.4.1",
+    "django-polymorphic==4.10.3",
     "django-richtextfield~=1.6.1",
     "django-select2~=8.4.1",
     "django-import-export~=4.3.6",
