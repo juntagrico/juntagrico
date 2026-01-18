@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-21 09:32-0600\n"
+"POT-Creation-Date: 2026-01-17 17:02-0600\n"
 "PO-Revision-Date: 2021-10-18 06:38+0000\n"
 "Last-Translator: admin juntagrico, 2025\n"
 "Language-Team: English (https://app.transifex.com/juntagrico/teams/126289/"
@@ -162,19 +162,19 @@ msgstr "New Jobs can not take place in the past."
 msgid "Ersetzen mit"
 msgstr "Replace with"
 
-#: juntagrico/admins/inlines/subscription_membership_inlines.py:26
+#: juntagrico/admins/inlines/subscription_membership_inlines.py:27
 msgid "Mindestens eine Mitgliedschaft wird benötigt."
 msgstr "At least one membership is required"
 
-#: juntagrico/admins/inlines/subscription_membership_inlines.py:38
+#: juntagrico/admins/inlines/subscription_membership_inlines.py:39
 msgid "{} Mitgliedschaft"
 msgstr "{} membership"
 
-#: juntagrico/admins/inlines/subscription_membership_inlines.py:39
+#: juntagrico/admins/inlines/subscription_membership_inlines.py:40
 msgid "{} Mitgliedschaften"
 msgstr "{} memberships"
 
-#: juntagrico/admins/inlines/subscription_membership_inlines.py:48
+#: juntagrico/admins/inlines/subscription_membership_inlines.py:49
 msgid "Verwendbare {}"
 msgstr "Usable {}"
 
@@ -330,7 +330,6 @@ msgid "Arbeitseinsatz"
 msgstr "Assignment"
 
 #: juntagrico/config.py:38
-#: juntagrico/templates/forms/subscription_type_details.html:27
 #: juntagrico/templates/forms/subscription_type_label.html:35
 msgid "Arbeitseinsätze"
 msgstr "Assignments"
@@ -592,7 +591,7 @@ msgstr "Deliveries"
 
 #: juntagrico/entity/delivery.py:35 juntagrico/entity/depot.py:19
 #: juntagrico/entity/jobs.py:24 juntagrico/entity/jobs.py:76
-#: juntagrico/entity/jobs.py:127 juntagrico/entity/location.py:12
+#: juntagrico/entity/jobs.py:126 juntagrico/entity/location.py:12
 #: juntagrico/entity/mailing.py:11 juntagrico/entity/subtypes.py:15
 #: juntagrico/entity/subtypes.py:37 juntagrico/entity/subtypes.py:63
 #: juntagrico/templates/exports/snippets/snippet_depotlist_header.html:44
@@ -622,7 +621,7 @@ msgid "Lieferobjekte"
 msgstr "Deliverables"
 
 #: juntagrico/entity/depot.py:20 juntagrico/entity/depot.py:54
-#: juntagrico/entity/jobs.py:25 juntagrico/entity/jobs.py:130
+#: juntagrico/entity/jobs.py:25 juntagrico/entity/jobs.py:129
 #: juntagrico/entity/location.py:23 juntagrico/entity/subtypes.py:16
 #: juntagrico/entity/subtypes.py:43 juntagrico/entity/subtypes.py:77
 #: juntagrico/templates/area.html:14 juntagrico/templates/depot.html:55
@@ -660,7 +659,7 @@ msgstr "Pickup period in hours"
 msgid "Kapazität"
 msgstr "Capacity"
 
-#: juntagrico/entity/depot.py:51 juntagrico/entity/jobs.py:134
+#: juntagrico/entity/depot.py:51 juntagrico/entity/jobs.py:133
 #: juntagrico/entity/location.py:21 juntagrico/entity/location.py:85
 #: juntagrico/entity/member.py:45 juntagrico/templates/job.html:112
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:14
@@ -695,7 +694,7 @@ msgstr "Only visible for {0} of {1}"
 msgid "Sichtbar auf Depotliste"
 msgstr "Visible on depot list"
 
-#: juntagrico/entity/depot.py:60 juntagrico/entity/jobs.py:153
+#: juntagrico/entity/depot.py:60 juntagrico/entity/jobs.py:152
 #: juntagrico/entity/location.py:24 juntagrico/entity/subtypes.py:42
 #: juntagrico/entity/subtypes.py:74
 msgid "Sichtbar"
@@ -725,7 +724,7 @@ msgstr "{0}-{1}-Type"
 msgid "{0}-{1}-Typen"
 msgstr "{0}-{1}-Types"
 
-#: juntagrico/entity/jobs.py:26 juntagrico/entity/jobs.py:401
+#: juntagrico/entity/jobs.py:26 juntagrico/entity/jobs.py:400
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:13
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:14
 #: juntagrico/templates/memberjobs.html:63
@@ -759,7 +758,7 @@ msgid ""
 "Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt."
 msgstr "New Users are automatically added to this activity area."
 
-#: juntagrico/entity/jobs.py:65 juntagrico/entity/jobs.py:131
+#: juntagrico/entity/jobs.py:65 juntagrico/entity/jobs.py:130
 msgid "Tätigkeitsbereich"
 msgstr "Activity area"
 
@@ -804,87 +803,87 @@ msgstr "Job extra"
 msgid "JobExtras"
 msgstr "Job extras"
 
-#: juntagrico/entity/jobs.py:129
+#: juntagrico/entity/jobs.py:128
 msgid "Angezeigter Name"
 msgstr "Display name"
 
-#: juntagrico/entity/jobs.py:132
+#: juntagrico/entity/jobs.py:131
 msgid "Dauer in Stunden"
 msgstr "Duration in hours"
 
-#: juntagrico/entity/jobs.py:173 juntagrico/entity/jobs.py:339
+#: juntagrico/entity/jobs.py:172 juntagrico/entity/jobs.py:338
 msgid "Jobart"
 msgstr "Job Type"
 
-#: juntagrico/entity/jobs.py:174
+#: juntagrico/entity/jobs.py:173
 msgid "Jobarten"
 msgstr "Jobtypes"
 
-#: juntagrico/entity/jobs.py:179 juntagrico/entity/jobs.py:212
+#: juntagrico/entity/jobs.py:178 juntagrico/entity/jobs.py:211
 msgid "Plätze"
 msgstr "Slots"
 
-#: juntagrico/entity/jobs.py:180
+#: juntagrico/entity/jobs.py:179
 msgid "Unendlich Plätze"
 msgstr "Infinite slots"
 
-#: juntagrico/entity/jobs.py:181 juntagrico/templates/job.html:26
+#: juntagrico/entity/jobs.py:180 juntagrico/templates/job.html:26
 msgid "Zeitpunkt"
 msgstr "Time"
 
-#: juntagrico/entity/jobs.py:183
+#: juntagrico/entity/jobs.py:182
 #, python-brace-format
 msgid "{0} vielfaches"
 msgstr "{0} multiplication"
 
-#: juntagrico/entity/jobs.py:187
+#: juntagrico/entity/jobs.py:186
 msgid "Reminder verschickt"
 msgstr "Reminder sent"
 
-#: juntagrico/entity/jobs.py:188
+#: juntagrico/entity/jobs.py:187
 msgid "abgesagt"
 msgstr "canceled"
 
-#: juntagrico/entity/jobs.py:201
+#: juntagrico/entity/jobs.py:200
 #, python-brace-format
 msgid "Job {0}"
 msgstr "Job {0}"
 
-#: juntagrico/entity/jobs.py:204 juntagrico/entity/jobs.py:218
+#: juntagrico/entity/jobs.py:203 juntagrico/entity/jobs.py:217
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:32
 msgid "Freie Plätze"
 msgstr "Available slots"
 
-#: juntagrico/entity/jobs.py:333
+#: juntagrico/entity/jobs.py:332
 msgid "AbstractJob"
 msgstr "Abstract job"
 
-#: juntagrico/entity/jobs.py:334
+#: juntagrico/entity/jobs.py:333
 msgid "AbstractJobs"
 msgstr "Abstract jobs"
 
-#: juntagrico/entity/jobs.py:335
+#: juntagrico/entity/jobs.py:334
 msgid "kann vergangene Jobs editieren"
 msgstr "can edit past jobs"
 
-#: juntagrico/entity/jobs.py:340
+#: juntagrico/entity/jobs.py:339
 msgid "Zusätzliche Beschreibung"
 msgstr "Additional Description"
 
-#: juntagrico/entity/jobs.py:342
+#: juntagrico/entity/jobs.py:341
 msgid "Dauer in Stunden (Überschreibend)"
 msgstr "Duration in hours (overwrite)"
 
-#: juntagrico/entity/jobs.py:343
+#: juntagrico/entity/jobs.py:342
 msgid ""
 "Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen."
 msgstr "If not set, the default duration of the job type is used."
 
-#: juntagrico/entity/jobs.py:347
+#: juntagrico/entity/jobs.py:346
 msgid "Dauer"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:361
+#: juntagrico/entity/jobs.py:360
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:8
 #: juntagrico/templates/juntagrico/mails/member/job/subscription_changed.txt:13
 #: juntagrico/templates/mails/member/job_canceled.txt:13
@@ -895,23 +894,23 @@ msgstr ""
 msgid "Job"
 msgstr "Job"
 
-#: juntagrico/entity/jobs.py:362
+#: juntagrico/entity/jobs.py:361
 msgid "Jobs"
 msgstr "Jobs"
 
-#: juntagrico/entity/jobs.py:391
+#: juntagrico/entity/jobs.py:390
 msgid "EinzelJob"
 msgstr "One time job"
 
-#: juntagrico/entity/jobs.py:392
+#: juntagrico/entity/jobs.py:391
 msgid "EinzelJobs"
 msgstr "One time Jobs"
 
-#: juntagrico/entity/jobs.py:402
+#: juntagrico/entity/jobs.py:401
 msgid "Job Extras"
 msgstr "Job extra"
 
-#: juntagrico/entity/jobs.py:403 juntagrico/entity/share.py:33
+#: juntagrico/entity/jobs.py:402 juntagrico/entity/share.py:33
 #: juntagrico/templates/exports/share_certificate.html:111
 #: juntagrico/templates/js/i18n.js:91 juntagrico/templates/memberjobs.html:45
 msgid "Wert"
@@ -1588,7 +1587,6 @@ msgid "{0} Personen"
 msgstr "{0} People"
 
 #: juntagrico/forms.py:800
-#: juntagrico/templates/forms/subscription_type_details.html:29
 #: juntagrico/templates/forms/subscription_type_label.html:37
 msgid "Stunden"
 msgstr "Hours"
@@ -1787,7 +1785,7 @@ msgid "Neue Anmeldung zum Einsatz"
 msgstr ""
 
 #: juntagrico/mailer/adminnotification.py:147
-#: juntagrico/mailer/adminnotification.py:168
+#: juntagrico/mailer/adminnotification.py:169
 msgid "Änderung der Einsatzanmeldung"
 msgstr ""
 
@@ -1795,7 +1793,7 @@ msgstr ""
 msgid "Abmeldung vom Einsatz"
 msgstr ""
 
-#: juntagrico/mailer/adminnotification.py:172
+#: juntagrico/mailer/adminnotification.py:173
 msgid "Einsatzanmeldung entfernt"
 msgstr ""
 
@@ -2622,7 +2620,7 @@ msgstr "cancel"
 
 #: juntagrico/templates/extra_change.html:60
 #: juntagrico/templates/juntagrico/my/subscription/part/order.html:9
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:90
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:98
 msgid "Zusatzabos bestellen"
 msgstr "Order extra subscriptions"
 
@@ -2651,7 +2649,6 @@ msgstr ""
 "%(v_member_type_pl)s without %(v_subscription)s pay an annual fee of "
 "%(base_fee)s %(c_currency)s"
 
-#: juntagrico/templates/forms/subscription_type_details.html:19
 #: juntagrico/templates/forms/subscription_type_label.html:27
 msgid "Laufzeit"
 msgstr ""
@@ -4043,11 +4040,17 @@ msgstr "Cancel complete %(v_subscription)s"
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:86
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:84
+#, fuzzy
+#| msgid "Weitere Infos zu den Zusatzabos"
+msgid "Infos zu den Zusatz-Abos"
+msgstr "Further information about the extra subscriptions"
+
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
 msgid "Weitere Bestandteile bestellen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:95
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:103
 #: juntagrico/templates/size_change.html:83
 #, python-format
 msgid ""
@@ -4055,7 +4058,7 @@ msgid ""
 "werden."
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:98
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:106
 #, python-format
 msgid "Nur %(v_subscription)s-VerwalterIn kann Bestandteile bestellen."
 msgstr ""
