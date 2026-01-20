@@ -29,7 +29,7 @@ def depot_list_data(days=0):
 
 
 def default_depot_list_generation(context):
-    for depot_list in Config.depot_lists():
+    for depot_list in Config.depot_lists(context=context):
         render_to_pdf_storage(
             depot_list['template'],
             context | depot_list['extra_context'],

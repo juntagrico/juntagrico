@@ -124,17 +124,18 @@ class Config:
     first_job_info = _get_setting('FIRST_JOB_INFO', ['overall'])
 
     @staticmethod
-    def depot_lists(default_names=None):
+    def depot_lists(default_names=None, context=None):
         default_names = default_names or {}
         values = getattr(settings, 'DEPOT_LISTS', defaults.DEPOT_LISTS)
         # normalize
         for file_name, conf in values.items():
             if not isinstance(conf, dict):
                 conf = dict(template=conf)
-            if callable(conf.get('extra_context')):
-                conf['extra_context'] = conf['extra_context']()
-            elif 'extra_context' not in conf:
-                conf['extra_context'] = {}
+            if context is not None:
+                if callable(conf.get('extra_context')):
+                    conf['extra_context'] = conf['extra_context'](context)
+                elif 'extra_context' not in conf:
+                    conf['extra_context'] = {}
             if 'name' not in conf:
                 conf['name'] = default_names.get(file_name, file_name)
             yield dict(file_name=file_name, **conf)
