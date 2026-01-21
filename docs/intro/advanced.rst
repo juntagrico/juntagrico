@@ -34,6 +34,7 @@ Mailer
 ^^^^^^
 
 You can customize the rich text field in the mailer in the `settings.py` using:
+
 .. code-block:: python
 
     from juntagrico import defaults
@@ -59,6 +60,7 @@ This feature is disabled by default. Use the steps below to enable it.
     This is done in the default email templates. You will have to do it in your customized email texts as well.
 
 To enable the rich text editor you have to modify the following setting.
+
 .. code-block:: python
 
     from juntagrico import defaults
@@ -67,6 +69,7 @@ To enable the rich text editor you have to modify the following setting.
 
 
 Instead you can also pass your custom configuration to the `admin` argument.
+
 .. code-block:: python
 
     DJRICHTEXTFIELD_CONFIG = defaults.richtextfield_config(LANGUAGE_CODE, admin={
@@ -96,7 +99,7 @@ You can modify juntagrico with your own code. Use the provided :ref:`Hooks <refe
 Modifications can be made, once all django apps have been loaded,
 i.e. in the ``ready`` method of your app config in ``apps.py`` in the main folder of your project or addon:
 
-  .. code-block:: python
+.. code-block:: python
 
     from django.apps import AppConfig
     from juntagrico.util import addons
