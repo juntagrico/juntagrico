@@ -847,7 +847,7 @@ class AreaDescriptionForm(ModelForm):
         fields = ['description']
         labels = {'description': ''}
         if Config.using_richtext():
-            widgets = {'description': RichTextWidget()}
+            widgets = {'description': RichTextWidget(field_settings='juntagrico.admin')}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

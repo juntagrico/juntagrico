@@ -249,8 +249,29 @@ Activity Area Templates
 juntagrico/my/area/snippets/intro.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``all``: Override the intro text on the activity area overview page
+Intro text on the activity area overview page
 
+- ``all``: Use this block if you want to append or prepend text
+
+juntagrico/my/area/list.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- ``intro``: Intro including structure. To just change the text, override ``snippets/intro.html``. See above.
+- ``list``: Entire list of activity areas
+- ``section_head``: Title above area list. If core areas exist separate titles are shown for core and non-core areas.
+- ``area_list``: List structure of activity areas
+- ``area``: Display of activity area in list element
+- ``coordinated_areas``: List of areas coordinated by this user
+
+juntagrico/my/area/show.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- ``join``: Slider to join activity area
+- ``description``: Full description structure
+- ``description_text``: Description Text
+- ``contacts``: List of activity area contacts
+- ``members``: Count and link to member list for admins
+- ``upcoming``: List of upcoming jobs in activity area
 
 Membership Templates
 --------------------

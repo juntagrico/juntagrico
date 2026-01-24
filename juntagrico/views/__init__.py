@@ -83,14 +83,14 @@ def areas(request):
     '''
     List all areas a member can participate in
     '''
-    return render(request, 'areas.html', {
+    return render(request, 'juntagrico/my/area/list.html', {
         'areas': ActivityArea.objects.filter(hidden=False).order_by('-core', 'name'),
         'coordinated_areas': request.user.member.coordinated_areas.all(),
     })
 
 
 @login_required
-def show_area(request, area_id):
+def show_area(request, area_id, form_class=AreaDescriptionForm):
     '''
     Details for an area
     '''
@@ -99,12 +99,12 @@ def show_area(request, area_id):
     access = request.user.member.area_access.filter(area=area).first()
     if access and access.can_modify_area:
         if request.method == 'POST':
-            edit_form = AreaDescriptionForm(request.POST, instance=area)
+            edit_form = form_class(request.POST, instance=area)
             if edit_form.is_valid():
                 edit_form.save()
                 return redirect('area', area_id=area_id)
         else:
-            edit_form = AreaDescriptionForm(instance=area)
+            edit_form = form_class(instance=area)
 
     job_types = JobType.objects.filter(activityarea=area_id)
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
@@ -123,7 +123,7 @@ def show_area(request, area_id):
         'can_view_member': access and access.can_view_member,
         'can_manage_jobs': access and access.can_modify_jobs
     }
-    return render(request, 'area.html', renderdict)
+    return render(request, 'juntagrico/my/area/show.html', renderdict)
 
 
 @login_required
