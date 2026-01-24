@@ -3,6 +3,7 @@ from itertools import zip_longest
 
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Max, F
@@ -406,6 +407,11 @@ class CheckJobCapabilities:
     def job_model_name(self):
         return self.job.get_real_instance_class().__name__.lower()
 
+    @cached_property
+    def job_app_label(self):
+        content_type = ContentType.objects.get_for_model(self.job.get_real_instance())
+        return content_type.app_label
+
     @property
     def is_coordinator(self):
         return self.access and self.access.can_modify_jobs
@@ -421,30 +427,23 @@ class CheckJobCapabilities:
         return self.user.has_perm('juntagrico.can_send_mails') or self.access and self.access.can_contact_member
 
     def get_edit_url(self):
-        if self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator:
-            return reverse(f'admin:juntagrico_{self.job_model_name}_change', args=(self.job.id,))
+        if self.user.has_perm(f'{self.job_app_label}.change_{self.job_model_name}') or self.is_coordinator:
+            return reverse(f'admin:{self.job_app_label}_{self.job_model_name}_change', args=(self.job.id,))
         return ''
 
     def can_convert(self):
-        return self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
+        return self.user.has_perm(f'{self.job_app_label}.change_{self.job_model_name}') or self.is_coordinator
 
     def can_modify(self):
         job_read_only = self.job.canceled or self.job.has_started()
         return not job_read_only or self.user.has_perm('juntagrico.can_edit_past_jobs')
 
     def can_copy(self):
-        return self.user.has_perm(f'juntagrico.add_{self.job_model_name}') or self.is_coordinator
+        return self.user.has_perm(f'{self.job_app_label}.add_{self.job_model_name}') or self.is_coordinator
 
     def can_cancel(self):
-        can_change = self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
+        can_change = self.user.has_perm(f'{self.job_app_label}.change_{self.job_model_name}') or self.is_coordinator
         return not (self.job.canceled or self.job.has_started()) and can_change
-
-
-def get_job_admin_url(request, job, has_perm=False):
-    model = job.get_real_instance_class().__name__.lower()
-    if has_perm or request.user.has_perm(f'juntagrico.change_{model}'):
-        return reverse(f'admin:juntagrico_{model}_change', args=(job.id,))
-    return ''
 
 
 class RecuringJob(Job):
