@@ -263,7 +263,7 @@ class RegisterMemberForm(MemberBaseForm):
         documents_html = format_html_join(
             ' ' + cls.text['and'] + ' ',
             '<a target="_blank" href="{}">{}</a>',
-            ((link(), _(text)) for text, link in cls.documents.items())
+            ((link(), _(text)) for text, link in cls.documents.items() if link().strip())
         )
         if documents_html:
             return format_html(cls.text['accept_with_docs'], documents_html, Config.organisation_long_name())
