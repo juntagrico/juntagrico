@@ -147,10 +147,10 @@ def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **
     })
 
 
-@requires_permission_to_contact
+@login_required  # only require login, to allow custom email forms in addons
 def sent(request):
     # show empty page with only success message
-    return render(request, 'base.html')
+    return render(request, 'juntagrico/email/sent.html')
 
 
 @permission_required('juntagrico.can_load_templates')
