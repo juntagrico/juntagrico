@@ -15,57 +15,50 @@
     {% trans "Stichtag" %} {{ date|date:"d.m.Y" }}
 </div>
 
-<div>
-    <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
-        <tr>
-            <td style="width:200px"></td>
-            <td style="width:200px"></td>
-            {% for product in products %}
-                <th colspan="{{ product.sizes.on_depot_list.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
-                        style="font-size:11px">{{ product.description|safe }}</span></th>
+{% if tour_days|count > 1 %}
+    {% include "./snippets/snippet_tour_overview.html" %}
+
+    {% regroup tours.sort_by_weekday by weekday as tours_by_day %}
+    {% for tour_days in tours_by_day %}
+        {% include "./snippets/snippet_tour.html" with day=tour_days.grouper tours=tour_days.list %}
+    {% endfor %}
+{% else %}
+    <div>
+    <table cellpadding="5" cellspacing="0" class="bottom-border width-100 mb-5">
+            {% include "./snippets/snippet_tour_header.html" %}
+            {% for tour in tours %}
+                <tr>
+                    <td>{{ tour.name }}</td>
+                    <td class="text-right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
+                    {% for product in products %}
+                        {% for size in product.sizes.on_depot_list.sorted %}
+                            <td class="text-right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
             {% endfor %}
-        </tr>
-        <tr>
-            <td class="small bottom-border left-border right-border">{% trans "Ausfahrt" %}</td>
-            <td class="small bottom-border  right-border">{% trans "Total" %}</td>
-            {% for product in products %}
-                {% for size in product.sizes.on_depot_list.sorted %}
-                    <td class="small bottom-border {% if forloop.first %}left-border{% endif %}">{{ size.name }} ({{ size.units|floatformat:-3 }})</td>
-                {% endfor %}
-            {% endfor %}
-        </tr>
-        {% for tour in tours %}
+            {% if subscriptions|by_tour:None|count_units:date %}
+                <tr>
+                    <td>{% trans "Keine" %}</td>
+                    <td class="text-right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
+                    {% for product in products %}
+                        {% for size in product.sizes.on_depot_list.sorted %}
+                            <td class="text-right">{{ subscriptions|by_tour:None|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+            {% endif %}
             <tr>
-                <td>{{ tour.name }}</td>
-                <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
+                <td><b>{% trans "Alle" %}</b></td>
+                <td class="text-right">{{ subscriptions|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for size in product.sizes.on_depot_list.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                        <td class="text-right">{{ subscriptions|parts_by_size:size|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
-        {% endfor %}
-        {% if subscriptions|by_tour:None|count_units:date %}
-            <tr>
-                <td>{% trans "Keine" %}</td>
-                <td style="text-align:right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
-                {% for product in products %}
-                    {% for size in product.sizes.on_depot_list.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:None|parts_by_size:size|active_on:date|count|floatformat }}</td>
-                    {% endfor %}
-                {% endfor %}
-            </tr>
-        {% endif %}
-        <tr>
-            <td><b>{% trans "Alle" %}</b></td>
-            <td style="text-align:right">{{ subscriptions|count_units:date|floatformat }}</td>
-            {% for product in products %}
-                {% for size in product.sizes.on_depot_list.sorted %}
-                    <td style="text-align:right">{{ subscriptions|parts_by_size:size|active_on:date|count|floatformat }}</td>
-                {% endfor %}
-            {% endfor %}
-        </tr>
-    </table>
-</div>
+        </table>
+    </div>
+{% endif %}
 </body>
 </html>

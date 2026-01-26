@@ -4,12 +4,13 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.template.defaultfilters import date
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.entity.contact import Contact, MemberContact, TextContact
 from juntagrico.entity.location import Location
+from juntagrico.queryset.depot import TourQueryset
 from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices
 
@@ -20,8 +21,11 @@ class Tour(JuntagricoBaseModel):
     """
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(_('Beschreibung'), default='', blank=True)
+    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices, blank=True, null=True)
     visible_on_list = models.BooleanField(_('Sichtbar auf Listen'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    objects = TourQueryset.as_manager()
 
     def __str__(self):
         return self.name
@@ -139,7 +143,7 @@ class Depot(JuntagricoBaseModel):
             if end_time.isoweekday() != self.weekday:
                 display_format.insert(0, 'l')
             if display_format:
-                parts.append(_('bis'))
+                parts.append(gettext('bis'))
                 parts.append(date(end_time, ' '.join(display_format)))
         return ' '.join(parts)
 

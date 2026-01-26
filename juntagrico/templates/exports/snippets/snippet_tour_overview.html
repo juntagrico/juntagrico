@@ -1,0 +1,39 @@
+{% load juntagrico.depot_extras %}
+{% load i18n %}
+
+<div>
+    <table cellpadding="5" cellspacing="0" class="bottom-border width-100 mb-5">
+        {% include "./snippet_tour_header.html" with header=_('Wochentag') %}
+        {% for day, day_name in tour_days.items %}
+            <tr>
+                <td class="tour-name">{{ day_name|default_if_none:_('Ohne') }}</td>
+                <td class="text-right">{{ subscriptions|by_tour_day:day|count_units:date|floatformat }}</td>
+                {% for product in products %}
+                    {% for size in product.sizes.on_depot_list.sorted %}
+                        <td class="text-right">{{ subscriptions|by_tour_day:day|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {% if subscriptions|by_tour:None|count_units:date %}
+            <tr>
+                <td>{% trans "Ohne Ausfahrt" %}</td>
+                <td class="text-right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
+                {% for product in products %}
+                    {% for size in product.sizes.on_depot_list.sorted %}
+                        <td class="text-right">{{ subscriptions|by_tour:None|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endif %}
+        <tr>
+            <td><b>{% trans "Alle" %}</b></td>
+            <td class="text-right"><b>{{ subscriptions|count_units:date|floatformat }}</b></td>
+            {% for product in products %}
+                {% for size in product.sizes.on_depot_list.sorted %}
+                    <td class="text-right"><b>{{ subscriptions|parts_by_size:size|active_on:date|count|floatformat }}</b></td>
+                {% endfor %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>

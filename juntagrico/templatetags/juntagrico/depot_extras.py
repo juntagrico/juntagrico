@@ -58,6 +58,15 @@ def by_tour(subscriptions, tour):
 
 
 @register.filter
+def by_tour_day(subscriptions, tour_day):
+    # case 1: single subscription object is passed
+    if isinstance(subscriptions, Subscription):
+        return subscriptions if subscriptions.depot.tour.weekday == tour_day else None
+    # case 2: queryset of subscriptions is passed
+    return subscriptions.filter(depot__tour__weekday=tour_day)
+
+
+@register.filter
 def by_depot(subscriptions, depot):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
