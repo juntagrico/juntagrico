@@ -24,8 +24,6 @@ LOGGING = {
     },
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 # enable only to test addon features
 # INSTALLED_APPS.insert(9, 'juntagrico_test_addon')
 

@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Core Settings
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 SECRET_KEY = 'fake-key'
 
@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.1.7-275.db',
+        'NAME': 'dev.2.0.db',
     }
 }
 
