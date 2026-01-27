@@ -800,6 +800,10 @@ EMAILS
 
 MAIL_TEMPLATE
 ^^^^^^^^^^^^^
+  .. warning::
+    Deprecated since version 2.0. :ref:`Override template directly instead <reference-templates>`, i.e.,
+    place your html template in ``templates/mails/email.html``.
+
   Path to your custom html email template if you want to overwrite the look and feel of the html emails
 
   Type: String
