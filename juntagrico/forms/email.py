@@ -364,7 +364,7 @@ class BaseForm(BaseRecipientsForm):
         body = self.cleaned_data['body']
         footer = self.get_footer()
 
-        html_body = get_template('mails/email.html').render({
+        html_body = get_template(Config.mail_template()).render({
             'subject': subject, 'content': mark_safe(body), 'footer': footer
         })
         text_body = get_template('mails/email.txt').render({
