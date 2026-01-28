@@ -76,18 +76,18 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         self.assertInHTML("""
             <tr>
                 <td class="small bottom-border left-border right-border">Ausfahrt</td>
-                <td class="small bottom-border  right-border">Total</td>
+                <td class="small bottom-border right-border">Total</td>
                 <td class="small bottom-border left-border">product size (1)</td>
             </tr>
             <tr>
                 <td>Tour1</td>
-                <td style="text-align:right">6</td>
-                <td style="text-align:right">6</td>
+                <td class="text-right">6</td>
+                <td class="text-right">6</td>
             </tr>
             <tr>
                 <td><b>Alle</b></td>
-                <td style="text-align:right">6</td>
-                <td style="text-align:right">6</td>
+                <td class="text-right">6</td>
+                <td class="text-right">6</td>
             </tr>
         """, rendered_html)
 
