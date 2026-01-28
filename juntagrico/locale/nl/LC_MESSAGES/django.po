@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 14:52-0600\n"
+"POT-Creation-Date: 2026-01-28 14:16-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -399,15 +399,15 @@ msgstr ""
 msgid "{} von {}"
 msgstr ""
 
-#: juntagrico/config.py:151
+#: juntagrico/config.py:152
 msgid "{} verwendet folgende Cookies: session, csfr, cookieconsent."
 msgstr ""
 
-#: juntagrico/config.py:153
+#: juntagrico/config.py:154
 msgid "einverstanden"
 msgstr ""
 
-#: juntagrico/config.py:154
+#: juntagrico/config.py:155
 msgid "Hier findest du mehr zum Thema"
 msgstr ""
 
@@ -531,9 +531,9 @@ msgstr ""
 msgid "Verrechnungsperioden"
 msgstr ""
 
-#: juntagrico/entity/contact.py:38 juntagrico/entity/depot.py:24
-#: juntagrico/entity/depot.py:65 juntagrico/entity/depot.py:158
-#: juntagrico/entity/jobs.py:37 juntagrico/entity/jobs.py:91
+#: juntagrico/entity/contact.py:38 juntagrico/entity/depot.py:26
+#: juntagrico/entity/depot.py:69 juntagrico/entity/depot.py:162
+#: juntagrico/entity/jobs.py:38 juntagrico/entity/jobs.py:92
 #: juntagrico/entity/listmessage.py:13 juntagrico/entity/location.py:27
 #: juntagrico/entity/subtypes.py:17 juntagrico/entity/subtypes.py:38
 #: juntagrico/entity/subtypes.py:66 juntagrico/entity/subtypes.py:90
@@ -588,9 +588,9 @@ msgstr ""
 msgid "Lieferdatum"
 msgstr ""
 
-#: juntagrico/entity/delivery.py:15 juntagrico/entity/depot.py:34
-#: juntagrico/entity/depot.py:47
-#: juntagrico/templates/exports/amount_overview.html:29
+#: juntagrico/entity/delivery.py:15 juntagrico/entity/depot.py:38
+#: juntagrico/entity/depot.py:51
+#: juntagrico/templates/exports/snippets/snippet_tour_header.html:9
 msgid "Ausfahrt"
 msgstr ""
 
@@ -599,10 +599,11 @@ msgstr ""
 msgid "{0}-Paket"
 msgstr ""
 
-#: juntagrico/entity/delivery.py:21 juntagrico/templates/area.html:74
-#: juntagrico/templates/exports/amount_overview.html:50
+#: juntagrico/entity/delivery.py:21
+#: juntagrico/templates/exports/amount_overview.html:42
 #: juntagrico/templates/juntagrico/job/snippets/conversion_preview.html:43
 #: juntagrico/templates/juntagrico/job/snippets/conversion_preview.html:51
+#: juntagrico/templates/juntagrico/my/area/show.html:84
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:108
 msgid "Keine"
 msgstr ""
@@ -616,9 +617,9 @@ msgstr ""
 msgid "Lieferungen"
 msgstr ""
 
-#: juntagrico/entity/delivery.py:35 juntagrico/entity/depot.py:21
-#: juntagrico/entity/jobs.py:27 juntagrico/entity/jobs.py:106
-#: juntagrico/entity/jobs.py:160 juntagrico/entity/location.py:12
+#: juntagrico/entity/delivery.py:35 juntagrico/entity/depot.py:22
+#: juntagrico/entity/jobs.py:28 juntagrico/entity/jobs.py:107
+#: juntagrico/entity/jobs.py:161 juntagrico/entity/location.py:12
 #: juntagrico/entity/mailing.py:11 juntagrico/entity/subtypes.py:15
 #: juntagrico/entity/subtypes.py:34 juntagrico/entity/subtypes.py:64
 #: juntagrico/entity/subtypes.py:108
@@ -648,47 +649,52 @@ msgstr ""
 msgid "Lieferobjekte"
 msgstr ""
 
-#: juntagrico/entity/depot.py:22 juntagrico/entity/depot.py:56
-#: juntagrico/entity/jobs.py:28 juntagrico/entity/jobs.py:163
+#: juntagrico/entity/depot.py:23 juntagrico/entity/depot.py:60
+#: juntagrico/entity/jobs.py:29 juntagrico/entity/jobs.py:164
 #: juntagrico/entity/location.py:23 juntagrico/entity/subtypes.py:16
 #: juntagrico/entity/subtypes.py:65 juntagrico/entity/subtypes.py:82
-#: juntagrico/entity/subtypes.py:121 juntagrico/templates/area.html:28
-#: juntagrico/templates/job.html:233
+#: juntagrico/entity/subtypes.py:121 juntagrico/templates/job.html:233
+#: juntagrico/templates/juntagrico/my/area/show.html:32
 #: juntagrico/templates/juntagrico/my/depot/show.html:54
 #: juntagrico/templates/mails/member/depot_changed.txt:17
 msgid "Beschreibung"
 msgstr ""
 
-#: juntagrico/entity/depot.py:23
+#: juntagrico/entity/depot.py:24
+#: juntagrico/templates/exports/snippets/snippet_tour_overview.html:6
+msgid "Wochentag"
+msgstr ""
+
+#: juntagrico/entity/depot.py:25
 msgid "Sichtbar auf Listen"
 msgstr ""
 
-#: juntagrico/entity/depot.py:35
+#: juntagrico/entity/depot.py:39
 msgid "Ausfahrten"
 msgstr ""
 
-#: juntagrico/entity/depot.py:44
+#: juntagrico/entity/depot.py:48
 #, python-brace-format
 msgid "{0} Name"
 msgstr ""
 
-#: juntagrico/entity/depot.py:48
+#: juntagrico/entity/depot.py:52
 msgid "Abholtag"
 msgstr ""
 
-#: juntagrico/entity/depot.py:49
+#: juntagrico/entity/depot.py:53
 msgid "Abholzeit"
 msgstr ""
 
-#: juntagrico/entity/depot.py:50
+#: juntagrico/entity/depot.py:54
 msgid "Abholzeitfenster in Stunden"
 msgstr ""
 
-#: juntagrico/entity/depot.py:52
+#: juntagrico/entity/depot.py:56
 msgid "Kapazität"
 msgstr ""
 
-#: juntagrico/entity/depot.py:53 juntagrico/entity/jobs.py:167
+#: juntagrico/entity/depot.py:57 juntagrico/entity/jobs.py:168
 #: juntagrico/entity/location.py:21 juntagrico/entity/location.py:85
 #: juntagrico/entity/member.py:45 juntagrico/templates/job.html:200
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:14
@@ -701,79 +707,79 @@ msgstr ""
 msgid "Ort"
 msgstr ""
 
-#: juntagrico/entity/depot.py:54 juntagrico/entity/depot.py:175
+#: juntagrico/entity/depot.py:58 juntagrico/entity/depot.py:179
 msgid "Aufpreis"
 msgstr ""
 
-#: juntagrico/entity/depot.py:55 juntagrico/entity/depot.py:176
+#: juntagrico/entity/depot.py:59 juntagrico/entity/depot.py:180
 #, python-brace-format
 msgid "Aufpreis für {0}"
 msgstr ""
 
-#: juntagrico/entity/depot.py:57
+#: juntagrico/entity/depot.py:61
 #: juntagrico/templates/juntagrico/my/depot/show.html:67
 msgid "Zugangsbeschreibung"
 msgstr ""
 
-#: juntagrico/entity/depot.py:58
+#: juntagrico/entity/depot.py:62
 #, python-brace-format
 msgid "Nur für {0} des/r {1} sichtbar"
 msgstr ""
 
-#: juntagrico/entity/depot.py:61 juntagrico/entity/subtypes.py:36
+#: juntagrico/entity/depot.py:65 juntagrico/entity/subtypes.py:36
 msgid "Sichtbar auf Depotliste"
 msgstr ""
 
-#: juntagrico/entity/depot.py:62 juntagrico/entity/jobs.py:204
+#: juntagrico/entity/depot.py:66 juntagrico/entity/jobs.py:205
 #: juntagrico/entity/location.py:24 juntagrico/entity/subtypes.py:117
 msgid "Sichtbar"
 msgstr ""
 
-#: juntagrico/entity/depot.py:63 juntagrico/entity/depot.py:162
-#: juntagrico/entity/jobs.py:33 juntagrico/entity/jobs.py:95
+#: juntagrico/entity/depot.py:67 juntagrico/entity/depot.py:166
+#: juntagrico/entity/jobs.py:34 juntagrico/entity/jobs.py:96
 msgid "Koordinatoren"
 msgstr ""
 
-#: juntagrico/entity/depot.py:142
+#: juntagrico/entity/depot.py:146
 msgid "bis"
 msgstr ""
 
-#: juntagrico/entity/depot.py:155 juntagrico/entity/jobs.py:85
+#: juntagrico/entity/depot.py:159 juntagrico/entity/jobs.py:86
 msgid "Kann Beschreibung ändern"
 msgstr ""
 
-#: juntagrico/entity/depot.py:156 juntagrico/entity/jobs.py:86
+#: juntagrico/entity/depot.py:160 juntagrico/entity/jobs.py:87
 #, python-brace-format
 msgid "Kann {0} sehen"
 msgstr ""
 
-#: juntagrico/entity/depot.py:157 juntagrico/entity/jobs.py:87
+#: juntagrico/entity/depot.py:161 juntagrico/entity/jobs.py:88
 #, python-brace-format
 msgid "Kann {0} kontaktieren"
 msgstr ""
 
-#: juntagrico/entity/depot.py:161 juntagrico/entity/jobs.py:94
+#: juntagrico/entity/depot.py:165 juntagrico/entity/jobs.py:95
 msgid "Koordinator"
 msgstr ""
 
-#: juntagrico/entity/depot.py:173 juntagrico/entity/subs.py:232
+#: juntagrico/entity/depot.py:177 juntagrico/entity/subs.py:232
 #: juntagrico/entity/subtypes.py:158
 #, python-brace-format
 msgid "{0}-Typ"
 msgstr ""
 
-#: juntagrico/entity/depot.py:185
+#: juntagrico/entity/depot.py:189
 #, python-brace-format
 msgid "{0}-{1}-Typ"
 msgstr ""
 
-#: juntagrico/entity/depot.py:186
+#: juntagrico/entity/depot.py:190
 #, python-brace-format
 msgid "{0}-{1}-Typen"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:29 juntagrico/entity/jobs.py:610
-#: juntagrico/templates/areas.html:32
+#: juntagrico/entity/jobs.py:30 juntagrico/entity/jobs.py:609
+#: juntagrico/templates/juntagrico/my/area/list.html:32
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:13
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:14
 #: juntagrico/templates/memberjobs.html:63
@@ -784,161 +790,162 @@ msgstr ""
 msgid "Kernbereich"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:31
+#: juntagrico/entity/jobs.py:32
 msgid "versteckt"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:32
+#: juntagrico/entity/jobs.py:33
 msgid ""
 "Nicht auf der \"Tätigkeitsbereiche\"-Seite anzeigen. Einsätze bleiben "
 "sichtbar."
 msgstr ""
 
-#: juntagrico/entity/jobs.py:38
+#: juntagrico/entity/jobs.py:39
 msgid "Standard Tätigkeitesbereich für neue Benutzer"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:40
+#: juntagrico/entity/jobs.py:41
 msgid ""
 "Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt."
 msgstr ""
 
-#: juntagrico/entity/jobs.py:77 juntagrico/entity/jobs.py:164
+#: juntagrico/entity/jobs.py:78 juntagrico/entity/jobs.py:165
 #: juntagrico/templates/job.html:220
 msgid "Tätigkeitsbereich"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:78 juntagrico/templates/areas.html:36
+#: juntagrico/entity/jobs.py:79
 #: juntagrico/templates/juntagrico/manage/member/show.html:28
 #: juntagrico/templates/juntagrico/manage/member/show.html:51
 #: juntagrico/templates/juntagrico/menu/admin/activityareas.html:8
 #: juntagrico/templates/juntagrico/menu/user.html:47
+#: juntagrico/templates/juntagrico/my/area/list.html:36
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:90
 msgid "Tätigkeitsbereiche"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:88
+#: juntagrico/entity/jobs.py:89
 #, python-brace-format
 msgid "Kann {0} entfernen"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:89
+#: juntagrico/entity/jobs.py:90
 msgid "Kann Jobs verwalten"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:90
+#: juntagrico/entity/jobs.py:91
 msgid "Kann Einsatzanmeldungen verwalten"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:108
+#: juntagrico/entity/jobs.py:109
 msgid "Icon für fehlendes Extra"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:110
+#: juntagrico/entity/jobs.py:111
 msgid "Icon für Extra"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:116
+#: juntagrico/entity/jobs.py:117
 msgid "JobExtraTyp"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:117
+#: juntagrico/entity/jobs.py:118
 msgid "JobExtraTypen"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:131
+#: juntagrico/entity/jobs.py:132
 msgid "jeder kann Extra auswählen"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:152
+#: juntagrico/entity/jobs.py:153
 msgid "JobExtra"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:153
+#: juntagrico/entity/jobs.py:154
 msgid "JobExtras"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:162
+#: juntagrico/entity/jobs.py:163
 msgid "Angezeigter Name"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:165
+#: juntagrico/entity/jobs.py:166
 msgid "Dauer in Stunden"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:224 juntagrico/entity/jobs.py:451
+#: juntagrico/entity/jobs.py:225 juntagrico/entity/jobs.py:450
 msgid "Jobart"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:225
+#: juntagrico/entity/jobs.py:226
 msgid "Jobarten"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:230 juntagrico/entity/jobs.py:266
+#: juntagrico/entity/jobs.py:231 juntagrico/entity/jobs.py:267
 msgid "Plätze"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:231
+#: juntagrico/entity/jobs.py:232
 msgid "Unendlich Plätze"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:232 juntagrico/templates/job.html:114
+#: juntagrico/entity/jobs.py:233 juntagrico/templates/job.html:114
 msgid "Zeitpunkt"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:234
+#: juntagrico/entity/jobs.py:235
 #, python-brace-format
 msgid "{0} vielfaches"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:238
+#: juntagrico/entity/jobs.py:239
 msgid "Reminder verschickt"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:239
+#: juntagrico/entity/jobs.py:240
 msgid "abgesagt"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:252
+#: juntagrico/entity/jobs.py:253
 #, python-brace-format
 msgid "Job {0}"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:258 juntagrico/entity/jobs.py:272
+#: juntagrico/entity/jobs.py:259 juntagrico/entity/jobs.py:273
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:32
 msgid "Freie Plätze"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:394
+#: juntagrico/entity/jobs.py:395
 msgid "AbstractJob"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:395
+#: juntagrico/entity/jobs.py:396
 msgid "AbstractJobs"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:396
+#: juntagrico/entity/jobs.py:397
 msgid "kann vergangene Jobs editieren"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:452
+#: juntagrico/entity/jobs.py:451
 msgid "Zusätzliche Beschreibung"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:454
+#: juntagrico/entity/jobs.py:453
 msgid "Dauer in Stunden (Überschreibend)"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:455
+#: juntagrico/entity/jobs.py:454
 msgid ""
 "Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen."
 msgstr ""
 
-#: juntagrico/entity/jobs.py:459
+#: juntagrico/entity/jobs.py:458
 msgid "Dauer"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:514
+#: juntagrico/entity/jobs.py:513
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:8
 #: juntagrico/templates/juntagrico/mails/member/job/subscription_changed.txt:13
 #: juntagrico/templates/mails/member/job_canceled.txt:13
@@ -949,23 +956,23 @@ msgstr ""
 msgid "Job"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:515
+#: juntagrico/entity/jobs.py:514
 msgid "Jobs"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:600
+#: juntagrico/entity/jobs.py:599
 msgid "EinzelJob"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:601
+#: juntagrico/entity/jobs.py:600
 msgid "EinzelJobs"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:611
+#: juntagrico/entity/jobs.py:610
 msgid "Job Extras"
 msgstr ""
 
-#: juntagrico/entity/jobs.py:612 juntagrico/entity/share.py:33
+#: juntagrico/entity/jobs.py:611 juntagrico/entity/share.py:33
 #: juntagrico/templates/exports/share_certificate.html:111
 #: juntagrico/templates/js/i18n.js:91 juntagrico/templates/memberjobs.html:45
 msgid "Wert"
@@ -1644,7 +1651,8 @@ msgstr ""
 msgid "Saison"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:915 juntagrico/templates/area.html:77
+#: juntagrico/forms/__init__.py:915
+#: juntagrico/templates/juntagrico/my/area/show.html:87
 msgid "Anzeigen"
 msgstr ""
 
@@ -2192,47 +2200,6 @@ msgstr ""
 msgid "Unwiderruflich Ersetzen"
 msgstr ""
 
-#: juntagrico/templates/area.html:21
-msgid "Mitmachen"
-msgstr ""
-
-#: juntagrico/templates/area.html:36
-msgid "Beschreibung ändern"
-msgstr ""
-
-#: juntagrico/templates/area.html:49
-#: juntagrico/templates/juntagrico/my/depot/show.html:41
-msgid "Kontaktperson(en)"
-msgstr ""
-
-#: juntagrico/templates/area.html:62
-msgid "Kontakte ändern"
-msgstr ""
-
-#: juntagrico/templates/area.html:85
-msgid "Kommende Termine"
-msgstr ""
-
-#: juntagrico/templates/area.html:94
-msgid "Keine Einsätze ausgeschrieben"
-msgstr ""
-
-#: juntagrico/templates/areas.html:8
-msgid "Mitarbeit"
-msgstr ""
-
-#: juntagrico/templates/areas.html:31
-msgid "Kernbereiche"
-msgstr ""
-
-#: juntagrico/templates/areas.html:34
-msgid "Weitere Bereiche"
-msgstr ""
-
-#: juntagrico/templates/areas.html:79
-msgid "Von dir koordiniert"
-msgstr ""
-
 #: juntagrico/templates/base.html:76
 #, python-format
 msgid "Du imitierst derzeit den Benutzer “%(fn)s %(ln)s”."
@@ -2438,12 +2405,9 @@ msgstr ""
 msgid "Erstellt am"
 msgstr ""
 
-#: juntagrico/templates/exports/amount_overview.html:30
-#: juntagrico/templates/exports/depot_overview.html:47
-msgid "Total"
-msgstr ""
-
-#: juntagrico/templates/exports/amount_overview.html:60
+#: juntagrico/templates/exports/amount_overview.html:52
+#: juntagrico/templates/exports/snippets/snippet_tour.html:19
+#: juntagrico/templates/exports/snippets/snippet_tour_overview.html:30
 #: juntagrico/templates/juntagrico/menu/admin/members.html:20
 msgid "Alle"
 msgstr ""
@@ -2451,6 +2415,11 @@ msgstr ""
 #: juntagrico/templates/exports/depot_overview.html:8
 #, python-format
 msgid "%(v_depot)s Uebersicht"
+msgstr ""
+
+#: juntagrico/templates/exports/depot_overview.html:47
+#: juntagrico/templates/exports/snippets/snippet_tour_header.html:10
+msgid "Total"
 msgstr ""
 
 #: juntagrico/templates/exports/depotlist.html:7
@@ -2519,6 +2488,15 @@ msgstr ""
 
 #: juntagrico/templates/exports/snippets/snippet_depotlist_header.html:52
 msgid "retour"
+msgstr ""
+
+#: juntagrico/templates/exports/snippets/snippet_tour.html:6
+#: juntagrico/templates/exports/snippets/snippet_tour_overview.html:9
+msgid "Ohne"
+msgstr ""
+
+#: juntagrico/templates/exports/snippets/snippet_tour_overview.html:20
+msgid "Ohne Ausfahrt"
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:8
@@ -4080,6 +4058,47 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/modal.html:25
 msgid "Ok"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/list.html:8
+msgid "Mitarbeit"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/list.html:31
+msgid "Kernbereiche"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/list.html:34
+msgid "Weitere Bereiche"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/list.html:79
+msgid "Von dir koordiniert"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:22
+msgid "Mitmachen"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:40
+msgid "Beschreibung ändern"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:56
+#: juntagrico/templates/juntagrico/my/depot/show.html:41
+msgid "Kontaktperson(en)"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:69
+msgid "Kontakte ändern"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:96
+msgid "Kommende Termine"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/area/show.html:102
+msgid "Keine Einsätze ausgeschrieben"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/area/snippets/intro.html:6
