@@ -1,7 +1,9 @@
+import datetime
 from functools import cached_property
 
 from django.contrib import admin
 from django.db import models
+from django.db.models import Max
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -51,17 +53,17 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def get_part_overview(parts):
-        # building multi-dimensional dictionary [product_name][size_long_name][(type_name, type_long_name)] -> amount
+        # building multi-dimensional dictionary [category_name][bundle_long_name][(type_name, type_long_name)] -> amount
         result = {}
         for part in parts.all():
-            product_name = part.type.size.product.name
-            product = result.get(product_name, {})
-            size_name = part.type.size.long_name
-            size = product.get(size_name, {})
+            category_name = part.type.bundle.category.name
+            category = result.get(category_name, {})
+            bundle_name = part.type.bundle.long_name
+            bundle = category.get(bundle_name, {})
             type_name = (part.type.name, part.type.long_name)
-            size[type_name] = 1 + size.get(type_name, 0)
-            product[size_name] = size
-            result[product_name] = product
+            bundle[type_name] = 1 + bundle.get(type_name, 0)
+            category[bundle_name] = bundle
+            result[category_name] = category
         return result
 
     @property
@@ -87,21 +89,21 @@ class Subscription(Billable, SimpleStateModel):
     @cached_property
     def content(self):
         """
-        :return: list of parts annotated with size_sum, size_name and product_name
+        :return: list of parts annotated with bundle_name, category_name and amount
         """
         return self.types.with_active_or_future_parts().annotate_content()
 
     def content_strings(self, sformat=None):
         """
         :param sformat: format string. defaults to SUB_OVERVIEW_FORMAT.format
-        :return: list of formated strings desribing each type and amount in this subscription
+        :return: list of formated strings describing each type and amount in this subscription
         """
         sformat = sformat or Config.sub_overview_format('format')
         return [sformat.format(
-            product=t.product_name,
-            size=t.size_name,
+            category=t.category_name,
+            bundle=t.bundle_name,
             type=t.name,
-            amount=t.size_sum,
+            amount=t.amount,
         ) for t in self.content]
 
     @property
@@ -115,17 +117,17 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=False).count()
 
     @staticmethod
-    def calc_subscription_amount(parts, size):
-        return parts.filter(type__size=size).count()
+    def calc_subscription_amount(parts, bundle):
+        return parts.filter(type__bundle=bundle).count()
 
-    def subscription_amount(self, size):
-        return self.calc_subscription_amount(self.active_parts, size)
+    def subscription_amount(self, bundle):
+        return self.calc_subscription_amount(self.active_parts, bundle)
 
-    def subscription_amount_future(self, size):
-        return self.calc_subscription_amount(self.future_parts, size)
+    def subscription_amount_future(self, bundle):
+        return self.calc_subscription_amount(self.future_parts, bundle)
 
     @property
     def price(self):
@@ -181,19 +183,19 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.active_parts.filter(type__size__product__is_extra=True)
+        return self.active_parts.filter(type__is_extra=True)
 
     @property
     def future_extra_subscriptions(self):
-        return self.future_parts.filter(type__size__product__is_extra=True)
+        return self.future_parts.filter(type__is_extra=True)
 
     @property
     def active_and_future_extra_subscriptions(self):
-        return self.active_and_future_parts.filter(type__size__product__is_extra=True)
+        return self.active_and_future_parts.filter(type__is_extra=True)
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
@@ -234,9 +236,8 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def __str__(self):
         try:
             return Config.sub_overview_format('part_format').format(
-                product=self.type.size.product.name,
-                size=self.type.size.name,
-                size_long=self.type.size.long_name,
+                category=self.type.bundle.get_category_name(),
+                bundle=self.type.bundle.long_name,
                 type=self.type.name,
                 type_long=self.type.long_name,
                 price=self.type.price
@@ -248,9 +249,47 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
+    def cancel(self, date=None):
+        super().cancel(date)
+        # if last part was canceled, also cancel subscription
+        if not self.subscription.canceled and not self.subscription.parts.not_canceled().exists():
+            self.subscription.cancel(date)
+
+    def deactivate(self, date=None):
+        super().deactivate(date)
+        # if last part is deactivated, also deactivate subscription
+        if self.subscription.deactivation_date is None and not self.subscription.parts.filter(deactivation_date=None).exists():
+            self.subscription.deactivate(self.subscription.parts.aggregate(Max('deactivation_date'))['deactivation_date__max'])
+
     @property
     def is_extra(self):
-        return self.type.size.product.is_extra
+        return self.type.is_extra
+
+    @property
+    def is_trial(self):
+        return self.type.trial_days > 0
+
+    @cached_property
+    def remaining_trial_days(self):
+        """
+        The end of the trial period is the deactivation_date, if set, otherwise it is activation_date + trial_days.
+        :return: remaining days of trial if is a trial and has started, otherwise None
+        """
+        if self.is_trial and self.activation_date is not None:
+            today = datetime.date.today()
+            end = self.end_of_trial_date
+            return (end - today).days
+
+    @cached_property
+    def end_of_trial_date(self):
+        if self.is_trial and self.activation_date is not None:
+            return self.deactivation_date or (self.activation_date + datetime.timedelta(days=self.type.trial_days))
+
+    def follow_up_parts(self):
+        """
+        :return: non-trial parts from the same subscription that are waiting or active after this part.
+        """
+        return self.subscription.parts.non_trial().waiting(self.activation_date)
 
     def clean(self):
         check_sub_part_consistency(self)

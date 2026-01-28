@@ -21,11 +21,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: '3.9'
           - python-version: '3.10'
           - python-version: '3.11'
           - python-version: '3.11'
             exclude-test: shares
+          - python-version: '3.12'
+          - python-version: '3.13'
+          - python-version: '3.14'
 
     services:
       postgres:
@@ -66,7 +68,7 @@ jobs:
         pip install psycopg2 mysqlclient
     - name: ruff
       run: |
-        ruff check juntagrico
+        ruff check --preview juntagrico
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
@@ -88,7 +90,6 @@ jobs:
 
   coverage:
     name: Coverage Report
-    if: ${{ github.event_name == 'push' }}
     needs: tests
     runs-on: ubuntu-latest
     permissions:

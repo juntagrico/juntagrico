@@ -230,7 +230,7 @@ Trigger: A member cancels one of their shares
 
 Arguments:
 
-* instance: The share instance that was cancelled
+* instance: The share instance that was canceled
 
 * on_share_canceled: :ref:`Notify <reference-notifications-share-canceled>` users
   with permission :ref:`notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>` via email.
@@ -322,3 +322,22 @@ Arguments:
 Default receivers:
 
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
+
+
+Management Command signals
+--------------------------
+
+.. _reference-signals-management-command-called:
+
+called
+^^^^^^
+
+Sender: generate_depot_list.Command
+
+Trigger: Management command is called
+
+Arguments: None
+
+Default receivers:
+
+* on_depot_list_generated: :ref:`Inform admin <reference-notifications-depot-list-generated>` when Depot list is generated.

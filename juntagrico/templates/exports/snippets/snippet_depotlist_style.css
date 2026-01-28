@@ -36,9 +36,29 @@ body {
     font-family: Symbola;
 }
 
+table {
+    table-layout: fixed;
+    margin-bottom:5px;
+}
+
+th {
+    font-size: 14px;
+    vertical-align: top;
+    text-align: center;
+}
+
+td {
+    font-size: 14px;
+    line-height: 14px;
+    vertical-align: top;
+    text-align: center;
+}
+
 .page-break {
     page-break-after: always;
 }
+
+/* borders */
 
 .full-border {
     border: 1px black solid;
@@ -60,18 +80,7 @@ body {
     border-bottom: 1px black solid;
 }
 
-th {
-    font-size: 14px;
-    vertical-align: top;
-    text-align: center;
-}
-
-td {
-    font-size: 14px;
-    line-height: 14px;
-    vertical-align: top;
-    text-align: center;
-}
+/* alignment */
 
 .vert-top {
     vertical-align: top;
@@ -81,16 +90,44 @@ td {
     vertical-align: bottom;
 }
 
-.horz-left {
+.horz-left, .text-left {
     text-align: left;
 }
 
-.horz-center {
+.horz-center, .text-center {
     text-align: center;
 }
 
+.text-right {
+    text-align: right;
+}
+
+/* size & space */
+
+.width-100 {
+    width: 100%;
+}
+
+.mb-5 {
+    margin-bottom: 5px;
+}
+
+.mt-40 {
+    margin-top: 40px;
+}
+
+.fontsmall {
+    font-size: 11px
+}
+
+.large {
+    font-size: 18px;
+}
+
+/* specific */
+
 .namecol {
-    width:300px;
+    width: 300px;
 }
 
 .checkboxcol {
@@ -105,16 +142,12 @@ td {
 
 .depot {
     font-size: 24px;
-    margin: 0px;
+    margin: 0;
 }
 
 .depotaddr {
     font-size: 14px;
-    margin: 0px;
-}
-
-.fontsmall {
-    font-size:11px
+    margin: 0;
 }
 
 .pickup-details {
@@ -129,7 +162,6 @@ td {
     font-size:11px
 }
 
-table {
-    table-layout: fixed;
-    margin-bottom:5px;
+.tour-name {
+    width: 200px;
 }

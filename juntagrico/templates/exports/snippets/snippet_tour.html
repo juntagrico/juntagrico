@@ -1,0 +1,28 @@
+{% load juntagrico.depot_extras %}
+{% load i18n %}
+{% load juntagrico.config %}
+<div class="mt-40">
+    <table cellpadding="5" cellspacing="0" class="bottom-border width-100 mb-5">
+        {% include "./snippet_tour_header.html" with title=tours.0.get_weekday_display|default_if_none:_('Ohne') %}
+        {% for tour in tours %}
+            <tr>
+                <td class="tour-name">{{ tour.name }}</td>
+                <td class="text-right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
+                {% for product in products %}
+                    {% for size in product.sizes.on_depot_list.sorted %}
+                        <td class="text-right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><b>{% trans "Alle" %}</b></td>
+            <td class="text-right">{{ subscriptions|by_tour_day:day|count_units:date|floatformat }}</td>
+            {% for product in products %}
+                {% for size in product.sizes.on_depot_list.sorted %}
+                    <td class="text-right">{{ subscriptions|by_tour_day:day|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                {% endfor %}
+            {% endfor %}
+        </tr>
+    </table>
+</div>

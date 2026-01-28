@@ -23,7 +23,32 @@ The linked repositories contain additional information and installation instruct
 Rich Text Editor
 ----------------
 
-The rich text editor allows formatting text of most descriptions, like the job descriptions, entered through the admin interface,
+Juntagrico uses django-richtextfields.
+You can find more information on the configuration options here https://pypi.org/project/django-richtextfield/
+
+The examples below use the TinyMCE editor, which comes pre-installed with juntagrico. You may use any other editor.
+
+.. _intro-richtext-mailer:
+
+Mailer
+^^^^^^
+
+You can customize the rich text field in the mailer in the `settings.py` using:
+
+.. code-block:: python
+
+    from juntagrico import defaults
+
+    DJRICHTEXTFIELD_CONFIG = defaults.richtextfield_config(LANGUAGE_CODE, mailer={
+        # your configuration settings
+    })
+
+
+Admin Interface
+^^^^^^^^^^^^^^^
+
+The rich text editor in the admin interface allows formatting text of most descriptions, like the job descriptions,
+entered through the admin interface,
 This feature is disabled by default. Use the steps below to enable it.
 
 .. warning::
@@ -34,30 +59,22 @@ This feature is disabled by default. Use the steps below to enable it.
     When text from rich text fields is used in plain text emails the HTML tags need to be removed using the ``striptags`` filter.
     This is done in the default email templates. You will have to do it in your customized email texts as well.
 
-To enable the rich text editor you have to do the following:
+To enable the rich text editor you have to modify the following setting.
 
-* Add ``'djrichtextfield'`` to your ``INSTALLED_APPS`` in the settings
-* Add ``re_path(r'^djrichtextfield/', include('djrichtextfield.urls')),`` to your urls (also make sure to import ``re_path`` from ``django.urls``)
-* Add the following setting
-    .. code-block:: python
+.. code-block:: python
 
-        from juntagrico.util.settings import tinymce_lang
+    from juntagrico import defaults
 
-        DJRICHTEXTFIELD_CONFIG = {
-            'js': ['juntagrico/external/tinymce/tinymce.min.js'],
-            'init_template': 'djrichtextfield/init/tinymce.js',
-            'settings': {
-                'menubar': False,
-                'plugins': 'link  lists',
-                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
-                'language': tinymce_lang(LANGUAGE_CODE)
-            }
-        }
+    DJRICHTEXTFIELD_CONFIG = defaults.richtextfield_config(LANGUAGE_CODE, use_in_admin=True)
 
 
-The example above uses the TinyMCE editor, which comes pre-installed with juntagrico. You may use any other editor.
+Instead you can also pass your custom configuration to the `admin` argument.
 
-More information on django-richtextfield you can find here https://pypi.org/project/django-richtextfield/
+.. code-block:: python
+
+    DJRICHTEXTFIELD_CONFIG = defaults.richtextfield_config(LANGUAGE_CODE, admin={
+        # your configuration settings
+    })
 
 
 .. _intro-custom-templates:
@@ -82,7 +99,7 @@ You can modify juntagrico with your own code. Use the provided :ref:`Hooks <refe
 Modifications can be made, once all django apps have been loaded,
 i.e. in the ``ready`` method of your app config in ``apps.py`` in the main folder of your project or addon:
 
-  .. code-block:: python
+.. code-block:: python
 
     from django.apps import AppConfig
     from juntagrico.util import addons

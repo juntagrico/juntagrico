@@ -1,0 +1,13 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block modal_classes %}modal-lg{% endblock %}
+
+{% block title %}
+    {% blocktrans with v_subscription=vocabulary.subscription %}Probe-{{ v_subscription }} abschliessen{% endblocktrans %}
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="closeout_trial_form" class="btn btn-primary"
+           value="{% trans "Anwenden" %}">
+{% endblock %}

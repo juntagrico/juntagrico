@@ -1,31 +1,119 @@
 {% extends "base.html" %}
+{% load juntagrico.snippets %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load static %}
+
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
-        {% if edit_url.strip %}
-         <a href="{{ edit_url }}" class="edit">
-            <i class="fas fa-pen">
-            </i>
-        </a>
-        {% endif %}
     </h3>
 {% endblock %}
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
+
+{% block messages %}
+    {% if error %}
+        {% include "messages/error.html" %}
+    {% endif %}
+    {% if form.current_assignments.count %}
+        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
+    {% elif job.canceled %}
+        {% include "messages/job_canceled.html" %}
+    {% elif job.has_ended %}
+        {% include "messages/job_past.html" %}
+    {% elif job.has_started %}
+        {% include "messages/job_running.html" %}
+    {% elif job.free_slots == 0 %}
+        {% include "messages/job_fully_booked.html" %}
+    {% endif %}
 {% endblock %}
+
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% block admin_actions %}
+        {% if edit_url.strip or can_copy or can_cancel %}
+            <div class="row pb-4">
+                <div class="col-12">
+                    {% if edit_url.strip %}
+                        <a href="{{ edit_url }}" class="btn btn-primary">
+                            <i class="fas fa-pen mr-1"></i>
+                            {% trans "Einsatz bearbeiten" %}
+                        </a>
+                    {% endif %}
+
+                    {% if can_copy %}
+                        {% if is_recurring %}
+                            <div class="btn-group">
+                                <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                                    <i class="fa-solid fa-copy"></i>
+                                    {% trans "Einsatz kopieren" %}
+                                </a>
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" data-reference="parent" aria-expanded="false">
+                                    <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
+                                        {% trans "Mehrfach kopieren" %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
+                                <i class="fa-solid fa-copy"></i>
+                                {% trans "Einsatz kopieren" %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if can_convert %}
+                        {% if is_recurring %}
+                            <form action="{% url 'job-convert-to-one-time' %}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz in einen einmaligen Einsatz umwandeln möchtest?" %}')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
+                                        title="{% trans "in einmaligen Einsatz umwandeln" %}">
+                                    <i class="fa-solid fa-repeat"></i>
+                                    {% trans "Umwandeln" %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <a class="convert-to-recurring-job btn btn-outline-primary"
+                               title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
+                               data-url="{% url 'job-convert-to-recurring' job.id %}">
+                                <i class="fa-solid fa-repeat"></i>
+                                {% trans "Umwandeln" %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if can_cancel %}
+                        <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
+                              onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger" name="job_id" value="{{ job.id }}">
+                                <i class="fas fa-ban mr-1"></i>
+                                {% trans "Einsatz absagen" %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        {# Modals #}
+        {% if convertion_form %}
+            {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
+        {% endif %}
+    {% endblock %}
+
     {% block time %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Zeitpunkt" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
                 <br/>
                 {% if job_is_in_past %}
@@ -42,11 +130,11 @@
     {% if not job.infinite_slots %}
         {% block status %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% trans "Status" %}:
                 </div>
                 {% with slots_taken=job.occupied_slots %}
-                    <div class="col-md-5" title="{{ slots_taken }} von {{ job.slots }} gebucht">
+                    <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
                         {% spaceless %}
                             {% for _ in ''|ljust:job.slots %}
                                 {% if forloop.counter <= slots_taken %}
@@ -65,10 +153,10 @@
     {% block multiplier %}
         {% if job.multiplier == 0 %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% vocabulary "assignment_pl" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% blocktrans trimmed with jm=job.multiplier %}
                     Du erhältst für diese Veranstaltung keine {{ v_assignment_pl }} gutgeschrieben.
                     {% endblocktrans %}
@@ -76,10 +164,10 @@
             </div>
         {% elif job.multiplier != 1 %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% vocabulary "assignment_pl" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% blocktrans trimmed with jm=job.multiplier %}
                     Du erhältst für diesen Einsatz das {{ jm }}-Fache an {{ v_assignment_pl }} gutgeschrieben.
                     {% endblocktrans %}
@@ -91,10 +179,10 @@
     {% if job.extras.strip %}
         {% block extras %}
             <div class="row pb-4">
-                <div class="col-md-3">
+                <div class="col-lg-3">
                     {% trans "Extras" %}:
                 </div>
-                <div class="col-md-5">
+                <div class="col-lg-9">
                     {% for extra in job.empty_per_job_extras %}
                         {{ extra.extra_type.display_empty|safe }}
                     {% endfor %}
@@ -108,10 +196,10 @@
 
     {% block location %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Ort" %}:
             </div>
-            <div class="col-md-5" id="map-container">
+            <div class="col-lg-9" id="map-container">
                 {{ job.type.location.to_html|safe }}
                 {% if job.type.location.google_maps_query %}
                     <br>
@@ -126,12 +214,25 @@
         </div>
     {% endblock %}
 
+    {% block activity_area %}
+        <div class="row pb-4">
+            <div class="col-lg-3">
+                {% trans "Tätigkeitsbereich" %}:
+            </div>
+            <div class="col-lg-9">
+                <a href="{% url 'area' job.type.activityarea.id %}">
+                    {{ job.type.activityarea }}
+                </a>
+            </div>
+        </div>
+    {% endblock %}
+
     {% block description %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Beschreibung" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 <div class="job-description">{{ job.type.description|richtext|safe }}</div>
                 {% if job.additional_description %}
                     <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
@@ -142,10 +243,10 @@
 
     {% block contact %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Kontakt" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {% for contact in job.contacts %}
                     {{ contact.to_html }}
                 {% endfor %}
@@ -155,14 +256,14 @@
 
     {% block participants %}
         <div class="row pb-4">
-            <div class="col-md-3">
+            <div class="col-lg-3">
                 {% trans "Dabei sind" %}:
             </div>
-            <div class="col-md-5">
+            <div class="col-lg-9">
                 {% if job.occupied_slots == 0 and job.free_slots != 0 %}
                     {% trans "Noch niemand" %} 🥺
                 {% else %}
-                    {% include "juntagrico/job/snippets/participant_list.html" %}
+                    {% job_participant_list request.user job %}
                 {% endif %}
             </div>
         </div>
@@ -174,9 +275,14 @@
         {% endif %}
     {% endblock %}
 {% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
+{% endblock %}
+
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
     {% include 'snippets/scripts/leaflet.html' %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJob.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/js/initJob.js' %}">
     </script>
 {% endblock %}

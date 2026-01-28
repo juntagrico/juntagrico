@@ -3,21 +3,25 @@ import datetime
 from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.core import mail
 
+from juntagrico.entity.contact import EmailContact, TextContact, MemberContact, PhoneContact
 from juntagrico.entity.delivery import Delivery, DeliveryItem
-from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition
+from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
+    ProductSize, SubscriptionBundleProductSize
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
     fixtures = ['test/members', 'test/areas']
+    with_extra_subs = True
 
     _count_sub_types = 0
 
@@ -25,14 +29,16 @@ class JuntagricoTestCase(TestCase):
     def setUpTestData(cls):
         # load from fixtures
         cls.load_members()
+        cls.default_member = cls.member
         cls.load_areas()
         # setup other objects
         cls.set_up_job()
         cls.set_up_depots()
         cls.set_up_sub_types()
         cls.set_up_sub()
-        cls.set_up_extra_sub_types()
-        cls.set_up_extra_sub()
+        if cls.with_extra_subs:
+            cls.set_up_extra_sub_types()
+            cls.set_up_extra_sub()
         cls.set_up_mail_template()
         cls.set_up_deliveries()
         # Use this command here to create fixtures fast:
@@ -43,11 +49,15 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def load_members(cls):
         cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6 = Member.objects.order_by('id')[:6]
+        cls.inactive_member = Member.objects.get(email='inactive_member@email.org')
         cls.admin = Member.objects.get(email='admin@email.org')
 
     @classmethod
     def load_areas(cls):
         cls.area_admin = Member.objects.get(email='areaadmin@email.org')
+        (cls.area_admin_modifier, cls.area_admin_viewer,
+         cls.area_admin_contact, cls.area_admin_remover,
+         cls.area_admin_job_modifier, cls.area_admin_assignment_modifier) = Member.objects.filter(email__startswith='area_admin').order_by('id')
         cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod
@@ -112,6 +122,8 @@ class JuntagricoTestCase(TestCase):
                           'default_duration': 4,
                           'location': cls.create_location('area_location2')}
         cls.job_type2 = JobType.objects.create(**job_type_data2)
+        cls.job_type2.contact_set.add(MemberContact(member=cls.member4, display=MemberContact.DISPLAY_EMAIL),
+                                             bulk=False)
         """
         job_extra
         """
@@ -189,18 +201,25 @@ class JuntagricoTestCase(TestCase):
         depots
         """
         cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
+        cls.depot_coordinator = cls.create_member('depot_coordinator@email.org')
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
-            'contact': cls.member,
             'tour': cls.tour,
             'weekday': 1,
             'location': location,
         }
         cls.depot = Depot.objects.create(**depot_data)
+        depot_coordinator = {
+            'depot': cls.depot,
+            'member': cls.depot_coordinator,
+            'can_modify_depot': True,
+            'can_view_member': True,
+            'can_contact_member': True,
+        }
+        DepotCoordinator.objects.create(**depot_coordinator)
         depot_data = {
             'name': 'depot2',
-            'contact': cls.member,
             'weekday': 1,
             'pickup_time': datetime.time(9, 0),
             'pickup_duration': 48,
@@ -209,16 +228,38 @@ class JuntagricoTestCase(TestCase):
             'fee': 55.0,
         }
         cls.depot2 = Depot.objects.create(**depot_data)
+        depot_coordinator['depot'] = cls.depot2
+        depot_coordinator['member'] = cls.member
+        DepotCoordinator.objects.create(**depot_coordinator)
+        EmailContact.objects.create(
+            content_object=cls.depot2,
+            email='emailcontact@example.org',
+        )
+        TextContact.objects.create(
+            content_object=cls.depot2,
+            text='free text',
+        )
+        mail.outbox = []
 
     @staticmethod
-    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+    def create_bundle(long_name, category=None, description='', **kwargs):
+        return SubscriptionBundle.objects.create(
+            long_name=long_name,
+            category=category,
+            description=description,
+            **kwargs
+        )
+
+    @staticmethod
+    def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3,
+                        price=1000, **kwargs):
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')
         return SubscriptionType.objects.create(
             name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
             long_name=long_name,
-            size=size,
+            bundle=bundle,
             shares=shares,
             visible=visible,
             required_assignments=required_assignments,
@@ -228,27 +269,47 @@ class JuntagricoTestCase(TestCase):
         )
 
     @classmethod
+    def set_up_products(cls):
+        # products
+        cls.sub_product = SubscriptionProduct.objects.create(name='product')
+        cls.unused_product = SubscriptionProduct.objects.create(name='unused product')
+        # product sizes
+        cls.product_size = ProductSize.objects.create(
+            name='product size',
+            product=cls.sub_product,
+            units=1.0
+        )
+        cls.invisible_product_size = ProductSize.objects.create(
+            name='invisible product size',
+            product=cls.sub_product,
+            show_on_depot_list=False,
+        )
+        cls.unused_product_size = ProductSize.objects.create(
+            name='unused product size',
+            product=cls.unused_product
+        )
+
+    @classmethod
     def set_up_sub_types(cls):
         """
-        subscription product, size and types
+        subscription categories, bundles, types and products
         """
-        sub_product_data = {
-            'name': 'product'
+        cls.set_up_products()
+        # category
+        sub_category_data = {
+            'name': 'category'
         }
-        cls.sub_product = SubscriptionProduct.objects.create(**sub_product_data)
-        sub_size_data = {
-            'name': 'sub_name',
-            'long_name': 'sub_long_name',
-            'units': 1,
-            'visible': True,
-            'depot_list': True,
-            'product': cls.sub_product,
-            'description': 'sub_desc'
-        }
-        cls.sub_size = SubscriptionSize.objects.create(**sub_size_data)
-        cls.sub_type = cls.create_sub_type(cls.sub_size)
-        cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
-        cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)
+        cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
+        # bundle
+        cls.bundle = cls.create_bundle('bundle', cls.sub_category, description='sub_desc')
+        SubscriptionBundleProductSize.objects.create(bundle=cls.bundle, product_size=cls.product_size)
+        SubscriptionBundleProductSize.objects.create(bundle=cls.bundle, product_size=cls.invisible_product_size)
+        cls.unused_bundle = cls.create_bundle('unused bundle', description='unused bundle description')
+        SubscriptionBundleProductSize.objects.create(bundle=cls.unused_bundle, product_size=cls.product_size)
+        # types
+        cls.sub_type = cls.create_sub_type(cls.bundle)
+        cls.sub_type2 = cls.create_sub_type(cls.bundle, shares=2)
+        cls.sub_type3 = cls.create_sub_type(cls.bundle, shares=0)
         DepotSubscriptionTypeCondition.objects.create(
             depot=cls.depot,
             subscription_type=cls.sub_type,
@@ -307,36 +368,22 @@ class JuntagricoTestCase(TestCase):
         # sub2 (waiting)
         cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
         cls.member2.join_subscription(cls.sub2, True)
-        # cancelled_sub
-        cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
-        cls.member6.join_subscription(cls.cancelled_sub, True)
+        # canceled_sub
+        cls.canceled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
+        cls.member6.join_subscription(cls.canceled_sub, True)
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
 
     @classmethod
     def set_up_extra_sub_types(cls):
         """
-        subscription product, size and types
+        subscription extra types
         """
-        extrasub_product_data = {
-            'name': 'extraproduct',
-            'is_extra': True
-        }
-        cls.extrasub_product = SubscriptionProduct.objects.create(**extrasub_product_data)
-        extrasub_size_data = {
-            'name': 'extrasub_name',
-            'long_name': 'sub_long_name',
-            'units': 1,
-            'visible': True,
-            'depot_list': True,
-            'product': cls.extrasub_product,
-            'description': 'sub_desc'
-        }
-        cls.extrasub_size = SubscriptionSize.objects.create(**extrasub_size_data)
         extrasub_type_data = {
             'name': 'extrasub_type_name',
             'long_name': 'sub_type_long_name',
-            'size': cls.extrasub_size,
+            'is_extra': True,
+            'bundle': cls.bundle,
             'shares': 0,
             'visible': True,
             'required_assignments': 10,
@@ -363,26 +410,92 @@ class JuntagricoTestCase(TestCase):
     def set_up_deliveries(cls):
         delivery_data = {'delivery_date': '2017-03-27',
                          'tour': cls.tour,
-                         'subscription_size': cls.sub_size}
+                         'subscription_bundle': cls.bundle}
         cls.delivery1 = Delivery.objects.create(**delivery_data)
         delivery_data['delivery_date'] = '2017-03-28'
         cls.delivery2 = Delivery.objects.create(**delivery_data)
         DeliveryItem.objects.create(delivery=cls.delivery1)
 
-    def assertGet(self, url, code=200, member=None):
-        login_member = member or self.member
+    def assertGet(self, url, code=200, member=None, data=None):
+        login_member = member or self.default_member
         self.client.force_login(login_member.user)
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, code)
+        response = self.client.get(url, data)
+        self.assertEqual(response.status_code, code, msg=f'url: {url}, data: {data}')
         return response
 
     def assertPost(self, url, data=None, code=200, member=None):
-        login_member = member or self.member
+        login_member = member or self.default_member
         self.client.force_login(login_member.user)
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, code)
+        self.assertEqual(response.status_code, code, msg=f'url: {url}, data: {data}')
         return response
 
 
 class JuntagricoTestCaseWithShares(JuntagricoTestCase):
     fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if getattr(settings, 'ENABLE_SHARES', False) else [])
+
+
+class JuntagricoJobTestCase(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # create complex job type
+        cls.complex_job_type = JobType.objects.create(
+            name='complex_job_type',
+            displayed_name='complex_job_type_name',
+            description='complex_job_type_description',
+            activityarea=cls.area2,
+            default_duration=4,
+            location=cls.create_location('complex_location'),
+        )
+        cls.job_type_contact = PhoneContact(phone='01233556')
+        cls.complex_job_type.contact_set.add(cls.job_type_contact, bulk=False)
+        JobExtra.objects.create(
+            recuring_type=cls.complex_job_type,
+            extra_type=cls.job_extra_type,
+        )
+
+        # create complex recurring job
+        time = timezone.now() + timezone.timedelta(hours=2)
+        cls.complex_job_data = {
+            'slots': 1,
+            'time': time,
+            'type': cls.complex_job_type,
+            'infinite_slots': True,
+            'multiplier': 2,
+            'additional_description': 'Extra Description',
+            'duration_override': 6
+        }
+        cls.complex_job = RecuringJob.objects.create(**cls.complex_job_data)
+        cls.email_contact = EmailContact(email='test@test.org')
+        cls.complex_job.contact_set.add(cls.email_contact, bulk=False)
+        cls.member_contact = MemberContact(member=cls.member2, display=MemberContact.DISPLAY_EMAIL)
+        cls.complex_job.contact_set.add(cls.member_contact, bulk=False)
+        Assignment.objects.create(job=cls.complex_job, member=cls.member2, amount=1.2)
+
+        # create complex one_time_job
+        time = timezone.now() + timezone.timedelta(hours=2)
+        cls.other_location = cls.create_location('other_location')
+        cls.complex_one_time_job_data = {
+            'name': 'one_time_job',
+            'activityarea': cls.area,
+            'description': 'one_time_job_description',
+            'default_duration': 3,
+            'location': cls.create_location('one_time_location'),
+            'slots': 1,
+            'time': time,
+            'infinite_slots': True,
+            'multiplier': 2,
+        }
+        cls.complex_one_time_job = OneTimeJob.objects.create(**cls.complex_one_time_job_data)
+        cls.complex_one_time_job.contact_set.add(EmailContact(email='test@test.org'), bulk=False)
+        cls.complex_one_time_job.contact_set.add(
+            MemberContact(member=cls.member3, display=MemberContact.DISPLAY_EMAIL),
+            bulk=False
+        )
+        JobExtra.objects.create(
+            onetime_type=cls.complex_one_time_job,
+            extra_type=cls.job_extra_type,
+            per_member=True,
+        )
+        Assignment.objects.create(job=cls.complex_one_time_job, member=cls.member, amount=1.3)

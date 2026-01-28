@@ -1,0 +1,20 @@
+{% extends "juntagrico/snippets/subscription/type_container.html" %}
+{% load i18n %}
+
+{% block outer %}
+    <div class="card-header">
+        <div><strong>{{ type.name }}</strong></div>
+
+        <div>
+        {% if type.is_extra %}
+            <i class="fa-regular fa-square-plus"></i>
+            {% trans "Zusatz-Abo" %}
+        {% endif %}
+        {% if not type.visible %}
+            <i class="fa-regular fa-circle-xmark"></i>
+            {% trans "Nicht bestellbar" %}
+        {% endif %}
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %}

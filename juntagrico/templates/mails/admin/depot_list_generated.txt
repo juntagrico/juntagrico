@@ -6,10 +6,7 @@
 {% trans "Hallo" %}
 
 {% blocktrans %}Soeben wurden neue {{ v_depot }}-Listen generiert{% endblocktrans %}:
-
-{{ v_depot }}-{% trans "Liste" %}: {{ serverurl }}{% url 'lists-depotlist' %}
-{{ v_depot }}-{% trans "Übersicht" %}: {{ serverurl }}{% url 'lists-depot-overview' %}
-{% trans "Mengen-Übersicht" %}: {{ serverurl }}{% url 'lists-depot-amountoverview' %}
+{{ serverurl }}{% url 'lists' %}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}

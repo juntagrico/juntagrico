@@ -1,0 +1,15 @@
+{% extends 'juntagrico/snippets/subscription/type_container.html' %}
+{% load i18n %}
+
+{% block content %}
+    {% include 'bootstrap4/layout/field_errors_block.html' %}
+    {{ block.super }}
+    <div class="text-center">
+        <span class="switch switch-lg">
+            <input type="radio" class="switch" name="{{ option.name }}" value="{{ option.value }}" id="type{{ option.value }}" required="">
+            <label for="type{{ option.value }}">
+                <span class="d-none">{% trans "Auswahl:" %}</span>
+            </label>
+        </span>
+    </div>
+{% endblock %}

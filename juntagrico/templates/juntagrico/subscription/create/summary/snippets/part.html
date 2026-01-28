@@ -1,0 +1,25 @@
+{% load juntagrico.common %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+<strong>{{ amount }}</strong>&times; {{ type.name }}
+{% if type.has_periods %}
+    {% for period in type.periods.all %}
+        <br/>
+        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+        {{ period.price|price }}
+    {% endfor %}
+{% else %}
+    <strong>
+    {% if type.trial_days %}
+        {%blocktrans trimmed with tp=type.price|price %}
+         à {{ tp }}.
+        {%endblocktrans%}
+    {% else %}
+        {%blocktrans trimmed with tp=type.price|price %}
+         à {{ tp }}/Jahr.
+        {%endblocktrans%}
+    {% endif %}
+    </strong>
+    {{ type.min_duration_info }}
+{% endif %}

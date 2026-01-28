@@ -4,28 +4,39 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
-from juntagrico.admins.inlines.contact_inline import ContactInline
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin, AreaCoordinatorMixin, can_see_all
+from juntagrico.admins.inlines.contact_inline import ContactInlineForJob
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForJobType
-from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobextradao import JobExtraDao
-from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.entity.jobs import OneTimeJob
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.location import Location
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
-from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+class JobTypeBaseAdmin(AreaCoordinatorMixin):
+    path_to_area = 'activityarea'
+
+    def get_area(self, obj):
+        return obj.activityarea
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # used for form validation
+        if db_field.name == 'activityarea':
+            user = request.user
+            if not can_see_all(user, 'activityarea'):
+                kwargs["queryset"] = ActivityArea.objects.filter(
+                    coordinator_access__member__user=user,
+                    coordinator_access__can_modify_jobs=True
+                )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin, JobTypeBaseAdmin):
     fields = ('name', 'displayed_name', 'activityarea', 'location', 'default_duration', 'description', 'visible')
     list_display = ['__str__', 'default_duration', 'location', 'contacts_text', 'visible', 'last_used']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']
-    search_fields = ['name', 'activityarea__name', 'last_used']
+    search_fields = ['name', 'displayed_name', 'activityarea__name', 'last_used']
     actions = ['transform_job_type', 'action_hide', 'action_make_visible']
-    inlines = [ContactInline, JobExtraInlineForJobType]
+    inlines = [ContactInlineForJob, JobExtraInlineForJobType]
 
     @admin.display(
         ordering='last_used',
@@ -41,25 +52,15 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
     @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
-            i = 0
-            for rj in JobDao.recurings_by_type(inst.id):
-                oj = OneTimeJob()
-                attribute_copy(inst, oj)
-                attribute_copy(rj, oj)
-                oj.name += str(i)
-                i += 1
-                oj.save()
-                for je in JobExtraDao.by_type(inst.id):
-                    je.recuring_type = None
-                    je.onetime_type = oj
-                    je.pk = None
-                    je.save()
-                for b in AssignmentDao.assignments_for_job(rj.id):
-                    b.job = oj
-                    b.save()
-                rj.delete()
-            for je in JobExtraDao.by_type(inst.id):
-                je.delete()
+            # convert all jobs of this type
+            for recurring_job in inst.recuringjob_set.all():
+                recurring_job.convert()
+            # delete type
+            inst.job_extras_set.all().delete()  # delete protected relations first
+            # workaround: deletion of polymorphic relations is unreliable.
+            # this may be fixed soon https://github.com/jazzband/django-polymorphic/pull/746
+            for contact in inst.contact_set.all():
+                contact.delete()
             inst.delete()
 
     @admin.action(description=_('Verstecken'))
@@ -76,8 +77,10 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
         return Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
 
     def get_queryset(self, request):
-        qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
-        if request.resolver_match.view_name != 'admin:autocomplete':
+        qs = super().get_queryset(request)
+        if request.resolver_match.view_name == 'admin:autocomplete':
+            qs = qs.filter(visible=True)
+        else:
             qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
 
@@ -86,21 +89,3 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
         if request.resolver_match.view_name == 'admin:autocomplete':
             search_fields.remove('last_used')
         return search_fields
-
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(
-                'field_name') == 'type':
-            queryset = queryset.filter(visible=True)
-            if request.user.has_perm('juntagrico.is_area_admin') and (
-                    not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-                queryset = queryset.intersection(JobTypeDao.visible_types_by_coordinator(request.user.member))
-        return queryset, use_distinct
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        kwargs = formfield_for_coordinator(request,
-                                           db_field.name,
-                                           'activityarea',
-                                           'juntagrico.is_area_admin',
-                                           ActivityAreaDao.areas_by_coordinator)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)

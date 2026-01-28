@@ -87,7 +87,7 @@ Example:
 
     {% extends 'juntagrico/menu/user.html' %}
     {% block extend %}
-        {% include 'your/own/admin_menu.html' %}
+        {% include 'your/own/user_menu.html' %}
         {{ block.super }}
     {% endblock %}
 
@@ -143,41 +143,59 @@ The signup templates are located in the folder ``createsubscription``.
 
 Some pages have additional blocks listed below.
 
-signup.html
-^^^^^^^^^^^
+juntagrico/signup/member.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``intro_1``: First part of intro
 - ``intro_with_shares``: Part of intro, about shares
 - ``intro_2``  Last part of intro
 - ``read_instructions``: Text on documents that should be read
 
-forms/no_subscription_field.html
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/form/layout/category_container.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Defines the structure to display subscription categories in the subscription/part order and change forms
+
+Blocks:
+
+- ``head``: Name and description of category
+- ``fields``: Nested fields
+
+
+juntagrico/form/layout/bundle_container.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Defines the structure to display subscription bundles in the subscription/part order and change forms.
+
+Has the same blocks as ``category_container.html``.
+
+
+juntagrico/subscription/create/form/no_subscription_field.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``description``: Textlabel on signup option without subscription
 - ``base_fee``: Base fee description on signup option without subscription
 
 
-select_depot.html|label
-^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_depot.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Labeltext of depot selection field
+- ``label``: of depot selection field
 
-select_start_date.html
-^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_start_date.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``label``: Label of date selection field
 - ``hint``: text below selection field
 
-select_shares.html
-^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/subscription/create/select_shares.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``intro_1``: First part of intro
-- ``intro_2``  Last part of intro
+- ``intro_2``:  Last part of intro
 
-summary.html
-^^^^^^^^^^^^
+juntagrico/subscription/create/summary.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each section has a block:
 
@@ -187,8 +205,8 @@ Each section has a block:
 - ``start_date``
 - ``co_member``
 - ``activity_areas``
-- ``shares``:
-- ``comment``:
+- ``shares``
+- ``comment``
 
 Subscription Templates
 ----------------------
@@ -212,8 +230,8 @@ Add content to the subscription overview page, for members that have no subscrip
 Depot Templates
 ---------------
 
-depot.html
-^^^^^^^^^^
+juntagrico/my/depot/show.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each section has a block to overwrite or extend it:
 
@@ -228,22 +246,43 @@ Each section has a block to overwrite or extend it:
 Activity Area Templates
 -----------------------
 
-juntagrico/my/area/snippets/intro.html|all
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/area/snippets/intro.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Override the intro text on the activity area overview page
+Intro text on the activity area overview page
 
+- ``all``: Use this block if you want to append or prepend text
+
+juntagrico/my/area/list.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- ``intro``: Intro including structure. To just change the text, override ``snippets/intro.html``. See above.
+- ``list``: Entire list of activity areas
+- ``section_head``: Title above area list. If core areas exist separate titles are shown for core and non-core areas.
+- ``area_list``: List structure of activity areas
+- ``area``: Display of activity area in list element
+- ``coordinated_areas``: List of areas coordinated by this user
+
+juntagrico/my/area/show.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- ``join``: Slider to join activity area
+- ``description``: Full description structure
+- ``description_text``: Description Text
+- ``contacts``: List of activity area contacts
+- ``members``: Count and link to member list for admins
+- ``upcoming``: List of upcoming jobs in activity area
 
 Membership Templates
 --------------------
 
-cancelmembership.html|intro
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/membership/cancel.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Text after title
+- ``intro``: Text after title
 
-profile.html
-^^^^^^^^^^^^
+juntagrico/my/membership/profile.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Blocks exist for the text in the info banner on top and for the buttons
 

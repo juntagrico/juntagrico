@@ -119,6 +119,7 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
     </script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initChangeExtra.js' %}">
+    <script type="text/javascript">
+        $("input[type='number']").inputSpinner();
     </script>
 {% endblock %}

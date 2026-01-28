@@ -1,0 +1,10 @@
+{% extends 'juntagrico/snippets/subscription/type_container.html' %}
+{% load i18n %}
+
+{% block content %}
+    {{ block.super }}
+    <label for="type{{ type.id }}" class="d-none">
+        <span>{% trans "Anzahl:" %}</span>
+    </label>
+    {{ field }}
+{% endblock %}

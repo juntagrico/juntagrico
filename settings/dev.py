@@ -2,6 +2,7 @@ import os
 
 from .minimal import *  # noqa: F401
 
+from juntagrico.defaults import richtextfield_config
 from juntagrico.util.settings import tinymce_lang
 
 
@@ -22,8 +23,6 @@ LOGGING = {
         'level': 'WARNING' if os.environ.get('GITHUB_WORKFLOW') else 'DEBUG',
     },
 }
-
-INSTALLED_APPS.append('djrichtextfield')
 
 # enable only to test addon features
 # INSTALLED_APPS.insert(9, 'juntagrico_test_addon')
@@ -100,17 +99,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Rich text Settings
 
-DJRICHTEXTFIELD_CONFIG = {
-    'js': ['juntagrico/external/tinymce/tinymce.min.js'],
-    'init_template': 'djrichtextfield/init/tinymce.js',
-    'settings': {
-        'menubar': False,
-        'plugins': 'link  lists',
-        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
-        'language': tinymce_lang(LANGUAGE_CODE)
-    }
-}
-
+DJRICHTEXTFIELD_CONFIG = richtextfield_config(LANGUAGE_CODE, use_in_admin=True)
 
 # Juntagrico Settings
 

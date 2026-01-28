@@ -1,0 +1,11 @@
+{% extends "admin/submit_line.html" %}
+{% load i18n %}
+{% block submit-row %}
+    {% if is_copy_view %}
+        <input type="submit" value="{% translate 'Kopie speichern' %}" class="default" name="_saveasnew">
+    {% elif is_mass_copy_view %}
+        <input type="submit" value="{% translate 'Mehrfach kopieren' %}" class="default" name="_save">
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}

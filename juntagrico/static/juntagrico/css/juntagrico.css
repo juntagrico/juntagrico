@@ -123,6 +123,10 @@ body.wide-layout > .page-container {
     max-width: 95%;
 }
 
+.full-width {
+    width: 100%;
+}
+
 /* row size stuff checked */
 .page-container > div.row {
     margin-top: 60px;
@@ -271,25 +275,6 @@ textarea#recipients[disabled=disabled] {
 
 #edit-recipients-action::after {
     content: ")";
-}
-
-/* mail attachement stuff checked */
-.file-upload {
-    line-height: 30px;
-}
-
-.file-upload-button {
-    display: inline-block;
-    position: relative;
-}
-
-.file-upload-button > input[type=file] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
 }
 
 /* core assignment stuff checked */
@@ -475,4 +460,58 @@ a.phone-number {
     color: #606560;
     float: right;
     display: inline-block;
+}
+
+/* comparison */
+
+.diff-remove {
+    color: #bd2130;
+}
+
+.diff-add {
+    color: #1c7430;
+}
+
+.text-others-unchanged:first-of-type {
+    display: none;
+}
+
+.text-no-changes:not(:nth-of-type(2)) {
+    display: none;
+}
+
+
+/* subscription creation/order */
+.subscription-bundle h2 {
+    font-family: "Source Sans Pro Light";
+}
+
+.type-details strong {
+    font-size: larger;
+}
+
+.type-duration {
+    font-size: smaller;
+}
+
+.subscription-order {
+    max-width: 9em;
+    margin: 0 auto;
+
+}
+
+.subscription-order .btn {
+    padding: .5rem 1rem;
+    font-size: 1.40625rem;
+    line-height: 1.5;
+    border-radius: .3rem;
+    background-color: #fff6;
+}
+
+.subscription-order .form-control{
+    height: calc(1.5em + 1rem + 2px);
+    padding: .5rem 1rem;
+    font-size: 1.40625rem;
+    line-height: 1.5;
+    background-color: #fff6;
 }

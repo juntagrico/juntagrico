@@ -1,14 +1,13 @@
 from django import template
-from django.template.defaultfilters import urlize, linebreaksbr
+from django.template.defaultfilters import urlize, linebreaksbr, floatformat
 
 from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.jobextradao import JobExtraDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.jobs import ActivityArea, JobExtra
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
 
@@ -22,7 +21,12 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def has_extra_subscriptions():
-    return SubscriptionProductDao.all_extra_products().count() > 0
+    return SubscriptionType.objects.is_extra().exists()
+
+
+@register.simple_tag
+def has_trial_subscriptions():
+    return SubscriptionType.objects.filter(trial_days__gt=0).exists()
 
 
 @register.simple_tag
@@ -32,12 +36,12 @@ def show_core():
 
 @register.simple_tag
 def requires_core():
-    return SubscriptionTypeDao.get_with_core().count() > 0
+    return SubscriptionType.objects.filter(required_core_assignments__gt=0).exists()
 
 
 @register.simple_tag
 def show_job_extras():
-    return JobExtraDao.all_job_extras().count() > 0
+    return JobExtra.objects.count() > 0
 
 
 @register.simple_tag
@@ -53,11 +57,6 @@ def activemenu(request, expected):
     return ''
 
 
-@register.simple_tag
-def messages(request):
-    return getattr(request, 'member_messages', [])
-
-
 @register.filter
 def view_name(request):
     return request.resolver_match.view_name.replace('.', '-')
@@ -66,14 +65,20 @@ def view_name(request):
 @register.simple_tag
 def depot_admin(request):
     if hasattr(request.user, 'member'):
-        return DepotDao.depots_for_contact(request.user.member)
+        return Depot.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 
 @register.simple_tag
 def area_admin(request):
     if hasattr(request.user, 'member'):
-        return ActivityAreaDao.areas_by_coordinator(request.user.member)
+        return ActivityArea.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 
@@ -93,3 +98,18 @@ def richtext(value):
 @register.filter
 def values_list(queryset, keys):
     return queryset.values_list(keys, flat=isinstance(keys, str))
+
+
+@register.filter
+def price(value):
+    """
+    formats the number as a price.
+    if cents are 0, they are omitted, otherwise 2 decimals are shown.
+    """
+    value = floatformat(value, '-2u')
+    try:
+        if len(value.split('.')[1]) == 1:
+            value += '0'
+    except IndexError:
+        pass
+    return value + ' ' + Config.currency()

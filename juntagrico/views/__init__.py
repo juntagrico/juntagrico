@@ -2,28 +2,25 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, Job, JobType
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
-    CoopMemberCancellationForm
+    CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
-from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
-from juntagrico.util.messages import home_messages
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
+from juntagrico.config import Config
 
 
 @login_required
@@ -31,20 +28,31 @@ def home(request):
     '''
     Overview on juntagrico
     '''
+    # collect upcoming jobs
     start = timezone.now()
-    end = start + timedelta(14)
-    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
-    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
-    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
-    messages = getattr(request, 'member_messages', []) or []
-    messages.extend(home_messages(request))
-    request.member_messages = messages
-    renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
-        'areas': ActivityAreaDao.all_visible_areas_ordered(),
-    }
+    jobs_base = Job.objects.filter(canceled=False, time__gte=start).with_free_slots()
+    # collect jobs that always show
+    # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
+    pinned_jobs = jobs_base.filter(pinned=True)
+    promoted_jobs = jobs_base.by_type_name(Config.jobs_frontpage('promoted_types')).next(Config.jobs_frontpage('promoted_count'))
+    show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
+    show_jobs_count = len(show_job_ids)
+    # fill with future jobs of next x days or until max
+    remaining_to_max = Config.jobs_frontpage('max') - show_jobs_count
+    if remaining_to_max > 0:
+        end = start + timedelta(Config.jobs_frontpage('days'))
+        next_jobs = jobs_base.exclude(id__in=show_job_ids).filter(time__lte=end).next(remaining_to_max)
+        # if next x days are not enough to fill to min, load enough to fill to min
+        remaining_to_min = Config.jobs_frontpage('min') - show_jobs_count
+        if remaining_to_min > next_jobs.count():
+            next_jobs = jobs_base.exclude(id__in=show_job_ids).next(remaining_to_min)
+        show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
-    return render(request, 'home.html', renderdict)
+    return render(request, 'home.html', {
+        'jobs': Job.objects.filter(id__in=show_job_ids).order_by('time'),
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
+        'areas': ActivityAreaDao.all_visible_areas_ordered(),
+    })
 
 
 @login_required
@@ -66,48 +74,56 @@ def depot(request, depot_id):
         'show_access': request.user.member.subscriptionmembership_set.filter(
             subscription__depot=depot).count() > 0
     }
-    return render(request, 'depot.html', renderdict)
+    return render(request, 'juntagrico/my/depot/show.html', renderdict)
 
 
 @login_required
 @highlighted_menu('area')
 def areas(request):
     '''
-    Details for all areas a member can participate
+    List all areas a member can participate in
     '''
-    member = request.user.member
-    areas = ActivityAreaDao.all_visible_areas_ordered()
-    last_was_core = True
-    for area in areas:
-        area.checked = member in area.members.all()
-        area.first_non_core = not area.core and last_was_core
-        last_was_core = area.core
-    renderdict = {
-        'areas': areas,
-    }
-    return render(request, 'areas.html', renderdict)
+    return render(request, 'juntagrico/my/area/list.html', {
+        'areas': ActivityArea.objects.filter(hidden=False).order_by('-core', 'name'),
+        'coordinated_areas': request.user.member.coordinated_areas.all(),
+    })
 
 
 @login_required
-def show_area(request, area_id):
+def show_area(request, area_id, form_class=AreaDescriptionForm):
     '''
     Details for an area
     '''
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    job_types = JobTypeDao.types_by_area(area_id)
+    edit_form = None
+    access = request.user.member.area_access.filter(area=area).first()
+    if access and access.can_modify_area:
+        if request.method == 'POST':
+            edit_form = form_class(request.POST, instance=area)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect('area', area_id=area_id)
+        else:
+            edit_form = form_class(instance=area)
+
+    job_types = JobType.objects.filter(activityarea=area_id)
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
     jobs = list(rjobs)
     if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
-    area_checked = request.user.member in area.members.all()
+    area_checked = request.user.member.areas.filter(pk=area.pk).exists()
+
     renderdict = {
         'area': area,
         'jobs': jobs,
         'area_checked': area_checked,
+        'edit_form': edit_form,
+        'can_view_member': access and access.can_view_member,
+        'can_manage_jobs': access and access.can_modify_jobs
     }
-    return render(request, 'area.html', renderdict)
+    return render(request, 'juntagrico/my/area/show.html', renderdict)
 
 
 @login_required
@@ -167,39 +183,6 @@ def contact(request):
 
 
 @login_required
-def contact_member(request, member_id):
-    '''
-    member contact form
-    '''
-    member = request.user.member
-    contact_member = get_object_or_404(Member, id=int(member_id))
-    if not contact_member.reachable_by_email and not request.user.is_staff and not contact_member.activityarea_set.exists():
-        raise Http404()
-
-    is_sent = False
-    back_url = request.META.get('HTTP_REFERER') or reverse('home')
-
-    if request.method == 'POST':
-        # send mail to member
-        back_url = request.POST.get('back_url')
-        files = []
-        append_attachements(request, files)
-        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
-                                  request.POST.get('copy'), files)
-        is_sent = True
-    renderdict = {
-        'admin': request.user.has_perm('juntagrico.is_operations_group') or request.user.has_perm(
-            'juntagrico.is_area_admin'),
-        'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
-        'member_id': member_id,
-        'member_name': contact_member.first_name + ' ' + contact_member.last_name,
-        'is_sent': is_sent,
-        'back_url': back_url
-    }
-    return render(request, 'contact_member.html', renderdict)
-
-
-@login_required
 @highlighted_menu('membership')
 def profile(request):
     success = False
@@ -227,7 +210,7 @@ def profile(request):
         'success': success,
         'member': member
     }
-    return render(request, 'profile.html', renderdict)
+    return render(request, 'juntagrico/my/membership/profile.html', renderdict)
 
 
 @login_required
@@ -266,7 +249,7 @@ def cancel_membership(request):
         'share_error': share_error,
         'form': form
     }
-    return render(request, 'cancelmembership.html', renderdict)
+    return render(request, 'juntagrico/my/membership/cancel.html', renderdict)
 
 
 @login_required

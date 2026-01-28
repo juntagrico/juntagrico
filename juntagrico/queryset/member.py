@@ -1,10 +1,35 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, Case, When, Prefetch, F
+from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
 from django.utils.decorators import method_decorator
+from django.utils.itercompat import is_iterable
 
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
+
+
+def q_joined_subscription(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptionmembership__join_date__isnull=False,
+             subscriptionmembership__join_date__lte=on_date)
+
+
+def q_left_subscription(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptionmembership__leave_date__isnull=False,
+             subscriptionmembership__leave_date__lte=on_date)
+
+
+def q_subscription_activated(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptions__activation_date__isnull=False,
+             subscriptions__activation_date__lte=on_date)
+
+
+def q_subscription_deactivated(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptions__deactivation_date__isnull=False,
+             subscriptions__deactivation_date__lte=on_date)
 
 
 class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
@@ -17,6 +42,43 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             cancellation_date__isnull=False,
             deactivation_date__isnull=True
         )
+
+    def has_active_subscription(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(
+            q_subscription_activated(on_date),
+            ~q_subscription_deactivated(on_date),
+            q_joined_subscription(on_date),
+            ~q_left_subscription(on_date)
+        )
+
+    def in_depot(self, depot):
+        if is_iterable(depot):
+            return self.filter(subscriptions__depot__in=depot)
+        return self.filter(subscriptions__depot=depot)
+
+    def has_active_shares(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=on_date),
+            share__isnull=False,
+        )
+
+    def annotate_job_slots(self):
+        return self.annotate(slots=Count('id')).distinct()
+
+    def annotate_first_job(self, suffix='', of_jobs=None):
+        from juntagrico.entity.jobs import Assignment
+        of_jobs = {'job__in': of_jobs} if of_jobs is not None else {}
+        return self.annotate(**{
+            f'is_first_job{suffix}': ~Exists(
+                Assignment.objects.filter(
+                    member=OuterRef('pk'),
+                    job__time__lt=OuterRef('jobs__time'),
+                    **of_jobs
+                )
+            )
+        })
 
     def prefetch_for_list(self):
         members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
@@ -62,3 +124,6 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         """
         return self.annotate_assignment_count(start, end, prefix, **extra_filters)\
             .annotate_core_assignment_count(start, end, prefix, **extra_filters)
+
+    def as_email_recipients(self):
+        return [f'{m} <{m.email}>' for m in self]

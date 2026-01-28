@@ -10,6 +10,7 @@ class JuntagricoAppconfig(AppConfig):
     def ready(self):
         from . import signals
         from .models import Subscription, Job, Share, Member
+        from .management.commands import generate_depot_list
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
@@ -17,6 +18,7 @@ class JuntagricoAppconfig(AppConfig):
         signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
         signals.assignment_changed.connect(signals.on_assignment_changed, sender=Member)
         signals.share_canceled.connect(signals.on_share_canceled, sender=Share)
+        signals.called.connect(signals.on_depot_list_generated, sender=generate_depot_list.Command)
         # See models.py for older signal connections
 
         '''monkey patch User email method for password reset'''

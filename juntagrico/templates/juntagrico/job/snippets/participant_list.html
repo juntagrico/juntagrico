@@ -1,11 +1,24 @@
 {% load juntagrico.common %}
 {% load i18n %}
 <ul>
-    {% for participant in job.unique_participants %}
+    {% for participant in participants %}
         <li class="participant">
             <span class="participant-name">{{ participant }}</span>
             {% if participant.slots > 1 %}
                 <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
+            {% endif %}
+            {% if participant.is_first_job %}
+                <span class="badge badge-success participant-first-time">
+                    {% blocktrans %}Erster Einsatz{% endblocktrans %}
+                </span>
+            {% elif participant.is_first_job_in_area %}
+                <span class="badge badge-success participant-first-time-in-area">
+                    {% blocktrans %}Erster Einsatz im Tätigkeitsbereich{% endblocktrans %}
+                </span>
+            {% elif participant.is_first_job_of_type %}
+                <span class="badge badge-success participant-first-time-of-type">
+                    {% blocktrans %}Erster Einsatz dieser Art{% endblocktrans %}
+                </span>
             {% endif %}
             <span class="participant-job-extras">
             {% for extra in job.all_participant_extras|get_item:participant %}
@@ -21,7 +34,7 @@
             {% endif %}
             {% if can_contact or participant.reachable_by_email %}
                 {% spaceless %}
-                    <a class="contact-member" href="{% url 'contact-member' participant.id %}">
+                    <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
                         <i class="far fa-envelope"></i>
                     </a>
                 {% endspaceless %}
@@ -33,48 +46,14 @@
 {# button to contact all #}
 {% if can_contact %}
     {% block send_mail %}
-        <div>
-            <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="recipients" id="recipients"
-                       value="{% for e in job.participant_emails %}{{ e }}
-{% endfor %}"/>
-                <input type="hidden" name="recipients_count" id="recipients_count" value="{{ job.unique_participants.count }}"/>
-                <button type="submit" class="btn btn-outline-primary" id="send-email">
-                    {% trans "Allen ein E-Mail senden" %}
-                </button>
-            </form>
-        </div>
+        <a href="{% url 'email-to-job' job.id %}" class="btn btn-secondary">
+            <i class="fa fa-envelope"></i>
+            {% trans "Allen ein E-Mail senden" %}
+        </a>
     {% endblock %}
 {% endif %}
 
 {# Modal for editing assignment #}
 {% if can_edit_assignments %}
-    <div class="modal" id="edit_assignment_modal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        {% blocktrans trimmed with v_assignment=vocabulary.assignment %}
-                            {{ v_assignment }} bearbeiten
-                        {% endblocktrans %}
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="spinner-grow" id="edit_assignment_loader" role="status">
-                        <span class="sr-only">{% trans "Lädt..." %}</span>
-                    </div>
-                    <div id="edit_assignment_content"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Abbrechen" %}</button>
-                    <input type="submit" id="edit_assignment_submit" form="assignment-edit-form" class="btn btn-primary" 
-                           value="{% trans "Speichern" %}">
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "./modal_edit_assignment.html" with name='edit_assignment' %}
 {% endif %}

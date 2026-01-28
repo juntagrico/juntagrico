@@ -70,7 +70,7 @@ class SimpleStateModel(models.Model):
         date = date or today
         self.activation_date = self.activation_date or date  # allows immediate deactivation
         if not self.cancellation_date:
-            self.cancellation_date = today if date > today else date  # can't cancel in the future
+            self.cancellation_date = today  # cancel immediately
         self.deactivation_date = self.deactivation_date or date
         self.save()
 
@@ -159,5 +159,5 @@ def absolute_url(*args, **kwargs):
 
 
 def validate_iban(value):
-    if value != '' and not IBAN(value, True).is_valid:
+    if value != '' and not IBAN(value, allow_invalid=True).is_valid:
         raise ValidationError(_('IBAN ist nicht gültig'))

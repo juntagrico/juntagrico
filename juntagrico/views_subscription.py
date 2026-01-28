@@ -4,26 +4,24 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.db.models import Count, Sum, F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+from django.views import View
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
@@ -36,8 +34,8 @@ from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date, next_membership_end_date
-from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session, \
-    primary_member_of_subscription_of_part
+from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
+    using_change_date
 
 
 @login_required
@@ -67,7 +65,7 @@ def subscription(request, subscription_id=None):
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
             'next_size_date': Subscription.next_size_change_date(),
-            'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
+            'has_extra_subscriptions': SubscriptionType.objects.is_extra().exists(),
             'sub_overview_addons': addons.config.get_sub_overviews(),
             'can_leave': can_leave,
         })
@@ -175,45 +173,28 @@ def size_change(request, subscription_id):
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'parts_order_allowed': not subscription.canceled,
-        'can_change_part': SubscriptionTypeDao.get_normal_visible().count() > 1
+        'can_change_part': SubscriptionType.objects.can_change()
     }
     return render(request, 'size_change.html', renderdict)
 
 
 @primary_member_of_subscription_of_part
-def part_change(request, part):
+def part_change(request, part,
+                form_class=SubscriptionPartChangeForm,
+                template_name='juntagrico/my/subscription/part/change.html'):
     """
     change part of a subscription
     """
-    if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of canceled subscription")
-    if SubscriptionTypeDao.get_normal_visible().count() <= 1:
-        raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
-        form = SubscriptionPartChangeForm(part, request.POST)
+        form = form_class(part, request.POST)
         if form.is_valid():
-            subscription_type = get_object_or_404(SubscriptionType, id=form.cleaned_data['part_type'])
-            if part.activation_date is None:
-                # just change type of waiting part
-                part.type = subscription_type
-                part.save()
-            else:
-                # cancel existing part and create new waiting one
-                with transaction.atomic():
-                    new_part = SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
-                    part.cancel()
-                # notify admin
-                adminnotification.subpart_canceled(part)
-                adminnotification.subparts_created([new_part], part.subscription)
+            form.save()
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
-        form = SubscriptionPartChangeForm(part)
-    renderdict = {
+        form = form_class(part)
+    return render(request, template_name, {
         'form': form,
-        'subscription': subscription,
-        'hours_used': Config.assignment_unit() == 'HOURS',
-    }
-    return render(request, 'part_change.html', renderdict)
+    })
 
 
 @primary_member_of_subscription
@@ -223,13 +204,12 @@ def extra_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        form = SubscriptionPartOrderForm(subscription, request.POST,
-                                         product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(subscription, request.POST, extra=True)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
-        form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(extra=True)
     renderdict = {
         'form': form,
         'extras': subscription.active_and_future_extra_subscriptions.all(),
@@ -240,48 +220,61 @@ def extra_change(request, subscription_id):
     return render(request, 'extra_change.html', renderdict)
 
 
-class SignupView(FormView, ModelFormMixin):
-    template_name = 'signup.html'
-
+class SignupView(View):
     def __init__(self):
         super().__init__()
-        self.cs_session = None
-        self.object = None
+        self.signup_manager = None
 
-    def get_form_class(self):
-        return EditMemberForm if self.cs_session.edit else RegisterMemberForm
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.signup_manager = import_string(Config.signup_manager())(request)
 
-    @method_decorator(create_subscription_session)
-    def dispatch(self, request, cs_session, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
+        # make sure signup process is followed
+        next_page = self.signup_manager.get_next_page()
+        if next_page != request.resolver_match.url_name:
+            return redirect(next_page)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class MemberSignupView(SignupView, FormView):
+    template_name = 'juntagrico/signup/member.html'
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
         if Config.enable_registration() is False:
             raise Http404
         # logout if existing user is logged in
         if request.user.is_authenticated:
             logout(request)
-            cs_session.clear()  # empty session object
+            self.signup_manager.clear()
 
-        self.cs_session = cs_session
-        self.object = self.cs_session.main_member
-        return super().dispatch(request, *args, **kwargs)
+    def get_form_class(self):
+        return EditMemberForm if self.signup_manager.get('main_member') else RegisterMemberForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        if 'data' not in form_kwargs:
+            form_kwargs['data'] = self.signup_manager.get('main_member')
+        return form_kwargs
 
     def form_valid(self, form):
-        self.cs_session.main_member = form.instance
-        # monkey patch comment field into main_member
-        self.cs_session.main_member.comment = form.cleaned_data.get('comment', '')
-        return redirect(self.cs_session.next_page())
+        self.signup_manager.set('main_member', form.data.dict())
+        return redirect(self.signup_manager.get_next_page())
 
 
 def confirm(request, member_hash):
     """
-    Confirm from a user that has been added as a co_subscription member
+    Confirm mail address from link with hash after signup or if user that has been added as a co_subscription member
     """
-
-    for member in MemberDao.all_members().filter(confirmed=False):
+    renderdict = {'error_message': _('Ungültiger Link.')}
+    for member in Member.objects.filter(confirmed=False):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
-
-    return redirect('home')
+            renderdict = {}
+            break
+    return render(request, 'mail_confirmation.html', renderdict)
 
 
 class AddCoMemberView(FormView, ModelFormMixin):
@@ -339,9 +332,9 @@ def error_page(request, error_message):
 
 
 @permission_required('juntagrico.is_operations_group')
-def activate_subscription(request, subscription_id):
+@using_change_date
+def activate_subscription(request, change_date, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
         add_subscription_member_to_activity_area(subscription)
@@ -355,9 +348,9 @@ def add_subscription_member_to_activity_area(subscription):
 
 
 @permission_required('juntagrico.is_operations_group')
-def deactivate_subscription(request, subscription_id):
+@using_change_date
+def deactivate_subscription(request, change_date, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
     try:
         subscription.deactivate(change_date)
     except ValidationError as e:
@@ -365,9 +358,8 @@ def deactivate_subscription(request, subscription_id):
     return return_to_previous_location(request)
 
 
-@primary_member_of_subscription
-def cancel_part(request, part_id, subscription_id):
-    part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
+@primary_member_of_subscription_of_part
+def cancel_part(request, part):
     part.cancel()
     adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
@@ -402,23 +394,6 @@ def leave_subscription(request, subscription_id):
         membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     return render(request, 'leavesubscription.html', {})
-
-
-@permission_required('juntagrico.change_subscriptionpart')
-def activate_part(request, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
-    change_date = request.session.get('changedate', None)
-    if part.activation_date is None and part.deactivation_date is None:
-        part.activate(change_date)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.change_subscriptionpart')
-def deactivate_part(request, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
-    change_date = request.session.get('changedate', None)
-    part.deactivate(change_date)
-    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription

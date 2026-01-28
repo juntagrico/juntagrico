@@ -1,41 +1,43 @@
-{% load static %}
 {% load juntagrico.config %}
+{% load static %}
+{% spaceless %}
+
 <style type="text/css">
-    @media screen
-    {@font-face {font-family: 'Source Sans Pro Light';src: url('{{ serverurl }}{% static 'juntagrico/fonts/SourceSansPro-Light.ttf' %}') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    }
-    @font-face
-    {font-family: 'Source Sans Pro Regular';src: url('{{ serverurl }}{% static 'juntagrico/fonts/SourceSansPro-Regular.ttf' %}') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    }
-    }
+{% block css %}@media screen {
+@font-face {font-family: 'Source Sans Pro Light';src: url('{% server_url %}{% static 'juntagrico/fonts/SourceSansPro-Light.ttf' %}') format('truetype');
+font-weight: normal; font-style: normal;}
+@font-face {font-family: 'Source Sans Pro Regular';src: url('{% server_url %}{% static 'juntagrico/fonts/SourceSansPro-Regular.ttf' %}') format('truetype');
+font-weight: normal; font-style: normal;}
+}{% endblock %}
 </style>
+
 <table width="600px">
-    <tr>
-        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">
-            &nbsp;
-        </td>
-        <td style="font-size:14px;font-family: 'Source Sans Pro Regular', monospace; font-weight: bold;padding:20px;">
-            {{ subject }}
-        </td>
-        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">
-            &nbsp;
-        </td>
-    </tr>
+    {% block subject %}
+        <tr>
+            <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+            <td style="font-size:14px;font-family: 'Source Sans Pro Regular', monospace; font-weight: bold;padding:20px;">{{ subject }}</td>
+            <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+        </tr>
+    {% endblock %}
+
+    {% block all_content %}
     <tr>
         <td style="font-size:14px;font-family: 'Source Sans Pro Light', monospace; padding:20px; */word-break: break-all;">
-            {% block content %}
-            {% endblock %}
+            {% block content %}{{ content }}{% endblock %}
         </td>
     </tr>
+    {% endblock %}
+
+    {% block signature %}
     <tr>
         <td colspan="3" style="padding-top:25px;">
-            <a href="{% organisation_website "url" %}">
-                {% organisation_website "name" %}
-            </a>
+            {% if signature %}
+                {{ signature|safe }}
+            {% else %}
+                {% include 'juntagrico/mails/signature.html' %}
+            {% endif %}
         </td>
     </tr>
+    {% endblock %}
 </table>
+{% endspaceless %}
