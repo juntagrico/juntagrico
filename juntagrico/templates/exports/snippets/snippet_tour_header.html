@@ -1,6 +1,6 @@
 {% load i18n %}
 <tr>
-    <th colspan="2" class="text-left large">{{ title }}</th>
+    <th colspan="2" class="text-left large">{{ title|default:'' }}</th>
     {% for product in products %}
         <th colspan="{{ product.sizes.on_depot_list.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}</th>
     {% endfor %}
