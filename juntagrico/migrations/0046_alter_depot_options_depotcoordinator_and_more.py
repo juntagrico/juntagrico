@@ -5,8 +5,8 @@ import juntagrico
 
 def has_perm(apps, user, perm):
     permission = apps.get_model('auth', 'Permission')
-    perm = permission.objects.get(codename=perm)
-    return user.user_permissions.filter(codename=perm.codename).exists() or user.groups.filter(permissions=perm).exists()
+    perm = permission.objects.get(content_type__app_label='juntagrico', codename=perm)
+    return perm in user.user_permissions.all() or user.groups.filter(permissions=perm).exists()
 
 
 def migrate_coordinators(apps, schema_editor):
