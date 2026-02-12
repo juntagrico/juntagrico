@@ -30,8 +30,8 @@
         <h4>{{ vocabulary.co_member_pl }}</h4>
         {% for co_member in co_members %}
             <p>{{ co_member.first_name }} {{ co_member.last_name }}
-                {% if not co_member.pk %}<a href="?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
-                <a href="?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
+                {% if not co_member.pk %}<a href="?edit={{forloop.counter}}" class="edit"><i class="bi bi-pencil-square"></i></a>{% endif %}
+                <a href="?remove={{forloop.counter}}" class="delete"><i class="bi bi-trash text-danger"></i></a>
             </p>
         {% endfor %}
         <a href="?next" class="btn btn-success">

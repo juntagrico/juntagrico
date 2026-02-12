@@ -104,14 +104,14 @@
     {{ block.super }}
     config.layout.topStart.features.buttons.push(
         id_action_button(
-            '<i class="fa-solid fa-file-invoice-dollar"></i> {% trans "Zahlungsdatei erzeugen" %}',
+            '<i class="bi bi-file-earmark-binary"></i> {% trans "Zahlungsdatei erzeugen" %}',
             '{% url "share-pain001" %}',
             '{% csrf_token %}',
             '.share_id', 'share_ids'
         ),
         {% if perms.juntagrico.change_share %}
             id_action_button(
-                '<i class="fa-regular fa-circle-check"></i> {% trans "Ausbuchen" %}',
+                '<i class="bi bi-journal-check"></i> {% trans "Ausbuchen" %}',
                 '{% url 'manage-share-payout' %}',
                 '{% csrf_token %}', 
                 '.backpayable', 'share_ids',

@@ -28,14 +28,14 @@
             {% if can_edit_assignments %}
                 {% spaceless %}
                     <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
-                        <i class="fas fa-pen"></i>
+                        <i class="bi bi-pencil-square"></i>
                     </a>
                 {% endspaceless %}
             {% endif %}
             {% if can_contact or participant.reachable_by_email %}
                 {% spaceless %}
                     <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
-                        <i class="far fa-envelope"></i>
+                        <i class="bi bi-envelope"></i>
                     </a>
                 {% endspaceless %}
             {% endif %}
@@ -47,7 +47,7 @@
 {% if can_contact %}
     {% block send_mail %}
         <a href="{% url 'email-to-job' job.id %}" class="btn btn-secondary">
-            <i class="fa fa-envelope"></i>
+            <i class="bi bi-envelope"></i>
             {% trans "Allen ein E-Mail senden" %}
         </a>
     {% endblock %}

@@ -37,7 +37,7 @@
                 <div class="col-12">
                     {% if edit_url.strip %}
                         <a href="{{ edit_url }}" class="btn btn-primary">
-                            <i class="fas fa-pen mr-1"></i>
+                            <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Einsatz bearbeiten" %}
                         </a>
                     {% endif %}
@@ -46,7 +46,7 @@
                         {% if is_recurring %}
                             <div class="btn-group">
                                 <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
-                                    <i class="fa-solid fa-copy"></i>
+                                    <i class="bi bi-copy"></i>
                                     {% trans "Einsatz kopieren" %}
                                 </a>
                                 <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
@@ -61,7 +61,7 @@
                             </div>
                         {% else %}
                             <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
-                                <i class="fa-solid fa-copy"></i>
+                                <i class="bi bi-copy"></i>
                                 {% trans "Einsatz kopieren" %}
                             </a>
                         {% endif %}
@@ -74,7 +74,7 @@
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
                                         title="{% trans "in einmaligen Einsatz umwandeln" %}">
-                                    <i class="fa-solid fa-repeat"></i>
+                                    <i class="bi bi-arrow-repeat"></i>
                                     {% trans "Umwandeln" %}
                                 </button>
                             </form>
@@ -82,7 +82,7 @@
                             <a class="convert-to-recurring-job btn btn-outline-primary"
                                title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
                                data-url="{% url 'job-convert-to-recurring' job.id %}">
-                                <i class="fa-solid fa-repeat"></i>
+                                <i class="bi bi-arrow-repeat"></i>
                                 {% trans "Umwandeln" %}
                             </a>
                         {% endif %}
@@ -93,7 +93,7 @@
                               onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger" name="job_id" value="{{ job.id }}">
-                                <i class="fas fa-ban mr-1"></i>
+                                <i class="bi bi-ban mr-1"></i>
                                 {% trans "Einsatz absagen" %}
                             </button>
                         </form>

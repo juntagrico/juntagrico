@@ -13,7 +13,7 @@
                     <strong>{{ product }}</strong>
                     {% if perms.juntagrico.change_subscriptionproduct %}
                     <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}">
-                        <i class="fa-solid fa-pen"></i>
+                        <i class="bi bi-pencil-square"></i>
                     </a>
                 {% endif %}
                 </div>
@@ -32,9 +32,9 @@
                                 <li>
                                     {{ size.name }} ({{ size.units|floatformat:-3 }})
                                     {% if size.show_on_depot_list %}
-                                        <i class="fa-solid fa-file-circle-check"></i>
+                                        <i class="bi bi-file-earmark-check" title="{% trans "Auf Depotliste angezeigt" %}"></i>
                                     {% else %}
-                                        <i class="fa-solid fa-file-circle-xmark"></i>
+                                        <i class="bi bi-file-earmark-x" title="{% trans "Nicht auf Depotliste angezeigt" %}"></i>
                                     {% endif %}
                                 </li>
                             {% endfor %}
@@ -47,7 +47,7 @@
     {% if perms.juntagrico.add_subscriptionproduct %}
         <div class="col mb-3">
             <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionproduct_add' %}">
-                <i class="fas fa-plus mr-1"></i>
+                <i class="bi bi-plus mr-1"></i>
                 {% trans "Produkt hinzufügen" %}
             </a>
         </div>

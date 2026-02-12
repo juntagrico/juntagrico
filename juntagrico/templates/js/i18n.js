@@ -11,7 +11,7 @@ var email_copy_string = "{% trans "E-Mails kopieren" %}";
 var email_copied_string = "{% trans "E-Mails kopiert" %}";
 var dt_language = {
     decimal: "{{ 0.0 }}"[1], {# let django render this as float to take the decimal symbol from here #}
-    search: "<i class=\"fa-solid fa-magnifying-glass\"></i> {% trans "Suchen: " %}",
+    search: "<i class=\"bi bi-search\"></i> {% trans "Suchen: " %}",
     emptyTable: "{% trans "Keine Daten verfügbar" %}",
     zeroRecords: "{% trans "Keine passenden Einträge gefunden" %}",
     info: "{% trans "Zeige _TOTAL_ von _MAX_" %}",
@@ -32,8 +32,8 @@ var dt_language = {
     loadingRecords: "{% trans "Lädt..." %}",
     searchBuilder: {
         "search": "{% trans "Suchen" %}",
-        "add": "<i class=\"fa-solid fa-magnifying-glass\"></i> {% trans "Suchkriterium hinzufügen" %}",
-        "clearAll": "<i class=\"fa-solid fa-xmark\"></i> {% trans "Leeren" %}",
+        "add": "<i class=\"bi bi-search\"></i> {% trans "Suchkriterium hinzufügen" %}",
+        "clearAll": "<i class=\"bi bi-x\"></i> {% trans "Leeren" %}",
         "condition": "{% trans "Bedingung" %}",
         "conditions": {
             "date": {

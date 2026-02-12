@@ -50,14 +50,14 @@ $(function () {
 
 function email_button(action, default_email_all) {
     return {
-        text: '<i class="fa-regular fa-envelope"></i> ' + email_button_string[0],
+        text: '<i class="bi bi-envelope"></i> ' + email_button_string[0],
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
                 const count = get_email_ids(get_selected_or_all(dt)).size
                 that.enable(count > 0)
                 that.text(
-                    '<i class="fa-regular fa-envelope"></i> ' +
+                    '<i class="bi bi-envelope"></i> ' +
                     email_button_string[Math.min(2, count)].replace("{count}", count)
                 )
             })
@@ -92,9 +92,9 @@ function timed_text_class_change(new_text, new_class, duration) {
 }
 
 function email_copy_button() {
-    let copied_text = '<i class="fa-solid fa-check"></i> ' + email_copied_string
+    let copied_text = '<i class="bi bi-check"></i> ' + email_copied_string
     return {
-        text: '<i class="fa-regular fa-clipboard"></i> ' + email_copy_string,
+        text: '<i class="bi bi-clipboard"></i> ' + email_copy_string,
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
