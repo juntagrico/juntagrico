@@ -1,0 +1,38 @@
+{% load juntagrico.common %}
+{% load i18n %}
+<h4>{% trans "Kategorien" %}</h4>
+<p>
+    {% trans "Kategorien für Pakete mit optionaler Beschreibung." %}
+    {% trans "Pakete ohne Kategorie, können nicht bestellt werden." %}
+</p>
+<div class="row">
+    {% for category in categories %}
+        <div class="col col-12 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <strong>{{ category }}</strong>
+                    {% if perms.juntagrico.change_subscriptioncategory %}
+                    <a href="{% url 'admin:juntagrico_subscriptioncategory_change' category.id %}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                {% endif %}
+                </div>
+                {% if category.description|striptags|wordcount %}
+                    <div class="card-body">
+                        <div class="card-text">
+                            {{ category.description|richtext|safe }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    {% if perms.juntagrico.add_subscriptioncategory %}
+        <div class="col mb-3">
+            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptioncategory_add' %}">
+                <i class="bi bi-plus mr-1"></i>
+                {% trans "Kategorie hinzufügen" %}
+            </a>
+        </div>
+    {% endif %}
+</div>
