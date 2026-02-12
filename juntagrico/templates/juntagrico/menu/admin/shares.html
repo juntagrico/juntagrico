@@ -4,10 +4,9 @@
 {% if c_enable_shares %}
     {% if perms.juntagrico.change_share or perms.juntagrico.view_share %}
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#shareman">
+            <a class="nav-link{% if 'manage-share' not in request.resolver_match.url_name %} collapsed{% endif %}" data-toggle="collapse" href="#shareman">
+                <i class="bi bi-caret-down turn"></i>
                 {% blocktrans %}{{ v_share_pl }}{% endblocktrans %}
-                <i class="fas fa-angle-right">
-                </i>
             </a>
             <div class="collapse{% if 'manage-share' in request.resolver_match.url_name %} show{% endif %}" id="shareman">
                 <ul class="nav flex-column subadmin-menu">

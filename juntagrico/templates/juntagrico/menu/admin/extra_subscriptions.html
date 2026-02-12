@@ -3,10 +3,9 @@
 {% has_extra_subscriptions as b_has_extra_subscriptions %}
 {% if perms.juntagrico.change_subscriptionpart and b_has_extra_subscriptions %}
     <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#extrasubman">
+        <a class="nav-link collapsed" data-toggle="collapse" href="#extrasubman">
+            <i class="bi bi-caret-down turn"></i>
             {% blocktrans %}Zusatzabos{% endblocktrans %}
-            <i class="fas fa-angle-right">
-            </i>
         </a>
         <div class="collapse" id="extrasubman">
             <ul class="nav flex-column subadmin-menu">

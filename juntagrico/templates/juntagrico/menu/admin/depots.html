@@ -4,10 +4,9 @@
 {% depot_admin request as qs_depot_admin %}
 {% if qs_depot_admin|length > 0 %}
     <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#depotman">
+        <a class="nav-link{% if 'manage-depot' not in request.resolver_match.url_name %} collapsed{% endif %}" data-toggle="collapse" href="#depotman">
+            <i class="bi bi-caret-down turn"></i>
             {% blocktrans %}{{ v_depot_pl }}{% endblocktrans %}
-            <i class="fas fa-angle-right">
-            </i>
         </a>
         <div class="collapse{% if 'manage-depot' in request.resolver_match.url_name %} show{% endif %}" id="depotman">
             <ul class="nav flex-column subadmin-menu">

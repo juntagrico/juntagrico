@@ -16,7 +16,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" href="{% config "favicon" %}"/>
         <link href="{% config "bootstrap" %}" rel="stylesheet"/>
-        <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/bootstrap-icons/bootstrap-icons.min.css' %}" rel="stylesheet">
         <link href="{% static 'juntagrico/external/cc/cookieconsent.min.css' %}" rel="stylesheet"/>
         <link href="{% static 'juntagrico/external/datatables/datatables.min.css' %}" rel="stylesheet"/>
         {% block styles %}
@@ -51,8 +51,7 @@
 
                     {% block small_menu_content %}
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <i class="fa-solid fa-bars">
-                            </i>
+                            <i class="bi bi-list"></i>
                         </button>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">

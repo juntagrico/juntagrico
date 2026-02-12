@@ -7,13 +7,13 @@
 {% block tools %}
     {% if perms.juntagrico.change_recuringjob or can_manage_jobs %}
         <a href="{% url 'admin:juntagrico_recuringjob_add' %}" class="btn btn-primary mr-1">
-            <i class="fas fa-calendar-plus mr-1"></i>
+            <i class="bi bi-calendar-plus mr-1"></i>
             {% trans "Wiederkehrenden Einsatz ausschreiben" %}
         </a>
     {% endif %}
     {% if perms.juntagrico.change_onetimejob or can_manage_jobs %}
         <a href="{% url 'admin:juntagrico_onetimejob_add' %}" class="btn btn-outline-primary">
-            <i class="fas fa-plus mr-1"></i>
+            <i class="bi bi-plus mr-1"></i>
             {% trans "Einzel-Einsatz ausschreiben" %}
         </a>
     {% endif %}

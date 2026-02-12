@@ -18,7 +18,7 @@ $(function () {
 
         // show filename and button to remove on current
         $this.next().remove()
-        let remove_button = $('<a href="#"><i class="far fa-times-circle text-dark"></i></a>')
+        let remove_button = $('<a href="#"><i class="bi bi-trash text-danger"></i></a>')
         remove_button.on('click', removeFile)
         $this.after(remove_button).after('<span class="mr-2 mb-2">' + $this.val().split('\\').pop() + '</span>')
     });

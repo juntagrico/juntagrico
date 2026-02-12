@@ -342,7 +342,7 @@ textarea#recipients[disabled=disabled] {
 
 /* arrows for collapsible list elements */
 .details-control, .shown .details-control {
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'bootstrap-icons';
     font-style: normal;
     font-weight: 900;
     font-size: 27px;
@@ -351,11 +351,19 @@ textarea#recipients[disabled=disabled] {
 }
 
 .details-control::before {
-    content: "\f105";
+    content: "\f234";
 }
 
 .shown .details-control::before {
-    content: "\f107";
+    content: "\f22C";
+}
+
+.turn::before {
+    transition: rotate .2s linear;
+}
+
+.collapsed .turn::before {
+    rotate: -90deg;
 }
 
 /* increment buttons stuff*/

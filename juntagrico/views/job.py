@@ -199,7 +199,7 @@ def convert_to_recurring(request, job_id, form_class=ConvertToRecurringJobForm, 
         success = True
     if redirect_on_post:
         if success:
-            messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+            messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
                                                 _("Umwandlung erfolgreich")))
         else:
             messages.error(request, _('Umwandlung fehlgeschlagen'))
@@ -241,7 +241,7 @@ def convert_to_one_time(request):
         raise PermissionDenied
     # convert the job
     new_job = recurring_job.convert()
-    messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+    messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
                                         _("Umwandlung erfolgreich")))
     return redirect('job', new_job.id)
 
@@ -285,7 +285,7 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
             success = True
         if redirect_on_post:
             if success:
-                messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
                                                     _("Änderung gespeichert")))
             else:
                 messages.error(request, _('Änderung des Einsatzes fehlgeschlagen.'))

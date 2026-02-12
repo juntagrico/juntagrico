@@ -334,7 +334,7 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
             success = True
         if redirect_on_post:
             if success:
-                messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
                                                     _("Änderungen angewendet")))
             else:
                 messages.error(request, _('Änderungen fehlgeschlagen.'))

@@ -86,7 +86,7 @@
     {{ block.super }}
     config.layout.topStart.features.buttons.push(
         id_action_button(
-            '<i class="fa-solid fa-rotate"></i> {% trans "Ändern" %}',
+            '<i class="bi bi-arrow-repeat"></i> {% trans "Ändern" %}',
             '{% url 'manage-sub-depot-change-confirm' %}',
             '{% csrf_token %}',
             '.subscription_id',

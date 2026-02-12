@@ -1,5 +1,5 @@
 {% load i18n %}
-<h4>Zusatz-Abos <a href="{% url 'cs-extras' %}?mod" class="edit"><i class="fas fa-pen"></i></a></h4>
+<h4>Zusatz-Abos <a href="{% url 'cs-extras' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
 <p>
 {% for type, amount in extras.items %}
     {% include './snippets/part.html' %}
