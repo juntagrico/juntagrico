@@ -1,12 +1,12 @@
 {% load i18n %}
 <tr>
-    <th colspan="2" class="text-left large">{{ title|default_if_none:'' }}</th>
+    <th colspan="2" class="text-left large">{% if title %}{{ title }}{% endif %}</th>
     {% for product in products %}
         <th colspan="{{ product.sizes.on_depot_list.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}</th>
     {% endfor %}
 </tr>
 <tr>
-    <td class="small bottom-border left-border right-border">{{ header|default:_('Ausfahrt') }}</td>
+    <td class="small bottom-border left-border right-border">{% if header %}{{ header }}{% else %}{% trans "Ausfahrt" %}{% endif %}</td>
     <td class="small bottom-border right-border">{% trans "Total" %}</td>
     {% for product in products %}
         {% for size in product.sizes.on_depot_list.sorted %}
