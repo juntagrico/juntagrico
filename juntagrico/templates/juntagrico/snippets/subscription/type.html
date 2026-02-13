@@ -39,13 +39,13 @@
     {% block required_assignments %}
         <div class="type-details type-required-assignments">
             {% if hours_used %}
-                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3 %}
+                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3|strip:'0' %}
                     <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz
                 {% plural %}
                     <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze
                 {% endblocktranslate %}
             {% else %}
-                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3 %}
+                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3|strip:'0' %}
                     <strong>{{ assignments_float }}</strong> Arbeitseinsatz
                 {% plural %}
                     <strong>{{ assignments_float }}</strong> Arbeitseinsätze
@@ -57,13 +57,13 @@
     {% if type.required_core_assignments > 0 %}
         <div class="type-details type-required-core-assignments">
             {% if hours_used %}
-                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3 %}
+                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3|strip:'0' %}
                     <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz in Kernbereichen
                 {% plural %}
                     <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze in Kernbereichen
                 {% endblocktranslate %}
             {% else %}
-                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3 %}
+                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3|strip:'0' %}
                     <strong>{{ assignments_float }}</strong> Arbeitseinsatz in Kernbereichen
                 {% plural %}
                     <strong>{{ assignments_float }}</strong> Arbeitseinsätze in Kernbereichen

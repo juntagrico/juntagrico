@@ -30,7 +30,7 @@
                         <ul>
                             {% for size in product.sizes.all %}
                                 <li>
-                                    {{ size.name }} ({{ size.units|floatformat:-3 }})
+                                    {{ size.name }} ({{ size.units|floatformat:-3|strip:'0' }})
                                     {% if size.show_on_depot_list %}
                                         <i class="bi bi-file-earmark-check" title="{% trans "Auf Depotliste angezeigt" %}"></i>
                                     {% else %}
