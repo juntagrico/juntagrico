@@ -6,8 +6,8 @@ from django.db.models.functions import Lower
 from juntagrico.config import Config
 from juntagrico.context_processors import Vocabulary
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.entity.depot import Tour
+from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.util.pdf import render_to_pdf_storage
@@ -31,7 +31,7 @@ def depot_list_data(days=0):
         'depots': DepotDao.all_depots_for_list(),
         'tour_days': tour_days,
         'tours': tours,
-        'messages': ListMessageDao.all_active(),
+        'messages': ListMessage.objects.filter(active=True),
         'vocabulary': Vocabulary(),
     }
 

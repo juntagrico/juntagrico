@@ -36,7 +36,7 @@ DATABASES = {
     }
 }
 
-ROOT_URLCONF = 'urls.dev'
+ROOT_URLCONF = 'urls.minimal'
 
 MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',

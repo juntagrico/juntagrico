@@ -2,11 +2,6 @@ from juntagrico.entity.jobs import ActivityArea
 
 
 class ActivityAreaDao:
-
-    @staticmethod
-    def all_visible_areas():
-        return ActivityArea.objects.filter(hidden=False)
-
     @staticmethod
     def all_visible_areas_ordered():
         return ActivityArea.objects.filter(hidden=False).order_by('-core', 'name')

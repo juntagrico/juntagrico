@@ -1,0 +1,34 @@
+{% extends "juntagrico/menu/admin/subscriptions.html" %}
+{% load i18n %}
+
+{% block sub %}
+    {{ block.super }}
+    {% if perms.juntagrico.change_subscription %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
+                <i>{% trans "Warteliste" %}</i>
+            </a>
+        </li>
+    {% endif %}
+    {% if perms.juntagrico.change_subscription %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
+                <i>{% trans "Kündigungsliste" %}</i>
+            </a>
+        </li>
+    {% endif %}
+    {% if perms.juntagrico.change_subscription %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'sub-mgmt-part-waitinglist' %}">
+                <i>{% trans "Bestandteile Warteliste" %}</i>
+            </a>
+        </li>
+    {% endif %}
+    {% if perms.juntagrico.change_subscription %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'sub-mgmt-part-canceledlist' %}">
+                <i>{% trans "Bestandteile Kündigungsliste" %}</i>
+            </a>
+        </li>
+    {% endif %}
+{% endblock %}
