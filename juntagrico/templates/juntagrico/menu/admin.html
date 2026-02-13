@@ -16,8 +16,9 @@
         </h5>
     </li>
     {% include "juntagrico/menu/admin/admin.html" %}
-    {% include "juntagrico/menu/admin/subscriptions.html" %}
-    {% include "juntagrico/menu/admin/extra_subscriptions.html" %}
+    {% block subscriptions %}
+        {% include "juntagrico/menu/admin/subscriptions.html" %}
+    {% endblock %}
     {% include "juntagrico/menu/admin/members.html" %}
     {% include "juntagrico/menu/admin/assignments.html" %}
     {% include "juntagrico/menu/admin/shares.html" %}
@@ -25,7 +26,6 @@
     {% include "juntagrico/menu/admin/activityareas.html" %}
     {% include "juntagrico/menu/admin/emails.html" %}
     {% include "juntagrico/menu/admin/lists.html" %}
-    {% include "juntagrico/menu/admin/exports.html" %}
     {% admin_menus as l_admin_menus %}
     {% for menu in l_admin_menus %}
         {% include menu %}

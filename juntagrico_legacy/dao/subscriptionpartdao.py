@@ -1,4 +1,4 @@
-from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico_legacy.dao.subscriptiondao import SubscriptionDao
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated
 

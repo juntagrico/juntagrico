@@ -73,17 +73,19 @@ jobs:
       run: |
         python -m django makemigrations --noinput
         python -m manage test --exclude-tag=$EXCLUDE_TEST
+        python -m manage test juntagrico_legacy.tests --settings="settings.legacy"
       env:
         GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
         python -m django makemigrations --noinput
         coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
-        python -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
+        coverage run -a -m manage test juntagrico_legacy.tests --settings="settings.legacy"
+        coverage run -a -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
     - run: coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
-      if: ${{ matrix.python-version  == '3.11' && github.event_name == 'push' }}
+      if: ${{ matrix.python-version  == '3.11' }}
     - uses: actions/upload-artifact@v4
-      if: ${{ matrix.python-version  == '3.11' && github.event_name == 'push' }}
+      if: ${{ matrix.python-version  == '3.11' }}
       with:
         name: coverage-${{ matrix.exclude-test }}
         path: coverage-${{ matrix.exclude-test }}.lcov

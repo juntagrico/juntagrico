@@ -1,7 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
-import juntagrico.views.email
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_iso20022 as juntagrico_iso20022
@@ -145,8 +144,6 @@ urlpatterns = [
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
-    path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
-    path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),
     path('manage/subscription/inconsistencies', manage.subscription_inconsistencies,
          name='manage-subscription-inconsistencies'),
@@ -155,9 +152,7 @@ urlpatterns = [
     path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
          name='sub-deactivate'),
     # /manage/subscription/part
-    path('manage/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
-    path('manage/subscription/part/canceledlist', juntagrico_admin.part_canceledlist,
-         name='sub-mgmt-part-canceledlist'),
+
     path('manage/subscription/part/<int:part_id>/activate/', manage.activate_part,
          name='part-activate'),
     path('manage/subscription/part/<int:part_id>/cancel/', manage.cancel_part,
@@ -173,9 +168,6 @@ urlpatterns = [
     path('manage/subscription/trial/<int:part_id>/closeout', manage.closeout_trial,
          name='manage-trial-closeout'),
     path('manage/subscription/parts/apply', manage.parts_apply, name='parts-apply'),
-    # /manage/subscription/extra
-    path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
-    path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
     # /manage/subscription/depot
     path('manage/subscription/depot/changes', manage.SubscriptionDepotChangesView.as_view(), name='manage-sub-depot-changes'),
     path('manage/subscription/depot/change/confirm', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm'),
@@ -223,13 +215,6 @@ urlpatterns = [
     # /list
     path('list', juntagrico_admin.manage_list, name='lists'),
     path('list/<str:name>', juntagrico_admin.download_list, name='lists-download'),
-
-    # /export
-    path('my/export', juntagrico_admin.export, name='export'),
-    path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),
-    path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),
-    path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),
-    path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),
 
     # /command
     path('command/shifttime', ShiftTimeFormView.as_view(), name='command-shifttime'),

@@ -64,30 +64,6 @@ class ManageListTests(JuntagricoTestCase):
         self.area.refresh_from_db()
         self.assertFalse(self.area.members.filter(id=1).exists())
 
-    def testSubWaitingList(self):
-        self.assertGet(reverse('sub-mgmt-waitinglist'))
-        self.assertGet(reverse('sub-mgmt-waitinglist'), member=self.member2, code=302)
-
-    def testSubCanceledList(self):
-        self.assertGet(reverse('sub-mgmt-canceledlist'))
-        self.assertGet(reverse('sub-mgmt-canceledlist'), member=self.member2, code=302)
-
-    def testPartWaitingList(self):
-        self.assertGet(reverse('sub-mgmt-part-waitinglist'))
-        self.assertGet(reverse('sub-mgmt-part-waitinglist'), member=self.member2, code=302)
-
-    def testPartCanceledList(self):
-        self.assertGet(reverse('sub-mgmt-part-canceledlist'))
-        self.assertGet(reverse('sub-mgmt-part-canceledlist'), member=self.member2, code=302)
-
-    def testExtraWaitingList(self):
-        self.assertGet(reverse('sub-mgmt-extra-waitinglist'))
-        self.assertGet(reverse('sub-mgmt-extra-waitinglist'), member=self.member2, code=302)
-
-    def testExtraCanceledList(self):
-        self.assertGet(reverse('sub-mgmt-extra-canceledlist'))
-        self.assertGet(reverse('sub-mgmt-extra-canceledlist'), member=self.member2, code=302)
-
     def testMemberCanceledList(self):
         self.assertGet(reverse('manage-member-canceled'))
         self.assertGet(reverse('manage-member-canceled'), member=self.member2, code=403)
