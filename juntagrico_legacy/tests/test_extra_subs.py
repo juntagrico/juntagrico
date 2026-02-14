@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from . import JuntagricoTestCaseWithShares
+from juntagrico.tests import JuntagricoTestCaseWithShares
 
 
 class ExtraSubTests(JuntagricoTestCaseWithShares):

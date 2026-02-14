@@ -3,6 +3,14 @@ from django.urls import path
 from juntagrico_legacy import views
 
 urlpatterns = [
+    # subscription overview
+    path('my/subscription/change/overview/<int:subscription_id>/', views.subscription_change,
+         name='sub-change'),
+    # /my/subscription/extra/{id}
+    path('my/subscription/change/extra/<int:subscription_id>/', views.extra_change,
+         name='extra-change'),
+
+    # /manage/subscription
     path('my/waitinglist', views.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', views.canceledlist, name='sub-mgmt-canceledlist'),
     path('manage/subscription/part/waitinglist', views.part_waitinglist, name='sub-mgmt-part-waitinglist'),

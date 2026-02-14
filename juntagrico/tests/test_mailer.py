@@ -106,7 +106,7 @@ class DepotMailerTests(JuntagricoTestCaseWithShares):
         response = self.assertGet(reverse('email-count-depot-recipients', args=[self.depot.id]), data={
             'to_depot': 'on'
         })
-        self.assertEqual(b'An 3 Personen senden', response.content)
+        self.assertEqual(b'An 4 Personen senden', response.content)
 
 
 class DepotCoordinatorMailerTests(DepotMailerTests):
@@ -226,7 +226,8 @@ class MailerTests(JuntagricoTestCaseWithShares):
         expected = [
             'first_name1 last_name1 <email1@email.org>',
             'first_name3 last_name3 <email3@email.org>',
-            'first_name6 last_name6 <member6@email.org>'
+            'first_name6 last_name6 <member6@email.org>',
+            'first_name7 last_name7 <member7@email.org>',
         ]
         if settings.ENABLE_SHARES:
             expected = ['First_name4 Last_name4 <email4@email.org>'] + expected
@@ -263,4 +264,4 @@ class MailerTests(JuntagricoTestCaseWithShares):
             post_data['to_list'].append('all_shares')
         self.assertPost(reverse('email-write'), post_data, code=302)
         # check that email was split into batches
-        self.assertEqual(len(mail.outbox), 7 if settings.ENABLE_SHARES else 6)
+        self.assertEqual(len(mail.outbox), 10 if settings.ENABLE_SHARES else 6)

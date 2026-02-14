@@ -25,9 +25,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertEqual(self.member2.subscription_current, self.sub2)
         self.assertTrue(self.member2 in self.area.members.all())
 
-    def testSubChange(self):
-        self.assertGet(reverse('sub-change', args=[self.sub.pk]))
-
     def testPrimaryChange(self):
         self.assertGet(reverse('primary-change', args=[self.sub.pk]))
         self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member3.pk}, 302)
@@ -57,59 +54,60 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
                 f'amount[{type_id}]': 1 if i == 1 else 0
                 for i, type_id in enumerate(SubscriptionType.objects.order_by('id').values_list('id', flat=True))
             }
+            initial_count = self.sub.future_parts.count()
             # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
             if settings.ENABLE_SHARES:
                 self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
                 self.sub.refresh_from_db()
-                self.assertEqual(self.sub.future_parts.count(), 1)
+                self.assertEqual(self.sub.future_parts.count(), initial_count)
                 self.assertFalse(self.sub.future_parts.filter(type=self.sub_type2).exists())
             # Add 2 shares. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
             self.create_paid_share(self.member)
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.count(), 2)
+            self.assertEqual(self.sub.future_parts.count(), initial_count + 1)
             self.assertTrue(self.sub.future_parts.filter(type=self.sub_type2).exists())
 
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
+        initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
         # should fail
         self.assertPost(reverse('part-change', args=[part.pk]), post_data)
         self.sub.refresh_from_db()
         # check: type and amount unchanged
-        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.count(), initial_count)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
     def testTypeChange(self):
         # add a shares for type2
         self.create_paid_share(self.member)
         mail.outbox.clear()
-        # change active type
-        part = self.sub.parts.all()[0]
+        # change active part
+        part = self.sub.active_parts.first()
         self.assertGet(reverse('part-change', args=[part.pk]))
+        initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
-        # check: has only one uncanceled part with new type
-        self.assertEqual(self.sub.future_parts.count(), 1)
-        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
-        # check: previous part was canceled
+        self.assertEqual(self.sub.future_parts.count(), initial_count, 'part number should not change')
+        self.assertTrue(self.sub.future_parts.filter(type=self.sub_type2).exists(), 'unexpected part type')
         part.refresh_from_db()
-        self.assertTrue(part.canceled)
+        self.assertTrue(part.canceled, 'part should be canceled')
         # check notification was sent to admins
         self.assertEqual(len(mail.outbox), 2)
 
-        # change future type
-        part = self.sub.future_parts.all()[0]
+        # change waiting part
+        part = self.sub.parts.filter(activation_date=None).first()
         post_data = {'part_type': self.sub_type.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
         # check: has only one uncanceled part with first type
-        self.assertEqual(self.sub.future_parts.count(), 1)
-        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+        self.assertEqual(self.sub.future_parts.count(), initial_count, 'part number should not change')
+        self.assertTrue(self.sub.future_parts.filter(type=self.sub_type).exists(), 'unexpected part type')
 
     def cancelPart(self, part):
         today = datetime.date.today()

@@ -22,79 +22,17 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionType
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
-    NicknameForm, SubscriptionPartChangeForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.signals import depot_changed, share_canceled
-from juntagrico.util import addons
-from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.management import cancel_sub, create_subscription_parts
+from juntagrico.util import return_to_previous_location
+from juntagrico.util.management import cancel_sub
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
-from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
+from juntagrico.util.temporal import end_of_next_business_year, end_of_business_year, \
     cancelation_date, next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
     using_change_date
-
-
-@login_required
-def subscription(request, subscription_id=None):
-    '''
-    Details for a subscription of a member
-    '''
-    member = request.user.member
-    future_subscription = member.subscription_future is not None
-    if subscription_id is None:
-        subscription = member.subscription_current
-    else:
-        subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
-        future_subscription = future_subscription and subscription != member.subscription_future
-    end_date = end_of_next_business_year()
-    renderdict = {}
-    if subscription is not None:
-        cancellation_date = subscription.cancellation_date
-        if cancellation_date is not None and cancellation_date <= next_cancelation_date():
-            end_date = end_of_business_year()
-        asc = member.usable_shares_count
-        share_error = subscription.share_overflow - asc < 0
-        primary = subscription.primary_member.id == member.id
-        can_leave = member.is_cooperation_member and not share_error and not primary
-        renderdict.update({
-            'subscription': subscription,
-            'co_members': subscription.co_members(member),
-            'primary': subscription.primary_member.email == member.email,
-            'next_size_date': Subscription.next_size_change_date(),
-            'has_extra_subscriptions': SubscriptionType.objects.is_extra().exists(),
-            'sub_overview_addons': addons.config.get_sub_overviews(),
-            'can_leave': can_leave,
-        })
-    renderdict.update({
-        'no_subscription': subscription is None,
-        'end_date': end_date,
-        'can_order': member.can_order_subscription,
-        'future_subscription': future_subscription,
-        'member': request.user.member,
-        'shares': request.user.member.active_shares.count(),
-        'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
-    })
-    return render(request, 'subscription.html', renderdict)
-
-
-@primary_member_of_subscription
-def subscription_change(request, subscription_id):
-    '''
-    change an subscription
-    '''
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    renderdict = {
-        'subscription': subscription,
-        'member': request.user.member,
-        'next_cancel_date': temporal.next_cancelation_date(),
-        'next_business_year': temporal.start_of_next_business_year(),
-        'sub_change_addons': addons.config.get_sub_changes(),
-    }
-    return render(request, 'subscription_change.html', renderdict)
 
 
 @primary_member_of_subscription
@@ -154,30 +92,6 @@ def primary_change(request, subscription_id):
     return render(request, 'pm_change.html', renderdict)
 
 
-@primary_member_of_subscription
-def size_change(request, subscription_id):
-    """
-    change the size of a subscription
-    """
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    if request.method == 'POST':
-        form = SubscriptionPartOrderForm(subscription, request.POST)
-        if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected(), True)
-            return return_to_previous_location(request)
-    else:
-        form = SubscriptionPartOrderForm()
-    renderdict = {
-        'form': form,
-        'subscription': subscription,
-        'hours_used': Config.assignment_unit() == 'HOURS',
-        'next_cancel_date': temporal.next_cancelation_date(),
-        'parts_order_allowed': not subscription.canceled,
-        'can_change_part': SubscriptionType.objects.can_change()
-    }
-    return render(request, 'size_change.html', renderdict)
-
-
 @primary_member_of_subscription_of_part
 def part_change(request, part,
                 form_class=SubscriptionPartChangeForm,
@@ -195,29 +109,6 @@ def part_change(request, part,
     return render(request, template_name, {
         'form': form,
     })
-
-
-@primary_member_of_subscription
-def extra_change(request, subscription_id):
-    """
-        change an extra subscription
-    """
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    if request.method == 'POST':
-        form = SubscriptionPartOrderForm(subscription, request.POST, extra=True)
-        if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected(), True)
-            return return_to_previous_location(request)
-    else:
-        form = SubscriptionPartOrderForm(extra=True)
-    renderdict = {
-        'form': form,
-        'extras': subscription.active_and_future_extra_subscriptions.all(),
-        'subscription': subscription,
-        'sub_id': subscription_id,
-        'extra_order_allowed': not subscription.canceled,
-    }
-    return render(request, 'extra_change.html', renderdict)
 
 
 class SignupView(View):

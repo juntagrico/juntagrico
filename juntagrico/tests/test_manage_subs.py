@@ -40,20 +40,22 @@ class ManageSubRecentListTests(JuntagricoTestCase):
         response = self.assertGet(reverse('manage-sub-recent'))
         # check that list is correct
         self.assertEqual(set(response.context['ordered_parts']), {
-            *self.sub3.parts.all(), *self.sub.parts.all(), *self.sub2.parts.all(), *self.canceled_sub.parts.all()
+            *self.sub3.parts.all(), *self.sub.parts.all(), *self.sub2.parts.all(), *self.canceled_sub.parts.all(),
+            *self.deactivated_sub.parts.all()
         })
         self.assertEqual(set(response.context['activated_parts']), {
-            *self.sub3.parts.all(), *self.sub.parts.all(), *self.canceled_sub.parts.all()
+            *self.sub3.parts.all(), *self.sub.parts.all(), *self.canceled_sub.parts.all(),
+            *self.deactivated_sub.parts.all()
         })
         self.assertEqual(set(response.context['canceled_parts']), {
-            *self.sub3.parts.all(), *self.canceled_sub.parts.all()
+            *self.sub3.parts.all(), *self.canceled_sub.parts.all(), *self.deactivated_sub.parts.all()
         })
         self.assertEqual(set(response.context['deactivated_parts']), {
             *self.sub3.parts.all()
         })
         self.assertEqual(set(response.context['joined_memberships']), {
             *self.sub3.subscriptionmembership_set.all(), *self.sub.subscriptionmembership_set.all(),
-            *self.canceled_sub.subscriptionmembership_set.all()
+            *self.canceled_sub.subscriptionmembership_set.all(), *self.deactivated_sub.subscriptionmembership_set.all()
         })
         self.assertEqual(set(response.context['left_memberships']), {
             *self.sub3.subscriptionmembership_set.all()

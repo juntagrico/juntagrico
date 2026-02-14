@@ -72,15 +72,15 @@ jobs:
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
-        python -m manage test --exclude-tag=$EXCLUDE_TEST
-        python -m manage test juntagrico_legacy/tests --settings="settings.legacy"
+        python -m manage test juntagrico.tests --exclude-tag=$EXCLUDE_TEST
+        python -m manage test juntagrico_legacy.tests --settings="settings.legacy"
       env:
         GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
         python -m django makemigrations --noinput
-        coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
-        coverage run -a -m manage test juntagrico_legacy/tests --settings="settings.legacy"
+        coverage run -m manage test juntagrico.tests --exclude-tag=$EXCLUDE_TEST
+        coverage run -a -m manage test juntagrico_legacy.tests --settings="settings.legacy"
         coverage run -a -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
     - run: coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
       if: ${{ matrix.python-version  == '3.11' }}

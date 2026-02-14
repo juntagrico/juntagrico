@@ -38,7 +38,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
 
     def testDepotListData(self):
         data = depot_list_data()
-        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub])
+        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub])
         # test depot list numbers
         rendered_html = get_template('exports/depotlist.html').render(data)
         self.assertInHTML("""
@@ -47,7 +47,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         """, rendered_html)
         self.assertInHTML("""
             <td class="namecol top-border left-border horz-left">first_name3 last_name3, first_name1 last_name1</td>
-            <td class="top-border left-border">1</td>
+            <td class="top-border left-border">2</td>
         """, rendered_html)
         self.assertInHTML("""
             <td class="namecol top-border left-border horz-left">First_name4 Last_name4</td>
@@ -57,11 +57,15 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             <td class="namecol top-border left-border horz-left">first_name6 last_name6</td>
             <td class="top-border left-border">1</td>
         """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">first_name7 last_name7</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
         # test depot overview
         rendered_html = get_template('exports/depot_overview.html').render(data)
         self.assertInHTML("""
             <td style="width:360px;">depot</td>
-            <td style="text-align:right">6</td>
+            <td style="text-align:right">8</td>
         """, rendered_html)
         self.assertInHTML("""
             <td style="width:360px;">depot2</td>
@@ -69,7 +73,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         """, rendered_html)
         self.assertInHTML("""
             <td>Total</td>
-            <td style="text-align:right">6</td>
+            <td style="text-align:right">8</td>
         """, rendered_html)
         # test amound overview numbers
         rendered_html = get_template('exports/amount_overview.html').render(data)
@@ -81,13 +85,13 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             </tr>
             <tr>
                 <td>Tour1</td>
-                <td class="text-right">6</td>
-                <td class="text-right">6</td>
+                <td class="text-right">8</td>
+                <td class="text-right">8</td>
             </tr>
             <tr>
                 <td><b>Alle</b></td>
-                <td class="text-right">6</td>
-                <td class="text-right">6</td>
+                <td class="text-right">8</td>
+                <td class="text-right">8</td>
             </tr>
         """, rendered_html)
 

@@ -74,8 +74,6 @@ urlpatterns = [
     path('my/subscription/<int:subscription_id>/', subscription.single, name='size-change'),  # compatibility
     path('my/subscription/<int:subscription_id>/order/', subscription.part_order, name='part-order'),
     path('my/subscription/<int:subscription_id>/order/extra/', subscription.part_order, {'extra': True}, name='extra-order'),
-    path('my/subscription/change/overview/<int:subscription_id>/', juntagrico_subscription.subscription_change,
-         name='sub-change'),
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
          name='depot-change'),
     path('my/subscription/change/nickname/<int:subscription_id>/', juntagrico_subscription.change_nickname,
@@ -87,9 +85,6 @@ urlpatterns = [
          name='sub-cancel'),
     path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
          name='sub-leave'),
-    # /my/subscription/extra/{id}
-    path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
-         name='extra-change'),
     # /my/subscription/part/{id}
     path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
     path('my/subscription/part/<int:part_id>/continue', juntagrico_subscription.part_change, {

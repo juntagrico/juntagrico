@@ -5,6 +5,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.core import mail
 
+from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.contact import EmailContact, TextContact, MemberContact, PhoneContact
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition, DepotCoordinator
@@ -48,7 +49,7 @@ class JuntagricoTestCase(TestCase):
 
     @classmethod
     def load_members(cls):
-        cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6 = Member.objects.order_by('id')[:6]
+        cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6, cls.member7 = Member.objects.order_by('id')[:7]
         cls.inactive_member = Member.objects.get(email='inactive_member@email.org')
         cls.admin = Member.objects.get(email='admin@email.org')
 
@@ -320,6 +321,7 @@ class JuntagricoTestCase(TestCase):
             subscription_type=cls.sub_type2,
             fee=50
         )
+        cls.trial_type = cls.create_sub_type(cls.bundle, trial_days=30, shares=0)
 
     @staticmethod
     def create_sub(depot, parts, activation_date=None, **kwargs):
@@ -362,7 +364,7 @@ class JuntagricoTestCase(TestCase):
         cls.sub3.activate(today - datetime.timedelta(3))
         cls.sub3.deactivate(today - datetime.timedelta(1))
         # sub (active, 2 members)
-        cls.sub = cls.create_sub_now(cls.depot)
+        cls.sub = cls.create_sub_now(cls.depot, parts=[cls.sub_type, cls.trial_type])
         cls.member.join_subscription(cls.sub, True)
         cls.member3.join_subscription(cls.sub)
         # sub2 (waiting)
@@ -371,6 +373,11 @@ class JuntagricoTestCase(TestCase):
         # canceled_sub
         cls.canceled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
         cls.member6.join_subscription(cls.canceled_sub, True)
+        # future deactivated but still active sub
+        cls.deactivated_sub = cls.create_sub_now(
+            cls.depot, cancellation_date=today, deactivation_date=today + datetime.timedelta(100)
+        )
+        cls.member7.join_subscription(cls.deactivated_sub, True)
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
 
@@ -390,6 +397,17 @@ class JuntagricoTestCase(TestCase):
             'price': 1000,
             'description': 'sub_type_desc'}
         cls.extrasub_type = SubscriptionType.objects.create(**extrasub_type_data)
+        # create periods
+        cls.period1 = BillingPeriod.objects.create(
+            type=cls.extrasub_type,
+            price=1000,
+            start_day=1,
+            start_month=1,
+            end_day=31,
+            end_month=7,
+            cancel_day=1,
+            cancel_month=5,
+        )
 
     @classmethod
     def set_up_extra_sub(cls):
