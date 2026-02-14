@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.core import mail
-from django.test import override_settings, tag
+from django.core.mail import EmailMultiAlternatives
+from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
@@ -265,3 +266,38 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertPost(reverse('email-write'), post_data, code=302)
         # check that email was split into batches
         self.assertEqual(len(mail.outbox), 10 if settings.ENABLE_SHARES else 7)
+
+
+@override_settings(EMAIL_BACKEND='juntagrico.backends.email.LocmemEmailBackend')
+class BackendTest(TestCase):
+    def make_email(self, bcc=None):
+        return EmailMultiAlternatives(
+            'test subject',
+            'test body',
+            'me from juntagrico <juntagrico@example.com>',
+            bcc=bcc or ['john <john@example.com>', 'me@example.com'],
+        )
+
+    def testSendEmail(self):
+        self.make_email().send()
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(FROM_FILTER={
+        'filter_expression': '.*@juntagrico\.org',
+        'replacement_from': 'juntagrico@juntagrico.org'
+    })
+    def testFromFilter(self):
+        self.make_email().send()
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].from_email, 'me from juntagrico <juntagrico@juntagrico.org>')
+
+    @override_settings(DEBUG=True)
+    def testNoRecipients(self):
+        self.make_email().send()
+        self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(DEBUG=True, WHITELIST_EMAILS=['maria@example.com'])
+    def testWhitelistEmail(self):
+        self.make_email(['john <john@example.com>', 'maria <maria@example.com>']).send()
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].bcc, ['maria <maria@example.com>'])

@@ -63,9 +63,10 @@ class BaseEmailBackend(base.BaseEmailBackend):
         return passed
 
     def apply_from_filter(self, message):
-        if not re.match(Config.from_filter('filter_expression'), extract_email(message.from_email)):
+        bare_from_email = extract_email(message.from_email)
+        if not re.match(Config.from_filter('filter_expression'), bare_from_email):
             reply_to = message.reply_to or [message.from_email]
-            message.from_email = Config.from_filter('replacement_from')
+            message.from_email = message.from_email.replace(bare_from_email, Config.from_filter('replacement_from'))
             message.reply_to = reply_to
 
 
@@ -73,7 +74,7 @@ class EmailBackend(BaseEmailBackend, smtp.EmailBackend):
     pass
 
 
-class ConsoleEmailBackend(BaseEmailBackend, console.EmailBackend):
+class LocmemEmailBackend(BaseEmailBackend, locmem.EmailBackend):
     pass
 
 
