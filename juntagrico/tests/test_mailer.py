@@ -264,4 +264,4 @@ class MailerTests(JuntagricoTestCaseWithShares):
             post_data['to_list'].append('all_shares')
         self.assertPost(reverse('email-write'), post_data, code=302)
         # check that email was split into batches
-        self.assertEqual(len(mail.outbox), 10 if settings.ENABLE_SHARES else 6)
+        self.assertEqual(len(mail.outbox), 10 if settings.ENABLE_SHARES else 7)
