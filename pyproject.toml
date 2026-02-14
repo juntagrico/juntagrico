@@ -53,7 +53,7 @@ Issues = "https://github.com/juntagrico/juntagrico/issues"
 Documentation = "https://juntagrico.readthedocs.io"
 
 [tool.setuptools.packages.find]
-include = ['juntagrico', 'juntagrico.*']
+include = ['juntagrico', 'juntagrico.*', 'juntagrico_legacy', 'juntagrico_legacy.*']
 
 [tool.setuptools.dynamic]
 version = {attr = "juntagrico.__version__"}
@@ -61,6 +61,11 @@ version = {attr = "juntagrico.__version__"}
 [tool.ruff.lint]
 select = ["E", "F", "B"]
 ignore = ["E501"]
+
+[tool.coverage.run]
+plugins = ["django_coverage_plugin"]
+include = ["juntagrico/*", "juntagrico_legacy/*"]
+omit = ["juntagrico/migrations/*"]
 
 [dependency-groups]
 dev = [
