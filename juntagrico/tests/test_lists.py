@@ -103,10 +103,12 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             'submit': 'yes',
         }
         # member has no access
-        self.assertPost(url, data, code=200)
+        self.assertGet(url, 200)  # can see lists only
+        self.assertPost(url, data, 200)
         self.assertFalse(default_storage.exists('depotlist.pdf'))
         # admin has access
-        self.assertPost(url, data, code=302, member=self.admin)
+        self.assertGet(url, 200, self.admin)
+        self.assertPost(url, data, 302, self.admin)
         self.assertListsCreated()
         self.sub4.refresh_from_db()
         self.assertEqual(self.sub4.depot, self.depot)

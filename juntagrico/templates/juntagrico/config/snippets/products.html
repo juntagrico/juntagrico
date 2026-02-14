@@ -12,10 +12,10 @@
                 <div class="card-header">
                     <strong>{{ product }}</strong>
                     {% if perms.juntagrico.change_subscriptionproduct %}
-                    <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
-                {% endif %}
+                        <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    {% endif %}
                 </div>
                 {% if product.description|striptags|wordcount %}
                     <div class="card-body">

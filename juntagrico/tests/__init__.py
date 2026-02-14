@@ -113,10 +113,11 @@ class JuntagricoTestCase(TestCase):
         """
         job_type
         """
+        location = cls.create_location('area_location1')
         job_type_data = {'name': 'nameot',
                          'activityarea': cls.area,
                          'default_duration': 2,
-                         'location': cls.create_location('area_location1')}
+                         'location': location}
         cls.job_type = JobType.objects.create(**job_type_data)
         job_type_data2 = {'name': 'nameot2',
                           'activityarea': cls.area2,
@@ -178,7 +179,7 @@ class JuntagricoTestCase(TestCase):
                              'default_duration': 2,
                              'slots': 1,
                              'time': time,
-                             'location': cls.create_location('job_location1')}
+                             'location': location}
         cls.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
         one_time_job_data.update(name='name2', time=timezone.now() - timezone.timedelta(hours=2))
         cls.past_one_time_job = OneTimeJob.objects.create(**one_time_job_data)
@@ -272,7 +273,7 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def set_up_products(cls):
         # products
-        cls.sub_product = SubscriptionProduct.objects.create(name='product')
+        cls.sub_product = SubscriptionProduct.objects.create(name='product', description='product description')
         cls.unused_product = SubscriptionProduct.objects.create(name='unused product')
         # product sizes
         cls.product_size = ProductSize.objects.create(
@@ -298,7 +299,8 @@ class JuntagricoTestCase(TestCase):
         cls.set_up_products()
         # category
         sub_category_data = {
-            'name': 'category'
+            'name': 'category',
+            'description': 'category description',
         }
         cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
         # bundle
