@@ -73,6 +73,10 @@ class EmailBackend(BaseEmailBackend, smtp.EmailBackend):
     pass
 
 
+class ConsoleEmailBackend(BaseEmailBackend, console.EmailBackend):
+    pass
+
+
 batch_mail_sent = Signal()
 
 

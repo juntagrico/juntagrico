@@ -55,7 +55,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
 
 ROOT_URLCONF = 'urls.dev'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'juntagrico.backends.email.ConsoleEmailBackend'
 
 
 class InvalidTemplateVariable(str):

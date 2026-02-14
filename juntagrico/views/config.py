@@ -2,6 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import F
 from django.shortcuts import render
 
+from juntagrico.config import Config
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionCategory
 
 
@@ -11,4 +12,5 @@ def overview(request):
         'products': SubscriptionProduct.objects.all(),
         'categories': SubscriptionCategory.objects.all(),
         'bundles': SubscriptionBundle.objects.order_by(F('category__sort_order').asc(nulls_last=True)),
+        'hours_used': Config.assignment_unit() == 'HOURS',
     })
