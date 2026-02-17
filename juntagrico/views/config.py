@@ -11,6 +11,6 @@ def overview(request):
     return render(request, 'juntagrico/config/overview.html', {
         'products': SubscriptionProduct.objects.all(),
         'categories': SubscriptionCategory.objects.all(),
-        'bundles': SubscriptionBundle.objects.order_by(F('category__sort_order').asc(nulls_last=True)),
+        'bundles': SubscriptionBundle.objects.order_by(F('category__sort_order').asc(nulls_last=True), 'sort_order'),
         'hours_used': Config.assignment_unit() == 'HOURS',
     })
