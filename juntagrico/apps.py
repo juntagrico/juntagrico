@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.contrib.admin import apps
 
 from . import checks  # noqa: F401
 
@@ -25,3 +26,8 @@ class JuntagricoAppconfig(AppConfig):
         from django.contrib.auth.models import User
         User.member__email = property(lambda this: this.member.email)
         User.EMAIL_FIELD = 'member__email'
+
+
+class JuntagricoAdminConfig(apps.AdminConfig):
+    default_site = 'juntagrico.admin_sites.JuntagricoAdminSite'
+    default = False
