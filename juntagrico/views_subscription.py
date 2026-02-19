@@ -344,14 +344,9 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
-        add_subscription_member_to_activity_area(subscription)
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
-
-
-def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.current_members) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')
