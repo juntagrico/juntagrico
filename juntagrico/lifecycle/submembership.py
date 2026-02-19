@@ -81,7 +81,7 @@ def check_sub_membership_consistency_ms(sub_membership):
 
 def add_subscription_member_to_activity_area(sender, instance, **kwargs):
     # if member is joining their first subscription, add them to auto-add areas
-    joined = (kwargs['created'] or instance._old['join_date'] is None) and instance.join_date is not None
+    joined = (kwargs['created'] or instance._old['_old']['join_date'] is None) and instance.join_date is not None
     if joined and not instance.member.subscriptionmembership_set.exclude(pk=instance.pk).filter(join_date__isnull=False).exists():
         from juntagrico.dao.activityareadao import ActivityAreaDao
         [area.members.add(instance.member) for area in ActivityAreaDao.all_auto_add_members_areas()]
