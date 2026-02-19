@@ -205,7 +205,8 @@ class CSSummaryView(FormView):
 
     def get_context_data(self, **kwargs):
         args = self.cs_session.to_dict()
-        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
+        if args['subscriptions']:
+            args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return super().get_context_data(
             **{},
             **args,
