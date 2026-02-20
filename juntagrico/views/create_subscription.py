@@ -243,7 +243,7 @@ class AddMemberView(SignupView, FormView):
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(form.existing_member.email if form.existing_member else form.data.dict())
+        return self._add_or_replace_co_member(form.existing_member.email if form.existing_member else form.cleaned_data)
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
@@ -283,7 +283,7 @@ class SelectSharesView(SignupView, FormView):
         return form_kwargs
 
     def form_valid(self, form):
-        self.signup_manager.set('shares', form.data.dict())
+        self.signup_manager.set('shares', form.cleaned_data)
         return redirect(self.signup_manager.get_next_page())
 
 

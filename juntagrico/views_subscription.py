@@ -150,7 +150,7 @@ class MemberSignupView(SignupView, FormView):
         return form_kwargs
 
     def form_valid(self, form):
-        self.signup_manager.set('main_member', form.data.dict())
+        self.signup_manager.set('main_member', form.cleaned_data)
         return redirect(self.signup_manager.get_next_page())
 
 

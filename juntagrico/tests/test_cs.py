@@ -210,8 +210,20 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.signup(False)
         self.addSubToSummary(False)
         response = self.assertGet(reverse('signup') + '?mod')
-        self.assertDictEqual(response.context_data['form'].data, self.newMemberData())
-        self.assertPost(reverse('signup') + '?mod', response.context_data['form'].data)
+        self.assertDictEqual(response.context_data['form'].data, {
+            'last_name': 'Last Name',
+            'first_name': 'First Name',
+            'addr_street': 'Street',
+            'addr_zipcode': '8000',
+            'addr_location': 'Zurich',
+            'phone': '044',
+            'mobile_phone': None,
+            'email': 'test@user.com',
+            'birthday': None,
+            'comment': '',
+            'agb': True
+        })
+        self.assertPost(reverse('signup') + '?mod', self.newMemberData())
 
         self.assertGet(reverse('cs-subscription') + '?mod')
         self.assertGet(reverse('cs-depot') + '?mod')
