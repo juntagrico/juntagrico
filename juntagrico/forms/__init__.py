@@ -13,7 +13,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.html import escape, format_html_join, format_html
+from django.utils.html import escape, format_html_join, format_html, strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _, gettext_lazy
@@ -395,11 +395,12 @@ class EditCoMemberForm(CoMemberBaseForm):
 class CategoryContainer(Div):
     template = 'juntagrico/form/layout/category_container.html'
 
-    def __init__(self, *fields, instance, name=None, description=None, **kwargs):
+    def __init__(self, *fields, instance, name=None, description=None, show=True, **kwargs):
         super().__init__(*fields, **kwargs)
         self.instance = instance
         self.name = name or instance.name
         self.description = description or instance.description
+        self.show = show
 
 
 class BundleContainer(CategoryContainer):
@@ -454,23 +455,27 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
         return SubscriptionTypeField(field_name, instance=subscription_type)
 
     def _collect_type_fields(self):
-        containers = []
+        containers = Div(template='juntagrico/form/layout/parent_container.html')
         for category in SubscriptionCategory.objects.exclude(bundles=None):
             category_container = CategoryContainer(instance=category, css_class='subscription-category')
             for bundle in category.bundles.exclude(types=None):
                 bundle_container = BundleContainer(
                     instance=bundle,
                     name=bundle.long_name,
-                    css_class='subscription-bundle'
+                    css_class='subscription-bundle',
                 )
                 for subscription_type in self.type_filter(bundle.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         bundle_container.append(type_field)
                 if len(bundle_container):
                     category_container.append(bundle_container)
+            # hide bundles of category, if they all have only 1 type and no description
+            if all(len(b) <= 1 and not strip_tags(b.instance.description).strip() for b in category_container):
+                for bundle_container in category_container:
+                    bundle_container.show = False
             if len(category_container):
                 containers.append(category_container)
-        return containers
+        return [containers]
 
     def type_filter(self, qs):
         return qs.filter(visible=True, is_extra=self.extra)
