@@ -8,8 +8,10 @@ class JuntagricoAppconfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
+        from django.db import models
         from . import signals
-        from .models import Subscription, Job, Share, Member
+        from .models import Subscription, Job, Share, Member, SubscriptionMembership
+        from .lifecycle.submembership import add_subscription_member_to_activity_area
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
@@ -17,6 +19,7 @@ class JuntagricoAppconfig(AppConfig):
         signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
         signals.assignment_changed.connect(signals.on_assignment_changed, sender=Member)
         signals.share_canceled.connect(signals.on_share_canceled, sender=Share)
+        models.signals.post_save.connect(add_subscription_member_to_activity_area, sender=SubscriptionMembership)
         # See models.py for older signal connections
 
         '''monkey patch User email method for password reset'''

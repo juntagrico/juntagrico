@@ -16,7 +16,6 @@ class Mailer:
         t = threading.Thread(
             target=Mailer._send_batches,
             args=[msg, Config.batch_mailer('batch_size'), Config.batch_mailer('wait_time')],
-            daemon=True
         )
         t.start()
 

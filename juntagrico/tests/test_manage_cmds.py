@@ -1,9 +1,13 @@
+from copy import deepcopy
 from io import StringIO
 
+from django.conf import settings
 from django.core import mail
 from django.core.management import call_command
+from django.test import override_settings, TestCase
 
 from . import JuntagricoTestCaseWithShares
+from ..entity.jobs import RecuringJob
 from ..entity.member import Member
 
 
@@ -44,3 +48,36 @@ class ManagementCommandsTest(JuntagricoTestCaseWithShares):
         self.assertEqual(len(mail.outbox), 1)
         # expect only 1 recipient, event when signed up twice
         self.assertListEqual(mail.outbox[0].recipients(), [self.member.email])
+
+
+class InvalidTemplateVariable(str):
+    def __mod__(self, other):
+        raise NameError(f"Undefined variable or unknown value for: '{other}'")
+
+
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+class FreshMailtextTests(TestCase):
+    """ Test mailtexts with fresh database
+    """
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Modify settings for test
+        template_setting = deepcopy(settings.TEMPLATES)
+        template_setting[0]['OPTIONS']['string_if_invalid'] = InvalidTemplateVariable('%s')
+        cls.override = override_settings(TEMPLATES=template_setting)
+        cls.override.enable()  # Activate the override
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.override.disable()  # Restore settings
+        super().tearDownClass()
+
+    def test_mailtexts(self):
+        err = StringIO()
+        out = StringIO()
+        job_count = RecuringJob.objects.count()
+        call_command('mailtexts', stderr=err, stdout=out)
+        self.assertEqual(err.getvalue(), '')
+        self.assertNotIn('%', out.getvalue(), 'some template values could not be rendered')
+        self.assertEqual(job_count, RecuringJob.objects.count(), 'test data was not reverted')

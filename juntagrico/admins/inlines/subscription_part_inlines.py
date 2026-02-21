@@ -9,6 +9,7 @@ from juntagrico.entity.subs import SubscriptionPart
 
 class SubscriptionPartInlineFormset(BaseInlineFormSet):
     def clean(self):
+        super().clean()
         required_shares = 0
         future_parts_count = 0
         for form in self.forms:

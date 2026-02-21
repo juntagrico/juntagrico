@@ -35,3 +35,5 @@ def handle_job_time_changed(sender, instance, **kwargs):
 def check_job_consistency(instance):
     if instance._old['canceled'] != instance.canceled and instance._old['canceled'] is True:
         raise ValidationError(_('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
+    if not instance.infinite_slots and instance.slots <= 0:
+        raise ValidationError(_('Ein Job muss entweder mehr als 0 Plätze haben oder "Unendlich Plätze" aktiviert haben.'), code='invalid')

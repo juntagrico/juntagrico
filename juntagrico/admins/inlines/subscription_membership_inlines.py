@@ -11,6 +11,8 @@ from juntagrico.entity.member import SubscriptionMembership
 
 class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
     def clean(self):
+        super().clean()
+
         def consider_form(form):
             leave_date = getattr(form.instance, 'leave_date', None)
             return not form.cleaned_data.get('DELETE', False) \
