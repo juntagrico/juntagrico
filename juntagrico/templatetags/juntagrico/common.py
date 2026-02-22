@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django import template
 from django.template.defaultfilters import urlize, linebreaksbr, floatformat
 
@@ -110,5 +112,5 @@ def price(value):
 
 
 @register.filter
-def strip(value, chars=' '):
-    return value.strip(chars)
+def decimal(value, decimal_places=3):
+    return Decimal(str(Decimal(value).quantize(Decimal('0.' + '0'*(decimal_places-1) + '1'))).rstrip('0').rstrip('.'))

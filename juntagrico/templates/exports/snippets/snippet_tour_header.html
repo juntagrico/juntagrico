@@ -11,7 +11,7 @@
     <td class="small bottom-border right-border">{% trans "Total" %}</td>
     {% for product in products %}
         {% for size in product.sizes.on_depot_list.sorted %}
-            <td class="small bottom-border {% if forloop.first %}left-border{% elif forloop.last %}right-border{% endif %}">{{ size.name }} ({{ size.units|floatformat:-3|strip:'0' }})</td>
+            <td class="small bottom-border {% if forloop.first %}left-border{% elif forloop.last %}right-border{% endif %}">{{ size.name }} ({{ size.units|decimal }})</td>
         {% endfor %}
     {% endfor %}
 </tr>
