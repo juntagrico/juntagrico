@@ -354,7 +354,7 @@ class OnetimeJobCopyTests(JuntagricoTestCase):
         self.assertEqual(self.complex_job.infinite_slots, self.complex_job_data['infinite_slots'])
         self.assertEqual(self.complex_job.time, self.complex_job_data['time'])
         self.assertEqual(self.complex_job.multiplier, self.complex_job_data['multiplier'])
-        self.assertListEqual(self.complex_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertListEqual(sorted(self.complex_job.get_emails()), [self.member2.email, 'test@test.org'])
         # check completeness of copy
         new_job = OneTimeJob.objects.last()
         self.assertEqual(new_job.name, 'one_time_job2')
