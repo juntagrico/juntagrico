@@ -113,4 +113,4 @@ def price(value):
 
 @register.filter
 def decimal(value, decimal_places=3):
-    return Decimal(str(Decimal(value).quantize(Decimal('0.' + '0'*(decimal_places-1) + '1'))).rstrip('0').rstrip('.'))
+    return Decimal(str(Decimal(value).quantize(Decimal('0.' + '0' * (decimal_places - 1) + '1'))).rstrip('0').rstrip('.'))
