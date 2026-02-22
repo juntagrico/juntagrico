@@ -38,39 +38,45 @@
 
     {% block required_assignments %}
         <div class="type-details type-required-assignments">
-            {% if hours_used %}
-                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3|strip:'0' %}
-                    <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz
-                {% plural %}
-                    <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze
-                {% endblocktranslate %}
-            {% else %}
-                {% blocktranslate trimmed count assignments=type.required_assignments with assignments_float=type.required_assignments|floatformat:-3|strip:'0' %}
-                    <strong>{{ assignments_float }}</strong> Arbeitseinsatz
-                {% plural %}
-                    <strong>{{ assignments_float }}</strong> Arbeitseinsätze
-                {% endblocktranslate %}
-            {% endif %}
+            {% with v_assignment=vocabulary.assignment v_assignment_pl=vocabulary.assignment_pl assignments_float=type.required_assignments|decimal %}
+                {% if hours_used %}
+                    {% blocktranslate trimmed count assignments=type.required_assignments %}
+                        <strong>{{ assignments_float }} Stunde</strong> {{ v_assignment }}
+                    {% plural %}
+                        <strong>{{ assignments_float }} Stunden</strong> {{ v_assignment_pl }}
+                    {% endblocktranslate %}
+                {% else %}
+                    {% blocktranslate trimmed count assignments=type.required_assignments %}
+                        <strong>{{ assignments_float }}</strong> {{ v_assignment }}
+                    {% plural %}
+                        <strong>{{ assignments_float }}</strong> {{ v_assignment_pl }}
+                    {% endblocktranslate %}
+                {% endif %}
+            {% endwith %}
         </div>
     {% endblock %}
 
-    {% if type.required_core_assignments > 0 %}
-        <div class="type-details type-required-core-assignments">
-            {% if hours_used %}
-                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3|strip:'0' %}
-                    <strong>{{ assignments_float }} Stunde</strong> Arbeitseinsatz in Kernbereichen
-                {% plural %}
-                    <strong>{{ assignments_float }} Stunden</strong> Arbeitseinsätze in Kernbereichen
-                {% endblocktranslate %}
-            {% else %}
-                {% blocktranslate trimmed count assignments=type.required_core_assignments with assignments_float=type.required_core_assignments|floatformat:-3|strip:'0' %}
-                    <strong>{{ assignments_float }}</strong> Arbeitseinsatz in Kernbereichen
-                {% plural %}
-                    <strong>{{ assignments_float }}</strong> Arbeitseinsätze in Kernbereichen
-                {% endblocktranslate %}
-            {% endif %}
-        </div>
-    {% endif %}
+    {% block required_core_assignments %}
+        {% if type.required_core_assignments > 0 %}
+            {% with v_assignment=vocabulary.assignment v_assignment_pl=vocabulary.assignment_pl assignments_float=type.required_core_assignments|decimal %}
+                <div class="type-details type-required-core-assignments">
+                    {% if hours_used %}
+                        {% blocktranslate trimmed count assignments=type.required_core_assignments %}
+                            <strong>{{ assignments_float }} Stunde</strong> {{ v_assignment }} in Kernbereichen
+                        {% plural %}
+                            <strong>{{ assignments_float }} Stunden</strong> {{ v_assignment_pl }} in Kernbereichen
+                        {% endblocktranslate %}
+                    {% else %}
+                        {% blocktranslate trimmed count assignments=type.required_core_assignments %}
+                            <strong>{{ assignments_float }}</strong> {{ v_assignment }} in Kernbereichen
+                        {% plural %}
+                            <strong>{{ assignments_float }}</strong> {{ v_assignment_pl }} in Kernbereichen
+                        {% endblocktranslate %}
+                    {% endif %}
+                </div>
+            {% endwith %}
+        {% endif %}
+    {% endblock %}
 
     {% config "enable_shares" as c_enable_shares %}
     {% if c_enable_shares %}

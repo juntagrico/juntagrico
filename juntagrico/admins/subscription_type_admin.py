@@ -95,4 +95,4 @@ class SubscriptionBundleAdmin(SortableAdminMixin, RichTextAdmin):
         description=_('Bestellbar')
     )
     def orderable(self, obj):
-        return obj.category is not None
+        return obj.types.visible().exists()

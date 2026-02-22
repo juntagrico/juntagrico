@@ -218,7 +218,7 @@ class MemberBaseForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
-        self.base_layout = ('last_name', 'first_name',
+        self.base_layout = ('first_name', 'last_name',
                             'addr_street', 'addr_zipcode', 'addr_location',
                             'phone', 'mobile_phone', 'email', 'birthday')
 
@@ -357,18 +357,8 @@ class RegisterMultiCoMemberForm(CoMemberBaseForm):
             *self.base_layout,  # keep first 9 fields
             FormActions(
                 self.get_submit_button(),
-                LinkButton(self.button_next_text(), '?next', css_classes='btn-success'),
-                LinkButton(_('Abbrechen'), reverse("cs-cancel"))
             )
         )
-
-    def button_next_text(self):
-        return _('Keine weiteren {} hinzufügen').format(Config.vocabulary('co_member_pl'))
-
-
-class RegisterFirstMultiCoMemberForm(RegisterMultiCoMemberForm):
-    def button_next_text(self):
-        return _('Überspringen')
 
 
 class EditCoMemberForm(CoMemberBaseForm):
