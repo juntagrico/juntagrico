@@ -267,8 +267,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 }
         print(externalSignupDetails())
         with self.settings(ENABLE_EXTERNAL_SIGNUP=False):
+            self.assertGet(reverse('signup-external'), code=404)
             self.assertPost(reverse('signup-external'), externalSignupDetails(), code=404)
         with self.settings(ENABLE_EXTERNAL_SIGNUP=True):
+            self.assertGet(reverse('signup-external'), code=200)
             response = self.assertPost(reverse('signup-external'), externalSignupDetails())
             self.assertRedirects(response, reverse('cs-summary'))
             if settings.ENABLE_SHARES:
