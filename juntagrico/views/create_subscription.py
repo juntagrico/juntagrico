@@ -17,8 +17,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, \
-    SubscriptionPartSelectRequiredForm
+    ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView
@@ -189,19 +188,20 @@ class AddMemberView(SignupView, FormView):
     def __init__(self):
         super().__init__()
         self.edit = False
+        self.mod = False
         self.member_data = {}
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
+        self.mod = self.request.GET.get('mod') is not None
         if request.user.is_authenticated:
             self.member_data = model_to_dict(request.user.member, ['email', 'addr_street', 'addr_zipcode', 'addr_location'])
         else:
             self.member_data = self.signup_manager.get('main_member')
 
     def get_form_class(self):
-        return EditCoMemberForm if self.edit else \
-            RegisterMultiCoMemberForm if self.signup_manager.get('co_members') else RegisterFirstMultiCoMemberForm
+        return EditCoMemberForm if self.edit else RegisterMultiCoMemberForm
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
@@ -223,7 +223,9 @@ class AddMemberView(SignupView, FormView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            co_members=self.signup_manager.get('co_members', []) if not self.edit else [],
+            co_members=self.signup_manager.get('co_members', []),
+            edit=self.edit,
+            mod=self.mod,
             **kwargs
         )
 
