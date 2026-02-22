@@ -139,8 +139,19 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), member=self.member,
-                        data={'email': self.member4.email})
+        self.assertPost(
+            reverse('add-member', args=[self.sub.pk]),
+            member=self.member, code=302,
+            data={
+                'email': self.member4.email,
+                # fields are required even with existing email
+                'first_name': '-', 'last_name': '-', 'phone': '-',
+                'addr_street': '-', 'addr_zipcode': '-', 'addr_location': '-',
+            }
+        )
+        self.sub.refresh_from_db()
+        self.assertTrue(self.member4 in self.sub.current_members.all())
+        self.assertTrue(self.member4 in self.area.members.all())
 
     def testJoinLeaveRejoin(self):
         # leaving on the same day should delete the subscription membership again

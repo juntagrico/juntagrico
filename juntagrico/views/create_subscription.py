@@ -304,7 +304,8 @@ class SummaryView(SignupView, FormView):
         args['show_extras'] = self.signup_manager.extras_enabled()
         args['extras'] = self.signup_manager.extras()
         args['depot'] = self.signup_manager.depot()
-        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
+        if args['subscriptions']:
+            args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return args
 
     @transaction.atomic

@@ -18,11 +18,14 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
         self.assertFalse(self.sub2.parts.first().active)
         # test activation
+        self.assertFalse(self.area.members.filter(pk__in=self.sub2.current_members).exists())
         part = self.sub2.parts.first()
         self.assertPost(reverse('parts-apply'), {'parts[]': [part.id]}, code=302)
         # check that part is active
         part.refresh_from_db()
         self.assertTrue(part.active)
+        # check that members of sub2 where added to area
+        self.assertQuerySetEqual(self.area.members.filter(pk__in=self.sub2.current_members), self.sub2.current_members)
 
     def testSubscriptionDeactivate(self):
         self.assertGet(reverse('parts-apply'), code=302)

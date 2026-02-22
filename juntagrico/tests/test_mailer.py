@@ -37,7 +37,7 @@ class AreaMailerTests(JuntagricoTestCaseWithShares):
         response = self.assertGet(reverse('email-count-area-recipients', args=[self.area.id]), data={
             'to_area': 'on'
         })
-        self.assertEqual(b'An 1 Person senden', response.content)
+        self.assertEqual(b'An 4 Personen senden', response.content)
 
 
 class AreaCoordinatorMailerTests(AreaMailerTests):
