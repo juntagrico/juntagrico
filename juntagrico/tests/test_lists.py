@@ -7,7 +7,8 @@ from django.test import override_settings
 from django.urls import reverse
 from django.core.management import call_command
 
-from ..util.depot_list import depot_list_data
+from ..entity.depot import Tour
+from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
 
 
@@ -131,6 +132,26 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         call_command('generate_depot_list', '--force', '--no-future', stdout=out)
         self.assertEqual(out.getvalue(), '')
         self.assertListsCreated()
+
+
+@override_settings(
+    DEPOT_LISTS={'amount_overview': 'exports/amount_overview.html'},
+    STORAGES={
+        'default': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
+        'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    }
+)
+class AmountOverviewWithMultipleTourDaysTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.tour2 = Tour.objects.create(name='Tour2', description='Tour2 description', weekday=2)
+        cls.depot2.tour = cls.tour2
+        cls.depot2.save()
+
+    def testMultipleTourDays(self):
+        default_depot_list_generation(depot_list_data())
+        self.assertTrue(default_storage.exists('amount_overview.pdf'))
 
 
 class DepotListTests(JuntagricoTestCase):
