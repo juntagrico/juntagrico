@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import F
 from django.forms import model_to_dict
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
@@ -132,7 +131,6 @@ def create_external(request):
     if request.method == "GET":
         depots = list(DepotDao.all_visible_depots().values('id', 'name'))
         subs = list(SubscriptionType.objects.visible()
-                    .annotate(is_extra=F("size__product__is_extra"))
                     .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
                             'price', 'trial', 'description', 'is_extra'))
         external_details = {'depots': depots,
