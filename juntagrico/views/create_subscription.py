@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import F
 from django.forms import model_to_dict
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
