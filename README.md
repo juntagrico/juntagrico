@@ -1,8 +1,8 @@
 # juntagrico
 
 [![image](https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml/badge.svg?branch=main&event=push)](https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability)](https://codeclimate.com/github/juntagrico/juntagrico/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/test_coverage)](https://codeclimate.com/github/juntagrico/juntagrico/test_coverage)
+[![Maintainability](https://qlty.sh/gh/juntagrico/projects/juntagrico/maintainability.svg)](https://qlty.sh/gh/juntagrico/projects/juntagrico)
+[![Code Coverage](https://qlty.sh/gh/juntagrico/projects/juntagrico/coverage.svg)](https://qlty.sh/gh/juntagrico/projects/juntagrico)
 [![image](https://img.shields.io/pypi/v/juntagrico.svg)](https://pypi.python.org/pypi/juntagrico)
 [![image](https://img.shields.io/pypi/l/juntagrico.svg)](https://pypi.python.org/pypi/juntagrico)
 [![image](https://img.shields.io/pypi/pyversions/juntagrico.svg)](https://pypi.python.org/pypi/juntagrico)
