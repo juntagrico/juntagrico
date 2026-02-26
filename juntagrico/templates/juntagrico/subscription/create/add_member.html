@@ -1,0 +1,56 @@
+{% extends "juntagrico/signup/base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% blocktrans with v_co_member=vocabulary.co_member %}{{ v_co_member }} hinzufügen{% endblocktrans %}
+{% endblock %}
+
+{% block intro %}
+    {% if not mod %}
+        <p>
+            {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
+            Teilst du dein/e/n {{ v_subscription }}? Füge weitere BezieherInnen hinzu.
+            {% endblocktrans %}
+        </p>
+        {% if co_members|length == 0 %}
+            {% block continue %}
+                <a href="?next" class="btn btn-primary btn-lg mb-4">
+                    {% blocktrans trimmed with v_co_member_pl=vocabulary.co_member_pl %}
+                        Ohne {{ v_co_member_pl }} fortfahren &rarr;
+                    {% endblocktrans %}
+                </a>
+            {% endblock %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if not mod and co_members|length > 0 %}
+        <h4>{{ vocabulary.co_member_pl }}</h4>
+        {% for co_member in co_members %}
+            <p>{{ co_member.first_name }} {{ co_member.last_name }}
+                {% if not co_member.pk %}<a href="?edit={{forloop.counter}}" class="edit"><i class="bi bi-pencil-square"></i></a>{% endif %}
+                <a href="?remove={{forloop.counter}}" class="delete"><i class="bi bi-trash text-danger"></i></a>
+            </p>
+        {% endfor %}
+        <a href="?next" class="btn btn-success btn-lg mb-4">
+            {% trans "Fertig &rarr;" %}
+        </a>
+    {% endif %}
+
+    <h4>
+        {% with v_co_member=vocabulary.co_member %}
+            {% if edit %}
+                {% blocktrans %}{{ v_co_member }} bearbeiten{% endblocktrans %}
+            {% elif co_members|length > 0 %}
+                {% blocktrans %}Weitere {{ v_co_member }} hinzufügen{% endblocktrans %}
+            {% else %}
+                {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}
+            {% endif %}
+        {% endwith %}
+    </h4>
+    <form action="" method="post" id="new_member" novalidate>
+        {% crispy form %}
+    </form>
+{% endblock %}

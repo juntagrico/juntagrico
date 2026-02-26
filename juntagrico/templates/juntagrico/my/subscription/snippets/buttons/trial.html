@@ -1,0 +1,8 @@
+{% load i18n %}
+<a href="{% url 'part-continue' part.id %}" class="btn btn-primary">
+    {% trans "Ja gerne" %}
+</a>
+<a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
+   onclick="return confirm('{% trans "Bist du sicher, dass du nicht verlängern möchtest?" %}')">
+    {% trans "Nein Danke" %}
+</a>

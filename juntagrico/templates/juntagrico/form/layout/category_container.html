@@ -1,0 +1,16 @@
+{% load juntagrico.common %}
+
+{% block all_head %}
+    {% if div.show %}
+        <div class="col-12 mb-4 {{ div.css_class }}">
+            {% block head %}
+                <h2>{{ div.name }}</h2>
+                <div>{{ div.description|richtext|safe }}</div>
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block fields %}
+    {{ fields|safe }}
+{% endblock %}

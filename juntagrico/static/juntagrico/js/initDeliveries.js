@@ -1,6 +1,4 @@
-/*global define*/
-define([], function () {
-
+$(function () {
 	$('.collapse').on('shown.bs.collapse', function () {
 	    $(this).parent().prev().addClass("shown");
 	});

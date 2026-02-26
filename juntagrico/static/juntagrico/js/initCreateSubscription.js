@@ -1,5 +1,4 @@
-/*global define, $, mwember_shares, depots, destinations, google */
-define([], function () {
+$(function () {
     let depot_element = document.getElementById('depots')
     if (depot_element) {
         let depots = JSON.parse(depot_element.textContent)
@@ -21,7 +20,7 @@ define([], function () {
     }
 
     // interactive checkbox
-    $("input[name='subscription'][value='-1']").change(function(){
+    $("input[name='no_selection']").change(function(){
         if (this.checked) {
             $("input[type='number'][name^='amount']+div input").val(0).change()
         } else if (total_selected_subs() == 0)  {
@@ -29,11 +28,13 @@ define([], function () {
         }
     })
     $("input[type='number'][name^='amount']").change(function(){
-        $("input[name='subscription'][value='-1']").prop('checked', total_selected_subs() == 0)
-    })
+        $("input[name='no_selection']").prop('checked', total_selected_subs() == 0)
+        // highlight card, if value != 0
+        $(this).closest('.card').toggleClass('bg-primary', parseInt(this.value) !== 0)
+    }).change()
 
     // show Spinner in multi selection
     if($().inputSpinner) {
-        $("input[type='number']").inputSpinner();
+        $("input[type='number']").inputSpinner({groupClass : 'subscription-order'});
     }
 });

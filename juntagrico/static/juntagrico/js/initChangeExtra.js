@@ -1,6 +1,3 @@
-/*global define*/
-define([], function () {
-
+$(function () {
     $("input[type='number']").inputSpinner();
-
 });

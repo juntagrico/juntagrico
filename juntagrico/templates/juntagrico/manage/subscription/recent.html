@@ -78,22 +78,22 @@
                     </td>
                 </tr>
             {% endfor %}
-            {% for cancelled_part in cancelled_parts %}
+            {% for canceled_part in canceled_parts %}
                 <tr>
                     <td>
                         <span class="d-none">5</span>{% trans "Kündigung" %}
                     </td>
                     <td>
-                        {{ cancelled_part.cancellation_date|date:"Y-m-d" }}
+                        {{ canceled_part.cancellation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=cancelled_part.subscription %}
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=canceled_part.subscription %}
                     </td>
                     <td>
-                        {{ cancelled_part.type.display_name }}
+                        {{ canceled_part.type.display_name }}
                     </td>
                     <td>
-                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=cancelled_part.subscription %}
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=canceled_part.subscription %}
                     </td>
                 </tr>
             {% endfor %}

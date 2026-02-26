@@ -107,7 +107,7 @@
     {% if perms.juntagrico.change_share %}
     config.layout.topStart.features.buttons.push(
         id_action_button(
-            '<i class="fa-solid fa-user-slash"></i> {% trans "Deaktivieren" %}',
+            '<i class="bi bi-person-dash"></i> {% trans "Deaktivieren" %}',
             '{% url 'manage-member-deactivate' %}',
             '{% csrf_token %}', 
             '.deactivatable', 'member_ids',

@@ -5,14 +5,17 @@
     <tr>
         <th colspan="3" class="horz-left">{% comment "#TODO: get number of columns from data. workaround: there will be at least 3 columns" %}{% endcomment %}
             <h2 class="depot">{{ depot.get_weekday_display }} - {{ depot.name }}</h2>
-            <h3 class="depotaddr">{{ depot.location.address }} ({% trans "Kontakt" %}: {{ depot.contact.first_name }} {{ depot.contact.last_name }})</h3>
+            <div>
+                <span class="depotaddr">{{ depot.location.address }}</span>
+                <span class="contact-details">({% trans "Kontakt" %}: {% for names in depot.contact_names %}{{ names }}{% if not forloop.last %}, {% endif %}{% endfor %})</span>
+            </div>
             <span class="pickup-details">{% trans "Abholung" %}: {{ depot.pickup_display }}</span>
         </th>
     </tr>
     <tr>
         <th class="namecol"></th>
         {% for product in products %}
-            <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %}">{{ product.name }}
+            <th colspan="{{ product.sizes.on_depot_list.count }}" class="top-border {% if forloop.first %}left-border{% endif %}">{{ product.name }}
                 {% if product.description|safe %}<br /><span class="proddescr">{{ product.description }}</span>{% endif %}
             </th>
         {% endfor %}
@@ -21,7 +24,7 @@
     <tr class="bottom-border">
         <td></td>
         {% for product in products %}
-            {% for size in product.sizes_for_depot_list %}
+            {% for size in product.sizes.on_depot_list.sorted %}
                 <td class="small bottom-border {% if forloop.first %}left-border{% endif %}">{{ size.name }}</td>
             {% empty %}
                 <td class="small bottom-border left-border"></td>
@@ -32,7 +35,7 @@
     <tr class="horz-center">
         <td class="horz-left">{% trans "TOTAL" %}:</td>
         {% for product in products %}
-            {% for size in product.sizes_for_depot_list %}
+            {% for size in product.sizes.on_depot_list.sorted %}
                 <td>{{ subscriptions|by_depot:depot|parts_by_size:size|active_on:date|count }}</td>
             {% empty %}
                 <td></td>
@@ -43,7 +46,7 @@
     <tr class="bottom-border horz-center">
         <th class="namecol vert-bottom horz-left">{% trans "Name" %}</th>
         {% for product in products %}
-            <th colspan="{{ product.sizes_for_depot_list|count }}"></th>
+            <th colspan="{{ product.sizes.on_depot_list.count }}"></th>
         {% endfor %}
         <th class="fontsmall vert-bottom">{% trans "abgeholt" %}</th>
         <th class="fontsmall vert-bottom">{% vocabulary "package" %} {% trans "retour" %}</th>

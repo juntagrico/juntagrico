@@ -317,14 +317,14 @@ Recipients:
 - Contact of the job, that is not the admin who changed the assignment.
   Falls back to contact(s) of job type or area that display their email.
 
-List Notifications
-------------------
+Management Command Notifications
+--------------------------------
 
 .. _reference-notifications-depot-list-generated:
 
 Depot lists generated
 ^^^^^^^^^^^^^^^^^^^^^
-Trigger: After executing the default depot list generator.
+Trigger: On signal :ref:`called <reference-signals-management-command-called>` from sender ``generate_depot_list.Command``.
 
 Template: ``mails/admin/depot_list_generated.txt``
 

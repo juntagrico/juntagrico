@@ -1,148 +1,218 @@
-from copy import deepcopy
+from django.db import transaction
 
 from juntagrico.config import Config
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.member import Member
+from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
+from juntagrico.mailer import adminnotification, membernotification
+from juntagrico.util.management import create_share, create_subscription_parts
 
 
-class SessionObjectManager:
-    """ Handles loading and storing a session object in the session
-    """
-    def __init__(self, request, key, data_type):
-        self._request = request
-        self._key = key
-        # load existing object from session or create a new one
-        if key in request.session:
-            self.data = request.session.get(key)
+def get_parts_dict(selection):
+    sub_types = SubscriptionType.objects.filter(id__in=selection.keys())
+    return {sub_type: selection[str(sub_type.id)] for sub_type in sub_types if selection[str(sub_type.id)]}
+
+
+class SessionManager:
+    session_name = ''
+
+    def __init__(self, request):
+        self.request = request
+        if self.session_name not in request.session:
+            request.session[self.session_name] = {}
+        self.data = request.session[self.session_name]
+
+    def get(self, key, default=None):
+        return self.data.get(key, default)
+
+    def set(self, key, value):
+        self.data[key] = value
+        self.request.session[self.session_name] = self.data
+
+    def append(self, key, value):
+        if key not in self.data or not isinstance(self.data[key], list):
+            self.data[key] = [value]
         else:
-            self.data = data_type()
-            request.session[self._key] = self.data
+            self.data[key].append(value)
+        self.request.session[self.session_name] = self.data
 
-    def store(self):
-        # only store if key exists, otherwise session was flushed
-        if self._key in self._request.session:
-            if self.data.cleared:
-                del self._request.session[self._key]
-            else:
-                self._request.session[self._key] = self.data
+    def remove(self, key, index):
+        self.data[key].pop(index)
+        self.request.session[self.session_name] = self.data
 
-
-class SessionObject:
-    """ Base session object
-    """
-    def __init__(self):
-        self.cleared = False
+    def replace(self, key, index, value):
+        self.data[key][index] = value
+        self.request.session[self.session_name] = self.data
 
     def clear(self):
-        self.__init__()
-        self.cleared = True
+        self.data = self.request.session[self.session_name] = {}
 
 
-class CSSessionObject(SessionObject):
-    """ Session object that stores information of registration (subscription creation)
-    """
-    def __init__(self):
-        super().__init__()
-        self._main_member = None
-        self._co_members = []
-        self.co_members_done = False
-        self.subscriptions = {}
-        self.depot = None
-        self.start_date = None
-        self.edit = False
+class MemberDetails:
+    def __init__(self, member, password=None, share_count=0):
+        self.member = member
+        self.password = password
+        self.share_count = share_count
 
-    def clear(self):
-        """ keep main member when clearing
-        that way, sending the signup post request twice, should still forward to the welcome page properly
-        """
-        main_member = self._main_member
-        super().clear()
-        self._main_member = main_member
 
-    def pop(self):
-        """ return copy of data and clear it.
-        :return: copy of data
-        """
-        data = deepcopy(self)
-        self.clear()
-        return data
+class SignupManager(SessionManager):
+    session_name = 'signup'
 
-    @property
+    def _main_member_form(self):
+        form = RegisterMemberForm(self.data.get('main_member', {}))
+        form.full_clean()
+        return form
+
     def main_member(self):
-        return self._main_member
+        return self._main_member_form().instance
 
-    @main_member.setter
-    def main_member(self, new_main_member):
-        # transfer previously selected shares
-        new_main_member.new_shares = getattr(self._main_member, 'new_shares', 0)
-        self._main_member = new_main_member
+    def comment(self):
+        return self.data.get('main_member', {}).get('comment', '')
 
-    @property
+    def has_parts(self):
+        return any(self.get('subscriptions', {}).values())
+
+    def subscriptions(self):
+        """
+        :return: dict of subscription_types -> amount, where selected amount > 0
+        """
+        subscription = self.get('subscriptions', {})
+        return get_parts_dict(subscription)
+
+    def extras_enabled(self):
+        return SubscriptionType.objects.is_extra().visible().exists()
+
+    def extras(self):
+        extras = self.get('extras', {})
+        return get_parts_dict(extras)
+
+    def depot(self):
+        if (depot_id := self.data.get('depot', None)) is not None:
+            return Depot.objects.get(id=depot_id)
+
     def co_members(self):
-        return self._co_members.copy()
-
-    def get_co_member(self, index):
-        co_member = self._co_members[index]
-        return co_member
-
-    def add_co_member(self, new_co_member):
-        new_co_member.new_shares = 0
-        self._co_members.append(new_co_member)
-
-    def remove_co_member(self, index):
-        del self._co_members[index]
-
-    def has_co_members(self):
-        return len(self._co_members) > 0
-
-    def get_co_member_shares(self):
-        return sum([getattr(co_member, 'new_shares', 0) for co_member in self.co_members])
-
-    def subscription_size(self):
-        return sum([sub_type.size.units * (amount or 0) for sub_type, amount in self.subscriptions.items()])
+        co_members = []
+        for c in self.get('co_members', []):
+            if isinstance(c, str):
+                co_member = Member.objects.get(email=c)
+                co_members.append((str(co_member), co_member.active_shares_count))
+            else:
+                co_members.append((c['first_name'] + ' ' + c['last_name'], 0))
+        return co_members
 
     def required_shares(self):
-        return sum([sub_type.shares * (amount or 0) for sub_type, amount in self.subscriptions.items()])
+        return sum([s.shares * amount for s, amount in self.subscriptions().items()])
 
-    def to_dict(self):
-        build_dict = {k: getattr(self, k) for k in ['main_member', 'co_members', 'depot', 'start_date']}
-        build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v and v > 0}
-        return build_dict
+    def existing_shares(self):
+        return self.request.user.member.active_shares_count if self.request.user.is_authenticated else 0
 
-    def count_shares(self):
-        shares = {
-            'existing_main_member': self.main_member.usable_shares_count,
-            'existing_co_member': sum([co_member.usable_shares_count for co_member in self.co_members]),
-            'total_required': max(self.required_shares(), Config.required_shares())
-        }
-        shares['remaining_required'] = max(
-            0, shares['total_required'] - max(0, shares['existing_main_member'] + shares['existing_co_member'])
-        )
-        shares['remaining_required_main_member'] = max(
-            0, Config.required_shares() - shares['existing_main_member']
-        )
-        return shares
+    def shares_ok(self):
+        return ShareOrderForm(self.required_shares(), self.existing_shares(), self.co_members(), data=self.get('shares')).is_valid()
 
-    def evaluate_ordered_shares(self, shares=None):
-        if not Config.enable_shares():  # skip if no shares are needed
-            return True
-        shares = shares or self.count_shares()
-        # count new shares
-        new_main_member = getattr(self.main_member, 'new_shares', 0)
-        new_co_members = self.get_co_member_shares()
-        # evaluate
-        return shares['existing_main_member'] + new_main_member >= Config.required_shares()\
-            and new_main_member + new_co_members >= shares['remaining_required']
-
-    def next_page(self):
-        # identify next page, based on what information is still missing
-        has_subs = self.subscription_size() > 0
-        if not self.subscriptions:
+    def get_next_page(self):
+        """identify next page, based on what information is still missing
+        """
+        if self.request.user.is_authenticated:
+            if not self.request.user.member.can_order_subscription:
+                return 'subscription-landing'
+        elif not self.get('main_member'):
+            return 'signup'
+        url_name = self.request.resolver_match.url_name
+        if self.request.GET.get('mod') is not None or url_name == 'cs-cancel':
+            return url_name
+        has_parts = self.has_parts()
+        if not self.get('subscriptions'):
             return 'cs-subscription'
-        elif has_subs and not self.depot:
+        elif has_parts and self.extras_enabled() and not self.get('extras'):
+            return 'cs-extras'
+        elif has_parts and self.get('depot') is None:
             return 'cs-depot'
-        elif has_subs and not self.start_date:
+        elif has_parts and not self.get('start_date'):
             return 'cs-start'
-        elif has_subs and not self.co_members_done:
+        elif has_parts and not self.get('co_members_done'):
             return 'cs-co-members'
-        elif not self.evaluate_ordered_shares():
+        elif Config.enable_shares() and not self.shares_ok():
             return 'cs-shares'
         return 'cs-summary'
+
+    def apply_member(self):
+        if self.request.user.is_authenticated:
+            member = self.request.user.member
+            member.signup_comment = self.get('comment', '')  # save new comment
+            member.save()
+            password = None
+        else:
+            member_form = self._main_member_form()
+            member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
+            member = member_form.save()
+            password = member.set_password()
+        return MemberDetails(member, password)
+
+    def apply_co_member(self):
+        co_members = []
+        for co_member_data in self.get('co_members', []):
+            if isinstance(co_member_data, str):
+                # member exists
+                co_members.append(MemberDetails(Member.objects.get(email=co_member_data)))
+            else:
+                # create new co-member
+                co_member = CoMemberBaseForm(co_member_data).save()
+                co_members.append(MemberDetails(co_member, co_member.set_password()))
+        return co_members
+
+    def apply_shares(self, member, co_members):
+        shares = self.get('shares')
+        member.share_count = int(shares['of_member'])
+        create_share(member.member, member.share_count)
+        for i, co_member in enumerate(co_members):
+            co_member.share_count = int(shares[f'of_co_member[{i}]'])
+            create_share(co_member.member, co_member.share_count)
+
+    def apply_subscriptions(self, member, co_members):
+        subscription = None
+        if self.has_parts():
+            # create instance
+            subscription = StartDateForm({'start_date': self.get('start_date')}).save(commit=False)
+            subscription.depot = self.depot()
+            subscription.save()
+            # let members join it
+            member.member.join_subscription(subscription, primary=True)
+            for co_member in co_members:
+                co_member.member.join_subscription(subscription)
+            # add parts
+            create_subscription_parts(subscription, self.subscriptions())
+            # add extra parts
+            create_subscription_parts(subscription, self.extras())
+        return subscription
+
+    def send_emails(self, member, co_members, subscription):
+        # notify admin about subscription
+        if subscription:
+            adminnotification.subscription_created(subscription, self.get('comment', ''))
+        # send welcome email to members and co-members
+        if member.password:
+            membernotification.welcome(member.member, member.password)
+        for co_member in co_members:
+            membernotification.welcome_co_member(co_member.member, co_member.password, co_member.share_count,
+                                                 new=co_member.password is not None)
+
+    @transaction.atomic
+    def apply(self):
+        """ create all elements from data the collected data
+        :return the new main member object
+        """
+        # create memberd
+        member = self.apply_member()
+        # create co-members
+        co_members = self.apply_co_member()
+        # create shares (notifies member and admin)
+        if Config.enable_shares():
+            self.apply_shares(member, co_members)
+        # create subscription
+        subscription = self.apply_subscriptions(member, co_members)
+        # send emails and notifications
+        self.send_emails(member, co_members, subscription)
+
+        self.clear()
+        return member.member

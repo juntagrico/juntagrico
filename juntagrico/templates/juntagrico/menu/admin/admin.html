@@ -1,10 +1,19 @@
 {% load i18n %}
-{% block admin %}
+{% block all %}
     {% if request.user.is_staff %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'admin:index' %}">
-                {% trans "Datenverwaltung" %}
-            </a>
-        </li>
+        {% block admin %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin:index' %}">
+                    {% trans "Datenverwaltung" %}
+                </a>
+            </li>
+        {% endblock %}
+        {% block config %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'config' %}">
+                    {% trans "Konfiguration" %}
+                </a>
+            </li>
+        {% endblock %}
     {% endif %}
 {% endblock %}

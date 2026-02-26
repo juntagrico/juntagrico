@@ -1,0 +1,11 @@
+{% extends "juntagrico/menu/admin.html" %}
+
+{% block subscriptions %}
+    {{ block.super }}
+    {% include "juntagrico/menu/admin/extra_subscriptions.html" %}
+{% endblock %}
+
+{% block extend %}
+    {% include "juntagrico/menu/admin/exports.html" %}
+    {{ block.super }}
+{% endblock %}

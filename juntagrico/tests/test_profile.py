@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.entity.member import Member
@@ -13,6 +14,7 @@ class ProfileTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.member = cls.create_member('member_with_shares@email.org')
+        cls.default_member = cls.member
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
         cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org')
@@ -100,15 +102,15 @@ class ProfileTests(JuntagricoTestCase):
         self.member.join_subscription(sub, True)
         # don't cancel while subscription is active
         self.assertPost(reverse('cancel-membership'), code=200, member=self.member, data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 0)
         self.member.refresh_from_db()
         self.assertFalse(self.member.canceled)
+        self.assertEqual(len(mail.outbox), 0)
         # succeed when canceled
         sub.cancel()
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member, data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
         self.member.refresh_from_db()
         self.assertTrue(self.member.canceled)
+        self.assertEqual(len(mail.outbox), 1)  # admin notification
 
     def _testDeactivateMembershipSingle(self, member):
         self.assertPost(reverse('manage-member-deactivate-single', args=(member.pk,)), member=self.admin, code=302)
@@ -145,6 +147,44 @@ class AuthTests(JuntagricoTestCase):
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))
         self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(ENFORCE_MAIL_CONFIRMATION=False)
+    def testUnconfirmedLogin(self):
+        # login with unconfirmed email passes
+        self.assertEqual(self.member.confirmed, False)
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def testConfirm(self):
+        # after creation confirmed must be false
+        self.assertEqual(self.member.confirmed, False)
+        # login with unconfirmed email should fail and send confirmation email
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        # changing email should reset confirmation
+        self.member.confirmed = True
+        self.member.save()
+        self.assertEqual(self.member.confirmed, True)
+        self.member.email = 'new_email@email.org'
+        self.member.save()
+        self.assertEqual(self.member.confirmed, False)
+        # test confirmation link
+        response = self.client.get(reverse('confirm', args=['wrong_hash']))
+        self.assertEqual(response.status_code, 200)
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.confirmed, False)
+        response = self.client.get(reverse('confirm', args=[self.member.get_hash()]))
+        self.assertEqual(response.status_code, 200)
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.confirmed, True)
 
     def testChangePassword(self):
         self.assertGet(reverse('password'))

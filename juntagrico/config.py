@@ -5,6 +5,15 @@ from django.contrib.sites.models import Site
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+from juntagrico import defaults
+
+
+FIRST_JOB_NOTIFICATION_MAP = {
+    'overall': 'first_job_subscribed',
+    'per_area': 'first_job_in_area_subscribed',
+    'per_type': 'first_job_in_type_subscribed',
+}
+
 
 def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
@@ -48,6 +57,7 @@ class Config:
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
+            'from': _('{} von {}'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -91,13 +101,44 @@ class Config:
     enable_shares = _get_setting('ENABLE_SHARES', True)
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
+    require_subscription = _get_setting('REQUIRE_SUBSCRIPTION', False)
+    signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
+    enable_external_signup = _get_setting('ENABLE_EXTERNAL_SIGNUP', False)
+    enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
+
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
 
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
-    promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
-    promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
+    jobs_frontpage = _get_setting_with_key(
+        'JOBS_FRONTPAGE',
+        {
+            'days': 14,
+            'min': 3,
+            'max': 10,
+            'promoted_types': [],
+            'promoted_count': 2
+        }
+    )
+    first_job_info = _get_setting('FIRST_JOB_INFO', ['overall'])
+
+    @staticmethod
+    def depot_lists(default_names=None, context=None):
+        default_names = default_names or {}
+        values = getattr(settings, 'DEPOT_LISTS', defaults.DEPOT_LISTS)
+        # normalize
+        for file_name, conf in values.items():
+            if not isinstance(conf, dict):
+                conf = dict(template=conf)
+            if context is not None:
+                if callable(conf.get('extra_context')):
+                    conf['extra_context'] = conf['extra_context'](context)
+                elif 'extra_context' not in conf:
+                    conf['extra_context'] = {}
+            if 'name' not in conf:
+                conf['name'] = default_names.get(file_name, file_name)
+            yield dict(file_name=file_name, **conf)
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
@@ -119,8 +160,8 @@ class Config:
         'SUB_OVERVIEW_FORMAT',
         {
             'delimiter': '|',
-            'format': '{product}:{size}:{type}={amount}',
-            'part_format': '{size}'
+            'format': '{category}:{bundle}:{type}={amount}',
+            'part_format': '{bundle}'
         }
     )
 
@@ -138,7 +179,6 @@ class Config:
     )
     url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(
         'BATCH_MAILER',
         {
@@ -197,17 +237,25 @@ class Config:
             'core': fallback_static('juntagrico/img/core.png')
         }
     )
-    mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
     @classmethod
     def using_richtext(cls):
-        return 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG')
+        try:
+            return (
+                'djrichtextfield' in settings.INSTALLED_APPS
+                and isinstance(settings.DJRICHTEXTFIELD_CONFIG['profiles']['juntagrico.admin'], dict)
+            )
+        except (AttributeError, KeyError):
+            return False
 
     @classmethod
     def notifications(cls, name):
         default_notifications = [
             'job_subscription_changed',
             'job_unsubscribed',
+        ] + [
+            # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
+            FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
         ]
         enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
         disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])

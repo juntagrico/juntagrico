@@ -1,6 +1,7 @@
 -e .
 psycopg>=3.1.8
-coverage
+coverage[toml]
 django-coverage-plugin
 faker
 ruff
+pre-commit

@@ -20,7 +20,16 @@ ORGANISATION_NAME
 
 ORGANISATION_NAME_CONFIG
 ^^^^^^^^^^^^^^^^^^^^^^^^
-  Additional information to enrich the organisation name with the type of the organisation and its corresponding article
+  Additional information to adjust the language around the organisation name:
+
+  - the type of the organisation e.g. "Genossenschaft" or "Verein"
+  - the gender i.e. "f", "m" or "n"
+
+  E.g.
+
+  .. code-block:: python
+
+    ORGANISATION_NAME_CONFIG = {"type" : "Genossenschaft", "gender" : "f"}
 
   Type: Dictionary
 
@@ -28,8 +37,7 @@ ORGANISATION_NAME_CONFIG
 
   .. code-block:: python
 
-    {"type" : "",
-        "gender" : ""}
+    {"type" : "", "gender" : ""}
 
 ORGANISATION_LONG_NAME
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -300,12 +308,12 @@ BUSINESS_YEAR_CANCELATION_MONTH
     12
 
 
-Membership
-----------
+Sign-up
+-------
 
 ENABLE_REGISTRATION
 ^^^^^^^^^^^^^^^^^^^
-  Decides if new member can register
+  Decides if new members can sign up
 
   Type: Boolean
 
@@ -314,6 +322,65 @@ ENABLE_REGISTRATION
   .. code-block:: python
 
     True
+
+
+REQUIRE_SUBSCRIPTION
+^^^^^^^^^^^^^^^^^^^^
+  Requires selection of a subscription during signup. The option to sign up without subscription is removed.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+
+ENABLE_EXTERNAL_SIGNUP
+^^^^^^^^^^^^^^^^^^^
+  Activates the external signup API and exposes internal depot and subscription info as json.
+
+  Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'
+
+  Will redirect to signup summary page for final confirmation or redirect to correction of main member details (if mail address exists), subscription selection (on missing main subscription) or number of shares (if requirements not met).
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+SIGNUP_MANAGER
+^^^^^^^^^^^^^^
+
+  Overrides the sign-up manager class.
+  Change this to modify the sign-up process or when an addon instructs to do so.
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "juntagrico.util.sessions.SignupManager"
+
+ENFORCE_MAIL_CONFIRMATION
+^^^^^^^^^^^^^^^^^^^
+  At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    True
+
+Membership
+----------
 
 BASE_FEE
 ^^^^^^^^
@@ -410,6 +477,33 @@ ASSIGNMENT_UNIT
 
     "ENTITY"
 
+
+FIRST_JOB_INFO
+^^^^^^^^^^^^^^
+  Defines if participants list of job indicates if this is the first job of member.
+  If multiple cases apply for one member, only the most generic case is shown.
+
+  Multiple options can be combined:
+    - ``'overall'``: show if this is the first job of this member ever
+    - ``'per_area'``: show if this is the first job of this member in this area
+    - ``'per_type'``: show if this is the first job of this member in this job type
+
+  This setting will automatically enable admin notifications for the indicated first jobs.
+  Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
+  or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+    - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
+    - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
+    - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type
+
+  Type: List of strings
+
+  default value
+
+  .. code-block:: python
+
+    ["overall"]
+
+
 ALLOW_JOB_UNSUBSCRIBE
 ^^^^^^^^^^^^^^^^^^^^^
   If set to true, members can unsubscribe themselves (or reduce the slots they reserved)
@@ -429,35 +523,77 @@ ALLOW_JOB_UNSUBSCRIBE
     False
 
 
-PROMOTED_JOB_TYPES
-^^^^^^^^^^^^^^^^^^
-  Types of jobs which should apear on start page
+JOBS_FRONTPAGE
+^^^^^^^^
 
-  Type: List of Strings
+  Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs.
 
-  default value
-
-  .. code-block:: python
-
-    []
-
-PROMOTED_JOBS_AMOUNT
-^^^^^^^^^^^^^^^^^^^^
-  Amount of jobs which should be promoted on the start page
-
-  Type: Integer
+  The setting takes a dictionary of key-value pairs:
+    - ``'days'``: date range in days into the future for next jobs
+    - ``'promoted_types'``: types of jobs (list of strings) to promote
+    - ``'promoted_count'``: number of promoted jobs to show
+    - ``'min'``: minimal number of jobs in list to reach by filling in more next jobs
+    - ``'max'``: maximal number of jobs in list to limit next jobs
 
   default value
 
   .. code-block:: python
 
-    2
+        {
+        'days': 14,
+        'min': 3,
+        'max': 10,
+        'promoted_types': [],
+        'promoted_count': 2
+        }
 
 
 .. _settings-depot:
 
 Depot
 -----
+
+
+.. _settings-depot-lists:
+
+DEPOT_LISTS
+^^^^^^^^^^^
+
+  Define which depot lists should be created and how
+
+  Type: Dict of depot lists
+
+  Example: Generate exiting or new depot list with custom template and context
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    def extra_context(context):
+        from juntagrico.entity.subs import Subscription
+        # pass a custom set to subscriptions
+        return dict(subscriptions=Subscription.objects.active_on(context['date']).filter(...))
+
+    DEPOT_LISTS = defaults.DEPOT_LISTS | {
+        'depotlist': {  # overwrite existing depotlist definition.
+            'name': 'Meine Depotliste',
+            'template': 'exports/my_depotlist.html',
+            'extra_context': extra_context
+        },
+        # minimal definition for an additional list
+        'new_list': 'export/new_list_template.html'
+    }
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'depotlist': 'exports/depotlist.html',
+        'depot_overview': 'exports/depot_overview.html',
+        'amount_overview': 'exports/amount_overview.html',
+    }
+
 
 .. _settings-depot-list-generation-days:
 
@@ -476,9 +612,16 @@ DEPOT_LIST_GENERATION_DAYS
 
 .. _settings-default-depotlist-generators:
 
+
 DEFAULT_DEPOTLIST_GENERATORS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  Generators used to generate the depot list. Generators need the method signature ``generator_name(*args, **options)``
+  .. warning::
+    Deprecated since version 2.0. :ref:`Use DEPOT_LISTS instead <settings-depot-lists>`.
+
+  .. warning::
+    Changed in version 2.0: Takes ``context`` as argument instead of ``*args, **options``.
+
+  Generators used to generate the depot list. Generators need the method signature ``generator_name(context)``
 
   Type: List of Strings which define the different generators to be invoked
 
@@ -495,6 +638,8 @@ Appearance
 VOCABULARY
 ^^^^^^^^^^
   Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
+
+  The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
 
   Type: Dictionary
 
@@ -519,6 +664,7 @@ VOCABULARY
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
         'package': 'Tasche',
+        'from': '{} von {}'
     }
 
 
@@ -533,8 +679,8 @@ SUB_OVERVIEW_FORMAT
   .. code-block:: python
 
     {'delimiter': '|',
-     'format': '{product}:{size}:{type}={amount}',
-     'part_format': '{size}'
+     'format': '{category}:{bundle}:{type}={amount}',
+     'part_format': '{bundle}'
     }
 
 STYLES
@@ -654,6 +800,10 @@ EMAILS
 
 MAIL_TEMPLATE
 ^^^^^^^^^^^^^
+  .. warning::
+    Deprecated since version 2.0. :ref:`Override template directly instead <reference-templates>`, i.e.,
+    place your html template in ``templates/mails/email.html``.
+
   Path to your custom html email template if you want to overwrite the look and feel of the html emails
 
   Type: String
@@ -666,22 +816,15 @@ MAIL_TEMPLATE
 
 DEFAULT_MAILER
 ^^^^^^^^^^^^^^
-  The code to send mails. for more info see the code specified in the default value
-  The setting ``'juntagrico.util.mailer.batch.Mailer'`` uses a built in batch mailer,
-  that sends the emails to the "bcc" recipients in separate emails.
-  See ``BATCH_MAILER`` to configure it.
-
-  default value
-
-  .. code-block:: python
-
-    'juntagrico.util.mailer.default.Mailer'
-
+  .. warning::
+    Removed in version 2.0.
+    Instead extend ``juntagrico.backends.email.BaseEmailBackend`` and set the EMAIL_BACKEND to customize how your emails are sent.
+    See ``juntagrico.backends.email.BaseBatchEmailBackend`` for reference.
 
 BATCH_MAILER
 ^^^^^^^^^^^^^^
   Configuration for the batch mailer. These are only effective, if
-  DEFAULT_MAILER is set to ``'juntagrico.util.mailer.batch.Mailer'``.
+  EMAIL_BACKEND is set to ``'juntagrico.backends.email.BatchEmailBackend'``.
   ``batch_size`` is the number of emails, that is sent in one batch.
   When set to 1, all emails are sent using "to" instead of "bcc".
   ``wait_time`` is the interval in which the batches are sent.
@@ -723,17 +866,13 @@ WHITELIST_EMAILS
 
 MAILER_RICHTEXT_OPTIONS
 ^^^^^^^^^^^^^^^^^^^^^^^
-  Configuration overrides of the tinyMCE editor of the mailer view.
-  See default config in ``static/juntagrico/js/initMailer.js``.
-
-  default value:
-
-  .. code-block:: python
-
-    {}
+  .. warning::
+    Removed in version 2.0. Configure using `DJRICHTEXTFIELD_CONFIG` instead. See :ref:`Richtext in Mailer <intro-richtext-mailer>`.
 
 Notifications
 -------------
+
+.. _reference-settings-enable-notifications:
 
 ENABLE_NOTIFICATIONS
 ^^^^^^^^^^^^^^^^^^^^
@@ -753,6 +892,8 @@ ENABLE_NOTIFICATIONS
 
     []
 
+
+.. _reference-settings-disable-notifications:
 
 DISABLE_NOTIFICATIONS
 ^^^^^^^^^^^^^^^^^^^^^

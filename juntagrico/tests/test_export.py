@@ -21,11 +21,7 @@ class ExportTests(JuntagricoTestCase):
             data.update({f: "on" for f in selected})
         return data
 
-    def testExport(self):
-        self.assertGet(reverse('export'))
-
     def testMembersfilterExport(self):
-        self.assertGet(reverse('export-membersfilter'))
         # member does not have view permission on member model
         export_url = reverse('admin:juntagrico_member_export')
         self.assertGet(export_url, 403)
@@ -36,7 +32,6 @@ class ExportTests(JuntagricoTestCase):
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMembersExport(self):
-        self.assertGet(reverse('export-members'))
         export_url = reverse('admin:juntagrico_member_export')
         response = self.assertGet(export_url, member=self.admin)
         fields = response.context_data['form'].resource_fields['MemberResource']
@@ -52,7 +47,6 @@ class ExportTests(JuntagricoTestCase):
 
     @tag('shares')
     def testSharesExport(self):
-        self.assertGet(reverse('export-shares'))
         export_url = reverse('admin:juntagrico_share_export')
         response = self.assertGet(export_url, member=self.admin)
         fields = response.context_data['form'].resource_fields['ShareResource']
@@ -63,7 +57,6 @@ class ExportTests(JuntagricoTestCase):
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testSubExport(self):
-        self.assertGet(reverse('export-subscriptions'))
         export_url = reverse('admin:juntagrico_subscription_export')
         response = self.assertGet(export_url, member=self.admin)
         fields = response.context_data['form'].resource_fields

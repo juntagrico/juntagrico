@@ -51,3 +51,12 @@ class LocationAdmin(SortableAdminMixin, RichTextAdmin):
         if super().has_view_permission(request) and request.resolver_match.view_name != 'admin:autocomplete':
             return super().get_queryset(request)
         return super().get_queryset(request).filter(visible=True)
+
+    def has_view_permission(self, request, obj=None):
+        return (
+            super().has_view_permission(request, obj) or (
+                # area coordinators can see visible locations
+                request.user.member.area_access.filter(can_modify_jobs=True).exists()
+                and (obj is None or obj.visible)
+            )
+        )

@@ -1,0 +1,67 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% trans "Kündigungsliste der Bestandteile" %}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    {% include './snippets/deprecation_warning.html' %}
+    {% include 'management_lists/snippets/change_date.html' %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Typ" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for part in management_list %}
+                <tr>
+                    <td>
+                        {{ part.type.display_name }}
+                    </td>
+                    <td>
+                        {{ part.subscription.primary_member.first_name }} {{ part.subscription.primary_member.last_name }}
+                    </td>
+                    <td>
+                        {% if part.subscription.primary_member %}
+                            <a href="{% url 'email-to-member' part.subscription.primary_member.id %}" class="email"
+                               data-id="{{ part.subscription.primary_member.id }}">
+                                {{ part.subscription.primary_member.email }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ part.cancellation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if part.deactivation_date %}
+                        {% trans "Wurde bereits deaktiviert" %} {{ part.deactivation_date }}
+                        {% else %}
+                        <a href="{% url 'part-deactivate' part.id %}"class="btn btn-success">
+                            {% trans "deaktivieren" %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

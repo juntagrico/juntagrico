@@ -7,6 +7,10 @@ class HomeTests(JuntagricoTestCase):
 
     def testHome(self):
         self.assertGet(reverse('home'))
+        self.assertGet(reverse('home'), member=self.member2)
+        self.assertGet(reverse('home'), member=self.member3)
+        self.assertGet(reverse('home'), member=self.member4)
+        self.assertGet(reverse('home'), member=self.admin)
 
     def testCookies(self):
         self.assertGet(reverse('cookies'))

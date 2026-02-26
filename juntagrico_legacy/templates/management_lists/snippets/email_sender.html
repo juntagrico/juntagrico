@@ -1,0 +1,13 @@
+{% load i18n %}
+{% if perms.juntagrico.can_send_mails %}
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form id="email-sender" action="{% url 'email-write' %}" method="GET">
+                <input type="hidden" name="members"/>
+                <button type="submit" class="btn btn-success" id="send-email">
+                    {% trans "Email senden" %}
+                </button>
+            </form>
+        </div>
+    </div>
+{% endif %}

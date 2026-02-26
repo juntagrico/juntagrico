@@ -1,0 +1,21 @@
+{% extends "no_menu_base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block allcontent %}
+    <div class="offset-md-3 col-md-6">
+        {% if error_message %}
+            <div class="alert alert alert-danger mb-3">
+                <p>{{ error_message }}</p>
+
+                <p><a href="{% url 'login' %}">{% translate 'Anmelden' %}</a></p>
+            </div>
+        {% else %}
+            <div class="alert alert-success mb-3">
+                <p>{% translate "Deine E-Mail-Adresse wurde erfolgreich bestätigt." %}</p>
+
+                <p><a href="{% url 'login' %}">{% translate 'Anmelden' %}</a></p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

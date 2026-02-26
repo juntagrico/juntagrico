@@ -2,6 +2,7 @@
 {% load i18n %}
 {% block all %}
     <p>
+        {% enriched_organisation "D" as v_d_enriched_organisation %}
         {% blocktrans trimmed%}
         Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
         Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
@@ -17,7 +18,7 @@
         {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
         <a target="_blank" href="{{ activity_area_info }}">
             {% trans "Infoblatt" %}
-            <i class="fa-solid fa-arrow-up-right-from-square small"></i>
+            <i class="bi bi-box-arrow-up-right small"></i>
         </a>.
         </p>
     {% endif %}

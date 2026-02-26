@@ -1,0 +1,272 @@
+{% extends "../base.html" %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_subscription_pl=vocabulary.subscription_pl %}Probe-{{ v_subscription_pl }} mit offenem Ende{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% action_date request %}
+    {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
+    {% has_extra_subscriptions as b_has_extra_subscriptions %}
+    {% if b_has_extra_subscriptions %}
+        <div>
+            <span class="switch switch-sm">
+                <input class="switch" type="checkbox" id="show_normals" checked="checked">
+                <label for="show_normals">{% trans "Normale Bestandteile anzeigen" %}</label>
+            </span>
+            <span class="switch switch-sm">
+                <input class="switch" type="checkbox" id="show_extras" checked="checked">
+                <label for="show_extras">{% trans "Zusatz-Abos anzeigen" %}</label>
+            </span>
+        </div>
+    {% endif %}
+    {{ block.super }}
+
+    {# Modals #}
+    {% include "./modals/cancel_part.html" with name='cancel_part' %}
+    {% include "./modals/deactivate_trial.html" with name='deactivate_trial' %}
+    {% include "./modals/closeout_trial.html" with name='closeout_trial' %}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}-Typ
+                </th>
+                <th class="filter">
+                    {% trans "Bestellt am" %}
+                </th>
+                <th class="filter">
+                    {% trans "Aktiviert am" %}
+                </th>
+                <th class="filter">
+                    {% trans "Verbleibende Laufzeit" %}
+                </th>
+                <th class="filter">
+                    {% trans "Verlängerung" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th>
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trial_part in object_list %}
+                {% with remaining=trial_part.remaining_trial_days %}
+                    <tr class="{% if trial_part.is_extra %}show-extra{% else %}show-normal{% endif %}">
+                        <td>
+                            <a href="{% url 'admin:juntagrico_subscription_change' trial_part.subscription.id %}">
+                                {{ trial_part.type }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ trial_part.creation_date }}
+                        </td>
+                        <td>
+                            {% if trial_part.activation_date %}
+                                {{ trial_part.activation_date }}
+                            {% else %}
+                                <div class="actions">
+                                    <a href="{% url "manage-trial-activate" trial_part.id %}" class="btn btn-primary mb-1">
+                                        {% trans "Aktivieren" %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if remaining is not None %}
+                                {% blocktrans trimmed count remaining=remaining %}
+                                    {{ remaining }} Tag
+                                {% plural %}
+                                    {{ remaining }} Tage
+                                {% endblocktrans %}
+                                {% if remaining < 0 %}
+                                    <span class="badge badge-danger">{% trans "Überfällig" %}</span>
+                                {% endif %}
+                            {% else %}
+                                {% blocktrans trimmed count remaining=trial_part.type.trial_days %}
+                                    {{ remaining }} Tag ab Aktivierung
+                                {% plural %}
+                                    {{ remaining }} Tage ab Aktivierung
+                                {% endblocktrans %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% with next_parts=trial_part.follow_up_parts %}
+                                {% if next_parts %}
+                                    <div>{% trans "Ja" %}</div>
+                                    <ul>
+                                        {% for next_part in next_parts %}
+                                            <li>
+                                                {{ next_part.type }}
+                                                {% if next_part.activation_date %}
+                                                    {% blocktrans trimmed with ad=next_part.activation_date %}
+                                                        per {{ ad }}
+                                                    {% endblocktrans %}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% if trial_part.activation_date and not trial_part.deactivation_date %}
+                                        <a class="closeout-trial btn btn-primary mb-1"
+                                           title="{% trans "Wechsel auf regulären Bestandteil." %}"
+                                           data-url="{% url 'manage-trial-closeout' trial_part.id %}">
+                                            {% trans "Abschliessen" %}
+                                        </a>
+                                    {% endif %}
+                                {% elif trial_part.cancellation_date %}
+                                    <div>{% trans "Nein" %}</div>
+                                    {% blocktrans trimmed with cancellation_date=trial_part.cancellation_date %}
+                                        <div>Gekündigt seit {{ cancellation_date }}</div>
+                                    {% endblocktrans %}
+                                    {% if trial_part.activation_date and not trial_part.deactivation_date %}
+                                        <a data-url="{% url 'manage-trial-deactivate' trial_part.id %}"
+                                           data-toggle="modal" data-target="#deactivate_trial_modal"
+                                           data-date="{{ trial_part.end_of_trial_date|date }}"
+                                           class="btn btn-primary mb-1"
+                                           title="{% trans "Deaktivieren der Probe" %}">
+                                            {% trans "Abschliessen" %}
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <div>{% trans "noch offen" %}</div>
+                                    {% if trial_part.activation_date and not trial_part.deactivation_date %}
+                                        <div class="actions">
+                                            <a href="{% url 'manage-trial-continue' trial_part.id %}" class="btn btn-primary mb-1">
+                                                {% trans "Verlängern" %}
+                                            </a>
+                                            <a data-url="{% url 'manage-part-cancel' trial_part.id %}"
+                                               data-toggle="modal" data-target="#cancel_part_modal"
+                                               class="btn btn-outline-danger mb-1"
+                                               title="{% trans "Lässt die Probe noch für die verbleibende Laufzeit laufen" %}">
+                                                {% trans "Nicht verlängern" %}
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% include "./snippets/members_linked.html" with subscription=trial_part.subscription %}
+                        </td>
+                        <td>
+                            {{ trial_part.subscription.notes }}
+                        </td>
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function redraw_on_show_normal_extra (button, this_selector, is_checked) {
+            // this makes the buttons show up correctly taking show-normal and show-extra status into account
+            $('#filter-table').DataTable().draw()
+        }
+
+        $(function(){
+            $("#show_extras").ToggleButton('.show-extra', redraw_on_show_normal_extra)
+            $("#show_normals").ToggleButton('.show-normal', redraw_on_show_normal_extra)
+            redraw_on_show_normal_extra()
+
+            // apply submit url to modal button
+            $('#cancel_part_modal').on('show.bs.modal', function (event) {
+                $(this).find('.modal-submit').attr('href', $(event.relatedTarget).data('url'))
+            })
+            $('#deactivate_trial_modal').on('show.bs.modal', function (event) {
+                let modal = $(this)
+                let button = $(event.relatedTarget)
+                modal.find('.modal-form').attr('action', button.data('url'))
+                modal.find('.end-of-trial-date').text(button.data('date'))
+            })
+
+            // open modal to closeout trial
+            $('.closeout-trial').on('click', function(event) {
+                let url = $(this).data('url')
+                let content = $('#closeout_trial_content')
+                content.empty()
+                $('#closeout_trial_loader').show()
+                $('#closeout_trial_modal').modal('show')
+                content.load(url, handle_closeout_trial_form(url))
+                return false
+            })
+
+            function handle_closeout_trial_form(url) {
+                let submit_button = $('#closeout_trial_submit')
+                return function(response, status, xhr) {
+                    $('#closeout_trial_loader').hide()
+                    $('.card.as-label').on('click', card_as_label)
+                    $('.card.as-label input:radio').on('change', activate_card)
+                    $('.as-label').on('focus', function() {
+                        let target = $(this).data('for')
+                        if (target) {
+                            $('#' + target).prop('checked', true).trigger('change')
+                        }
+                    })
+                    $('input[name="deactivation_mode"], #closeout_deactivation_date').on('change', print_start_date)
+                    print_start_date()
+                    $('input[name="mode"]').on('change', toggle_change_dates)
+                    toggle_change_dates()
+
+                    if (status === 'error') {
+                        $(this).text(xhr.status + ' ' + xhr.statusText)
+                        submit_button.prop('disabled', true)
+                    } else {
+                        submit_button.prop('disabled', false).attr('formaction', url)
+                    }
+                }
+            }
+
+            function card_as_label() {
+                let card = $(this)
+                card.find('input:radio:enabled').prop('checked', true).trigger('change')
+            }
+
+            function activate_card() {
+                let input = $(this)
+                $('input:radio[name="' + input.attr('name') + '"]').closest('.card.as-label').removeClass('border-success')
+                input.closest('.card.as-label').addClass('border-success')
+            }
+
+            function print_start_date() {
+                let end_date
+                if ($('input[name="deactivation_mode"]:checked').val() === 'by_date') {
+                    end_date = $('#closeout_deactivation_date').val()
+                } else {
+                    end_date = $('#end_of_trial_date').data('date')
+                }
+                let start_date = new Date(end_date)
+                start_date.setDate(start_date.getDate() + 1);
+                $('.next-day-date').text(
+                    start_date.toLocaleDateString(undefined, {year: "numeric", month: "long", day: "numeric"})
+                )
+                let activation_date_input = $('#closeout_activation_date')
+                if (!activation_date_input.val()) {
+                    activation_date_input.val(start_date.toISOString().split('T')[0])
+                }
+            }
+
+            function toggle_change_dates() {
+                $('.show-mode').hide()
+                $('.show-mode-' + $('input[name="mode"]:checked').val()).show()
+                $('.hide-mode').show()
+                $('.hide-mode-' + $('input[name="mode"]:checked').val()).hide()
+            }
+        })
+    </script>
+{% endblock %}

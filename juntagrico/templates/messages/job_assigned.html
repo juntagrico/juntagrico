@@ -2,8 +2,8 @@
 {% load juntagrico.config %}
 <div class="alert alert-success">
     {% trans "Du bist für diesen Einsatz eingeschrieben." %}
-    {% if amount != 0 %}
-        {% blocktrans trimmed count a=amount %}
+    {% if others != 0 %}
+        {% blocktrans trimmed count a=others %}
         Zusammen mit einer weiteren Person.
         {% plural %}
         Zusammen mit {{ a }} weiteren Personen.
