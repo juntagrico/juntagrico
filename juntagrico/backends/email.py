@@ -25,10 +25,10 @@ class BaseEmailBackend(base.BaseEmailBackend):
     golist_setting = 'WHITELIST_EMAILS'
 
     def send_messages(self, email_messages):
-        super().send_messages(self.clean_messages(email_messages))
+        return super().send_messages(self.clean_messages(email_messages))
 
     def send_cleaned_messages(self, email_messages):
-        super().send_messages(email_messages)
+        return super().send_messages(email_messages)
 
     def clean_messages(self, email_messages):
         cleaned_messages = []
