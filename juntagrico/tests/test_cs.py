@@ -247,12 +247,13 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         session = self.client.session
         session['signup'] = {
             'main_member': self.newMemberData('fake@example.com'),
-            'subscriptions': {SubscriptionType.objects.normal().values_list('id', flat=True)[0]: 1},
-            'extras': {SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]: 0},
+            'subscriptions': {SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]: 1},
             'depot': Depot.objects.values_list('id', flat=True)[0],
             'start_date': '2026-03-01',
             'shares': {'of_member': 1},
         }
+        if extras := SubscriptionType.objects.is_extra().visible().values_list('id', flat=True):
+            session['signup']['extras'] = {extras[0]: 0}
         session.save()
         co_member_data = self.newMemberData(self.area_admin.email)
         response = self.client.post(reverse('cs-co-members'), co_member_data)
