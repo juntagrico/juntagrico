@@ -160,4 +160,4 @@ class ExcelWriter(object):
         while count < len(parts):
             dbfield = dbfield.related_model._meta.get_field(parts[count])
             count += 1
-        return dbfield.verbose_name
+        return str(dbfield.verbose_name)
