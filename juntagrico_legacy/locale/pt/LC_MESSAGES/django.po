@@ -1,0 +1,497 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-28 20:46-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: juntagrico_legacy/templates/export.html:6
+msgid "Exporte"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:15
+msgid ""
+"Diese Exporte werden in einer zukünftigen Version entfernt. Sprich mit "
+"deiner/m System-Admin, falls die neuen Exporte deine Anforderungen nicht "
+"abdecken."
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:23
+#: juntagrico_legacy/templates/export.html:41
+#: juntagrico_legacy/templates/export.html:61
+#: juntagrico_legacy/templates/export.html:79
+msgid "exportieren"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:28
+#: juntagrico_legacy/templates/export.html:46
+#: juntagrico_legacy/templates/export.html:66
+#: juntagrico_legacy/templates/export.html:84
+msgid "Neu: Datenverwaltung"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:30
+#: juntagrico_legacy/templates/export.html:48
+#: juntagrico_legacy/templates/export.html:68
+#: juntagrico_legacy/templates/export.html:86
+msgid "&rarr; Exportieren (oben rechts)"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:31
+#: juntagrico_legacy/templates/export.html:49
+msgid "&rarr; Ressource:"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:37
+#, python-format
+msgid "%(v_member_pl)s mit %(v_assignment_pl)s und Tätigketsbereichen"
+msgstr ""
+
+#: juntagrico_legacy/templates/export.html:49
+msgid "mit ..."
+msgstr ""
+
+#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:8
+msgid "Zusatzabos"
+msgstr ""
+
+#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:16
+#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:9
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:6
+msgid "Warteliste"
+msgstr ""
+
+#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:23
+#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:16
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:6
+msgid "Kündigungsliste"
+msgstr ""
+
+#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:23
+msgid "Bestandteile Warteliste"
+msgstr ""
+
+#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:30
+msgid "Bestandteile Kündigungsliste"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:22
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:28
+#: juntagrico_legacy/views.py:137
+msgid "Kündigungsdatum"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:25
+msgid "Enddatum"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:28
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:22
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:23
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:25
+msgid "Kontakt"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:31
+msgid "E-Mail"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:36
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:44
+msgid "Notizen"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:67
+msgid "Wurde bereits deaktiviert auf den"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/canceledlist.html:70
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:59
+msgid "deaktivieren"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/extra_canceledlist.html:5
+msgid "Kündigungsliste der Zusatz-Abos"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/extra_waitinglist.html:6
+msgid "Warteliste der Zusatz-Abos"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:6
+msgid "Kündigungsliste der Bestandteile"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:19
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:20
+msgid "Typ"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:25
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:26
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:28
+#: juntagrico_legacy/views.py:89
+msgid "Email"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:56
+msgid "Wurde bereits deaktiviert"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:6
+msgid "Warteliste der Bestandteile"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:29
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:39
+msgid "Bestelldatum"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:57
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:88
+msgid "Wurde bereits aktiviert"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:59
+#, python-format
+msgid " Übergeordnete/s/r %(v_subscription)s ist noch nicht aktiv "
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:61
+#, python-format
+msgid " Übergeordnete/s/r %(v_subscription)s ist deaktiviert "
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:64
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:91
+msgid "aktivieren"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:7
+msgid "Änderungsdatum einstellen"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:12
+#, python-format
+msgid "Das Änderungsdatum ist auf %(change_date)s gesetzt."
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:14
+msgid "Beende dies hier"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:4
+msgid ""
+"Diese Ansicht wird in einer zukünftigen Version entfernt. Sprich mit deiner/"
+"m System-Admin, falls die neue Liste deine Anforderungen nicht abdeckt. "
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:6
+msgid "Neue Liste: "
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:7
+msgid "Pendente Änderungen"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/snippets/email_sender.html:8
+msgid "Email senden"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:22
+msgid "Start Datum"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:31
+msgid "Tag"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:35
+#, python-format
+msgid "Bezahlte %(v_share_pl)s"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:77
+msgid "(J)"
+msgstr ""
+
+#: juntagrico_legacy/templates/management_lists/waitinglist.html:79
+msgid "(N)"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:9
+#, python-format
+msgid "%(v_subscription)s-Bestandteile ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:19
+msgid "Bestandteile verwalten"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:26
+#: juntagrico_legacy/views.py:83
+msgid "Name"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:29
+#: juntagrico_legacy/views.py:136
+msgid "Status"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:48
+msgid "ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:51
+#, python-format
+msgid " Dein/e %(v_subscription)s braucht mindestens 1 Bestandteil"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:53
+#: juntagrico_legacy/templates/subscription_change.html:29
+#, python-format
+msgid "%(v_subscription)s komplett künden"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:58
+msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:59
+msgid "kündigen"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:63
+#, python-format
+msgid "Gekündigt am %(cd)s"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:76
+msgid "Bestandteile bestellen"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:83
+#, python-format
+msgid ""
+"Für gekündigte %(v_subscription_pl)s können keine Bestandteile bestellt "
+"werden."
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:88
+#, python-format
+msgid "%(v_subscription)s kündigen"
+msgstr ""
+
+#: juntagrico_legacy/templates/size_change.html:93
+#, python-format
+msgid "%(v_subscription)s komplett kündigen"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:9
+msgid "Du bist umgezogen oder möchtest aus einem anderen Grund wechseln?"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:9
+msgid ""
+"Du kannst jederzeit wechseln - die Änderung wird sobald aktiv von uns "
+"kommuniziert."
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:12
+msgid "Aktuell"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:18
+#, python-format
+msgid "%(v_depot)s ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:5
+msgid "Zusatz-Abos"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:8
+msgid ""
+"Zusatz-Abos können nur mit einer Frist von einem Monat vor Ende der Laufzeit "
+"geändert werden."
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:13
+msgid "Weitere Infos zu den Zusatzabos"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:18
+msgid "Zukünftige Zusatz-Abos"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:22
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:32
+msgid "Keine Zusatz-Abos"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:44
+msgid "Zusatz-Abos ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:9
+#, python-format
+msgid "Haupt-%(v_subscription)s-BezieherIn "
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:12
+#, python-format
+msgid ""
+"Du möchtest nicht mehr Haupt-%(v_subscription)s-BezieherIn sein? Du kannst "
+"jederzeit wechseln, vorausgesetzt jemand deiner %(v_co_member_pl)s kann "
+"Haupt-%(v_subscription)s-BezieherIn werden"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:16
+#, python-format
+msgid " Dazu muss sie oder er mindestens 1 bezahlte/n/s %(v_share)s besitzen."
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:23
+#, python-format
+msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:7
+msgid "Spitzname"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:10
+#, python-format
+msgid ""
+"Du möchtest einen %(v_subscription)s-Spitznamen für die %(v_depot)s-Liste "
+"festlegen?"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:13
+msgid "Vorschau"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:18
+msgid "Kein Spitzname gewählt. Alle Namen werden angezeigt."
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:23
+msgid "Spitzname ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:7
+msgid "Bestandteile"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:10
+#, python-format
+msgid ""
+"Die %(v_subscription)s-Bestandteile (auch die Kündigung) kann in der Regel "
+"nur jährlich geändert werden und muss bis spätestens Ende %(ncd)s gemacht "
+"werden, damit die Änderung auf Anfang %(nby)s in Kraft tritt."
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:18
+msgid "Nächstmögliches Datum"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:22
+msgid "Zukünftige Bestandteile"
+msgstr ""
+
+#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:29
+msgid "Bestandteile ändern"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription_change.html:14
+msgid "Welchen Teil möchtest du ändern?"
+msgstr ""
+
+#: juntagrico_legacy/views.py:86
+msgid "Kernbereich"
+msgstr ""
+
+#: juntagrico_legacy/views.py:87
+msgid "Taetigkeitsbereiche"
+msgstr ""
+
+#: juntagrico_legacy/views.py:88 juntagrico_legacy/views.py:138
+msgid "Depot"
+msgstr ""
+
+#: juntagrico_legacy/views.py:90
+msgid "Telefon"
+msgstr ""
+
+#: juntagrico_legacy/views.py:91
+msgid "Mobile"
+msgstr ""
+
+#: juntagrico_legacy/views.py:99
+msgid "-Kein Tätigkeitsbereich-"
+msgstr ""
+
+#: juntagrico_legacy/views.py:101
+msgid "Kein Depot definiert"
+msgstr ""
+
+#: juntagrico_legacy/views.py:130
+msgid "Übersicht"
+msgstr ""
+
+#: juntagrico_legacy/views.py:131
+msgid "HauptbezieherIn"
+msgstr ""
+
+#: juntagrico_legacy/views.py:132
+msgid "HauptbezieherInEmail"
+msgstr ""
+
+#: juntagrico_legacy/views.py:133
+msgid "HauptbezieherInTelefon"
+msgstr ""
+
+#: juntagrico_legacy/views.py:134
+msgid "HauptbezieherInMobile"
+msgstr ""
+
+#: juntagrico_legacy/views.py:135
+msgid "Weitere BezieherInnen"
+msgstr ""
+
+#: juntagrico_legacy/views.py:140
+msgid "{} soll"
+msgstr ""
+
+#: juntagrico_legacy/views.py:141
+msgid "{} status(%)"
+msgstr ""
+
+#: juntagrico_legacy/views.py:142
+msgid "{} Kernbereich"
+msgstr ""
+
+#: juntagrico_legacy/views.py:143
+msgid "{} Kernbereich soll"
+msgstr ""
+
+#: juntagrico_legacy/views.py:144
+msgid "{} Kernbereich status(%)"
+msgstr ""
+
+#: juntagrico_legacy/views.py:145
+msgid "Preis"
+msgstr ""

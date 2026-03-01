@@ -50,7 +50,7 @@
                 </th>
                 {% if enable_shares %}
                     <th class="filter">
-                        {% trans "Bezahlte Anteilsscheine" %}
+                        {% blocktrans with v_share_pl=vocabulary.share_pl %}Bezahlte {{ v_share_pl }}{% endblocktrans %}
                     </th>
                 {% endif %}
                 <th class="filter">

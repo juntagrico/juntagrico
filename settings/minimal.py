@@ -68,10 +68,6 @@ TEMPLATES = [
     },
 ]
 
-LOCALE_PATHS = (
-    BASE_DIR / 'juntagrico/locale',
-)
-
 EMAIL_BACKEND = 'juntagrico.backends.email.EmailBackend'
 
 # Auth Settings
