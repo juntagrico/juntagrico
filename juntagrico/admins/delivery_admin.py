@@ -13,7 +13,7 @@ class DeliveryAdmin(BaseAdmin):
     list_display = ('__str__', 'delivery_date', 'tour', 'subscription_bundle')
     ordering = ('-delivery_date', 'subscription_bundle')
     actions = ['copy_delivery']
-    search_fields = ['delivery_date', 'tour__name', 'subscription_bundle__name']
+    search_fields = ['delivery_date', 'tour__name', 'subscription_bundle__long_name']
     date_hierarchy = 'delivery_date'
     autocomplete_fields = ['subscription_bundle']
     inlines = [DeliveryInline]
