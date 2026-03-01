@@ -247,9 +247,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         session = self.client.session
         session['signup'] = {
             'main_member': self.newMemberData('fake@example.com'),
-            'subscriptions': {'1': 1},
-            'extras': {'1': 0},
-            'depot': 1,
+            'subscriptions': {SubscriptionType.objects.normal().values_list('id', flat=True)[0]: 1},
+            'extras': {SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]: 0},
+            'depot': Depot.objects.values_list('id', flat=True)[0],
             'start_date': '2026-03-01',
             'shares': {'of_member': 1},
         }
