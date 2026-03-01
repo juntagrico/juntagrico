@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.utils.functional import cached_property
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
@@ -337,9 +337,9 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def __str__(self):
         if not self.join_date:
-            extra = _('Beitritt ausstehend')
+            extra = gettext('Beitritt ausstehend')
         else:
-            extra = f"{self.join_date} - {self.leave_date or _('Heute')}"
+            extra = f"{self.join_date} - {self.leave_date or gettext('Heute')}"
         return f"{self.member} - {self.subscription}: " + extra
 
     def clean(self):

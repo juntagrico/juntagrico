@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
 from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset

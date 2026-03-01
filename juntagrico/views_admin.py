@@ -75,8 +75,8 @@ def manage_list(request, extra_lists=None):
     depot_lists = []
     if request.user.has_perm('juntagrico.can_view_lists'):
         default_names = dict(
-            depotlist=_('{}-Listen').format(Config.vocabulary('depot')),
-            depot_overview=_('{} Übersicht').format(Config.vocabulary('depot')),
+            depotlist=_('{depot}-Listen').format(depot=Config.vocabulary('depot')),
+            depot_overview=_('{depot} Übersicht').format(depot=Config.vocabulary('depot')),
             amount_overview=_('Mengen Übersicht')
         )
         for depot_list in list(Config.depot_lists(default_names)) + extra_lists:

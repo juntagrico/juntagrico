@@ -1,7 +1,7 @@
 import datetime
 
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
@@ -76,7 +76,7 @@ class Share(Billable):
         check_share_consistency(self)
 
     def __str__(self):
-        return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
+        return gettext('Anteilschein {0} ({1})').format(self.id, self.state_text)
 
     def cancel(self, date=None, end_date=None):
         self.cancelled_date = self.cancelled_date or date or datetime.date.today()

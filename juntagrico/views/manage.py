@@ -82,7 +82,7 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
                             'juntagrico.can_filter_members']]
     template_name = 'juntagrico/manage/member/show.html'
     queryset = Member.objects.all
-    title = _('Alle {}').format(Config.vocabulary('member_pl'))
+    title = _('Alle {members}').format(members=Config.vocabulary('member_pl'))
 
     def get_queryset(self):
         return super().get_queryset()().prefetch_for_list
@@ -90,7 +90,7 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
-    title = _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
+    title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
 
 
 class AreaMemberView(MemberView):
@@ -194,7 +194,7 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
                             'juntagrico.can_filter_subscriptions']]
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
-    title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
+    title = _('Alle aktiven {subscriptions} im Überblick').format(subscriptions=Config.vocabulary('subscription_pl'))
 
 
 class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, TemplateView):

@@ -14,7 +14,9 @@
                     {% for area in qs_area_admin %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'manage-area-member' area.id %}">
-                                {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
+                                {% blocktrans trimmed with v_member_pl=vocabulary.member_pl area_name=area.name %}
+                                    {{ v_member_pl }} in {{ area_name }}
+                                {% endblocktrans %}
                             </a>
                         </li>
                     {% endfor %}

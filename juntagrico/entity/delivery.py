@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
@@ -18,7 +18,7 @@ class Delivery(JuntagricoBaseModel):
                                             on_delete=models.PROTECT)
 
     def __str__(self):
-        return u"%s - %s - %s" % (self.delivery_date, self.tour or _('Keine'), self.subscription_bundle.long_name)
+        return u"%s - %s - %s" % (self.delivery_date, self.tour or gettext('Keine'), self.subscription_bundle.long_name)
 
     class Meta:
         verbose_name = _('Lieferung')

@@ -4,7 +4,7 @@ from functools import cached_property
 from django.contrib import admin
 from django.db import models
 from django.db.models import Max
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
@@ -49,7 +49,7 @@ class Subscription(Billable, SimpleStateModel):
     objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
     def __str__(self):
-        return _('Abo ({1}) {0}').format(self.size, self.id)
+        return gettext('Abo ({1}) {0}').format(self.size, self.id)
 
     @staticmethod
     def get_part_overview(parts):
@@ -243,7 +243,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
                 price=self.type.price
             )
         except KeyError as k:
-            return _(f'Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.')
+            return gettext('Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.').format(k=k)
 
     @property
     def can_cancel(self):

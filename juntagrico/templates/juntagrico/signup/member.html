@@ -12,7 +12,7 @@
     {% config "share_price" as c_share_price %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% block intro_1 %}
-        <p>Interessiert an {% enriched_organisation "D" %}?</p>
+        <p>{% blocktrans %}Interessiert an {{ v_d_enriched_organisation }}?{% endblocktrans %}</p>
     {% endblock %}
 
     {% if c_enable_shares %}

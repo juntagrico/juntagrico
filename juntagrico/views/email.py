@@ -30,10 +30,10 @@ def count_recipients(request, form=None):
     if form.is_valid():
         if count := form.count_recipients():
             return HttpResponse(ngettext(
-                'An {} Person senden',
-                'An {} Personen senden',
+                'An {num} Person senden',
+                'An {num} Personen senden',
                 count
-            ).format(count))
+            ).format(num=count))
     return HttpResponse(_('Senden'))
 
 

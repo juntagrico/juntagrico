@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-28 20:51-0600\n"
+"POT-Creation-Date: 2026-03-01 13:01-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,13 +71,11 @@ msgstr "Prossime operazioni"
 #: juntagrico/admins/filters.py:33 juntagrico/admins/member_admin.py:37
 #: juntagrico/admins/subscription_admin.py:30
 #: juntagrico/admins/subscription_admin.py:36
-#: juntagrico/admins/subscription_admin.py:43
-#: juntagrico/templates/extra_change.html:25 juntagrico/templates/job.html:134
+#: juntagrico/admins/subscription_admin.py:43 juntagrico/templates/job.html:134
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:29
 #: juntagrico/templates/juntagrico/my/membership/profile.html:16
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:11
 #: juntagrico/templates/manage_shares.html:55
-#: juntagrico/templates/subscription.html:71
 msgid "Status"
 msgstr "Stato"
 
@@ -402,7 +400,7 @@ msgstr "Certificato di unità"
 msgid "Anteilscheine"
 msgstr "Certificati azionari"
 
-#: juntagrico/config.py:50 juntagrico/templates/extra_change.html:22
+#: juntagrico/config.py:50
 msgid "Abo"
 msgstr "Abbonamento"
 
@@ -458,7 +456,6 @@ msgid "wartend"
 msgstr "in attesa"
 
 #: juntagrico/entity/__init__.py:44 juntagrico/entity/listmessage.py:12
-#: juntagrico/templates/subscription.html:75
 msgid "aktiv"
 msgstr "attivo"
 
@@ -523,7 +520,7 @@ msgstr "Viene informato al {0} creazione"
 msgid "Wird bei {0} Kündigung informiert"
 msgstr "Viene informato al {0} Termine"
 
-#: juntagrico/entity/__init__.py:163 juntagrico/forms/__init__.py:140
+#: juntagrico/entity/__init__.py:163 juntagrico/forms/__init__.py:142
 msgid "IBAN ist nicht gültig"
 msgstr "L'IBAN non è valido"
 
@@ -603,7 +600,7 @@ msgstr "E-mail"
 
 #: juntagrico/entity/contact.py:61 juntagrico/entity/contact.py:129
 #: juntagrico/entity/contact.py:141 juntagrico/entity/contact.py:142
-#: juntagrico/forms/__init__.py:151 juntagrico/forms/__init__.py:208
+#: juntagrico/forms/__init__.py:153 juntagrico/forms/__init__.py:210
 msgid "Telefonnummer"
 msgstr "Numero di telefono"
 
@@ -620,7 +617,7 @@ msgid "Anzeige"
 msgstr "Nome visualizzato"
 
 #: juntagrico/entity/contact.py:124 juntagrico/entity/contact.py:125
-#: juntagrico/forms/__init__.py:152 juntagrico/forms/__init__.py:209
+#: juntagrico/forms/__init__.py:154 juntagrico/forms/__init__.py:211
 #: juntagrico/templates/registration/password_reset_form_cust.html:21
 msgid "E-Mail-Adresse"
 msgstr "Indirizzo e-mail"
@@ -694,7 +691,8 @@ msgstr "Nome"
 msgid "Menge"
 msgstr "Quantità"
 
-#: juntagrico/entity/delivery.py:37 juntagrico/forms/__init__.py:234
+#: juntagrico/entity/delivery.py:37 juntagrico/forms/__init__.py:237
+#: juntagrico/templates/juntagrico/subscription/create/summary.html:119
 #: juntagrico/templates/mails/admin/subscription_created.txt:13
 #: juntagrico/templates/snippets/snippet_delivery.html:28
 msgid "Kommentar"
@@ -1531,7 +1529,8 @@ msgid ""
 msgstr ""
 
 #: juntagrico/entity/subtypes.py:141
-msgid "Für {} Tage. Keine automatische Verlängerung."
+#, python-brace-format
+msgid "Für {num} Tage. Keine automatische Verlängerung."
 msgstr ""
 
 #: juntagrico/entity/subtypes.py:145
@@ -1579,88 +1578,111 @@ msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 msgid "Mitgliedschaft künden"
 msgstr "annullare l'iscrizione"
 
-#: juntagrico/forms/__init__.py:127 juntagrico/forms/__init__.py:154
-#: juntagrico/forms/__init__.py:211
+#: juntagrico/forms/__init__.py:127 juntagrico/forms/__init__.py:156
+#: juntagrico/forms/__init__.py:213
 msgid "Strasse/Nr."
 msgstr "Via/no."
 
 #: juntagrico/forms/__init__.py:133
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid ""
 #| "Du musst zuerst deine IBAN hinterlegen, damit deine %(v_share_pl)s "
 #| "ausbezahlt werden können."
 msgid ""
-"Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt "
+"Bitte hinterlege oder überprüfe deine Daten, damit deine {shares} ausbezahlt "
 "werden können."
 msgstr ""
 "Dovete prima inserire il vostro IBAN in modo che i vostri %(v_share_pl)s "
 "possano essere pagati."
 
-#: juntagrico/forms/__init__.py:153 juntagrico/forms/__init__.py:210
+#: juntagrico/forms/__init__.py:155 juntagrico/forms/__init__.py:212
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:25
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:75
 msgid "Geburtstag"
 msgstr "Compleanno"
 
-#: juntagrico/forms/__init__.py:156
+#: juntagrico/forms/__init__.py:158
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Sollen andere {} dich via Kontaktformular erreichen können? (Email nicht "
+#| "sichtbar)"
 msgid ""
-"Sollen andere {} dich via Kontaktformular erreichen können? (Email nicht "
-"sichtbar)"
+"Sollen andere {members} dich via Kontaktformular erreichen können? (Email "
+"nicht sichtbar)"
 msgstr ""
 "Gli altri dovrebbero essere in grado di contattarvi tramite il modulo di "
 "contatto? (Email non visibile)"
 
-#: juntagrico/forms/__init__.py:165
-msgid "Kontaktiere {} um den Namen zu ändern."
+#: juntagrico/forms/__init__.py:167
+#, fuzzy, python-brace-format
+#| msgid "Kontaktiere {} um den Namen zu ändern."
+msgid "Kontaktiere {email} um den Namen zu ändern."
 msgstr "Contattare {} per cambiare il nome."
 
-#: juntagrico/forms/__init__.py:166
-msgid "Kontaktiere {} um die E-Mail-Adresse zu ändern."
+#: juntagrico/forms/__init__.py:168
+#, fuzzy, python-brace-format
+#| msgid "Kontaktiere {} um die E-Mail-Adresse zu ändern."
+msgid "Kontaktiere {email} um die E-Mail-Adresse zu ändern."
 msgstr "Contattate {} per cambiare l'indirizzo e-mail."
 
-#: juntagrico/forms/__init__.py:179 juntagrico/forms/__init__.py:822
-#: juntagrico/forms/__init__.py:854
+#: juntagrico/forms/__init__.py:181 juntagrico/forms/__init__.py:878
+#: juntagrico/forms/__init__.py:915
 #: juntagrico/templates/juntagrico/job/snippets/modal_edit_assignment.html:12
 msgid "Speichern"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:228
+#: juntagrico/forms/__init__.py:231
 msgid "Diese E-Mail-Adresse existiert bereits im System."
 msgstr "Questo indirizzo e-mail esiste già nel sistema."
 
-#: juntagrico/forms/__init__.py:229
+#: juntagrico/forms/__init__.py:232
 msgid "Hier geht's zum Login."
 msgstr "Clicca qui per il login."
 
+#: juntagrico/forms/__init__.py:241
+#: juntagrico/templates/mails/member/co_member_welcome.txt:37
+msgid "die Statuten"
+msgstr "gli statuti"
+
+#: juntagrico/forms/__init__.py:242
+#: juntagrico/templates/mails/member/co_member_welcome.txt:38
+msgid "das Betriebsreglement"
+msgstr "il regolamento di funzionamento"
+
 #: juntagrico/forms/__init__.py:243
-#, fuzzy
+#: juntagrico/templates/mails/member/co_member_welcome.txt:39
+msgid "die DSGVO Infos"
+msgstr "il DSGVO info"
+
+#: juntagrico/forms/__init__.py:247
+#, fuzzy, python-brace-format
 #| msgid ""
 #| "Ich habe {}{}{} gelesen und erkläre meinen Willen, \"{}\" "
 #| "beizutreten.            Hiermit beantrage ich meine Aufnahme."
 msgid ""
-"Ich habe {} gelesen und erkläre meinen Willen, \"{}\" beizutreten. Hiermit "
-"beantrage ich meine Aufnahme."
+"Ich habe {documents} gelesen und erkläre meinen Willen, \"{organization}\" "
+"beizutreten. Hiermit beantrage ich meine Aufnahme."
 msgstr ""
 "Ho letto {}{}{}{}{}{} e dichiaro la mia volontà di aderire \"{}            "
 "Con la presente richiedo l'ammissione."
 
-#: juntagrico/forms/__init__.py:244
-#, fuzzy
+#: juntagrico/forms/__init__.py:251
+#, fuzzy, python-brace-format
 #| msgid ""
 #| "Ich habe {}{}{} gelesen und erkläre meinen Willen, \"{}\" "
 #| "beizutreten.            Hiermit beantrage ich meine Aufnahme."
 msgid ""
-"Ich erkläre meinen Willen, \"{}\" beizutreten. Hiermit beantrage ich meine "
-"Aufnahme."
+"Ich erkläre meinen Willen, \"{organization}\" beizutreten. Hiermit beantrage "
+"ich meine Aufnahme."
 msgstr ""
 "Ho letto {}{}{}{}{}{} e dichiaro la mia volontà di aderire \"{}            "
 "Con la presente richiedo l'ammissione."
 
-#: juntagrico/forms/__init__.py:245 juntagrico/templates/js/i18n.js:87
+#: juntagrico/forms/__init__.py:253 juntagrico/templates/js/i18n.js:87
 msgid "und"
 msgstr "e"
 
-#: juntagrico/forms/__init__.py:256
+#: juntagrico/forms/__init__.py:264
 #: juntagrico/templates/mail_confirmation.html:11
 #: juntagrico/templates/mail_confirmation.html:17
 #: juntagrico/templates/registration/login.html:42
@@ -1668,129 +1690,172 @@ msgstr "e"
 msgid "Anmelden"
 msgstr "Login"
 
-#: juntagrico/forms/__init__.py:284
+#: juntagrico/forms/__init__.py:294
 msgid "Verbindlich bestellen"
 msgstr "Ordine vincolante"
 
-#: juntagrico/forms/__init__.py:285 juntagrico/forms/__init__.py:348
-#: juntagrico/forms/__init__.py:380 juntagrico/forms/__init__.py:494
-#: juntagrico/forms/__init__.py:796
+#: juntagrico/forms/__init__.py:295 juntagrico/forms/__init__.py:366
+#: juntagrico/forms/__init__.py:398 juntagrico/forms/__init__.py:512
+#: juntagrico/forms/__init__.py:847
 #: juntagrico/templates/juntagrico/modal.html:22
 #: juntagrico/templates/juntagrico/subscription/create/select_depot.html:41
 #: juntagrico/templates/juntagrico/subscription/create/select_start_date.html:50
 msgid "Abbrechen"
 msgstr "Annulla"
 
-#: juntagrico/forms/__init__.py:297 juntagrico/forms/__init__.py:379
-#: juntagrico/forms/__init__.py:594 juntagrico/forms/job.py:72
+#: juntagrico/forms/__init__.py:307 juntagrico/forms/__init__.py:397
+#: juntagrico/forms/__init__.py:626 juntagrico/forms/job.py:72
 #: juntagrico/templates/juntagrico/manage/subscription/depot/changes.html:73
 #: juntagrico/templates/juntagrico/manage/subscription/depot/changes.html:89
 msgid "Ändern"
 msgstr "Cambia"
 
-#: juntagrico/forms/__init__.py:310
-msgid "Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet."
+#: juntagrico/forms/__init__.py:321
+#, fuzzy, python-brace-format
+#| msgid "Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet."
+msgid ""
+"Diese E-Mail-Adresse wird bereits von dir oder deinen {co_members} verwendet."
 msgstr "Questo indirizzo e-mail è già utilizzato da voi o dal vostro {}."
 
-#: juntagrico/forms/__init__.py:315
-#, fuzzy
+#: juntagrico/forms/__init__.py:328
+#, fuzzy, python-brace-format
 #| msgid ""
 #| "Die Person mit dieser E-Mail-Adresse ist bereits aktiv                 {}-"
 #| "BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} "
 #| "hinzufügen möchtet."
 msgid ""
-"Die Person mit dieser E-Mail-Adresse ist bereits aktive {}-BezierIn. Bitte "
-"meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet."
+"Die Person mit dieser E-Mail-Adresse ist bereits aktive {subscription}-"
+"BezierIn. Bitte meldet euch bei {email}, wenn ihr bestehende {members} als "
+"{co_members} hinzufügen möchtet."
 msgstr ""
 "La persona con questo indirizzo e-mail è già attiva {}-BezierIn. Si prega di "
 "contattare {} se si desidera aggiungere {} esistente come {}."
 
-#: juntagrico/forms/__init__.py:333
-msgid "{} hinzufügen"
-msgstr "Aggiungi"
+#: juntagrico/forms/__init__.py:349
+#, fuzzy, python-brace-format
+#| msgid "%(v_co_member)s hinzufügen"
+msgid "{co_member} hinzufügen"
+msgstr "Aggiungere %(v_co_member)s"
 
-#: juntagrico/forms/__init__.py:493 juntagrico/forms/__init__.py:795
+#: juntagrico/forms/__init__.py:511 juntagrico/forms/__init__.py:846
 #: juntagrico/templates/juntagrico/subscription/create/select_depot.html:38
 #: juntagrico/templates/juntagrico/subscription/create/select_start_date.html:47
 msgid "Weiter"
 msgstr "Continua"
 
-#: juntagrico/forms/__init__.py:504
-msgid "Wähle mindestens 1 {} aus."
-msgstr ""
+#: juntagrico/forms/__init__.py:522 juntagrico/forms/__init__.py:598
+#, fuzzy, python-brace-format
+#| msgid "Wähle 1 %(v_depot)s als %(v_subscription)s-Abholort aus."
+msgid "Wähle mindestens 1 {subscription} aus."
+msgstr "Selezionare 1 %(v_depot)s come %(v_subscription)s di prelievo."
 
-#: juntagrico/forms/__init__.py:516
-#, fuzzy
-#| msgid "Kein/e/n {0}"
-msgid "Kein {}"
-msgstr "Nessuno {0}"
+#: juntagrico/forms/__init__.py:534
+#, fuzzy, python-brace-format
+#| msgid "Keine %(v_subscription_pl)s"
+msgid "Kein {subscription}"
+msgstr "Nessuno %(v_subscription_pl)s"
 
-#: juntagrico/forms/__init__.py:546
-#, fuzzy
-#| msgid "Verbindlich bestellen"
-msgid "{}-Bestandteile bestellen"
-msgstr "Ordine vincolante"
+#: juntagrico/forms/__init__.py:566
+#, fuzzy, python-brace-format
+#| msgid "%(v_subscription)s erstellen"
+msgid "{subscription}-Bestandteile bestellen"
+msgstr "Creare %(v_subscription)s"
 
-#: juntagrico/forms/__init__.py:555
+#: juntagrico/forms/__init__.py:577
+#, python-brace-format
 msgid ""
-"Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden"
+"Für gekündigte {subscriptions} können keine Bestandteile oder Zusatzabos "
+"bestellt werden"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:563
-#, fuzzy
+#: juntagrico/forms/__init__.py:587
+#, fuzzy, python-brace-format
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
-msgid "Es sind zu wenig {} vorhanden für diese Bestandteile!{}"
+msgid "Es sind zu wenig {shares} vorhanden für diese Bestandteile!"
 msgstr "Ci sono troppo pochi %(v_share_pl)s disponibili per questa dimensione!"
 
-#: juntagrico/forms/__init__.py:566 juntagrico/forms/__init__.py:627
-#, fuzzy
+#: juntagrico/forms/__init__.py:591 juntagrico/forms/__init__.py:661
+#, fuzzy, python-brace-format
 #| msgid "Bestelle hier mehr Anteilscheine."
-msgid "&rarr; Bestelle hier mehr {}"
+msgid "&rarr; Bestelle hier mehr {shares}"
 msgstr "Ordina qui altri certificati azionari."
 
-#: juntagrico/forms/__init__.py:571
-msgid "Wähle mindestens 1 {} aus.{}"
-msgstr ""
+#: juntagrico/forms/__init__.py:603
+#, fuzzy, python-brace-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "&rarr; Oder {subscription} komplett künden"
+msgstr "Annullare completamente %(v_subscription)s"
 
-#: juntagrico/forms/__init__.py:575
-msgid "&rarr; Oder {} komplett künden"
-msgstr ""
-
-#: juntagrico/forms/__init__.py:624
-#, fuzzy
+#: juntagrico/forms/__init__.py:657
+#, fuzzy, python-brace-format
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
-msgid "Es sind zu wenig {} vorhanden für diesen Bestandteil!{}"
+msgid "Es sind zu wenig {shares} vorhanden für diesen Bestandteil!"
 msgstr "Ci sono troppo pochi %(v_share_pl)s disponibili per questa dimensione!"
 
-#: juntagrico/forms/__init__.py:662 juntagrico/templates/manage_shares.html:112
+#: juntagrico/forms/__init__.py:697 juntagrico/templates/manage_shares.html:112
 #, fuzzy
 #| msgid "bestellen"
 msgid "Bestellen"
 msgstr "ordine"
 
-#: juntagrico/forms/__init__.py:708
+#: juntagrico/forms/__init__.py:743
 #, fuzzy
 #| msgid "Bitte \"Bezahlt am\" ausfüllen"
 msgid "Bitte gib ein Deaktivierungsdatum an."
 msgstr "Compilare \"Pagato"
 
-#: juntagrico/forms/__init__.py:712 juntagrico/forms/__init__.py:716
+#: juntagrico/forms/__init__.py:747 juntagrico/forms/__init__.py:751
 #, fuzzy
 #| msgid "Bitte \"Bezahlt am\" ausfüllen"
 msgid "Bitte gib ein Aktivierungsdatum an."
 msgstr "Compilare \"Pagato"
 
-#: juntagrico/forms/__init__.py:775
-#, fuzzy
+#: juntagrico/forms/__init__.py:780
+#, fuzzy, python-brace-format
+#| msgid "Du brauchst als HauptbezieherIn mindestens 1 %(v_share)s."
+msgid "Du brauchst als HauptbezieherIn mindestens {num} {share}."
+msgid_plural "Du brauchst als HauptbezieherIn mindestens {num} {shares}."
+msgstr[0] "È necessario almeno l'1 %(v_share)s come destinatario principale."
+msgstr[1] "È necessario almeno l'1 %(v_share)s come destinatario principale."
+
+#: juntagrico/forms/__init__.py:785
+#, python-brace-format
+msgid "Du hast bereits {num} {share}."
+msgid_plural "Du hast bereits {num} {shares}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: juntagrico/forms/__init__.py:788
+#, python-brace-format
+msgid "Besitzt bereits {num} {share}."
+msgid_plural "Besitzt bereits {num} {shares}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: juntagrico/forms/__init__.py:791
+#, python-brace-format
+msgid ""
+"Du brauchst insgesamt {num} {share} für die von dir gewählten {subscription}-"
+"Bestandteile"
+msgid_plural ""
+"Du brauchst insgesamt {num} {shares} für die von dir gewählten "
+"{subscription}-Bestandteile"
+msgstr[0] ""
+msgstr[1] ""
+
+#: juntagrico/forms/__init__.py:825
+#, fuzzy, python-brace-format
 #| msgid "Neue/r/s {}"
-msgid "Neue {}"
+msgid "Neue {shares}"
 msgstr "Nuovo {}"
 
-#: juntagrico/forms/__init__.py:817
-msgid "{}-Spitzname"
-msgstr ""
+#: juntagrico/forms/__init__.py:871
+#, fuzzy, python-brace-format
+#| msgid "%(v_subscription)s ändern"
+msgid "{subscription}-Spitzname"
+msgstr "Variazione %(v_subscription)s"
 
-#: juntagrico/forms/__init__.py:826
+#: juntagrico/forms/__init__.py:882
 #: juntagrico/templates/exports/amount_overview.html:15
 #: juntagrico/templates/exports/depot_overview.html:17
 #: juntagrico/templates/exports/depotlist.html:15
@@ -1799,39 +1864,39 @@ msgstr ""
 msgid "Stichtag"
 msgstr "Visibile"
 
-#: juntagrico/forms/__init__.py:827
+#: juntagrico/forms/__init__.py:884
 msgid "Akzeptiere alle Depot-Änderungen"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:828
+#: juntagrico/forms/__init__.py:887
 msgid "Änderungen stattdessen einzeln prüfen und akzeptieren"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:836
+#: juntagrico/forms/__init__.py:897
 msgid "Listen Erzeugen"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:860
+#: juntagrico/forms/__init__.py:921
 msgid "Stunden"
 msgstr "orari"
 
-#: juntagrico/forms/__init__.py:861
+#: juntagrico/forms/__init__.py:922
 #, fuzzy
 #| msgid "Abo"
 msgid "Ab"
 msgstr "Abbonamento"
 
-#: juntagrico/forms/__init__.py:862 juntagrico/forms/__init__.py:883
+#: juntagrico/forms/__init__.py:923 juntagrico/forms/__init__.py:944
 msgid "Bis"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:867
+#: juntagrico/forms/__init__.py:928
 #, fuzzy
 #| msgid "Mails verschicken"
 msgid "Zeiten verschieben"
 msgstr "e-mail"
 
-#: juntagrico/forms/__init__.py:882 juntagrico/forms/email.py:307
+#: juntagrico/forms/__init__.py:943 juntagrico/forms/email.py:307
 #: juntagrico/templates/mails/admin/subpart_created.txt:14
 #: juntagrico/templates/mails/admin/subscription_created.txt:10
 #, fuzzy
@@ -1839,7 +1904,7 @@ msgstr "e-mail"
 msgid "Von"
 msgstr "Nome"
 
-#: juntagrico/forms/__init__.py:892
+#: juntagrico/forms/__init__.py:953
 #: juntagrico/templates/admin/mass_edit_share_dates_intermediate.html:30
 #: juntagrico/templates/juntagrico/manage/subscription/modals/closeout_trial.html:12
 #, fuzzy
@@ -1847,11 +1912,11 @@ msgstr "Nome"
 msgid "Anwenden"
 msgstr "inviare"
 
-#: juntagrico/forms/__init__.py:896
+#: juntagrico/forms/__init__.py:957
 msgid "Saison"
 msgstr ""
 
-#: juntagrico/forms/__init__.py:910
+#: juntagrico/forms/__init__.py:971
 #: juntagrico/templates/juntagrico/my/area/show.html:87
 #, fuzzy
 #| msgid "Angezeigter Name"
@@ -2592,95 +2657,47 @@ msgstr "invia messaggio"
 msgid "Cookies"
 msgstr "Biscotti"
 
-#: juntagrico/templates/cookie.html:13
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "    %(an)s verwendet Cookies.\n"
-#| "    %(an)s verwendet aber keine Cookies für Tracking etc.\n"
-#| "    %(an)s verwendet Session Cookies und Cookies zur CSRF Bekämpfung.\n"
-#| "    Und um zu speichern ob du den Cookie Consent bestätigt hast.\n"
-#| "\n"
-#| "    <p/>\n"
-#| "\n"
-#| "    Standartmässig speichert %(an)s im Session Cookie nur eine ID und die "
-#| "Session Daten in der Datenbank.\n"
-#| "    Das Session Cookie wird 2 Wochen gespeichert. <br/>\n"
-#| "    Die Aktuelle Informationen zu den Standard Einstellungen findest du "
-#| "hier:<br/>\n"
-#| "    <a href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/"
-#| "\">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/>\n"
-#| "    Diese Einstellungen können natürlich von deiner Initiative geändert "
-#| "worden sein.\n"
-#| "\n"
-#| "    <p/>\n"
-#| "\n"
-#| "    Mehr Infos zum CSRF Cookie findest du hier:\n"
-#| "    <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/\">https://"
-#| "docs.djangoproject.com/en/dev/ref/csrf/</a>\n"
-#| "\n"
-#| "    <p/>\n"
-#| "\n"
-#| "    Das Cookie Consent Cookie speichert für ein Jahr ab, ob du den "
-#| "Cookies zugestimmt hast.\n"
-#| "\n"
-#| "    <p/>\n"
-#| "\n"
-#| "    Gerne kannst du das natürlich bei dir konkret überprüfen und uns "
-#| "mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.\n"
-#| "    "
+#: juntagrico/templates/cookie.html:16
+#, python-format
 msgid ""
 "%(an)s verwendet Cookies. %(an)s verwendet aber keine Cookies für Tracking "
 "etc. %(an)s verwendet Session Cookies und Cookies zur CSRF Bekämpfung. Und "
-"um zu speichern ob du den Cookie Consent bestätigt hast. <p/> Standardmässig "
-"speichert %(an)s im Session Cookie nur eine ID und die Session Daten in der "
-"Datenbank. Das Session Cookie wird 2 Wochen gespeichert. <br/> Die Aktuelle "
-"Informationen zu den Standard Einstellungen findest du hier:<br/> <a "
-"href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/\">https://"
-"docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/> Diese "
-"Einstellungen können natürlich von deiner Initiative geändert worden sein. "
-"<p/> Mehr Infos zum CSRF Cookie findest du hier: <a href=\"https://docs."
-"djangoproject.com/en/dev/ref/csrf/\">https://docs.djangoproject.com/en/dev/"
-"ref/csrf/</a> <p/> Das Cookie Consent Cookie speichert für ein Jahr ab, ob "
-"du den Cookies zugestimmt hast. <p/> Gerne kannst du das natürlich bei dir "
-"konkret überprüfen und uns mitteilen wenn das was hier steht nicht stimmt "
-"oder nicht mehr stimmt."
+"um zu speichern ob du den Cookie Consent bestätigt hast."
 msgstr ""
-"\n"
-"    %(an)s utilizza i cookie.\n"
-"    %(an)s non utilizza cookies per il tracciamento ecc.\n"
-"    %(an)s utilizza i cookie di sessione e i cookie per combattere il CSRF\n"
-"    E per salvare se avete confermato il contenuto del cookie.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Per impostazione predefinita %(an)s memorizza nel cookie di sessione "
-"solo un ID e i dati della sessione nel database.\n"
-"    Il cookie di sessione viene memorizzato per 2 settimane. <br/>\n"
-"    Le informazioni attuali sulle impostazioni di default si trovano qui:<br/"
-">\n"
-"    <a href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/"
-"\">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/><br/"
-">\n"
-"    Queste impostazioni possono naturalmente essere state modificate dalla "
-"vostra iniziativa.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Potete trovare ulteriori informazioni sul cookie CSRF qui:\n"
-"    <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/\">https://docs."
-"djangoproject.com/en/dev/ref/csrf/</a>\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    I Cookie Consent Cookie conservano i cookie per un anno, "
-"indipendentemente dal fatto che abbiate accettato i cookie.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Naturalmente siete invitati a verificare con voi e a farci sapere se ciò "
-"che è scritto qui non è vero o non è più vero.\n"
-"    "
+
+#: juntagrico/templates/cookie.html:25
+#, python-format
+msgid ""
+"Standardmässig speichert %(an)s im Session-Cookie nur eine ID und die "
+"Session-Daten in der Datenbank. Das Session-Cookie wird 2 Wochen gespeichert."
+msgstr ""
+
+#: juntagrico/templates/cookie.html:30
+msgid ""
+"Die Aktuelle Informationen zu den Standard-Einstellungen findest du hier:"
+msgstr ""
+
+#: juntagrico/templates/cookie.html:33
+msgid ""
+"Diese Einstellungen können natürlich von deiner Initiative geändert worden "
+"sein."
+msgstr ""
+
+#: juntagrico/templates/cookie.html:37
+msgid "Mehr Infos zum CSRF Cookie findest du hier:"
+msgstr ""
+
+#: juntagrico/templates/cookie.html:42
+msgid ""
+"Das Cookie-Consent-Cookie speichert für ein Jahr ab, ob du den Cookies "
+"zugestimmt hast."
+msgstr ""
+
+#: juntagrico/templates/cookie.html:46
+msgid ""
+"Gerne kannst du das natürlich bei dir konkret überprüfen und uns mitteilen "
+"wenn das was hier steht nicht stimmt oder nicht mehr stimmt."
+msgstr ""
 
 #: juntagrico/templates/deliveries.html:7
 msgid "Alle Lieferungen im Überblick"
@@ -2770,13 +2787,10 @@ msgid "%(v_depot)s-Listen"
 msgstr "%(v_depot)s liste"
 
 #: juntagrico/templates/exports/share_certificate.html:96
-#: juntagrico/templates/manage_shares.html:16
-#: juntagrico/templates/manage_shares.html:28
-#: juntagrico/views_subscription.py:351
-#, fuzzy
-#| msgid "Beschreibung"
-msgid "Bescheinigung"
-msgstr "Descrizione"
+#, fuzzy, python-format
+#| msgid "Deine %(v_share_pl)s"
+msgid "Bescheinigung %(v_share_pl)s"
+msgstr "Il vostro %(v_share_pl)s"
 
 #: juntagrico/templates/exports/share_certificate.html:103
 #, python-format
@@ -2844,62 +2858,6 @@ msgstr ""
 
 #: juntagrico/templates/exports/snippets/snippet_tour_overview.html:20
 msgid "Ohne Ausfahrt"
-msgstr ""
-
-#: juntagrico/templates/extra_change.html:8
-#, fuzzy
-#| msgid "Zusatz-Abos ändern"
-msgid "Zusatzabos ändern"
-msgstr "Modifica abbonamenti aggiuntivi"
-
-#: juntagrico/templates/extra_change.html:14
-#, fuzzy
-#| msgid "Du hast noch keine Zusatz-Abos"
-msgid "Du hast noch keine Zusatzabos"
-msgstr "Non avete ancora abbonamenti aggiuntivi"
-
-#: juntagrico/templates/extra_change.html:16
-#: juntagrico/templates/juntagrico/menu/admin/assignments.html:13
-#: juntagrico/templates/juntagrico/widgets/assignment_progress.html:8
-#: juntagrico/templates/manage_shares.html:43
-#: juntagrico/templates/widgets/assignements.html:9
-msgid "Übersicht"
-msgstr "Panoramica"
-
-#: juntagrico/templates/extra_change.html:42
-#: juntagrico/templates/juntagrico/manage/assignments.html:73
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:41
-#, fuzzy, python-format
-#| msgid "Gekündigt am"
-msgid "Gekündigt am %(cd)s"
-msgstr "Terminato il"
-
-#: juntagrico/templates/extra_change.html:47
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:75
-#, fuzzy
-#| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
-msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
-msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
-
-#: juntagrico/templates/extra_change.html:48
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:76
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
-#: juntagrico/templates/manage_shares.html:87
-msgid "kündigen"
-msgstr "annullare"
-
-#: juntagrico/templates/extra_change.html:60
-#: juntagrico/templates/juntagrico/my/subscription/part/order.html:9
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:129
-#, fuzzy
-#| msgid "Extra-Abos bestellen"
-msgid "Zusatzabos bestellen"
-msgstr "Ordina abbonamenti extra"
-
-#: juntagrico/templates/extra_change.html:67
-#, python-format
-msgid ""
-"Für gekündigte %(v_subscription_pl)s können keine Zusatzabos bestellt werden."
 msgstr ""
 
 #: juntagrico/templates/future.html:7
@@ -3065,6 +3023,9 @@ msgstr ""
 
 #: juntagrico/templates/job.html:183
 #: juntagrico/templates/juntagrico/job/list/snippets/header.html:44
+#, fuzzy
+#| msgid "Extras"
+msgctxt "Job-Extras"
 msgid "Extras"
 msgstr "Extra"
 
@@ -3960,6 +3921,13 @@ msgstr "%(v_assignment_pl)s Area principale"
 msgid "%(v_assignment_pl)s Kernbereich Status"
 msgstr "%(v_assignment_pl)s Area principale"
 
+#: juntagrico/templates/juntagrico/manage/assignments.html:73
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:41
+#, fuzzy, python-format
+#| msgid "Gekündigt am"
+msgid "Gekündigt am %(cd)s"
+msgstr "Terminato il"
+
 #: juntagrico/templates/juntagrico/manage/list.html:23
 #, fuzzy
 #| msgid "Nachricht gesandt"
@@ -4412,7 +4380,6 @@ msgid "Wähle das Deaktivierungsdatum der Probe:"
 msgstr "Data di disattivazione"
 
 #: juntagrico/templates/juntagrico/manage/subscription/snippets/closeout_trial.html:109
-#: juntagrico/templates/juntagrico/manage/subscription/snippets/closeout_trial.html:136
 #, fuzzy
 #| msgid "der"
 msgid "Per"
@@ -4426,6 +4393,13 @@ msgstr ""
 #: juntagrico/templates/juntagrico/manage/subscription/snippets/closeout_trial.html:128
 msgid "Am Tag danach:"
 msgstr ""
+
+#: juntagrico/templates/juntagrico/manage/subscription/snippets/closeout_trial.html:136
+#, fuzzy
+#| msgid "der"
+msgctxt "Per Datum"
+msgid "Per"
+msgstr "il"
 
 #: juntagrico/templates/juntagrico/manage/subscription/snippets/closeout_trial.html:147
 #, fuzzy
@@ -4519,7 +4493,7 @@ msgid "Wechsel auf regulären Bestandteil."
 msgstr "Assegnazioni di lavoro attuali"
 
 #: juntagrico/templates/juntagrico/manage/subscription/trial.html:126
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:140
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:142
 msgid "Abschliessen"
 msgstr ""
 
@@ -4528,30 +4502,31 @@ msgstr ""
 msgid "Nein"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:131
-#, python-format
-msgid "<div>Gekündigt seit %(cancellation_date)s</div>"
-msgstr ""
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:132
+#, fuzzy, python-format
+#| msgid "Gekündigt am"
+msgid "Gekündigt seit %(cancellation_date)s"
+msgstr "Terminato il"
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:139
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:141
 #, fuzzy
 #| msgid "deaktivieren"
 msgid "Deaktivieren der Probe"
 msgstr "disattivare"
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:144
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:146
 msgid "noch offen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:148
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:150
 msgid "Verlängern"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:153
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:155
 msgid "Lässt die Probe noch für die verbleibende Laufzeit laufen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/manage/subscription/trial.html:154
+#: juntagrico/templates/juntagrico/manage/subscription/trial.html:156
 #, fuzzy
 #| msgid "Nicht vergessen"
 msgid "Nicht verlängern"
@@ -4563,8 +4538,10 @@ msgid "Version: "
 msgstr ""
 
 #: juntagrico/templates/juntagrico/menu/admin/activityareas.html:17
-msgid "in"
-msgstr "in"
+#, fuzzy, python-format
+#| msgid "Hier %(v_co_member_pl)s eintragen"
+msgid "%(v_member_pl)s in %(area_name)s"
+msgstr "Inserire qui %(v_co_member_pl)s"
 
 #: juntagrico/templates/juntagrico/menu/admin/admin.html:7
 msgid "Datenverwaltung"
@@ -4575,6 +4552,13 @@ msgstr ""
 #| msgid "%(v_assignment_pl)s Kernbereich"
 msgid "%(v_assignment_pl)s"
 msgstr "%(v_assignment_pl)s Area principale"
+
+#: juntagrico/templates/juntagrico/menu/admin/assignments.html:13
+#: juntagrico/templates/juntagrico/widgets/assignment_progress.html:8
+#: juntagrico/templates/manage_shares.html:43
+#: juntagrico/templates/widgets/assignements.html:9
+msgid "Übersicht"
+msgstr "Panoramica"
 
 #: juntagrico/templates/juntagrico/menu/admin/depots.html:9
 #, fuzzy, python-format
@@ -4993,15 +4977,12 @@ msgid "sowie %(unpaid)s noch nicht bezahlte"
 msgstr "di cui %(shares_unpaid)s non ancora pagate"
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:32
-#: juntagrico/templates/subscription.html:51
-#: juntagrico/templates/subscription.html:105
 #, fuzzy, python-format
 #| msgid "%(v_share_pl)s erwerben"
 msgid "%(v_share_pl)s verwalten"
 msgstr "Acquisto %(v_share_pl)s"
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:38
-#: juntagrico/templates/subscription.html:109
 #, python-format
 msgid "%(v_share_pl)s von %(v_co_member_pl)s"
 msgstr "%(v_share_pl)s da %(v_co_member_pl)s"
@@ -5013,7 +4994,6 @@ msgid "%(csc)s von %(cm)s"
 msgstr "%(csc)s da %(fn)s %(ln)s"
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:46
-#: juntagrico/templates/subscription.html:118
 #, fuzzy
 #| msgid "E-Mail-Adresse bestätigen"
 msgid "E-Mail-Adresse nicht bestätigt"
@@ -5079,6 +5059,13 @@ msgstr "Variazione %(v_subscription)s"
 msgid "Wähle einen neuen Bestandteil"
 msgstr "Scegliete la vostra dimensione %(v_subscription)s"
 
+#: juntagrico/templates/juntagrico/my/subscription/part/order.html:9
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:129
+#, fuzzy
+#| msgid "Extra-Abos bestellen"
+msgid "Zusatzabos bestellen"
+msgstr "Ordina abbonamenti extra"
+
 #: juntagrico/templates/juntagrico/my/subscription/part/order.html:12
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s erstellen"
@@ -5092,14 +5079,12 @@ msgid "%(v_subscription)s Details"
 msgstr "Creare %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/single.html:36
-#: juntagrico/templates/subscription.html:59
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s erstellen"
 msgid "%(v_subscription)s-Bestandteile"
 msgstr "Creare %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/single.html:47
-#: juntagrico/templates/subscription.html:128
 #, python-format
 msgid "%(v_subscription)s geteilt mit"
 msgstr "%(v_subscription)s condiviso con"
@@ -5133,7 +5118,6 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/inactive.html:9
 #: juntagrico/templates/juntagrico/my/subscription/snippets/buttons/create_subscription.html:6
-#: juntagrico/templates/subscription.html:34
 #, python-format
 msgid "%(v_subscription)s erstellen"
 msgstr "Creare %(v_subscription)s"
@@ -5233,7 +5217,6 @@ msgstr ""
 #: juntagrico/templates/juntagrico/my/subscription/snippets/co_members.html:47
 #: juntagrico/templates/leavesubscription.html:7
 #: juntagrico/templates/leavesubscription.html:34
-#: juntagrico/templates/subscription.html:253
 #, python-format
 msgid "%(v_subscription)s verlassen"
 msgstr "Uscita %(v_subscription)s"
@@ -5268,6 +5251,18 @@ msgstr ""
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:69
 msgid "Willst du weitermachen?"
 msgstr ""
+
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:75
+#, fuzzy
+#| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
+msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
+msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
+
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:76
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
+#: juntagrico/templates/manage_shares.html:87
+msgid "kündigen"
+msgstr "annullare"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:82
 #: juntagrico/templates/pm_change.html:36
@@ -5320,6 +5315,12 @@ msgstr "Variazione %(v_subscription)s"
 #, python-format
 msgid "%(v_member_type)s werden"
 msgstr "%(v_member_type)s diventa"
+
+#: juntagrico/templates/juntagrico/signup/member.html:15
+#, fuzzy, python-format
+#| msgid "Hier siehst du die Zukunft %(v_d_enriched_organisation)s"
+msgid "Interessiert an %(v_d_enriched_organisation)s?"
+msgstr "Qui vedete il futuro %(v_d_enriched_organisation)s"
 
 #: juntagrico/templates/juntagrico/signup/member.html:21
 #, fuzzy, python-format
@@ -6294,18 +6295,6 @@ msgstr "per acquistare il %(v_share_pl)s ordinato"
 msgid "Ebenfalls bestätigst du, dass du folgendes gelesen hast"
 msgstr "Lei certifica inoltre di aver letto"
 
-#: juntagrico/templates/mails/member/co_member_welcome.txt:37
-msgid "die Statuten"
-msgstr "gli statuti"
-
-#: juntagrico/templates/mails/member/co_member_welcome.txt:38
-msgid "das Betriebsreglement"
-msgstr "il regolamento di funzionamento"
-
-#: juntagrico/templates/mails/member/co_member_welcome.txt:39
-msgid "die DSGVO Infos"
-msgstr "il DSGVO info"
-
 #: juntagrico/templates/mails/member/co_member_welcome.txt:42
 #, fuzzy, python-format
 #| msgid ""
@@ -6463,6 +6452,13 @@ msgstr ""
 msgid "%(v_share_pl)s Verwalten"
 msgstr "Acquisto %(v_share_pl)s"
 
+#: juntagrico/templates/manage_shares.html:16
+#: juntagrico/views_subscription.py:351
+#, fuzzy
+#| msgid "Beschreibung"
+msgid "Bescheinigung"
+msgstr "Descrizione"
+
 #: juntagrico/templates/manage_shares.html:18
 #, python-format
 msgid ""
@@ -6471,8 +6467,10 @@ msgid ""
 msgstr ""
 
 #: juntagrico/templates/manage_shares.html:28
-msgid "herunterladen"
-msgstr ""
+#, fuzzy
+#| msgid "Beschreibung"
+msgid "Bescheinigung herunterladen"
+msgstr "Descrizione"
 
 #: juntagrico/templates/manage_shares.html:33
 #, python-format
@@ -6835,128 +6833,6 @@ msgstr "Nessuna operazione pubblicizzata"
 msgid "Einzel-Einsatz ausschreiben"
 msgstr "Nessuna operazione pubblicizzata"
 
-#: juntagrico/templates/subscription.html:9
-#, python-format
-msgid "%(v_subscription)s Übersicht"
-msgstr "%(v_subscription)s Panoramica"
-
-#: juntagrico/templates/subscription.html:21
-msgid "Du bist auf der Warteliste"
-msgstr "Sei in lista d'attesa"
-
-#: juntagrico/templates/subscription.html:24
-#, fuzzy
-#| msgid "Mehr Infos dazu findest du hier"
-msgid "Mehr Infos und Optionen dazu findest du hier"
-msgstr "Potete trovare ulteriori informazioni qui"
-
-#: juntagrico/templates/subscription.html:29
-#, python-format
-msgid ""
-"Du bist entweder kein/e %(v_subscription)s-BezieherIn oder hast gekündigt."
-msgstr "Lei non è un abbonato %(v_subscription)s o ha lasciato il suo lavoro."
-
-#: juntagrico/templates/subscription.html:31
-#, python-format
-msgid "%(v_subscription)s (wieder) neu beziehen?"
-msgstr "%(v_subscription)s (di nuovo) nuovo?"
-
-#: juntagrico/templates/subscription.html:32
-msgid "Melde dich hier an"
-msgstr "Iscriviti qui"
-
-#: juntagrico/templates/subscription.html:47
-#: juntagrico/templates/subscription.html:101
-#, python-format
-msgid "davon %(shares_unpaid)s noch nicht bezahlt"
-msgstr "di cui %(shares_unpaid)s non ancora pagate"
-
-#: juntagrico/templates/subscription.html:78
-msgid "Auf der Warteliste"
-msgstr "In lista d'attesa"
-
-#: juntagrico/templates/subscription.html:82
-msgid "deaktiviert"
-msgstr "disattivato"
-
-#: juntagrico/templates/subscription.html:87
-#, python-format
-msgid "Gekündigt am %(cd)s auf den %(ed)s."
-msgstr ""
-
-#: juntagrico/templates/subscription.html:113
-#, python-format
-msgid "%(csc)s von %(fn)s %(ln)s"
-msgstr "%(csc)s da %(fn)s %(ln)s"
-
-#: juntagrico/templates/subscription.html:147
-#, python-format
-msgid "Du hast noch keine %(v_co_member_pl)s eingetragen."
-msgstr "Non avete ancora inserito %(v_co_member_pl)s."
-
-#: juntagrico/templates/subscription.html:152
-#, python-format
-msgid "Hier %(v_co_member_pl)s eintragen"
-msgstr "Inserire qui %(v_co_member_pl)s"
-
-#: juntagrico/templates/subscription.html:155
-#, python-format
-msgid ""
-"Nur Haupt-%(v_subscription)s-BeziehierIn kann weitere %(v_co_member_pl)s "
-"hinzufügen."
-msgstr ""
-"Solo gli abbonati principali %(v_subscription)s possono aggiungere ulteriori "
-"%(v_co_member_pl)s."
-
-#: juntagrico/templates/subscription.html:164
-#, fuzzy, python-format
-#| msgid "%(v_depot)s-Listen"
-msgid "Name auf %(v_depot)s-Liste"
-msgstr "%(v_depot)s liste"
-
-#: juntagrico/templates/subscription.html:178
-#, python-format
-msgid "Weitere Infos zu/r/m %(v_depot)s"
-msgstr "Ulteriori informazioni su/r/m %(v_depot)s"
-
-#: juntagrico/templates/subscription.html:185
-msgid "Zusatzabos"
-msgstr "Abbonamenti supplementari"
-
-#: juntagrico/templates/subscription.html:194
-#: juntagrico/templates/subscription.html:214
-msgid "Keine Zusatzabos"
-msgstr "Nessun abbonamento supplementare"
-
-#: juntagrico/templates/subscription.html:202
-msgid "Neue Zusatzabos"
-msgstr "Nuovi abbonamenti aggiuntivi"
-
-#: juntagrico/templates/subscription.html:205
-#, python-format
-msgid "Die Änderungen treten voraussichtlich am %(nes)s in Kraft"
-msgstr "Si prevede che le modifiche entreranno in vigore in %(nes)s"
-
-#: juntagrico/templates/subscription.html:224
-#, fuzzy, python-format
-#| msgid "Neue %(v_subscription)s-Grösse"
-msgid "Neue %(v_subscription)s-Bestandteile"
-msgstr "Nuova dimensione %(v_subscription)s"
-
-#: juntagrico/templates/subscription.html:227
-#, python-format
-msgid "Die Änderung tritt voraussichtlich am %(nes)s in Kraft"
-msgstr "Si prevede che la modifica entri in vigore in %(nes)s"
-
-#: juntagrico/templates/subscription.html:242
-#, python-format
-msgid "%(v_subscription)s ändern"
-msgstr "Variazione %(v_subscription)s"
-
-#: juntagrico/templates/subscription.html:245
-msgid "Nur der Hauptbezieher kann Änderungen durchführen."
-msgstr "Solo il destinatario principale può apportare modifiche."
-
 #: juntagrico/templates/versions.html:6
 msgid "Versionen"
 msgstr ""
@@ -7122,10 +6998,10 @@ msgid "Dezember"
 msgstr "Dicembre"
 
 #: juntagrico/views/email.py:33
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Personalien"
-msgid "An {} Person senden"
-msgid_plural "An {} Personen senden"
+msgid "An {num} Person senden"
+msgid_plural "An {num} Personen senden"
 msgstr[0] "Dati personali"
 msgstr[1] "Dati personali"
 
@@ -7164,15 +7040,15 @@ msgid "Titel"
 msgstr ""
 
 #: juntagrico/views/manage.py:85
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Alte {0}"
-msgid "Alle {}"
+msgid "Alle {members}"
 msgstr "Vecchio {0}"
 
 #: juntagrico/views/manage.py:93
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Kein/e/n {0}"
-msgid "Alle aktiven {}"
+msgid "Alle aktiven {members}"
 msgstr "Nessuno {0}"
 
 #: juntagrico/views/manage.py:99
@@ -7182,9 +7058,9 @@ msgid "Alle aktiven {member} im Tätigkeitsbereich {area_name}"
 msgstr "Nuovo membro nel campo di attività {0}"
 
 #: juntagrico/views/manage.py:197
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Alle Lieferungen im Überblick"
-msgid "Alle aktiven {} im Überblick"
+msgid "Alle aktiven {subscriptions} im Überblick"
 msgstr "Tutte le consegne in sintesi"
 
 #: juntagrico/views/manage.py:338
@@ -7215,15 +7091,15 @@ msgid "Bitte gib ein Datum im Format JJJJ-MM-TT ein."
 msgstr ""
 
 #: juntagrico/views_admin.py:78
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Listen"
-msgid "{}-Listen"
+msgid "{depot}-Listen"
 msgstr "Elenchi"
 
 #: juntagrico/views_admin.py:79
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Übersicht"
-msgid "{} Übersicht"
+msgid "{depot} Übersicht"
 msgstr "Panoramica"
 
 #: juntagrico/views_subscription.py:160
@@ -7231,5 +7107,113 @@ msgid "Ungültiger Link."
 msgstr ""
 
 #: juntagrico/views_subscription.py:338
-msgid "{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
+#, python-brace-format
+msgid ""
+"{share}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
 msgstr ""
+
+#~ msgid "{} hinzufügen"
+#~ msgstr "Aggiungi"
+
+#, fuzzy
+#~| msgid "Kein/e/n {0}"
+#~ msgid "Kein {}"
+#~ msgstr "Nessuno {0}"
+
+#, fuzzy
+#~| msgid "Verbindlich bestellen"
+#~ msgid "{}-Bestandteile bestellen"
+#~ msgstr "Ordine vincolante"
+
+#~ msgid "in"
+#~ msgstr "in"
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| "\n"
+#~| "    %(an)s verwendet Cookies.\n"
+#~| "    %(an)s verwendet aber keine Cookies für Tracking etc.\n"
+#~| "    %(an)s verwendet Session Cookies und Cookies zur CSRF Bekämpfung.\n"
+#~| "    Und um zu speichern ob du den Cookie Consent bestätigt hast.\n"
+#~| "\n"
+#~| "    <p/>\n"
+#~| "\n"
+#~| "    Standartmässig speichert %(an)s im Session Cookie nur eine ID und "
+#~| "die Session Daten in der Datenbank.\n"
+#~| "    Das Session Cookie wird 2 Wochen gespeichert. <br/>\n"
+#~| "    Die Aktuelle Informationen zu den Standard Einstellungen findest du "
+#~| "hier:<br/>\n"
+#~| "    <a href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/"
+#~| "\">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/>\n"
+#~| "    Diese Einstellungen können natürlich von deiner Initiative geändert "
+#~| "worden sein.\n"
+#~| "\n"
+#~| "    <p/>\n"
+#~| "\n"
+#~| "    Mehr Infos zum CSRF Cookie findest du hier:\n"
+#~| "    <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/\">https://"
+#~| "docs.djangoproject.com/en/dev/ref/csrf/</a>\n"
+#~| "\n"
+#~| "    <p/>\n"
+#~| "\n"
+#~| "    Das Cookie Consent Cookie speichert für ein Jahr ab, ob du den "
+#~| "Cookies zugestimmt hast.\n"
+#~| "\n"
+#~| "    <p/>\n"
+#~| "\n"
+#~| "    Gerne kannst du das natürlich bei dir konkret überprüfen und uns "
+#~| "mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.\n"
+#~| "    "
+#~ msgid ""
+#~ "%(an)s verwendet Cookies. %(an)s verwendet aber keine Cookies für "
+#~ "Tracking etc. %(an)s verwendet Session Cookies und Cookies zur CSRF "
+#~ "Bekämpfung. Und um zu speichern ob du den Cookie Consent bestätigt hast. "
+#~ "<p/> Standardmässig speichert %(an)s im Session Cookie nur eine ID und "
+#~ "die Session Daten in der Datenbank. Das Session Cookie wird 2 Wochen "
+#~ "gespeichert. <br/> Die Aktuelle Informationen zu den Standard "
+#~ "Einstellungen findest du hier:<br/> <a href=\"https://docs.djangoproject."
+#~ "com/en/dev/topics/http/sessions/\">https://docs.djangoproject.com/en/dev/"
+#~ "topics/http/sessions/</a><br/> Diese Einstellungen können natürlich von "
+#~ "deiner Initiative geändert worden sein. <p/> Mehr Infos zum CSRF Cookie "
+#~ "findest du hier: <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/"
+#~ "\">https://docs.djangoproject.com/en/dev/ref/csrf/</a> <p/> Das Cookie "
+#~ "Consent Cookie speichert für ein Jahr ab, ob du den Cookies zugestimmt "
+#~ "hast. <p/> Gerne kannst du das natürlich bei dir konkret überprüfen und "
+#~ "uns mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt."
+#~ msgstr ""
+#~ "\n"
+#~ "    %(an)s utilizza i cookie.\n"
+#~ "    %(an)s non utilizza cookies per il tracciamento ecc.\n"
+#~ "    %(an)s utilizza i cookie di sessione e i cookie per combattere il "
+#~ "CSRF\n"
+#~ "    E per salvare se avete confermato il contenuto del cookie.\n"
+#~ "\n"
+#~ "    <p/>\n"
+#~ "\n"
+#~ "    Per impostazione predefinita %(an)s memorizza nel cookie di sessione "
+#~ "solo un ID e i dati della sessione nel database.\n"
+#~ "    Il cookie di sessione viene memorizzato per 2 settimane. <br/>\n"
+#~ "    Le informazioni attuali sulle impostazioni di default si trovano qui:"
+#~ "<br/>\n"
+#~ "    <a href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/"
+#~ "\">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/"
+#~ "><br/>\n"
+#~ "    Queste impostazioni possono naturalmente essere state modificate "
+#~ "dalla vostra iniziativa.\n"
+#~ "\n"
+#~ "    <p/>\n"
+#~ "\n"
+#~ "    Potete trovare ulteriori informazioni sul cookie CSRF qui:\n"
+#~ "    <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/\">https://"
+#~ "docs.djangoproject.com/en/dev/ref/csrf/</a>\n"
+#~ "\n"
+#~ "    <p/>\n"
+#~ "\n"
+#~ "    I Cookie Consent Cookie conservano i cookie per un anno, "
+#~ "indipendentemente dal fatto che abbiate accettato i cookie.\n"
+#~ "\n"
+#~ "    <p/>\n"
+#~ "\n"
+#~ "    Naturalmente siete invitati a verificare con voi e a farci sapere se "
+#~ "ciò che è scritto qui non è vero o non è più vero.\n"
+#~ "    "

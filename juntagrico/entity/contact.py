@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBasePoly

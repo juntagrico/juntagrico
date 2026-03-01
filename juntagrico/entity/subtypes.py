@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
@@ -66,7 +66,7 @@ class SubscriptionCategory(JuntagricoBaseModel):
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
-        return self.name or _('(Ohne Namen)')
+        return self.name or gettext('(Ohne Namen)')
 
     class Meta:
         verbose_name = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
@@ -138,11 +138,11 @@ class SubscriptionType(JuntagricoBaseModel):
 
     def min_duration_info(self):
         if self.trial_days:
-            return _('Für {} Tage. Keine automatische Verlängerung.').format(self.trial_days)
+            return gettext('Für {num} Tage. Keine automatische Verlängerung.').format(num=self.trial_days)
         if self.has_periods:
             return None  # price list already shows end of periods
         date = temporal.end_of_business_year()
-        return _('Bis {day}.{month}. Automatische Verlängerung.').format(day=date.day, month=date.month)
+        return gettext('Bis {day}.{month}. Automatische Verlängerung.').format(day=date.day, month=date.month)
 
     @property
     def display_name(self):

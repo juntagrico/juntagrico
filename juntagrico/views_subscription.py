@@ -335,7 +335,7 @@ def share_certificate(request):
     member = request.user.member
     active_share_years = member.active_share_years
     if year >= datetime.date.today().year or year not in active_share_years:
-        return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
+        return error_page(request, _('{share}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(share=Config.vocabulary('share')))
     shares_date = date(year, 12, 31)
     shares = member.active_shares_for_date(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
     shares_total = 0

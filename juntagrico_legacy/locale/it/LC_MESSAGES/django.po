@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-28 20:51-0600\n"
+"POT-Creation-Date: 2026-02-28 23:39-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +65,63 @@ msgstr ""
 msgid "mit ..."
 msgstr ""
 
+#: juntagrico_legacy/templates/extra_change.html:8
+#, fuzzy
+#| msgid "Zusatz-Abos ändern"
+msgid "Zusatzabos ändern"
+msgstr "Modifica abbonamenti aggiuntivi"
+
+#: juntagrico_legacy/templates/extra_change.html:14
+#, fuzzy
+#| msgid "Keine Zusatz-Abos"
+msgid "Du hast noch keine Zusatzabos"
+msgstr "Nessun abbonamento supplementare"
+
+#: juntagrico_legacy/templates/extra_change.html:16
+#: juntagrico_legacy/views.py:130
+msgid "Übersicht"
+msgstr "Panoramica"
+
+#: juntagrico_legacy/templates/extra_change.html:22
+msgid "Abo"
+msgstr ""
+
+#: juntagrico_legacy/templates/extra_change.html:25
+#: juntagrico_legacy/templates/size_change.html:29
+#: juntagrico_legacy/templates/subscription.html:71
+#: juntagrico_legacy/views.py:136
+msgid "Status"
+msgstr "Stato"
+
+#: juntagrico_legacy/templates/extra_change.html:42
+#: juntagrico_legacy/templates/size_change.html:63
+#, python-format
+msgid "Gekündigt am %(cd)s"
+msgstr ""
+
+#: juntagrico_legacy/templates/extra_change.html:47
+msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
+msgstr ""
+
+#: juntagrico_legacy/templates/extra_change.html:48
+#: juntagrico_legacy/templates/size_change.html:59
+msgid "kündigen"
+msgstr ""
+
+#: juntagrico_legacy/templates/extra_change.html:60
+#, fuzzy
+#| msgid "Zusatzabos"
+msgid "Zusatzabos bestellen"
+msgstr "Abbonamenti supplementari"
+
+#: juntagrico_legacy/templates/extra_change.html:67
+#, python-format
+msgid ""
+"Für gekündigte %(v_subscription_pl)s können keine Zusatzabos bestellt werden."
+msgstr ""
+
 #: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:8
+#: juntagrico_legacy/templates/subscription.html:185
 msgid "Zusatzabos"
 msgstr "Abbonamenti supplementari"
 
@@ -273,11 +329,6 @@ msgstr "Modifica dei dati personali"
 msgid "Name"
 msgstr "Nome"
 
-#: juntagrico_legacy/templates/size_change.html:29
-#: juntagrico_legacy/views.py:136
-msgid "Status"
-msgstr "Stato"
-
 #: juntagrico_legacy/templates/size_change.html:48
 msgid "ändern"
 msgstr ""
@@ -295,15 +346,6 @@ msgstr "Annullare completamente %(v_subscription)s"
 
 #: juntagrico_legacy/templates/size_change.html:58
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
-msgstr ""
-
-#: juntagrico_legacy/templates/size_change.html:59
-msgid "kündigen"
-msgstr ""
-
-#: juntagrico_legacy/templates/size_change.html:63
-#, python-format
-msgid "Gekündigt am %(cd)s"
 msgstr ""
 
 #: juntagrico_legacy/templates/size_change.html:76
@@ -482,6 +524,183 @@ msgstr "Dimensione futura"
 msgid "Bestandteile ändern"
 msgstr "Modifica dei dati personali"
 
+#: juntagrico_legacy/templates/subscription.html:9
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s Übersicht"
+msgstr "Annullare completamente %(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:21
+#, fuzzy
+#| msgid "Verbindlich bestellen"
+msgid "Du bist auf der Warteliste"
+msgstr "Ordine vincolante"
+
+#: juntagrico_legacy/templates/subscription.html:24
+msgid "Mehr Infos und Optionen dazu findest du hier"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:29
+#, fuzzy, python-format
+#| msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
+msgid ""
+"Du bist entweder kein/e %(v_subscription)s-BezieherIn oder hast gekündigt."
+msgstr "Cambia abbonato principale%(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:31
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s (wieder) neu beziehen?"
+msgstr "Annullare completamente %(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:32
+#, fuzzy
+#| msgid "Beende dies hier"
+msgid "Melde dich hier an"
+msgstr "Finisci qui"
+
+#: juntagrico_legacy/templates/subscription.html:34
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s erstellen"
+msgstr "Annullare completamente %(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:47
+#: juntagrico_legacy/templates/subscription.html:101
+#, python-format
+msgid "davon %(shares_unpaid)s noch nicht bezahlt"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:51
+#: juntagrico_legacy/templates/subscription.html:105
+#, fuzzy, python-format
+#| msgid "Personalien ändern"
+msgid "%(v_share_pl)s verwalten"
+msgstr "Modifica dei dati personali"
+
+#: juntagrico_legacy/templates/subscription.html:59
+#, fuzzy, python-format
+#| msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
+msgid "%(v_subscription)s-Bestandteile"
+msgstr "Cambia abbonato principale%(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:75
+#, fuzzy
+#| msgid "aktivieren"
+msgid "aktiv"
+msgstr "attivare"
+
+#: juntagrico_legacy/templates/subscription.html:78
+#, fuzzy
+#| msgid "Warteliste"
+msgid "Auf der Warteliste"
+msgstr "lista d'attesa"
+
+#: juntagrico_legacy/templates/subscription.html:82
+#, fuzzy
+#| msgid "deaktivieren"
+msgid "deaktiviert"
+msgstr "disattivare"
+
+#: juntagrico_legacy/templates/subscription.html:87
+#, python-format
+msgid "Gekündigt am %(cd)s auf den %(ed)s."
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:109
+#, python-format
+msgid "%(v_share_pl)s von %(v_co_member_pl)s"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:113
+#, python-format
+msgid "%(csc)s von %(fn)s %(ln)s"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:118
+msgid "E-Mail-Adresse nicht bestätigt"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:128
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s geteilt mit"
+msgstr "Annullare completamente %(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:147
+#, python-format
+msgid "Du hast noch keine %(v_co_member_pl)s eingetragen."
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:152
+#, python-format
+msgid "Hier %(v_co_member_pl)s eintragen"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:155
+#, fuzzy, python-format
+#| msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
+msgid ""
+"Nur Haupt-%(v_subscription)s-BeziehierIn kann weitere %(v_co_member_pl)s "
+"hinzufügen."
+msgstr "Cambia abbonato principale%(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:164
+#, python-format
+msgid "Name auf %(v_depot)s-Liste"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:178
+#, fuzzy, python-format
+#| msgid "Weitere Infos zu den Zusatzabos"
+msgid "Weitere Infos zu/r/m %(v_depot)s"
+msgstr "Ulteriori informazioni sugli abbonamenti supplementari"
+
+#: juntagrico_legacy/templates/subscription.html:194
+#: juntagrico_legacy/templates/subscription.html:214
+#, fuzzy
+#| msgid "Keine Zusatz-Abos"
+msgid "Keine Zusatzabos"
+msgstr "Nessun abbonamento supplementare"
+
+#: juntagrico_legacy/templates/subscription.html:202
+#, fuzzy
+#| msgid "Zusatzabos"
+msgid "Neue Zusatzabos"
+msgstr "Abbonamenti supplementari"
+
+#: juntagrico_legacy/templates/subscription.html:205
+#, python-format
+msgid "Die Änderungen treten voraussichtlich am %(nes)s in Kraft"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:224
+#, fuzzy, python-format
+#| msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
+msgid "Neue %(v_subscription)s-Bestandteile"
+msgstr "Cambia abbonato principale%(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:227
+#, python-format
+msgid "Die Änderung tritt voraussichtlich am %(nes)s in Kraft"
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:242
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s ändern"
+msgstr "Annullare completamente %(v_subscription)s"
+
+#: juntagrico_legacy/templates/subscription.html:245
+msgid "Nur der Hauptbezieher kann Änderungen durchführen."
+msgstr ""
+
+#: juntagrico_legacy/templates/subscription.html:253
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s komplett künden"
+msgid "%(v_subscription)s verlassen"
+msgstr "Annullare completamente %(v_subscription)s"
+
 #: juntagrico_legacy/templates/subscription_change.html:14
 msgid "Welchen Teil möchtest du ändern?"
 msgstr "Quale parte vuoi cambiare?"
@@ -513,10 +732,6 @@ msgstr "-Nessun campo di attività-"
 #: juntagrico_legacy/views.py:101
 msgid "Kein Depot definiert"
 msgstr "Nessun deposito definito"
-
-#: juntagrico_legacy/views.py:130
-msgid "Übersicht"
-msgstr "Panoramica"
 
 #: juntagrico_legacy/views.py:131
 #, fuzzy

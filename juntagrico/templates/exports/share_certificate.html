@@ -93,7 +93,7 @@
 {{ member.addr_zipcode }} {{ member.addr_location }}
 </p>
 <p class="letter_date">{{ cert_date|date:"DATE_FORMAT" }}</p>
-<p class="subject"><b>{% trans "Bescheinigung" %} {{ v_share_pl }}</b></p>
+<p class="subject"><b>{% blocktrans %}Bescheinigung {{ v_share_pl }}{% endblocktrans %}</b></p>
 
 <p class="member">
     Name: {{ member.first_name }} {{ member.last_name }}<br>

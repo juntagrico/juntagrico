@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
@@ -250,7 +250,7 @@ class Job(JuntagricoBasePoly):
         raise NotImplementedError
 
     def __str__(self):
-        return _('Job {0}').format(self.id)
+        return gettext('Job {0}').format(self.id)
 
     def get_label(self):
         return f'{self.type.get_name} ({date_format(self.time, "SHORT_DATETIME_FORMAT")})'

@@ -128,9 +128,11 @@
                                     {% endif %}
                                 {% elif trial_part.cancellation_date %}
                                     <div>{% trans "Nein" %}</div>
-                                    {% blocktrans trimmed with cancellation_date=trial_part.cancellation_date %}
-                                        <div>Gekündigt seit {{ cancellation_date }}</div>
-                                    {% endblocktrans %}
+                                    <div><!--
+                                        -->{% blocktrans trimmed with cancellation_date=trial_part.cancellation_date %}
+                                            Gekündigt seit {{ cancellation_date }}
+                                        {% endblocktrans %}<!--
+                                    --></div>
                                     {% if trial_part.activation_date and not trial_part.deactivation_date %}
                                         <a data-url="{% url 'manage-trial-deactivate' trial_part.id %}"
                                            data-toggle="modal" data-target="#deactivate_trial_modal"

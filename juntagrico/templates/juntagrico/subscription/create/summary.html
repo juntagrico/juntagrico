@@ -35,7 +35,7 @@
             {% if not forloop.last %}<br>{% endif %}
         {% endfor %}
         {% if subscriptions|length == 0 %}
-            {% blocktrans with v_subscription_pl=vocabulary.subscription %}Keine {{ v_subscription_pl }}{%endblocktrans%}
+            {% blocktrans with v_subscription_pl=vocabulary.subscription_pl %}Keine {{ v_subscription_pl }}{%endblocktrans%}
         {% endif %}
         </p>
     {% endblock %}
@@ -116,7 +116,7 @@
     {% endif %}
 
     {% block comment %}
-        <h4>Kommentar</h4>
+        <h4>{% trans "Kommentar" %}</h4>
         <form action="" method="post">
             {% crispy form %}
         </form>

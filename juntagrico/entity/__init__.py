@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import QuerySet
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.models import PolymorphicModel
 from schwifty import IBAN
 
@@ -113,13 +113,13 @@ class SimpleStateModel(models.Model):
         is_deactivated = self.deactivation_date is not None
         if is_deactivated:
             if not is_active:
-                raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
+                raise ValidationError(gettext('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
             elif self.activation_date > self.deactivation_date:
-                raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
+                raise ValidationError(gettext('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
             elif not is_canceled:
-                raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
+                raise ValidationError(gettext('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
         if is_canceled and self.cancellation_date > today:
-            raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
+            raise ValidationError(gettext('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 
     class Meta:
         abstract = True
@@ -142,8 +142,8 @@ class LowercaseEmailField(models.EmailField):
 def notifiable(cls):
     entity_name = cls.__qualname__.split('.')[0].lower()
     new_permissions = list(getattr(cls, 'permissions', [])) + [
-        (f'notified_on_{entity_name}_creation', _('Wird bei {0} Erstellung informiert').format(cls.verbose_name)),
-        (f'notified_on_{entity_name}_cancellation', _('Wird bei {0} Kündigung informiert').format(cls.verbose_name))
+        (f'notified_on_{entity_name}_creation', gettext('Wird bei {0} Erstellung informiert').format(cls.verbose_name)),
+        (f'notified_on_{entity_name}_cancellation', gettext('Wird bei {0} Kündigung informiert').format(cls.verbose_name))
     ]
     cls.permissions = new_permissions
     return cls
@@ -160,4 +160,4 @@ def absolute_url(*args, **kwargs):
 
 def validate_iban(value):
     if value != '' and not IBAN(value, allow_invalid=True).is_valid:
-        raise ValidationError(_('IBAN ist nicht gültig'))
+        raise ValidationError(gettext('IBAN ist nicht gültig'))
