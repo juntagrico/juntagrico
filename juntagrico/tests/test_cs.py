@@ -243,6 +243,37 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             response = self.assertGet(reverse('cs-cancel'), 302)
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
 
+    def testExistingCoMember(self):
+        session = self.client.session
+        session['signup'] = {
+            'main_member': self.newMemberData('fake@example.com'),
+            'subscriptions': {SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]: 1},
+            'depot': Depot.objects.values_list('id', flat=True)[0],
+            'start_date': '2026-03-01',
+            'shares': {'of_member': 1},
+        }
+        if extras := SubscriptionType.objects.is_extra().visible().values_list('id', flat=True):
+            session['signup']['extras'] = {extras[0]: 0}
+        session.save()
+        co_member_data = self.newMemberData(self.area_admin.email)
+        response = self.client.post(reverse('cs-co-members'), co_member_data)
+        self.assertRedirects(response, reverse('cs-co-members'))
+        self.assertGet(reverse('cs-co-members'))
+        self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
+        response = self.client.get(reverse('cs-co-members'))
+        if Config.enable_shares():
+            self.assertRedirects(response, reverse('cs-shares'))
+            self.assertGet(reverse('cs-shares'))
+            response = self.client.post(
+                reverse('cs-shares'),
+                {
+                    'of_member': 1,
+                    'of_co_member[0]': 1,
+                }
+            )
+        self.assertRedirects(response, reverse('cs-summary'))
+        self.client.post(reverse('cs-summary'), {'comment': ''})
+
     def testExternalSignup(self):
         def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
             if extra_only:
