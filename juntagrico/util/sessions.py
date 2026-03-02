@@ -94,11 +94,11 @@ class SignupManager(SessionManager):
     def co_members(self):
         co_members = []
         for c in self.get('co_members', []):
-            if isinstance(c, str):
-                co_member = Member.objects.get(email=c)
-                co_members.append((str(co_member), co_member.active_shares_count))
-            else:
-                co_members.append((c['first_name'] + ' ' + c['last_name'], 0))
+            existing_shares = 0
+            if c.get('exists'):
+                co_member = Member.objects.get(email=c['email'])
+                existing_shares = co_member.active_shares_count
+            co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
     def required_shares(self):
@@ -152,9 +152,9 @@ class SignupManager(SessionManager):
     def apply_co_member(self):
         co_members = []
         for co_member_data in self.get('co_members', []):
-            if isinstance(co_member_data, str):
+            if co_member_data.get('exists'):
                 # member exists
-                co_members.append(MemberDetails(Member.objects.get(email=co_member_data)))
+                co_members.append(MemberDetails(Member.objects.get(email=co_member_data['email'])))
             else:
                 # create new co-member
                 co_member = CoMemberBaseForm(co_member_data).save()

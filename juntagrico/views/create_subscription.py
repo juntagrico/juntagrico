@@ -243,7 +243,10 @@ class AddMemberView(SignupView, FormView):
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(form.existing_member.email if form.existing_member else form.cleaned_data)
+        data = form.cleaned_data
+        if form.existing_member:
+            data.update(exists=True)
+        return self._add_or_replace_co_member(data)
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
