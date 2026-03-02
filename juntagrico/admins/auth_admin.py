@@ -37,3 +37,11 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     def has_permissions(self, instance):
         return instance.user_permissions.exists()
+
+    def has_add_permission(self, request):
+        # can only add users by adding members
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        # can only delete users by deleting members
+        return False
