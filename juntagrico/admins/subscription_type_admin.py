@@ -14,7 +14,7 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
                     'required_core_assignments', 'visible', 'is_extra']
     exclude = ['trial']
     inlines = [DepotSubscriptionTypeInline]
-    search_fields = ['name', 'long_name', 'bundle__name', 'bundle__long_name', 'bundle__products__name']
+    search_fields = ['name', 'long_name', 'bundle__long_name', 'bundle__category__name']
     autocomplete_fields = ['bundle']
     list_filter = ['visible',
                    ('bundle', admin.RelatedOnlyFieldListFilter),

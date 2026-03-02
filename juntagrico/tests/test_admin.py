@@ -18,6 +18,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
                        member=self.area_admin_job_modifier)
         url = reverse('admin:juntagrico_onetimejob_changelist')
         self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.admin, data={'q': 'test'})
         selected_items = [self.one_time_job1.pk]
         # copy action
         response = self.assertPost(url, data={'action': 'copy_job', '_selected_action': selected_items},
@@ -31,6 +32,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_recuringjob_add'), member=self.admin)
         url = reverse('admin:juntagrico_recuringjob_changelist')
         self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.admin, data={'q': 'test'})
         selected_items = [self.job1.pk]
         self.assertPost(url, data={'action': 'duplicate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
@@ -110,6 +112,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
         url = reverse('admin:juntagrico_delivery_changelist')
         self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.admin, data={'q': 'test'})
         selected_items = [self.delivery1.pk]
         response = self.assertPost(url, data={'action': 'copy_delivery', '_selected_action': selected_items},
                                    member=self.admin, code=302)
@@ -133,6 +136,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.depot_coordinator)
         self.assertGet(reverse('admin:juntagrico_depot_change', args=(self.depot.pk,)), member=self.depot_coordinator)
+        self.assertGet(reverse('admin:juntagrico_depot_changelist'), member=self.admin, data={'q': 'test'})
 
     def testAssignmentAdmin(self):
         self.assertGet(reverse('admin:juntagrico_assignment_change', args=(self.assignment.pk,)), member=self.admin)
@@ -145,6 +149,7 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
         url = reverse('admin:juntagrico_member_changelist')
         self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.admin, data={'q': 'test'})
         selected_items = [self.member.pk]
         self.assertPost(url, data={'action': 'impersonate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
@@ -155,11 +160,19 @@ class AdminTests(JuntagricoTestCaseWithShares):
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptiontype_changelist'), member=self.admin, data={'q': 'test'})
+
+    def testSubBundleAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptionbundle_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionbundle_change', args=(self.bundle.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionbundle_changelist'), member=self.admin, data={'q': 'test'})
+
+    def testSubCategoryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptioncategory_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptioncategory_change', args=(self.sub_category.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptioncategory_changelist'), member=self.admin, data={'q': 'test'})
 
     def testSubProductAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_change', args=(self.sub_product.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin, data={'q': 'test'})
