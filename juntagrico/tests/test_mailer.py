@@ -283,7 +283,7 @@ class BackendTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
     @override_settings(FROM_FILTER={
-        'filter_expression': '.*@juntagrico\.org',
+        'filter_expression': r'.*@juntagrico\.org',
         'replacement_from': 'juntagrico@juntagrico.org'
     })
     def testFromFilter(self):
