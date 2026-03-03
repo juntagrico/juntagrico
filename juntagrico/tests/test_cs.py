@@ -22,7 +22,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'phone': '044',
             'mobile_phone': '',
             'email': email,
-            'birthday': '',
+            'birthday': '03.03.2026',
             'agb': 'on'
         }
 
@@ -217,11 +217,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'addr_zipcode': '8000',
             'addr_location': 'Zurich',
             'phone': '044',
-            'mobile_phone': None,
+            'mobile_phone': '',
             'email': 'test@user.com',
-            'birthday': None,
-            'comment': '',
-            'agb': True
+            'birthday': '03.03.2026',
+            'agb': 'on'
         })
         self.assertPost(reverse('signup') + '?mod', self.newMemberData())
 
