@@ -32,12 +32,14 @@
                     </a>
                 {% endspaceless %}
             {% endif %}
-            {% if can_contact or participant.reachable_by_email %}
-                {% spaceless %}
-                    <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
-                        <i class="bi bi-envelope"></i>
-                    </a>
-                {% endspaceless %}
+            {% if not participant.inactive %}
+                {% if can_contact or participant.reachable_by_email %}
+                    {% spaceless %}
+                        <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                    {% endspaceless %}
+                {% endif %}
             {% endif %}
         </li>
     {% endfor %}
