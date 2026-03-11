@@ -11,13 +11,12 @@
 {% block intro %}
     <p>
         {% block intro_1 %}
-            {% config "currency" as c_currency %}
-            {% config "share_price" as c_share_price %}
+            {% config "share_price_display" as c_share_price %}
             {% enriched_organisation "D" as v_d_enriched_organisation %}
             {% trans "Infos" %}:
             {% blocktrans trimmed with v_member_type=vocabulary.member_type v_share=vocabulary.share v_share_pl=vocabulary.share_pl %}
             Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
-            1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
+            1 {{ v_share }} ({{ c_share_price }}) erwerben.
             Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
             zurückerstattet.
             {% endblocktrans %}

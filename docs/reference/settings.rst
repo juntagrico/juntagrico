@@ -201,7 +201,10 @@ ORGANISATION_BANK_CONNECTION
 
 CURRENCY
 ^^^^^^^^
-  The default currency used within the system
+  The default currency used within the system.
+
+  .. note::
+    Changed in version 2.1.0: use ``{}`` to control where the numeric value is placed.
 
   Type: String
 
@@ -209,7 +212,7 @@ CURRENCY
 
   .. code-block:: python
 
-    "CHF"
+    "CHF {}"
 
 
 External Documents
@@ -386,13 +389,13 @@ BASE_FEE
 ^^^^^^^^
   Yearly fee for members without a subscription
 
-  Type: String
+  Type: Integer, Float or String
 
   default value
 
   .. code-block:: python
 
-    ""
+    None
 
 MEMBERSHIP_END_MONTH
 ^^^^^^^^^^^^^^^^^^^^
@@ -453,13 +456,13 @@ SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share
 
-  Type: String
+  Type: Integer, Float or String
 
   default value
 
   .. code-block:: python
 
-    "250"
+    250
 
 
 Jobs

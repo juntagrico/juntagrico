@@ -4,8 +4,7 @@
 {% block content %}
 {% config "organisation_address" as c_addr %}
 {% config "organisation_bank_connection" as c_bank %}
-{% config "share_price" as c_share_price %}
-{% config "currency" as c_currency %}
+{% config "share_price_display" as c_share_price %}
 {% config "organisation_name" as c_organisation_name %}
 {% enriched_organisation "D" as v_d_enriched_organisation %}
 {% vocabulary "share" as v_share %}
@@ -15,7 +14,7 @@
 {% blocktrans with sc=shares|length%}Du hast bei {{ v_d_enriched_organisation }} {{sc}} {{ v_share_pl }} bestellt{% endblocktrans %}:
 {% for share in shares %}{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
 {% endfor %}
-{% blocktrans with sc=shares|length %}Bitte überweise {{sc}} Mal den Betrag von {{ c_currency }} {{ c_share_price }} auf das folgende Konto{% endblocktrans %}:
+{% blocktrans with sc=shares|length %}Bitte überweise {{sc}} Mal den Betrag von {{ c_share_price }} auf das folgende Konto{% endblocktrans %}:
     {{ c_addr.name }}
     {% if c_addr.extra %}{{ c_addr.extra }}{% endif %}
     {{ c_addr.street }} {{ c_addr.number }}
