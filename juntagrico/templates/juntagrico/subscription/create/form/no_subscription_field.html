@@ -20,7 +20,7 @@
         {% config "base_fee" as base_fee %}
         {% if base_fee.strip %}
             {% config "currency" as c_currency %}
-            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl v_subscription=vocabulary.subscription %}
                 {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
                 einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
             {% endblocktrans %}
