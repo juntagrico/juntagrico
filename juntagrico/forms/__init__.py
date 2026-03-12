@@ -815,7 +815,7 @@ class ShareOrderForm(Form):
         # build share field for member
         if existing:
             help_text = self.text['member_existing'].format(
-                num=required_shares, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
+                num=existing, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
             )
         else:
             help_text = self.text['member_info'].format(
