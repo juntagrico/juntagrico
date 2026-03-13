@@ -1,0 +1,48 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block inner_list_head %}
+    <th class="filter">
+        {% trans "Beantragt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Beitritt" %}
+    </th>
+    <th class="filter">
+        {% trans "Gekündigt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Austritt" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_foot %}
+    <th>
+        {% trans "Beantragt am" %}
+    </th>
+    <th>
+        {% trans "Beitritt" %}
+    </th>
+    <th>
+        {% trans "Gekündigt am" %}
+    </th>
+    <th>
+        {% trans "Austritt" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_entry %}
+    <td>
+        {{ membership.creation_date }}
+    </td>
+    <td>
+        {{ membership.activation_date }}
+    </td>
+    <td>
+        {{ membership.cancellation_date }}
+    </td>
+    <td>
+        {{ membership.deactivation_date }}
+    </td>
+{% endblock %}

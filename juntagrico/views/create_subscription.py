@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.forms import model_to_dict
 from django.shortcuts import redirect, render
+from django.utils.functional import cached_property
 from django.views.generic import FormView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
@@ -17,6 +18,7 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
+from juntagrico.forms.signup import MembershipForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView
@@ -169,6 +171,7 @@ def create_external(request):
     start_date = post_data['start_date'].strftime('%Y-%m-%d')
     signup_manager.set('start_date', start_date)
     signup_manager.set('co_members_done', True)
+    signup_manager.set('membership', bool(post_data.get('membership', False)))
     shares_amount = post_data['shares']
     signup_manager.set('shares', {'of_member': shares_amount})
     if MemberDao.member_by_email(main_member['email']) or not post_data['by_laws_accepted']:
@@ -272,15 +275,58 @@ class AddMemberView(SignupView, FormView):
         return super().get(request, *args, **kwargs)
 
 
+class SelectMembershipView(SignupView, FormView):
+    template_name = 'juntagrico/subscription/create/select_membership.html'
+    form_class = MembershipForm
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['membership_required_on_signup'] = Config.membership('required_on_signup')
+        context_data['membership_required'] = self.signup_manager.requires_membership()
+        context_data['membership_fee'] = Config.membership('fee')
+        return context_data
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['required'] = self.signup_manager.requires_membership()
+        if 'data' not in form_kwargs and self.signup_manager.get('membership') is not None:
+            form_kwargs['data'] = {'membership': self.signup_manager.get('membership')}
+        return form_kwargs
+
+    def form_valid(self, form):
+        self.signup_manager.set('membership', form.cleaned_data['membership'])
+        return redirect(self.signup_manager.get_next_page())
+
+
 class SelectSharesView(SignupView, FormView):
     template_name = 'juntagrico/subscription/create/select_shares.html'
     form_class = ShareOrderForm
 
+    @cached_property
+    def required_shares(self):
+        return {
+            'for_signup': Config.required_shares(),
+            'for_membership': Config.membership('required_shares') if self.signup_manager.get('membership') else 0,
+            'for_subscription': self.signup_manager.required_shares(),
+        }
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs) | {
+            'required_shares': self.required_shares
+        }
+
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['required'] = self.signup_manager.required_shares()
+        form_kwargs['required'] = max(self.required_shares.values())
         form_kwargs['existing'] = self.signup_manager.existing_shares()
         form_kwargs['co_members'] = self.signup_manager.co_members()
+        required_by_member = max(
+            self.required_shares['for_membership'],
+            self.required_shares['for_signup']
+        )
+        form_kwargs['initial'] = {
+            'of_member': required_by_member - form_kwargs['existing']
+        }
         if 'data' not in form_kwargs:
             form_kwargs['data'] = self.signup_manager.get('shares')
         return form_kwargs
@@ -307,6 +353,7 @@ class SummaryView(SignupView, FormView):
         args['show_extras'] = self.signup_manager.extras_enabled()
         args['extras'] = self.signup_manager.extras()
         args['depot'] = self.signup_manager.depot()
+        args['membership_fee'] = Config.membership('fee')
         if args['subscriptions']:
             args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return args

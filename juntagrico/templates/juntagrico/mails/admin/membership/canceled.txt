@@ -3,10 +3,8 @@
 {% block content %}
 {% trans "Hallo" %}
 
-{% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date %}
-Soeben hat {{ fn }} {{ ln }} das Konto per {{ ed }} gekündet.
-E-Mail: {{ e }}
-{% endblocktrans %}
+{% blocktrans %}Soeben hat {{ member }} die Mitgliedschaft gekündet.{% endblocktrans %}
+{% trans "E-Mail:" %} {{ member.email }}
 {{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
 
 {% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:

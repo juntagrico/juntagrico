@@ -3,9 +3,11 @@ from django.db import transaction
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
 from juntagrico.mailer import adminnotification, membernotification
+from juntagrico.signals import created
 from juntagrico.util.management import create_share, create_subscription_parts
 
 
@@ -101,6 +103,20 @@ class SignupManager(SessionManager):
             co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
+    def requires_membership(self):
+        return Config.membership('enable') and (
+            Config.membership('required_on_signup') or
+            any([sub.requires_membership for sub in self.subscriptions()])
+        )
+
+    def membership_ok(self):
+        return (
+            self.request.user.is_authenticated
+            and self.request.user.member.memberships.filter(cancellation_date__isnull=False).exists()
+        ) or (
+            self.get('membership') is not None
+        )
+
     def required_shares(self):
         return sum([s.shares * amount for s, amount in self.subscriptions().items()])
 
@@ -132,6 +148,8 @@ class SignupManager(SessionManager):
             return 'cs-start'
         elif has_parts and not self.get('co_members_done'):
             return 'cs-co-members'
+        elif Config.membership('enable') and not self.membership_ok():
+            return 'cs-membership'
         elif Config.enable_shares() and not self.shares_ok():
             return 'cs-shares'
         return 'cs-summary'
@@ -147,6 +165,9 @@ class SignupManager(SessionManager):
             member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
             member = member_form.save()
             password = member.set_password()
+        if self.get('membership'):
+            membership = Membership.objects.create(account=member)
+            created.send(Membership, instance=membership)
         return MemberDetails(member, password)
 
     def apply_co_member(self):

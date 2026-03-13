@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load juntagrico.common %}
+{% load static %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_member_type=vocabulary.member_type %}{{ v_member_type }} werden{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% config "enable_shares" as c_enable_shares %}
+    {% config "share_price" as c_share_price %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+
+    {% config "bylaws" as c_bylaws %}
+    {% if c_bylaws.strip %}
+        {% block read_instructions %}
+            <p>
+                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                    Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
+                {% endblocktrans %}
+            </p>
+            <ul>
+                <li>
+                    <a target="_blank" href="{{ c_bylaws|safe }}">
+                        {% trans "Statuten" %}
+                    </a>
+                </li>
+            </ul>
+        {% endblock %}
+    {% endif %}
+
+    {% if membership_fee %}
+        <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+    {% endif %}
+
+    {% if c_enable_shares %}
+        {% block intro_with_shares %}
+            <p>
+                <strong>{% include "juntagrico/my/share/snippets/intro_for_membership.html" with required=required_shares %}</strong>
+            </p>
+            <p>
+                {% include "juntagrico/my/share/snippets/intro.html" %}
+            </p>
+        {% endblock %}
+    {% endif %}
+
+    <form action="" method="post">
+        {% crispy form %}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
+    </script>
+    <script type="text/javascript">
+        $("input[type='number']").inputSpinner();
+    </script>
+{% endblock %}

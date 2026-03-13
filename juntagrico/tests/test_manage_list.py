@@ -64,7 +64,7 @@ class ManageListTests(JuntagricoTestCase):
         self.area.refresh_from_db()
         self.assertFalse(self.area.members.filter(id=1).exists())
 
-    def testMemberCanceledList(self):
+    def testAccountCanceledList(self):
         self.assertGet(reverse('manage-member-canceled'))
         self.assertGet(reverse('manage-member-canceled'), member=self.member2, code=403)
 

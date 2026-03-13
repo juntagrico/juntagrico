@@ -97,8 +97,28 @@ def member_created(member, **kwargs):
 def member_canceled(member, message='', **kwargs):
     end_date = member.end_date
     EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
+        organisation_subject(_('Konto gekündigt')),
         get_email_content('m_canceled', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_membership_creation')
+def membership_created(membership, **kwargs):
+    member = membership.account
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
+        get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_membership_cancellation')
+def membership_canceled(membership, message='', **kwargs):
+    member = membership.account
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
+        get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict(locals())),
         bcc=kwargs['emails']
     ).send()
 

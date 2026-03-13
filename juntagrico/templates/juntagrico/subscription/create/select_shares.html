@@ -1,4 +1,5 @@
 {% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
@@ -10,43 +11,55 @@
 
 {% block intro %}
     <p>
-        {% block intro_1 %}
-            {% config "currency" as c_currency %}
-            {% config "share_price" as c_share_price %}
-            {% enriched_organisation "D" as v_d_enriched_organisation %}
-            {% trans "Infos" %}:
-            {% blocktrans trimmed with v_member_type=vocabulary.member_type v_share=vocabulary.share v_share_pl=vocabulary.share_pl %}
-            Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
-            1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
-            Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
-            zurückerstattet.
-            {% endblocktrans %}
-        {% endblock %}
+        {% include "juntagrico/my/share/snippets/intro.html" %}
     </p>
 
-    <p>
-        {% block intro_2 %}
-            {% config "required_shares" as c_required_shares %}
-            {% if form.required > c_required_shares %}
-                {% blocktrans trimmed with st=form.required v_subscription=vocabulary.subscription v_share_pl=vocabulary.share_pl %}
-                Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
-                {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
+    {% if required_shares.for_membership %}
+        <p>
+            {% block intro_membership %}
+                {% include "juntagrico/my/share/snippets/intro_for_membership.html" with required=required_shares.for_membership %}
+            {% endblock %}
+        </p>
+    {% endif %}
+
+    {% if required_shares.for_subscription %}
+        <p>
+            {% block intro_subscriptions %}
+                {% blocktrans trimmed with v_subscription=vocabulary.subscription v_share=vocabulary.share v_share_pl=vocabulary.share_pl count count=required_shares.for_subscription %}
+                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ count }} {{ v_share }}.
+                {% plural %}
+                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ count }} {{ v_share_pl }}.
                 {% endblocktrans %}
-            {% elif c_required_shares > 0 %}
+                {% if required_shares.for_subscription > 1 and form.co_members %}
+                    {% blocktrans trimmed %}
+                        Diese kannst du unter dir und deinen MitabonnentInnen verteilen.
+                    {% endblocktrans %}
+                {% endif %}
+            {% endblock %}
+        </p>
+    {% endif %}
+
+    {% if required_shares.for_signup > required_shares.for_membership %}
+        <p>
+            {% block intro_signup %}
+                {% blocktrans trimmed with v_share=vocabulary.share v_share_pl=vocabulary.share_pl count count=required_shares.for_signup %}
+                    Für die Anmeldung benötigst du mindestens {{ count }} {{ v_share }}.
+                {% plural %}
+                    Für die Anmeldung benötigst du mindestens {{ count }} {{ v_share_pl }}.
+                {% endblocktrans %}
+            {% endblock %}
+        </p>
+    {% endif %}
+
+    {% if required_shares.for_membership or required_shares.for_subscription or required_shares.for_signup %}
+        <p>
+            {% block intro_additional %}
                 {% blocktrans trimmed with v_share_pl=vocabulary.share_pl %}
-                Du benötigst mindestens {{ c_required_shares }} {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
+                    Du kannst natürlich noch mehr {{ v_share_pl }} erwerben.
                 {% endblocktrans %}
-            {% endif %}
-
-            {% if form.co_members and form.remaining %}
-                <br/>
-                {% blocktrans trimmed with sr=form.remaining v_share_pl=vocabulary.share_pl v_co_member_pl=vocabulary.co_member_pl %}
-                Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
-                deinen {{ v_co_member_pl }} auf.
-                {% endblocktrans %}
-            {% endif %}
-        {% endblock %}
-    </p>
+            {% endblock %}
+        </p>
+    {% endif %}
 {% endblock %}
 
 {% block content %}

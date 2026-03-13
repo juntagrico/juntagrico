@@ -88,6 +88,32 @@ Template: ``mails/admin/member_canceled.txt``
 Recipients: Users with the permission :ref:`juntagrico.notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>`
 
 
+.. _reference-notifications-membership-created:
+
+Membership Created
+^^^^^^^^^^^^^^^^^^
+
+Trigger: On signal :ref:`created <reference-signals-created>` from sender ``Membership``
+
+Template: ``juntagrico/mails/admin/membership/created.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_creation <reference-permissions-notified_on_membership_creation>`
+
+
+
+.. _reference-notifications-membership-canceled:
+
+Membership Canceled
+^^^^^^^^^^^^^^^^^^^
+
+Trigger: On signal :ref:`canceled <reference-signals-canceled>` from sender ``Membership``
+
+Template: ``juntagrico/mails/admin/membership/canceled.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>`
+
+
+
 Subscription Notifications
 --------------------------
 

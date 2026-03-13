@@ -1,0 +1,113 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    <h3>
+        {{ title }}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% include 'juntagrico/manage/member/snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                {% block list_head %}
+                    <th class="filter">
+                        {% trans "Nr." %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Kontakt" %}
+                    </th>
+                    {% if required_shares %}
+                        <th class="filter">
+                            {% vocabulary "share_pl" %}
+                            {% trans "(Bezahlt/Bestellt)" %}
+                        </th>
+                    {% endif %}
+                    {% block inner_list_head %}
+                        <th class="filter">
+                            {% trans "Beitritt" %}
+                        </th>
+                        <th class="filter">
+                            {% trans "Gekündigt?" %}
+                        </th>
+                    {% endblock %}
+                    <th class="filter">
+                        {% trans "Notizen" %}
+                    </th>
+                {% endblock %}
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                {% block list_foot %}
+                    <th>
+                        {% trans "Nr." %}
+                    </th>
+                    <th>
+                        {% trans "Kontakt" %}
+                    </th>
+                    {% if required_shares %}
+                        <th>
+                            {% vocabulary "share_pl" %}
+                            {% trans "(Bezahlt/Bestellt)" %}
+                        </th>
+                    {% endif %}
+                    {% block inner_list_foot %}
+                        <th>
+                            {% trans "Beitritt" %}
+                        </th>
+                        <th>
+                            {% trans "Gekündigt?" %}
+                        </th>
+                    {% endblock %}
+                    <th>
+                        {% trans "Notizen" %}
+                    </th>
+                {% endblock %}
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for membership in object_list %}
+                <tr>
+                    {% block list_entry %}
+                        <td>
+                            {% include './snippets/display_linked.html' %}
+                        </td>
+                        <td>
+                            {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=membership.person %}
+                        </td>
+                        {% if required_shares %}
+                            <td>
+                                {{ membership.person.share_set.active.count }} / {{ membership.person.share_set.usable.count }}
+                            </td>
+                        {% endif %}
+                        {% block inner_list_entry %}
+                            <td>
+                                {{ membership.activation_date }}
+                            </td>
+                            <td>
+                                {% if membership.cancellation_date %}
+                                    {% blocktrans with date=membership.cancellation_date %}Am {{ date }}{% endblocktrans %}
+                                {% else %}
+                                    {% trans "Nein" %}
+                                {% endif %}
+                            </td>
+                        {% endblock %}
+                        <td>
+                            {{ membership.notes }}
+                        </td>
+                    {% endblock %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

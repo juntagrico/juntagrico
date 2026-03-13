@@ -96,6 +96,14 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertGet(reverse('cs-co-members'))
 
         response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
@@ -260,6 +268,14 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('cs-co-members'))
         self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
         response = self.client.get(reverse('cs-co-members'))
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
@@ -291,6 +307,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 'subscription_%s' % sub_id: 1,
                 'depot_id': Depot.objects.values_list('id', flat=True)[0],
                 'start_date': '1900-01-01',
+                'membership': 'True',
                 'shares': shares,
                 'comment': comment,
                 'by_laws_accepted': 'True',

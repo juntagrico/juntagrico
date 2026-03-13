@@ -2,6 +2,8 @@ from django import template
 from django.utils.translation import gettext as _
 from schwifty import IBAN
 
+from juntagrico.config import Config
+
 register = template.Library()
 
 
@@ -19,6 +21,15 @@ def required_for_subscription(share, index):
                 return _("Ja. Oder ") + ", ".join(
                     str(o) for o in other_unpaid.distinct()
                 ) + ". " + _("({} insgesamt)").format(remaining)
+            return _("Ja")
+    return _("Nein")
+
+
+@register.filter
+def required_for_membership(share, index):
+    if Config.membership('enable') and share.member.memberships.filter(cancellation_date__isnull=True).exists():
+        required_shares = Config.membership('required_shares') - share.member.share_set.active().usable().count()
+        if required_shares >= index:
             return _("Ja")
     return _("Nein")
 

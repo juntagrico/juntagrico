@@ -19,6 +19,7 @@ from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
@@ -91,6 +92,57 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
     title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
+
+
+class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
+    permission_required = [['juntagrico.view_membership', 'juntagrico.change_membership']]
+    template_name = 'juntagrico/manage/membership/show.html'
+    queryset = Membership.objects.active
+    title = _('Aktive {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        if Config.enable_shares():
+            context_data['required_shares'] = Config.membership('required_shares')
+        return context_data
+
+
+class MembershipRequestedView(MembershipView):
+    template_name = 'juntagrico/manage/membership/requested.html'
+    queryset = Membership.objects.requested
+    title = _('Beantragte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+@using_change_date
+def membership_activate(request, change_date):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        membership.activate(change_date)
+    return return_to_previous_location(request)
+
+
+class MembershipCanceledView(MembershipView):
+    template_name = 'juntagrico/manage/membership/canceled.html'
+    queryset = Membership.objects.canceled
+    title = _('Gekündigte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+@using_change_date
+def membership_deactivate(request, change_date):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        membership.deactivate(change_date)
+    return return_to_previous_location(request)
+
+
+class MembershipArchiveView(MembershipView):
+    template_name = 'juntagrico/manage/membership/archive.html'
+    queryset = Membership.objects.inactive
+    title = _('Ehemalige {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
 class AreaMemberView(MemberView):

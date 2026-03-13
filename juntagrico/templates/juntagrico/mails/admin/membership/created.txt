@@ -1,16 +1,14 @@
 {% extends "mails/email.txt" %}
 {% load i18n %}
+{% load juntagrico.config %}
 {% block content %}
 {% trans "Hallo" %}
-
-{% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date %}
-Soeben hat {{ fn }} {{ ln }} das Konto per {{ ed }} gekündet.
+{% blocktrans with v_membership=vocabulary.membership e=member.email k=member.signup_comment %}
+Soeben hat {{ member }} die {{ v_membership }} beantragt.
 E-Mail: {{ e }}
+Kommentar: {{ k }}
 {% endblocktrans %}
 {{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
-
-{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
-{{ message }}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}
