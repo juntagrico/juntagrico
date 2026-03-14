@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership
+from ..entity.membership import Membership
 from ..entity.subs import SubscriptionPart
 from ..entity.subtypes import SubscriptionType
 
@@ -129,6 +130,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertLess(part.cancellation_date, part.activation_date)
 
     def testLeave(self):
+        Membership.objects.create(account=self.member3)
         if settings.ENABLE_SHARES:
             self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
             self.create_paid_share(self.member3)

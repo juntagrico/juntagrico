@@ -321,7 +321,7 @@ def manage_shares(request):
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required_for_membership': Config.membership('required_shares') if Config.membership('enable') else 0,
+        'required_for_membership': Config.membership('required_shares') if member.memberships.uncanceled().exists() else 0,
         'required_for_subscription': member.required_shares_count,
         'ibanempty': not member.iban,
         'next_membership_end_date': next_membership_end_date(),

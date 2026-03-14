@@ -29,6 +29,8 @@ class ShareTestCase(JuntagricoTestCase):
 class ShareTests(ShareTestCase):
     def testMemberShareManage(self):
         self.assertGet(reverse('manage-shares'), 200)
+        Membership.objects.create(account=self.member4)
+        self.assertGet(reverse('manage-shares'), 200, member=self.member4)
         self.assertPost(reverse('manage-shares'), {'shares': 0}, 200, member=self.member2)
         self.member2.refresh_from_db()
         self.assertEqual(self.member2.share_set.count(), 0)
