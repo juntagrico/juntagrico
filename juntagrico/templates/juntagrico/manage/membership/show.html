@@ -80,14 +80,14 @@
                 <tr>
                     {% block list_entry %}
                         <td>
-                            {% include './snippets/display_linked.html' %}
+                            {% include './snippets/display_linked.html' with member=membership.account %}
                         </td>
                         <td>
-                            {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=membership.person %}
+                            {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=membership.account %}
                         </td>
                         {% if required_shares %}
                             <td>
-                                {{ membership.person.share_set.active.count }} / {{ membership.person.share_set.usable.count }}
+                                {{ membership.account.share_set.active.count }} / {{ membership.account.share_set.usable.count }}
                             </td>
                         {% endif %}
                         {% block inner_list_entry %}

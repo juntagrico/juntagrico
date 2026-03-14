@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.entity.member import Member
@@ -17,6 +18,7 @@ class MembershipTests(JuntagricoTestCase):
         cls.member_without_shares = cls.create_member('member_without_shares@email.org', True)
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org', True)
         cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org', True)
+        cls.member_without_membership = cls.create_member('member_without_membership@email.org')
         if settings.ENABLE_SHARES:
             cls.paid_share = cls.create_paid_share(cls.member)
             cls.unpaid_share = Share.objects.create(member=cls.member_with_unpaid_share)
@@ -32,6 +34,23 @@ class MembershipTests(JuntagricoTestCase):
             'addr_zipcode': ' 1234',
             'addr_location': 'addr_location'
         }
+
+    def testCreateMembership(self):
+        self.assertGet(reverse('membership-create'), member=self.member_without_membership)
+        creation_data = {'membership': True}
+        if settings.ENABLE_SHARES:
+            creation_data['of_member'] = 1
+        self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
+        self.assertEqual(self.member_without_membership.memberships.count(), 1)
+        self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES))
+        # repeating will not create another membership, but another share
+        self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
+        self.assertEqual(self.member_without_membership.memberships.count(), 1)
+        self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES) * 2)
+
+    @override_settings(BYLAWS='')
+    def testCreateMembershipWithoutDocuments(self):
+        self.assertGet(reverse('membership-create'), member=self.member_without_membership)
 
     def testCancelMembership(self):
         self.assertGet(reverse('membership-cancel'))
@@ -130,3 +149,35 @@ class MembershipTests(JuntagricoTestCase):
         for member, result in members.items():
             member.refresh_from_db()
             self.assertEqual(member.inactive, result, f'{member} {member.email}')
+
+
+class MembershipAdminTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.default_member = Member.objects.get(email='admin@email.org')
+        cls.member_requested = cls.create_member('member_requested@email.org', {'activation_date': None})
+        cls.member_active = cls.create_member('member_active@email.org', True)
+        cls.member_canceled = cls.create_member('member_canceled@email.org', {'cancellation_date': '2026-03-13'})
+        cls.member_inactive = cls.create_member('member_inactive@email.org', {
+            'cancellation_date': '2026-03-13', 'deactivation_date': '2026-03-13'
+        })
+
+    def testMembershipManageRequested(self):
+        self.assertGet(reverse('manage-membership-requested'), 200)
+        membership = self.member_requested.memberships.first()
+        self.assertPost(reverse('manage-membership-activate'), {'membership_ids': membership.id}, 302)
+        membership.refresh_from_db()
+        self.assertTrue(membership.active)
+
+    def testMembershipManageActive(self):
+        self.assertGet(reverse('manage-membership-active'), 200)
+
+    def testMembershipManageCanceled(self):
+        self.assertGet(reverse('manage-membership-canceled'), 200)
+        membership = self.member_canceled.memberships.first()
+        self.assertPost(reverse('manage-membership-deactivate'), {'membership_ids': membership.id}, 302)
+        membership.refresh_from_db()
+        self.assertTrue(membership.inactive)
+
+    def testMembershipManageInactive(self):
+        self.assertGet(reverse('manage-membership-archive'), 200)

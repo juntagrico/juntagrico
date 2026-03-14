@@ -13,7 +13,10 @@ class ProfileTests(JuntagricoTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.member = cls.create_member('member_with_shares@email.org')
+        cls.member = cls.create_member('member_with_shares@email.org', True)
+        cls.member.number = 1
+        cls.member.save()
+        cls.membership = cls.member.memberships.first()
         cls.default_member = cls.member
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
@@ -34,7 +37,21 @@ class ProfileTests(JuntagricoTestCase):
             'addr_location': 'addr_location'
         }
 
-    def testProfile(self):
+    @override_settings(MEMBERSHIP={'enable': False})
+    def testProfileNoMemberships(self):
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithActiveMembership(self):
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithCanceledMembership(self):
+        self.membership.cancellation_date = '2026-03-12'
+        self.membership.save()
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithoutMembership(self):
+        self.membership.deactivation_date = self.membership.cancellation_date = '2026-03-12'
+        self.membership.save()
         self.assertGet(reverse('profile'))
 
     def testProfilePost(self):
