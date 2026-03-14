@@ -44,13 +44,13 @@ class MembershipTests(JuntagricoTestCase):
         if settings.ENABLE_SHARES:
             creation_data['of_member'] = 1
         self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
-        self.assertEqual(len(mail.outbox), 3)  # admin notifications (2 share, 1 membership)
+        self.assertEqual(len(mail.outbox), 1 + 2 * settings.ENABLE_SHARES)  # admin notifications (2 share, 1 membership)
         mail.outbox = []
         self.assertEqual(self.member_without_membership.memberships.count(), 1)
         self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES))
         # repeating will not create another membership, but another share
         self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
-        self.assertEqual(len(mail.outbox), 3)  # admin notifications (2 share, 1 membership)
+        self.assertEqual(len(mail.outbox), 1 + 2 * settings.ENABLE_SHARES)  # admin notifications (2 share, 1 membership)
         self.assertEqual(self.member_without_membership.memberships.count(), 1)
         self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES) * 2)
 
