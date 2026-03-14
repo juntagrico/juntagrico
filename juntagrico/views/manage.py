@@ -91,7 +91,12 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
-    title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
+    title = _('Aktive {members}').format(members=Config.vocabulary('member_pl'))
+
+
+class MemberArchiveView(MemberView):
+    queryset = Member.objects.inactive
+    title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
 
 
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):

@@ -179,12 +179,12 @@ urlpatterns = [
     path('manage/membership/archive', manage.MembershipArchiveView.as_view(), name='manage-membership-archive'),
 
     # /manage/member
-    path('manage/member', manage.MemberView.as_view(), name='manage-member'),
     path('manage/member/active', manage.MemberActiveView.as_view(), name='manage-member-active'),
     path('manage/member/canceled', manage.MemberCanceledView.as_view(), name='manage-member-canceled'),
     path('manage/member/deactivate', manage.member_deactivate, name='manage-member-deactivate'),
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
+    path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
 
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),

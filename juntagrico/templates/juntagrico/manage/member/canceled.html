@@ -16,6 +16,8 @@
 {% endblock %}
 
 {% block list %}
+    {% config 'enable_membership' as c_enable_membership %}
+    {% config 'enable_shares' as c_enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "share_pl" as v_share_pl %}
     <table id="filter-table" class="list table">
@@ -30,9 +32,16 @@
                 <th class="filter">
                     {% trans "Enddatum" %}
                 </th>
-                <th class="filter">
-                    {% blocktrans %}Aktive {{ v_share_pl }}{% endblocktrans %}
-                </th>
+                {% if c_enable_membership %}
+                    <th class="filter">
+                        {% blocktrans with v_membership=vocabulary.membership %}Aktive {{ v_membership }}{% endblocktrans %}
+                    </th>
+                {% endif %}
+                {% if c_enable_shares %}
+                    <th class="filter">
+                        {% blocktrans %}Aktive {{ v_share_pl }}{% endblocktrans %}
+                    </th>
+                {% endif %}
                 <th class="filter">
                     {% blocktrans %}Aktive/r/s {{ v_subscription }}{% endblocktrans %}
                 </th>
@@ -59,20 +68,19 @@
                     <td>
                         {{ member.end_date|date:"Y-m-d" }}
                     </td>
+                    {% if c_enable_membership %}
+                        <td>
+                            {{ member.memberships.active.exists|yesno:'(J),(N)' }}
+                        </td>
+                    {% endif %}
+                    {% if c_enable_shares %}
+                        <td>
+                            {{ member.active_shares_count }}
+                            {{ member.active_shares_count|yesno:'(J),(N)' }}
+                        </td>
+                    {% endif %}
                     <td>
-                        {{ member.active_shares_count }}
-                        {% if member.active_shares_count > 0 %}
-                            {% trans "(J)" %}
-                        {% else %}
-                            {% trans "(N)" %}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if member.in_subscription %}
-                            {% trans "(J)" %}
-                        {% else %}
-                            {% trans "(N)" %}
-                        {% endif %}
+                        {{ member.in_subscription|yesno:'(J),(N)' }}
                     </td>
                     <td>
                         {% if member.in_subscription %}
@@ -81,7 +89,7 @@
                                     {{ v_subscription }} muss zuerst deaktiviert werden.
                                 {% endblocktrans %}
                             </span>
-                        {% elif member.is_cooperation_member %}
+                        {% elif c_enable_shares and member.is_cooperation_member %}
                             <span>
                                 {% blocktrans trimmed %}
                                     {{ v_share_pl }} müssen zuerst deaktiviert werden.
