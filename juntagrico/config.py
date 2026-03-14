@@ -1,3 +1,4 @@
+import sys
 from typing import Any
 
 from django.conf import settings
@@ -93,7 +94,15 @@ class Config:
             'NAME': 'Juntagrico Bank',
         }
     )
-    share_price = _get_setting('SHARE_PRICE', '250')
+    share_price = _get_setting('SHARE_PRICE', 250)
+
+    @classmethod
+    def share_price_display(cls):
+        if not hasattr(cls, '_share_price_display'):
+            from juntagrico.templatetags.juntagrico.common import price
+            cls._share_price_display = price(cls.share_price())
+        return cls._share_price_display
+
     business_regulations = _get_setting('BUSINESS_REGULATIONS')
     bylaws = _get_setting('BYLAWS')
     gdpr_info = _get_setting('GDPR_INFO')
@@ -123,7 +132,22 @@ class Config:
     enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
 
     base_fee = _get_setting('BASE_FEE')
-    currency = _get_setting('CURRENCY', 'CHF')
+    raw_currency = _get_setting('CURRENCY', 'CHF {}')
+
+    @classmethod
+    def currency(cls):
+        if not hasattr(cls, '_currency'):
+            sys.stderr.write('Config.currency is deprecated since 2.1. Use currency_format instead.\n')
+            raw_currency = cls.raw_currency()
+            cls._currency = raw_currency.strip(' {}')
+        return cls._currency
+
+    @classmethod
+    def currency_format(cls):
+        if not hasattr(cls, '_currency_format'):
+            raw_currency = cls.raw_currency()
+            cls._currency_format = raw_currency if '{}' in raw_currency else (str(raw_currency) + ' {}').strip()
+        return cls._currency_format
 
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)

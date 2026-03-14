@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% block all %}
-    {% config "share_price" as c_share_price %}
-    {% blocktrans trimmed with v_share=vocabulary.share share_price=c_share_price|price %}
-        1 {{ v_share }} hat einen Wert von {{ share_price }}.
+    {% config "share_price_display" as c_share_price %}
+    {% blocktrans trimmed with v_share=vocabulary.share %}
+        1 {{ v_share }} hat einen Wert von {{ c_share_price }}.
     {% endblocktrans %}
     <br>
     {% blocktrans trimmed with v_share_pl=vocabulary.share_pl %}

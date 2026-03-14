@@ -10,8 +10,6 @@
 {% endblock %}
 
 {% block content %}
-    {% config "currency" as c_currency %}
-
     {% block profile %}
         {% if main_member %}
             <h4>{% trans "Personalien" %}
@@ -115,7 +113,7 @@
     {% config "enable_shares" as c_enable_shares %}
     {% if c_enable_shares %}
         {% block shares %}
-            {% config "share_price" as c_share_price %}
+            {% config "share_price_display" as c_share_price %}
             <h4>{% vocabulary "share_pl" %} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
             <p>
                 {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
@@ -124,7 +122,7 @@
                     <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
                 {% endfor %}
             </p>
-            <p><strong>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</strong></p>
+            <p><strong>{% blocktrans %}Zu je einmalig {{ c_share_price }}{% endblocktrans %}</strong></p>
         {% endblock %}
     {% endif %}
 
