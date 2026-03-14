@@ -1,4 +1,5 @@
 {% extends './no_selection_field.html' %}
+{% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load i18n %}
 
@@ -17,12 +18,11 @@
     {% endblock %}
     <br/>
     {% block base_fee %}
-        {% config "base_fee" as base_fee %}
-        {% if base_fee.strip %}
-            {% config "currency" as c_currency %}
-            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+        {% config "base_fee" as c_base_fee %}
+        {% if c_base_fee %}
+            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl v_subscription=vocabulary.subscription base_fee=c_base_fee|price %}
                 {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
-                einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+                einen Jahresbeitrag von {{ base_fee }}.
             {% endblocktrans %}
         {% endif %}
     {% endblock %}
