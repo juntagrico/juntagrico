@@ -31,8 +31,8 @@
                     Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ count }} {{ v_share_pl }}.
                 {% endblocktrans %}
                 {% if required_shares.for_subscription > 1 and form.co_members %}
-                    {% blocktrans trimmed %}
-                        Diese kannst du unter dir und deinen MitabonnentInnen verteilen.
+                    {% blocktrans trimmed with v_co_member_pl=vocabulary.co_member_pl %}
+                        Diese kannst du unter dir und deinen {{ v_co_member_pl }} verteilen.
                     {% endblocktrans %}
                 {% endif %}
             {% endblock %}

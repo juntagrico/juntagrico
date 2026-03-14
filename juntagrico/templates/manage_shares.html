@@ -75,7 +75,7 @@
                                         {% if forloop.first and not required_for_subscription %}
                                             <div>
                                                 <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
-                                                    {% trans "Mitgliedschaft kündigen" %}
+                                                    {% blocktrans with v_membership=vocabulary.membership %}{{ v_membership }} kündigen{% endblocktrans %}
                                                 </a>
                                             </div>
                                         {% endif %}

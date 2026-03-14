@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    {% blocktrans with v_member_type=vocabulary.member_type %}{{ v_member_type }} werden{% endblocktrans %}
+    {% blocktrans %}Neuanmeldung{% endblocktrans %}
 {% endblock %}
 
 {% block intro %}
@@ -28,7 +28,7 @@
     {% if c_business_regulations.strip %}
         {% block read_instructions %}
             <p>
-                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                {% blocktrans trimmed %}
                     Bevor du dich anmeldest, lies bitte Folgendes durch:
                 {% endblocktrans %}
                 <ul>

@@ -87,7 +87,7 @@ def share_canceled(share, **kwargs):
 def member_created(member, **kwargs):
     member.comment = member.signup_comment  # backwards compatibility
     EmailSender.get_sender(
-        organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
+        organisation_subject(_('Neues Konto')),
         get_email_content('a_member_created', base_dict(locals())),
         bcc=kwargs['emails']
     ).send()
