@@ -804,12 +804,17 @@ class ShareOrderForm(Form):
 
     def __init__(self, required, existing=0, co_members=None, *args, **kwargs):
         """
-        :param required: number of total required shares
+        :param required: number of total required shares or dict with 2 entries
+            'total' = number of total required shares,
+            'for_primary' = number of shares required by primary member
         :param existing: number of shares that the member already has
         :param co_members: an iterable of (name, existing_share_count) of co-members
         """
         super().__init__(*args, **kwargs)
-        self.required = required
+        if isinstance(required, dict):
+            self.required = required
+        else:
+            self.required = {'total': required, 'for_primary': existing}
         self.existing = existing
         self.co_members = co_members or []
 
@@ -823,7 +828,7 @@ class ShareOrderForm(Form):
             )
         elif co_members:
             help_text = self.text['member_info']
-        initial = self.initial.get('of_member', max(0, required - existing))
+        initial = self.required['for_primary'] - existing
         self.fields['of_member'] = IntegerField(
             label=label,
             required=False,
@@ -860,9 +865,9 @@ class ShareOrderForm(Form):
         of_co_member = sum(self.cleaned_data.get(f'of_co_member[{i}]', 0) for i in range(len(self.co_members)))
         total_shares = total_existing + of_member + of_co_member
         # evaluate
-        if total_shares < self.required:
+        if total_shares < self.required['total']:
             raise ValidationError(self.text['form_error'].format(
-                    num=self.required,
+                    num=self.required['total'],
                     share=Config.vocabulary('share'),
                     shares=Config.vocabulary('share_pl'),
                 )

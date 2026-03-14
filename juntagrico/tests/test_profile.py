@@ -41,6 +41,11 @@ class ProfileTests(JuntagricoTestCase):
     def testProfileNoMemberships(self):
         self.assertGet(reverse('profile'))
 
+    def testProfileWithRequestedMembership(self):
+        self.membership.activation_date = None
+        self.membership.save()
+        self.assertGet(reverse('profile'))
+
     def testProfileWithActiveMembership(self):
         self.assertGet(reverse('profile'))
 

@@ -1,7 +1,6 @@
 from django.db import transaction
 from django.forms import model_to_dict
 from django.shortcuts import redirect, render
-from django.utils.functional import cached_property
 from django.views.generic import FormView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
@@ -302,31 +301,16 @@ class SelectSharesView(SignupView, FormView):
     template_name = 'juntagrico/subscription/create/select_shares.html'
     form_class = ShareOrderForm
 
-    @cached_property
-    def required_shares(self):
-        return {
-            'for_signup': Config.required_shares(),
-            'for_membership': Config.membership('required_shares') if self.signup_manager.get('membership') else 0,
-            'for_subscription': self.signup_manager.required_shares(),
-        }
-
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs) | {
-            'required_shares': self.required_shares
+            'required_shares': self.signup_manager.required_shares_details()
         }
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['required'] = max(self.required_shares.values())
+        form_kwargs['required'] = self.signup_manager.required_shares()
         form_kwargs['existing'] = self.signup_manager.existing_shares()
         form_kwargs['co_members'] = self.signup_manager.co_members()
-        required_by_member = max(
-            self.required_shares['for_membership'],
-            self.required_shares['for_signup']
-        )
-        form_kwargs['initial'] = {
-            'of_member': required_by_member - form_kwargs['existing']
-        }
         if 'data' not in form_kwargs:
             form_kwargs['data'] = self.signup_manager.get('shares')
         return form_kwargs

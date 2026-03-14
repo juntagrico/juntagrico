@@ -16,6 +16,10 @@ class MembershipQueryset(QuerySet):
         on_date = on_date or datetime.date.today()
         return self.exclude(deactivation_date__lt=on_date)
 
+    def uncanceled(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(cancellation_date__isnull=True)
+
     def canceled(self, on_date=None):
         on_date = on_date or datetime.date.today()
         return self.filter(cancellation_date__isnull=False).exclude(deactivation_date__lt=on_date)

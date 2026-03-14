@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
@@ -25,7 +27,8 @@ class MembershipTests(JuntagricoTestCase):
             cls.canceled_share = cls.create_paid_and_canceled_share(cls.member_with_canceled_share)
         cls.admin = Member.objects.get(email='admin@email.org')
         cls.admin.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_membership_cancellation')
+            Permission.objects.get(codename='notified_on_membership_cancellation'),
+            Permission.objects.get(codename='notified_on_membership_creation')
         )
         cls.cancellation_data = {
             'message': 'my last message',
@@ -41,10 +44,13 @@ class MembershipTests(JuntagricoTestCase):
         if settings.ENABLE_SHARES:
             creation_data['of_member'] = 1
         self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
+        self.assertEqual(len(mail.outbox), 3)  # admin notifications (2 share, 1 membership)
+        mail.outbox = []
         self.assertEqual(self.member_without_membership.memberships.count(), 1)
         self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES))
         # repeating will not create another membership, but another share
         self.assertPost(reverse('membership-create'), code=302, data=creation_data, member=self.member_without_membership)
+        self.assertEqual(len(mail.outbox), 3)  # admin notifications (2 share, 1 membership)
         self.assertEqual(self.member_without_membership.memberships.count(), 1)
         self.assertEqual(self.member_without_membership.share_set.count(), int(settings.ENABLE_SHARES) * 2)
 
@@ -154,10 +160,15 @@ class MembershipTests(JuntagricoTestCase):
 class MembershipAdminTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
         cls.default_member = Member.objects.get(email='admin@email.org')
         cls.member_requested = cls.create_member('member_requested@email.org', {'activation_date': None})
+        cls.member_soon_active = cls.create_member('member_soon_active@email.org', {'activation_date': tomorrow})
         cls.member_active = cls.create_member('member_active@email.org', True)
         cls.member_canceled = cls.create_member('member_canceled@email.org', {'cancellation_date': '2026-03-13'})
+        cls.member_soon_inactive = cls.create_member('member_soon_inactive@email.org', {
+            'cancellation_date': '2026-03-13', 'deactivation_date': tomorrow,
+        })
         cls.member_inactive = cls.create_member('member_inactive@email.org', {
             'cancellation_date': '2026-03-13', 'deactivation_date': '2026-03-13'
         })

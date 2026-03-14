@@ -136,3 +136,4 @@ FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
 BASE_FEE = 100
+MEMBERSHIP = {'fee': 150}

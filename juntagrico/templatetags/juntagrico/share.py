@@ -27,7 +27,7 @@ def required_for_subscription(share, index):
 
 @register.filter
 def required_for_membership(share, index):
-    if Config.membership('enable') and share.member.memberships.filter(cancellation_date__isnull=True).exists():
+    if Config.membership('enable') and share.member.memberships.uncanceled().exists():
         required_shares = Config.membership('required_shares') - share.member.share_set.active().usable().count()
         if required_shares >= index:
             return _("Ja")

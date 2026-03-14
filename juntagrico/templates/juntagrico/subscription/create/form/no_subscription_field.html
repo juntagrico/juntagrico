@@ -18,7 +18,7 @@
     <br/>
     {% block base_fee %}
         {% config "base_fee" as base_fee %}
-        {% if base_fee.strip %}
+        {% if base_fee %}
             {% config "currency" as c_currency %}
             {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
                 Ohne {{ v_subscription }} bezahlst du einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}

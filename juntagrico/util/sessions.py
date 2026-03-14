@@ -117,8 +117,19 @@ class SignupManager(SessionManager):
             self.get('membership') is not None
         )
 
+    def required_shares_details(self):
+        return {
+            'for_signup': Config.required_shares(),
+            'for_membership': Config.membership('required_shares') if self.get('membership') else 0,
+            'for_subscription': sum([s.shares * amount for s, amount in self.subscriptions().items()]),
+        }
+
     def required_shares(self):
-        return sum([s.shares * amount for s, amount in self.subscriptions().items()])
+        required = self.required_shares_details()
+        return {
+            'total': max(required.values()),
+            'for_primary': max(required['for_membership'], required['for_signup']),
+        }
 
     def existing_shares(self):
         return self.request.user.member.active_shares_count if self.request.user.is_authenticated else 0
