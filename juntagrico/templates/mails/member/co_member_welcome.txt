@@ -16,7 +16,7 @@
 {% vocabulary "subscription" as v_subscription %}
 {% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
 
-{% if c_enable_shares %}
+{% if shares %}
 {% blocktrans with pm=sub.primary_member shares=co_member.usable_shares_count %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
 {% else %}
 {% blocktrans with pm=sub.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
@@ -29,10 +29,9 @@
 {% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' co_member.get_hash %}
 
 {% trans "Damit bestätigst du dass du damit einverstanden bist" %}:
-- {% blocktrans %}{{ c_organisation_name }}-{{ v_member_type }} zu werden{% endblocktrans %}
 - {% blocktrans %}dem/r {{ v_subscription }} beizutreten{% endblocktrans %}
-- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}
-{% if c_bylaws.strip or c_business_regulations.strip %}
+{% if shares %}- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}{% endif %}
+{% if c_bylaws.strip or c_business_regulations.strip or c_gdpr_info.strip %}
 {% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
 {% if c_bylaws.strip %} - {% trans "die Statuten" %} ({{ c_bylaws|safe }}){% endif %}
 {% if c_business_regulations.strip %} - {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }}){% endif %}

@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('selected', nargs='*', type=str,
-                            default='signup subscription share password job depot member')
+                            default='signup subscription share password job depot member membership')
 
     # entry point used by manage.py
     @transaction.atomic(durable=True)
@@ -223,6 +223,20 @@ class Command(BaseCommand):
             print(get_email_content('m_canceled', base_dict({
                 'member': member,
                 'end_date': datetime.date.today(),
+                'message': 'Nachricht'
+            })))
+            print()
+
+        if 'membership' in selected:
+            print('*** juntagrico/mails/admin/membership/created.txt ***')
+            print(get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
+                'member': member
+            })))
+            print()
+
+            print('*** juntagrico/mails/admin/membership/canceled.txt ***')
+            print(get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
+                'member': member,
                 'message': 'Nachricht'
             })))
             print()

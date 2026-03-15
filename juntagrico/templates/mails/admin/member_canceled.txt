@@ -4,7 +4,7 @@
 {% trans "Hallo" %}
 
 {% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date %}
-Soeben hat {{ fn }} {{ ln }} die Mitgliedschaft per {{ ed }} gekündet.
+Soeben hat {{ fn }} {{ ln }} das Konto per {{ ed }} gekündet.
 E-Mail: {{ e }}
 {% endblocktrans %}
 {{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}

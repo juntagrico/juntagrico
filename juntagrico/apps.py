@@ -12,12 +12,15 @@ class JuntagricoAppconfig(AppConfig):
         from django.db import models
         from . import signals
         from .models import Subscription, Job, Share, Member, SubscriptionMembership
+        from .entity.membership import Membership
         from .lifecycle.submembership import add_subscription_member_to_activity_area
         from .management.commands import generate_depot_list
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
         signals.canceled.connect(signals.on_member_canceled, sender=Member)
+        signals.created.connect(signals.on_membership_created, sender=Membership)
+        signals.canceled.connect(signals.on_membership_canceled, sender=Membership)
         signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
         signals.assignment_changed.connect(signals.on_assignment_changed, sender=Member)
         signals.share_canceled.connect(signals.on_share_canceled, sender=Share)

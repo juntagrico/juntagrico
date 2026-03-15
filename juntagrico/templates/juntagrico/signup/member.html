@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    {% blocktrans with v_member_type=vocabulary.member_type %}{{ v_member_type }} werden{% endblocktrans %}
+    {% blocktrans %}Neuanmeldung{% endblocktrans %}
 {% endblock %}
 
 {% block intro %}
@@ -15,56 +15,28 @@
         <p>{% blocktrans %}Interessiert an {{ v_d_enriched_organisation }}?{% endblocktrans %}</p>
     {% endblock %}
 
-    {% if c_enable_shares %}
-        {% block intro_with_shares %}
-            <p>
-                {% blocktrans trimmed with v_share=vocabulary.share v_share_pl=vocabulary.share_pl v_subscription=vocabulary.subscription %}
-                    Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
-                    {{ v_share_pl }} in der Höhe
-                    von {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
-                    ist abhängig von den {{ v_subscription }}-Bestandteilen. Die {{ v_share_pl }} sind das
-                    Kapital, das vor allem zur Finanzierung von Investitionen –
-                    zum Beispiel Infrastruktur - verwendet wird.
-                    Beim Austritt werden die {{ v_share_pl }} rückerstattet.
-                {% endblocktrans %}
-            </p>
-        {% endblock %}
-    {% endif %}
-
     <p>
         {% block intro_2 %}
-            {% blocktrans trimmed with v_member_type=vocabulary.member_type v_member_type_pl=vocabulary.member_type_pl %}
-                Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und
+            {% blocktrans trimmed %}
+                Bei {{ v_d_enriched_organisation }} tragen Alle im Rahmen ihrer Motivationen, Prioritäten und
                 Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
-                Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
-                Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
             {% endblocktrans %}
         {% endblock %}
     </p>
 
-    {% config "bylaws" as c_bylaws %}
     {% config "business_regulations" as c_business_regulations %}
-    {% if c_bylaws.strip or c_business_regulations.strip %}
+    {% if c_business_regulations.strip %}
         {% block read_instructions %}
             <p>
-                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
-                Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
+                {% blocktrans trimmed %}
+                    Bevor du dich anmeldest, lies bitte Folgendes durch:
                 {% endblocktrans %}
                 <ul>
-                    {% if c_bylaws.strip %}
-                        <li>
-                            <a target="_blank" href="{{ c_bylaws|safe }}">
-                                {% trans "Statuten" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if c_business_regulations.strip %}
-                        <li>
-                            <a target="_blank" href="{{ c_business_regulations|safe }}">
-                                {% trans "Betriebsreglement" %}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li>
+                        <a target="_blank" href="{{ c_business_regulations|safe }}">
+                            {% trans "Betriebsreglement" %}
+                        </a>
+                    </li>
                 </ul>
             </p>
         {% endblock %}

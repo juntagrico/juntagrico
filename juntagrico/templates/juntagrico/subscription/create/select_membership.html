@@ -1,0 +1,65 @@
+{% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block title %}
+    {% blocktrans with v_member_type=vocabulary.member_type %}{{ v_member_type }} werden{% endblocktrans %}
+{% endblock %}
+
+{% block intro %}
+    <p>
+        {% if membership_required_on_signup %}
+            {% block info_required %}
+                <strong>
+                    {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                        Die {{ v_membership }} ist erforderlich.
+                    {% endblocktrans %}
+                </strong>
+            {% endblock %}
+        {% elif membership_required %}
+            {% block info_required_with_subscription %}
+                <strong>
+                    {% blocktrans trimmed with v_membership=vocabulary.membership v_subscription_pl=vocabulary.subscription_pl %}
+                        Die {{ v_membership }} ist erforderlich für die von dir gewählten {{ v_subscription_pl }}.
+                    {% endblocktrans %}
+                </strong>
+            {% endblock %}
+        {% else %}
+            {% block info_not_required %}
+                <strong>
+                    {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                         Die {{ v_membership }} ist freiwillig.
+                    {% endblocktrans %}
+                </strong>
+            {% endblock %}
+        {% endif %}
+    </p>
+
+    {% if membership_fee %}
+        <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+    {% endif %}
+
+    {% config "bylaws" as c_bylaws %}
+    {% if c_bylaws.strip %}
+        {% block read_instructions %}
+            <p>
+                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                    Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
+                {% endblocktrans %}
+            </p>
+            <ul>
+                <li>
+                    <a target="_blank" href="{{ c_bylaws|safe }}">
+                        {% trans "Statuten" %}
+                    </a>
+                </li>
+            </ul>
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% crispy form %}
+{% endblock %}

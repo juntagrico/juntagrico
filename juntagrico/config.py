@@ -42,8 +42,8 @@ class Config:
     vocabulary = _get_setting_with_key(
         'VOCABULARY',
         {
-            'member': _('Mitglied'),
-            'member_pl': _('Mitglieder'),
+            'member': _('Konto'),
+            'member_pl': _('Konten'),
             'assignment': _('Arbeitseinsatz'),
             'assignment_pl': _('Arbeitseinsätze'),
             'share': _('Anteilschein'),
@@ -55,6 +55,8 @@ class Config:
             'price': _('Betriebsbeitrag'),
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
+            'membership': _('Mitgliedschaft'),
+            'membership_pl': _('Mitgliedschaften'),
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
@@ -108,6 +110,20 @@ class Config:
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
+    membership = _get_setting_with_key(
+        'MEMBERSHIP',
+        {
+            'enable': True,
+            'required_shares': 1,
+            'required_on_signup': True,
+            'fee': 0,
+        }
+    )
+
+    @classmethod
+    def enable_membership(cls):
+        return cls.membership('enable')
+
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     require_subscription = _get_setting('REQUIRE_SUBSCRIPTION', False)

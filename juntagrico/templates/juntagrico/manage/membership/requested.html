@@ -1,0 +1,68 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.snippets %}
+
+{% block content %}
+    {% action_date request %}
+    {{ block.super }}
+{% endblock %}
+
+{% block inner_list_head %}
+    <th class="filter">
+        {% trans "Beantragt am" %}
+    </th>
+    <th>
+        {% trans "Aktionen" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_foot %}
+    <th>
+        {% trans "Beantragt am" %}
+    </th>
+    <th>
+        {% trans "Aktionen" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_entry %}
+    <td>
+        {{ membership.creation_date }}
+    </td>
+    <td>
+        {% if membership.activation_date %}
+            <span>
+                {% blocktrans trimmed with activation_date=membership.activation_date %}
+                    Wird am {{ activation_date }} aktiviert
+                {% endblocktrans %}
+            </span>
+        {% else %}
+            <span class="membership_id d-none">{{ membership.id }} {# space is required #}</span>
+            <form action="{% url 'manage-membership-activate' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" name="membership_ids" value="{{ membership.id }}">
+                    {% trans "aktivieren" %}
+                </button>
+            </form>
+        {% endif %}
+    </td>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    {% if perms.juntagrico.change_share %}
+        config.layout.topStart.features.buttons.push(
+            id_action_button(
+                '<i class="bi bi-check2-square"></i> {% trans "Aktivieren" %}',
+                '{% url "manage-membership-activate" %}',
+                '{% csrf_token %}',
+                '.membership_id', 'membership_ids',
+                [
+                    '{% blocktrans with v_membership=vocabulary.membership %}1 {{ v_membership }} aktivieren?{% endblocktrans %}',
+                    '{% blocktrans with v_membership_pl=vocabulary.membership_pl %}Diese {count} {{ v_membership_pl }} aktivieren?{% endblocktrans %}'
+                ]
+            )
+        )
+    {% endif %}
+{% endblock %}

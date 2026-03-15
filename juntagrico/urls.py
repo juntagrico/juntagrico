@@ -8,7 +8,7 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api, config
+from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, membership
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -30,6 +30,7 @@ urlpatterns = [
     path('subscription/create/depot/', create_subscription.select_depot, name='cs-depot'),
     path('subscription/create/start/', create_subscription.select_start_date, name='cs-start'),
     path('subscription/create/comembers/', create_subscription.AddMemberView.as_view(), name='cs-co-members'),
+    path('subscription/create/membership/', create_subscription.SelectMembershipView.as_view(), name='cs-membership'),
     path('subscription/create/shares/', create_subscription.SelectSharesView.as_view(), name='cs-shares'),
     path('subscription/create/summary/', create_subscription.SummaryView.as_view(), name='cs-summary'),
     path('subscription/create/cancel/', create_subscription.cancel, name='cs-cancel'),
@@ -61,7 +62,8 @@ urlpatterns = [
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
     # /my/membership
     path('my/profile', juntagrico.profile, name='profile'),
-    path('my/cancel/membership', juntagrico.cancel_membership, name='cancel-membership'),
+    path('my/membership/create', membership.create, name='membership-create'),
+    path('my/membership/cancel', membership.cancel, name='membership-cancel'),
     # /my/share
     path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),
     path('my/share/certificate', juntagrico_subscription.share_certificate, name='share-certificate'),
@@ -168,24 +170,35 @@ urlpatterns = [
     path('manage/subscription/depot/change/confirm', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm'),
     path('manage/subscription/depot/change/confirm/<int:subscription_id>', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm-single'),
 
+    # /manage/membership
+    path('manage/membership', manage.MembershipView.as_view(), name='manage-membership-active'),
+    path('manage/membership/requested', manage.MembershipRequestedView.as_view(), name='manage-membership-requested'),
+    path('manage/membership/activate', manage.membership_activate, name='manage-membership-activate'),
+    path('manage/membership/canceled', manage.MembershipCanceledView.as_view(), name='manage-membership-canceled'),
+    path('manage/membership/deactivate', manage.membership_deactivate, name='manage-membership-deactivate'),
+    path('manage/membership/archive', manage.MembershipArchiveView.as_view(), name='manage-membership-archive'),
+
     # /manage/member
-    path('manage/member', manage.MemberView.as_view(), name='manage-member'),
     path('manage/member/active', manage.MemberActiveView.as_view(), name='manage-member-active'),
     path('manage/member/canceled', manage.MemberCanceledView.as_view(), name='manage-member-canceled'),
     path('manage/member/deactivate', manage.member_deactivate, name='manage-member-deactivate'),
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
+    path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
 
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),
+
     # /manage/share
     path('manage/share/unpaid', manage.ShareUnpaidView.as_view(), name='manage-share-unpaid'),
     path('manage/share/canceled', manage.ShareCanceledView.as_view(), name='manage-share-canceled'),
     path('manage/share/payout', manage.share_payout, name='manage-share-payout'),
     path('manage/share/payout/<int:share_id>', manage.share_payout, name='manage-share-payout-single'),
+
     # /manage/depot
     path('manage/depot/<int:depot_id>/subscription', manage.DepotSubscriptionView.as_view(),
          name='manage-depot-subs'),
+
     # /manage/area
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
     path('manage/area/<int:area_id>/member/remove', manage.remove_area_member, name='manage-area-member-remove'),

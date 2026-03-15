@@ -385,9 +385,31 @@ ENFORCE_MAIL_CONFIRMATION
 Membership
 ----------
 
+MEMBERSHIP
+^^^^^^^^^^
+  Membership configuration
+
+  The setting takes a dictionary of key-value pairs:
+    - ``'enable'``: enable all membership related functions (Bool)
+    - ``'required_shares'``: amount of shares required for a membership (Integer)
+    - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
+    - ``'fee'``: yearly membership fee (Float, Integer or String)
+
+  default value
+
+  .. code-block:: python
+
+        {
+            'enable': True,
+            'required_shares': 1,
+            'required_on_signup': True,
+            'fee': 0,
+        }
+
+
 BASE_FEE
 ^^^^^^^^
-  Yearly fee for members without a subscription
+  Yearly fee for anybody without a subscription, regardless of membership status.
 
   Type: Integer, Float or String
 
@@ -651,8 +673,8 @@ VOCABULARY
   .. code-block:: python
 
     {
-        'member': 'Mitglied',
-        'member_pl' : 'Mitglieder',
+        'member': 'Konto',
+        'member_pl' : 'Konten',
         'assignment' : 'Arbeitseinsatz',
         'assignment_pl' : 'Arbeitseinsätze',
         'share' : 'Anteilschein',
@@ -664,6 +686,8 @@ VOCABULARY
         'price' : 'Betriebsbeitrag',
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
+        'membership' : 'Mitgliedschaft',
+        'membership_pl' : 'Mitgliedschaften',
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
         'package': 'Tasche',

@@ -13,6 +13,7 @@ from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignmen
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
@@ -62,7 +63,7 @@ class JuntagricoTestCase(TestCase):
         cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod
-    def create_member(email, **kwargs):
+    def create_member(email, with_membership=False, **kwargs):
         member_data = {'first_name': 'first_name',
                        'last_name': 'last_name',
                        'email': email,
@@ -74,7 +75,16 @@ class JuntagricoTestCase(TestCase):
                        'confirmed': True,
                        }
         member_data.update(kwargs)
-        return Member.objects.create(**member_data)
+        member = Member.objects.create(**member_data)
+        if with_membership:
+            membership_data = {
+                'activation_date': '2026-03-12',
+                'number': 1
+            }
+            if isinstance(with_membership, dict):
+                membership_data |= with_membership
+            Membership.objects.create(account=member, **membership_data)
+        return member
 
     @staticmethod
     def create_paid_share(member, **kwargs):
