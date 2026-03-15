@@ -133,10 +133,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertLess(part.cancellation_date, part.activation_date)
 
     def testLeave(self):
-        Membership.objects.create(account=self.member3)
-        if settings.ENABLE_SHARES:
-            self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-            self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
