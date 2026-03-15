@@ -4,11 +4,11 @@ from django import forms
 from django.utils.html import format_html_join, format_html
 from django.utils.translation import gettext_lazy
 
-from . import HorizontalForm, ShareOrderForm
+from . import HorizontalFormMixin, ShareOrderForm
 from ..config import Config
 
 
-class MembershipForm(HorizontalForm):
+class MembershipForm(HorizontalFormMixin, forms.Form):
     membership = forms.BooleanField()
 
     documents = [

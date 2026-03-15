@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
         {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
     {% vocabulary "subscription" as v_subscription %}
     <div class="row mb-3">
@@ -14,7 +16,7 @@
             {% blocktrans trimmed %}
                 Hier kannst du dein/e/n {{ v_subscription }} verlassen.
             {% endblocktrans %}
-            {% if request.user.member.membership.uncanceled.exists %}
+            {% if request.user.member.membership.not_canceled.exists %}
                 {% vocabulary "member_type" as v_member_type %}
                 {% enriched_organisation "D" as v_d_enriched_organisation %}
                 {% blocktrans trimmed %}

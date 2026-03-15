@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -198,7 +198,21 @@ def remove_area_member(request, area_id):
 class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_member', 'juntagrico.change_member']]
     template_name = 'juntagrico/manage/member/canceled.html'
-    queryset = Member.objects.canceled
+
+    def get_queryset(self):
+        today = datetime.date.today()
+        queryset = Member.objects.canceled().annotate(has_subscription=Exists(
+            SubscriptionMembership.objects.filter(member=OuterRef('pk')).exclude(leave_date__lte=today)
+        ))
+        if Config.enable_shares():
+            queryset = queryset.annotate(share_count=Count(
+                'share', filter=Q(share__paid_date__lte=today) & ~Q(share__payback_date__lte=today)
+            ))
+        if Config.membership('enable'):
+            queryset = queryset.annotate(membership=Exists(
+                Membership.objects.filter(account=OuterRef('pk')).active()
+            ))
+        return queryset
 
 
 @permission_required('juntagrico.change_member')

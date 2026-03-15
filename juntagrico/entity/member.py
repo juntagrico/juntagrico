@@ -111,6 +111,11 @@ class Member(JuntagricoBaseModel):
         )
 
     @property
+    def shares(self):
+        """ forward compatibility """
+        return self.share_set
+
+    @property
     def active_shares(self):
         """ :return: shares that have been paid by member and not canceled AND paid back yet
         """
@@ -147,10 +152,6 @@ class Member(JuntagricoBaseModel):
         return self.active_shares.count()
 
     @property
-    def is_cooperation_member(self):
-        return self.active_shares_count > 0
-
-    @property
     def usable_shares(self):
         """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
@@ -175,7 +176,12 @@ class Member(JuntagricoBaseModel):
 
     @property
     def cancellable_shares_count(self):
-        return self.usable_shares_count - max(self.required_shares_count, 1)
+        is_member = Config.membership('enable') and self.memberships.not_canceled().exists()
+        required_shares = max(
+            self.required_shares_count,
+            Config.membership('required_shares') if is_member else 0,
+        )
+        return self.shares.usable().count() - required_shares
 
     @property
     def subscription_future(self):
@@ -346,8 +352,10 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return check_sub_membership_consistency(self)
 
     def can_leave(self):
-        enough_shares_to_leave = self.subscription.share_overflow - self.member.share_set.usable().count() >= 0
-        return self.leave_date is None and self.member.is_cooperation_member and enough_shares_to_leave
+        return self.leave_date is None and (
+            not Config.enable_shares() or
+            self.subscription.share_overflow - self.member.shares.usable().count() >= 0
+        )
 
     def waiting(self, date=None):
         return self.join_date is None or self.join_date > (date or datetime.date.today())

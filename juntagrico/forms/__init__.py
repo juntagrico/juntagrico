@@ -74,7 +74,7 @@ class ExtendableFormMixin(metaclass=ExtendableFormMetaclass):
         return super().clean()
 
 
-class HorizontalForm(Form):
+class HorizontalFormMixin:
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.label_class = 'col-md-3'
