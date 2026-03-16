@@ -3,12 +3,12 @@
 {% load juntagrico.config %}
 {% block content %}
 {% trans "Hallo" %}
-{% blocktrans with v_membership=vocabulary.membership e=member.email k=member.signup_comment %}
-Soeben hat {{ member }} die {{ v_membership }} beantragt.
+{% blocktrans with v_membership=vocabulary.membership e=account.email k=account.signup_comment %}
+Soeben hat {{ account }} die {{ v_membership }} beantragt.
 E-Mail: {{ e }}
 Kommentar: {{ k }}
 {% endblocktrans %}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}

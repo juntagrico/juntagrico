@@ -5,7 +5,7 @@ from juntagrico.config import Config
 from juntagrico.entity.membership import Membership
 from juntagrico.forms import CoopMemberCancellationForm, NonCoopMemberCancellationForm
 from juntagrico.forms.signup import CreateMembershipForm, CreateMembershipWithSharesForm
-from juntagrico.signals import created
+from juntagrico.mailer import adminnotification
 from juntagrico.util.management import create_share
 from juntagrico.util.temporal import next_membership_end_date
 
@@ -34,7 +34,7 @@ def create(request):
                 membership.save()
             else:
                 membership = Membership.objects.create(account=account)
-            created.send(Membership, instance=membership)
+            adminnotification.membership_created(membership)
             return redirect('profile')
     else:
         form = form_class()

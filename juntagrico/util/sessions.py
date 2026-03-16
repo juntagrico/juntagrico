@@ -7,7 +7,6 @@ from juntagrico.entity.membership import Membership
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
 from juntagrico.mailer import adminnotification, membernotification
-from juntagrico.signals import created
 from juntagrico.util.management import create_share, create_subscription_parts
 
 
@@ -178,7 +177,7 @@ class SignupManager(SessionManager):
             password = member.set_password()
         if self.get('membership'):
             membership = Membership.objects.create(account=member)
-            created.send(Membership, instance=membership)
+            adminnotification.membership_created(membership)
         return MemberDetails(member, password)
 
     def apply_co_member(self):

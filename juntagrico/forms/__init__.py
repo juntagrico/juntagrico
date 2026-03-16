@@ -23,11 +23,11 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
-from juntagrico.entity.membership import Membership
+from juntagrico.entity.membership import Membership as Membership
 from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
-from juntagrico.signals import canceled
+from juntagrico.signals import canceled as canceled
 from juntagrico.util.temporal import get_business_year, get_business_date_range
 
 
@@ -120,7 +120,7 @@ class AbstractMemberCancellationForm(ModelForm):
                 self.instance.leave_subscription(sub)
         if membership := self.instance.memberships.active().first():
             membership.cancel()
-            canceled.send(Membership, instance=membership, message=self.cleaned_data.get('message'))
+            adminnotification.membership_canceled(membership, self.cleaned_data.get('message'))
         return super().save(commit)
 
 

@@ -3,9 +3,9 @@
 {% block content %}
 {% trans "Hallo" %}
 
-{% blocktrans %}Soeben hat {{ member }} die Mitgliedschaft gekündet.{% endblocktrans %}
-{% trans "E-Mail:" %} {{ member.email }}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
+{% blocktrans %}Soeben hat {{ account }} die Mitgliedschaft gekündet.{% endblocktrans %}
+{% trans "E-Mail:" %} {{ account.email }}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
 
 {% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
 {{ message }}

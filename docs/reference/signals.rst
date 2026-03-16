@@ -324,45 +324,6 @@ Default receivers:
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
 
 
-Membership signals
-------------------
-
-created
-^^^^^^^
-
-Sender: Membership
-
-Trigger: A membership is requested during signup or from an existing account
-
-Arguments:
-
-* instance: The requested membership
-
-Default receivers:
-
-* on_membership_created: :ref:`Notify <reference-notifications-membership-created>` users with
-  permission :ref:`notified_on_membership_creation <reference-permissions-notified_on_membership_creation>` via email.
-
-
-canceled
-^^^^^^^^
-
-Sender: Membership
-
-Trigger: Member cancels their membership
-
-Arguments:
-
-* instance: The membership that was canceled
-* message (optional): The message the member left on cancellation
-
-Default receivers:
-
-* on_membership_canceled: :ref:`Notify <reference-notifications-membership-canceled>` users with
-  permission :ref:`notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>` via email.
-
-
-
 Management Command signals
 --------------------------
 
