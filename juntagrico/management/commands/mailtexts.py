@@ -230,13 +230,13 @@ class Command(BaseCommand):
         if 'membership' in selected:
             print('*** juntagrico/mails/admin/membership/created.txt ***')
             print(get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
-                'member': member
+                'account': member
             })))
             print()
 
             print('*** juntagrico/mails/admin/membership/canceled.txt ***')
             print(get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
-                'member': member,
+                'account': member,
                 'message': 'Nachricht'
             })))
             print()

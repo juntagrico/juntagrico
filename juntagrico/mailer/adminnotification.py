@@ -104,23 +104,25 @@ def member_canceled(member, message='', **kwargs):
 
 
 @requires_someone_with_perm('notified_on_membership_creation')
-def membership_created(membership):
+def membership_created(membership, emails=None):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
         get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
             'account': membership.account
         })),
+        bcc=emails or []
     ).send()
 
 
 @requires_someone_with_perm('notified_on_membership_cancellation')
-def membership_canceled(membership, message=''):
+def membership_canceled(membership, message='', emails=None):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
         get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
             'account': membership.account,
             'message': message
         })),
+        bcc=emails or []
     ).send()
 
 
