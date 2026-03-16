@@ -1,9 +1,20 @@
 {% extends "./show.html" %}
+{% load juntagrico.config %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.snippets %}
 
 {% block content %}
+    {% if 'membership_deactivated'|notified %}
+        <div class="alert alert-secondary">
+            <i class="bi bi-envelope"></i>
+            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+                {{ v_member_type_pl }} werden bei Deaktivierung automatisch per E-Mail benachrichtigt.
+            {% endblocktrans %}
+        </div>
+    {% endif %}
+
+
     {% action_date request %}
     {{ block.super }}
 {% endblock %}

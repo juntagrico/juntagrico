@@ -125,6 +125,7 @@ def membership_activate(request, change_date):
     memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
     for membership in memberships:
         membership.activate(change_date)
+        membernotification.membership_activated(membership)
     return return_to_previous_location(request)
 
 
@@ -141,6 +142,7 @@ def membership_deactivate(request, change_date):
     memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
     for membership in memberships:
         membership.deactivate(change_date)
+        membernotification.membership_deactivated(membership)
     return return_to_previous_location(request)
 
 

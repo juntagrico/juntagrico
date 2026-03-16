@@ -293,6 +293,8 @@ class Config:
         default_notifications = [
             'job_subscription_changed',
             'job_unsubscribed',
+            'membership_activated',
+            'membership_deactivated',
         ] + [
             # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
             FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()

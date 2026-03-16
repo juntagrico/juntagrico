@@ -241,4 +241,16 @@ class Command(BaseCommand):
             })))
             print()
 
+            print('*** juntagrico/mails/member/membership/activated.txt ***')
+            print(get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
+                'account': member
+            })))
+            print()
+
+            print('*** juntagrico/mails/member/membership/deactivated.txt ***')
+            print(get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
+                'account': member,
+            })))
+            print()
+
         transaction.set_rollback(True)  # force rollback

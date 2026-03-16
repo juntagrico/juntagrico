@@ -179,6 +179,7 @@ class MembershipAdminTests(JuntagricoTestCase):
         self.assertPost(reverse('manage-membership-activate'), {'membership_ids': membership.id}, 302)
         membership.refresh_from_db()
         self.assertTrue(membership.active)
+        self.assertEqual(len(mail.outbox), 1)  # member notification
 
     def testMembershipManageActive(self):
         self.assertGet(reverse('manage-membership-active'), 200)
@@ -189,6 +190,7 @@ class MembershipAdminTests(JuntagricoTestCase):
         self.assertPost(reverse('manage-membership-deactivate'), {'membership_ids': membership.id}, 302)
         membership.refresh_from_db()
         self.assertTrue(membership.inactive)
+        self.assertEqual(len(mail.outbox), 1)  # member notification
 
     def testMembershipManageInactive(self):
         self.assertGet(reverse('manage-membership-archive'), 200)

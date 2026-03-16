@@ -929,6 +929,8 @@ DISABLE_NOTIFICATIONS
 
   - `'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message.
   - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
+  - `'membership_activated'`: Don't notify new members when their membership is activated.
+  - `'membership_deactivated'`: Don't notify leaving members when their membership is deactivated.
 
   .. note::
     Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
