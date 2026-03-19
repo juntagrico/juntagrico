@@ -3,9 +3,9 @@ from django.db import transaction
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
-from juntagrico.entity.membership import Membership
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
+from juntagrico.forms.signup import MembershipForm
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.util.management import create_share, create_subscription_parts
 
@@ -102,6 +102,11 @@ class SignupManager(SessionManager):
             co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
+    def _membership_form(self):
+        form = MembershipForm(False, {'membership': self.data.get('membership', False)})
+        form.full_clean()
+        return form
+
     def requires_membership(self):
         return Config.membership('enable') and (
             Config.membership('required_on_signup') or
@@ -176,8 +181,8 @@ class SignupManager(SessionManager):
             member = member_form.save()
             password = member.set_password()
         if self.get('membership'):
-            membership = Membership.objects.create(account=member)
-            adminnotification.membership_created(membership)
+            membership_form = self._membership_form()
+            membership_form.save(member)
         return MemberDetails(member, password)
 
     def apply_co_member(self):

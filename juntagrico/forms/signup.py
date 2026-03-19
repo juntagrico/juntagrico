@@ -6,6 +6,9 @@ from django.utils.translation import gettext_lazy
 
 from . import HorizontalFormMixin, ShareOrderForm
 from ..config import Config
+from ..entity.membership import Membership
+from ..mailer import adminnotification
+from ..util.management import create_share
 
 
 class MembershipForm(HorizontalFormMixin, forms.Form):
@@ -54,6 +57,16 @@ class MembershipForm(HorizontalFormMixin, forms.Form):
         else:
             return cls.text['accept_wo_docs'].format(organization=Config.organisation_long_name())
 
+    def save(self, account):
+        # if there is a membership that has not been deactivated yet, keep that one
+        if membership := account.memberships.active_or_requested().first():
+            membership.deactivation_date = None
+            membership.cancellation_date = None
+            membership.save()
+        else:
+            membership = Membership.objects.create(account=account)
+        adminnotification.membership_created(membership)
+
 
 class CreateMembershipForm(MembershipForm):
     text = MembershipForm.text | {
@@ -87,3 +100,8 @@ class CreateMembershipWithSharesForm(ShareOrderForm, CreateMembershipForm):
                 super().__init__(required_shares, existing_shares, *args, **kwargs)
 
         return BoundCreateMembershipWithSharesForm
+
+    def save(self, account):
+        if ordered_shares := self.cleaned_data.get('of_member'):
+            create_share(account, ordered_shares)
+        super().save(account)

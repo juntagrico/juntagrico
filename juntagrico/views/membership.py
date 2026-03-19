@@ -2,11 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from juntagrico.config import Config
-from juntagrico.entity.membership import Membership
 from juntagrico.forms import CoopMemberCancellationForm, NonCoopMemberCancellationForm
 from juntagrico.forms.signup import CreateMembershipForm, CreateMembershipWithSharesForm
-from juntagrico.mailer import adminnotification
-from juntagrico.util.management import create_share
 from juntagrico.util.temporal import next_membership_end_date
 
 
@@ -25,16 +22,7 @@ def create(request):
     if request.method == 'POST':
         form = form_class(data=request.POST)
         if form.is_valid():
-            if ordered_shares := form.cleaned_data.get('of_member'):
-                create_share(account, ordered_shares)
-            # if there is a membership that has not been deactivated yet, keep that one
-            if membership := account.memberships.active_or_requested().first():
-                membership.deactivation_date = None
-                membership.cancellation_date = None
-                membership.save()
-            else:
-                membership = Membership.objects.create(account=account)
-            adminnotification.membership_created(membership)
+            form.save(account)
             return redirect('profile')
     else:
         form = form_class()
