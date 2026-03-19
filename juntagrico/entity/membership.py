@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
 from juntagrico.entity import notifiable, SimpleStateModel
+from juntagrico.lifecycle.membership import check_membership_consistency
 from juntagrico.queryset.membership import MembershipQueryset
 
 
@@ -27,6 +28,9 @@ class Membership(SimpleStateModel):
 
     def __str__(self):
         return gettext('{0} ({1})').format(self.id, self.state_text)
+
+    def clean(self):
+        return check_membership_consistency(self)
 
     def cancel(self, date=None, commit=True):
         date = date or datetime.date.today()

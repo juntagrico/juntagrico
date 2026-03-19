@@ -3,12 +3,14 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from . import JuntagricoTestCase
+from ..entity.membership import Membership
 
 
 class MembershipTests(JuntagricoTestCase):
@@ -194,3 +196,35 @@ class MembershipAdminTests(JuntagricoTestCase):
 
     def testMembershipManageInactive(self):
         self.assertGet(reverse('manage-membership-archive'), 200)
+
+    def testSecondMembership(self):
+        membership = Membership.objects.create(account=self.member_inactive)
+        membership.activate()
+        Membership.objects.create(
+            account=self.member_soon_active,
+            activation_date='2026-02-13',
+            cancellation_date='2026-02-15',
+            deactivation_date='2026-02-20',
+        )
+
+    def testOverlappingMembershipFails(self):
+        with self.assertRaises(ValidationError) as validation_error:
+            Membership.objects.create(account=self.member_requested)
+        self.assertEqual(validation_error.exception.code, 'overlap')
+        with self.assertRaises(ValidationError) as validation_error:
+            Membership.objects.create(account=self.member_active)
+        self.assertEqual(validation_error.exception.code, 'overlap')
+        with self.assertRaises(ValidationError) as validation_error:
+            Membership.objects.create(account=self.member_soon_inactive)
+        self.assertEqual(validation_error.exception.code, 'overlap')
+        with self.assertRaises(ValidationError) as validation_error:
+            Membership.objects.create(account=self.member_inactive, activation_date='2026-03-10')
+        self.assertEqual(validation_error.exception.code, 'overlap')
+        with self.assertRaises(ValidationError) as validation_error:
+            Membership.objects.create(
+                account=self.member_active,
+                activation_date='2026-03-10',
+                cancellation_date='2026-03-10',
+                deactivation_date='2026-03-16',
+            )
+        self.assertEqual(validation_error.exception.code, 'overlap')
