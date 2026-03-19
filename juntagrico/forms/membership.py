@@ -1,10 +1,13 @@
+import datetime
+
 from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field
 from django import forms
 from django.utils.html import format_html_join, format_html
 from django.utils.translation import gettext_lazy
 
-from . import HorizontalFormMixin, ShareOrderForm
+from . import HorizontalFormMixin, ShareOrderForm, JuntagricoDateWidget
 from ..config import Config
 from ..entity.membership import Membership
 from ..mailer import adminnotification
@@ -105,3 +108,27 @@ class CreateMembershipWithSharesForm(ShareOrderForm, CreateMembershipForm):
         if ordered_shares := self.cleaned_data.get('of_member'):
             create_share(account, ordered_shares)
         super().save(account)
+
+
+class CancelAndDeactivateForm(forms.ModelForm):
+    deactivate = forms.BooleanField(initial=False, required=False, label=gettext_lazy('Deaktivieren?'))
+    membership_ids = forms.CharField(required=True, widget=forms.HiddenInput())
+
+    class Meta:
+        model = Membership
+        fields = ('cancellation_date', 'deactivation_date')
+        widgets = {
+            'cancellation_date': JuntagricoDateWidget,
+            'deactivation_date': JuntagricoDateWidget,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['cancellation_date'].widget.attrs['max'] = datetime.date.today()
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'membership_ids',
+            'cancellation_date',
+            'deactivate',
+            'deactivation_date',
+        )

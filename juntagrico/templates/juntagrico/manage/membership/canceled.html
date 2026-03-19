@@ -4,21 +4,6 @@
 {% load static %}
 {% load juntagrico.snippets %}
 
-{% block content %}
-    {% if 'membership_deactivated'|notified %}
-        <div class="alert alert-secondary">
-            <i class="bi bi-envelope"></i>
-            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
-                {{ v_member_type_pl }} werden bei Deaktivierung automatisch per E-Mail benachrichtigt.
-            {% endblocktrans %}
-        </div>
-    {% endif %}
-
-
-    {% action_date request %}
-    {{ block.super }}
-{% endblock %}
-
 {% block inner_list_head %}
     <th class="filter">
         {% trans "Gekündigt am" %}
@@ -39,24 +24,10 @@
 
 {% block inner_list_entry %}
     <td>
-        {{ membership.cancellation_date }}
+        {{ membership.cancellation_date|date:"Y-m-d" }}
     </td>
     <td>
-        {% if membership.deactivation_date %}
-            <span>
-                {% blocktrans trimmed with deactivation_date=membership.deactivation_date %}
-                    Wird am {{ deactivation_date }} deaktiviert
-                {% endblocktrans %}
-            </span>
-        {% else %}
-            <span class="membership_id d-none">{{ membership.id }} {# space is required #}</span>
-            <form action="{% url 'manage-membership-deactivate' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger" name="membership_ids" value="{{ membership.id }}">
-                    {% trans "deaktivieren" %}
-                </button>
-            </form>
-        {% endif %}
+        {% include "juntagrico/manage/membership/snippets/button_deactivate.html" %}
     </td>
 {% endblock %}
 

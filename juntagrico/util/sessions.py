@@ -5,7 +5,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
-from juntagrico.forms.signup import MembershipForm
+from juntagrico.forms.membership import MembershipForm
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.util.management import create_share, create_subscription_parts
 

@@ -2,6 +2,9 @@
 {% load i18n %}
 {% load static %}
 
+{% block head %}
+{% endblock %}
+
 {% block inner_list_head %}
     <th class="filter">
         {% trans "Beantragt am" %}
@@ -34,15 +37,15 @@
 
 {% block inner_list_entry %}
     <td>
-        {{ membership.creation_date }}
+        {{ membership.creation_date|date:"Y-m-d" }}
     </td>
     <td>
-        {{ membership.activation_date }}
+        {{ membership.activation_date|date:"Y-m-d" }}
     </td>
     <td>
-        {{ membership.cancellation_date }}
+        {{ membership.cancellation_date|date:"Y-m-d" }}
     </td>
     <td>
-        {{ membership.deactivation_date }}
+        {{ membership.deactivation_date|date:"Y-m-d" }}
     </td>
 {% endblock %}

@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from juntagrico.config import Config
 from juntagrico.forms import CoopMemberCancellationForm, NonCoopMemberCancellationForm
-from juntagrico.forms.signup import CreateMembershipForm, CreateMembershipWithSharesForm
+from juntagrico.forms.membership import CreateMembershipForm, CreateMembershipWithSharesForm
 from juntagrico.util.temporal import next_membership_end_date
 
 

@@ -17,7 +17,7 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
-from juntagrico.forms.signup import MembershipForm
+from juntagrico.forms.membership import MembershipForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView

@@ -23,11 +23,9 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
-from juntagrico.entity.membership import Membership as Membership
 from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
-from juntagrico.signals import canceled as canceled
 from juntagrico.util.temporal import get_business_year, get_business_date_range
 
 
@@ -42,9 +40,9 @@ class JuntagricoDateWidget(DateInput):
     input_type = 'date'
 
     def format_value(self, value):
-        if isinstance(value, str):
-            return value
-        return value.strftime('%Y-%m-%d')
+        if isinstance(value, datetime.date):
+            return value.strftime('%Y-%m-%d')
+        return value
 
 
 class LinkButton(HTML):

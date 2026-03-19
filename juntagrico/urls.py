@@ -171,9 +171,10 @@ urlpatterns = [
     path('manage/subscription/depot/change/confirm/<int:subscription_id>', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm-single'),
 
     # /manage/membership
-    path('manage/membership', manage.MembershipView.as_view(), name='manage-membership-active'),
     path('manage/membership/requested', manage.MembershipRequestedView.as_view(), name='manage-membership-requested'),
     path('manage/membership/activate', manage.membership_activate, name='manage-membership-activate'),
+    path('manage/membership', manage.MembershipActiveView.as_view(), name='manage-membership-active'),
+    path('manage/membership/cancel/deactivate', manage.membership_cancel_and_deactivate, name='manage-membership-cancel-deactivate'),
     path('manage/membership/canceled', manage.MembershipCanceledView.as_view(), name='manage-membership-canceled'),
     path('manage/membership/deactivate', manage.membership_deactivate, name='manage-membership-deactivate'),
     path('manage/membership/archive', manage.MembershipArchiveView.as_view(), name='manage-membership-archive'),

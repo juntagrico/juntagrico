@@ -4,18 +4,19 @@
 {% load static %}
 {% load juntagrico.snippets %}
 
-{% block content %}
-    {% if 'membership_activated'|notified %}
-        <div class="alert alert-secondary">
-            <i class="bi bi-envelope"></i>
-            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
-                {{ v_member_type_pl }} werden bei Aktivierung automatisch per E-Mail benachrichtigt.
-            {% endblocktrans %}
-        </div>
-    {% endif %}
+{% block head %}
+    {% if perms.juntagrico.change_membership %}
+        {% if 'membership_activated'|notified %}
+            <div class="alert alert-secondary">
+                <i class="bi bi-envelope"></i>
+                {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+                    {{ v_member_type_pl }} werden bei Aktivierung automatisch per E-Mail benachrichtigt.
+                {% endblocktrans %}
+            </div>
+        {% endif %}
 
-    {% action_date request %}
-    {{ block.super }}
+        {% action_date request %}
+    {% endif %}
 {% endblock %}
 
 {% block inner_list_head %}
@@ -38,16 +39,16 @@
 
 {% block inner_list_entry %}
     <td>
-        {{ membership.creation_date }}
+        {{ membership.creation_date|date:"Y-m-d" }}
     </td>
     <td>
         {% if membership.activation_date %}
             <span>
-                {% blocktrans trimmed with activation_date=membership.activation_date %}
+                {% blocktrans trimmed with activation_date=membership.activation_date|date:"Y-m-d" %}
                     Wird am {{ activation_date }} aktiviert
                 {% endblocktrans %}
             </span>
-        {% else %}
+        {% elif perms.juntagrico.change_membership %}
             <span class="membership_id d-none">{{ membership.id }} {# space is required #}</span>
             <form action="{% url 'manage-membership-activate' %}" method="POST">
                 {% csrf_token %}

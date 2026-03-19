@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
+from django.views.generic.edit import FormMixin
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot, DepotCoordinator
@@ -22,6 +23,7 @@ from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
@@ -110,6 +112,42 @@ class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
         if Config.enable_shares():
             context_data['required_shares'] = Config.membership('required_shares')
         return context_data
+
+
+class MembershipActiveView(FormMixin, MembershipView):
+    form_class = forms.membership.CancelAndDeactivateForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        today = datetime.date.today()
+        form_kwargs['initial'] = {
+            'cancellation_date': today,
+            'deactivation_date': self.request.session.get('changedate') or today,
+        }
+        return form_kwargs
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+def membership_cancel_and_deactivate(request):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        form = forms.membership.CancelAndDeactivateForm(request.POST, instance=membership)
+        if form.is_valid():
+            form.save()
+            if form.cleaned_data['deactivation_date'] is not None:
+                message = _('{membership} erfolgreich gekündigt und deaktiviert.').format(membership=Config.vocabulary('membership'))
+            else:
+                message = _('{membership} erfolgreich gekündigt.').format(membership=Config.vocabulary('membership'))
+            messages.success(request, message)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, f'{error}')
+                    else:
+                        messages.error(request, f'{field}: {error}')
+    return return_to_previous_location(request)
 
 
 class MembershipRequestedView(MembershipView):

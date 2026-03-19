@@ -11,8 +11,28 @@
 {% endblock %}
 
 {% block content %}
+    {% block head %}
+        {% if perms.juntagrico.change_membership %}
+            {% if 'membership_deactivated'|notified %}
+                <div class="alert alert-secondary">
+                    <i class="bi bi-envelope"></i>
+                    {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+                        {{ v_member_type_pl }} werden bei Deaktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                </div>
+            {% endif %}
+
+            {% action_date request %}
+        {% endif %}
+    {% endblock %}
+
     {% include 'juntagrico/manage/member/snippets/toggle_buttons.html' %}
     {{ block.super }}
+
+    {# Modals #}
+    {% if perms.juntagrico.change_membership and form %}
+        {% include "juntagrico/manage/membership/modals/cancel_and_deactivate.html" with name='cancellation_and_deactivation' %}
+    {% endif %}
 {% endblock %}
 
 {% block list %}
@@ -39,6 +59,11 @@
                         <th class="filter">
                             {% trans "Gekündigt?" %}
                         </th>
+                        {% if perms.juntagrico.change_membership %}
+                            <th class="filter">
+                                {% trans "Aktionen" %}
+                            </th>
+                        {% endif %}
                     {% endblock %}
                     <th class="filter">
                         {% trans "Notizen" %}
@@ -68,6 +93,11 @@
                         <th>
                             {% trans "Gekündigt?" %}
                         </th>
+                        {% if perms.juntagrico.change_membership %}
+                            <th>
+                                {% trans "Aktionen" %}
+                            </th>
+                        {% endif %}
                     {% endblock %}
                     <th>
                         {% trans "Notizen" %}
@@ -92,15 +122,26 @@
                         {% endif %}
                         {% block inner_list_entry %}
                             <td>
-                                {{ membership.activation_date }}
+                                {{ membership.activation_date|date:"Y-m-d" }}
                             </td>
                             <td>
                                 {% if membership.cancellation_date %}
-                                    {% blocktrans with date=membership.cancellation_date %}Am {{ date }}{% endblocktrans %}
+                                    {% blocktrans with date=membership.cancellation_date|date:"Y-m-d" %}Am {{ date }}{% endblocktrans %}
                                 {% else %}
                                     {% trans "Nein" %}
                                 {% endif %}
                             </td>
+                            {% if perms.juntagrico.change_membership %}
+                                <td>
+                                    {% if membership.cancellation_date %}
+                                        {% include "juntagrico/manage/membership/snippets/button_deactivate.html" %}
+                                    {% else %}
+                                        <a href="#" class="btn btn-outline-danger" data-cancel-id="{{ membership.id }}">
+                                            {% trans "kündigen" %}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         {% endblock %}
                         <td>
                             {{ membership.notes }}
@@ -110,4 +151,39 @@
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    const re = /(\d*)\s*\[(\d+)\]/g;
+    config.columnDefs = [{
+        targets: 0,
+        type: 'html-num',
+        render: function (data, type, row, meta) {
+            return type === 'sort'
+                ? data.replace(re, function(match, number, id) {
+                    return number ? parseInt(number) * 1000000 + parseInt(id) : id
+                })
+                : data;
+        }
+    }]
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    {% if perms.juntagrico.change_membership %}
+        <script type="text/javascript">
+            // modal to cancel and deactivate
+            $('[data-cancel-id]').on('click', function(event) {
+                $('#cancellation_and_deactivation_modal').modal('show')
+                $('#id_membership_ids').val($(this).data('cancel-id'))
+                return false
+            })
+            // enable/disable deactivation_date
+            $('#id_deactivate').change(function() {
+                $('#id_deactivation_date').prop('disabled', !this.checked);
+                $('#div_id_deactivation_date').toggle(this.checked)
+            }).trigger('change')
+        </script>
+    {% endif %}
 {% endblock %}
