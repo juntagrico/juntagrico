@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy
 from . import HorizontalFormMixin, ShareOrderForm, JuntagricoDateWidget
 from ..config import Config
 from ..entity.membership import Membership
-from ..mailer import adminnotification
+from ..mailer import adminnotification, membernotification
 from ..util.management import create_share
 
 
@@ -132,3 +132,8 @@ class CancelAndDeactivateForm(forms.ModelForm):
             'deactivate',
             'deactivation_date',
         )
+
+    def save(self, commit=True):
+        instance = super().save(commit)
+        if instance.deactivation_date is not None:
+            membernotification.membership_deactivated(instance)

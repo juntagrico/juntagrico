@@ -76,6 +76,7 @@ class ManageListTests(JuntagricoTestCase):
 
     def testAccountCanceledList(self):
         self.create_member('canceled_member@email.com', cancellation_date='2026-03-14')
+        self.create_member('active_member@email.com', True, cancellation_date='2026-03-14')
         self.assertGet(reverse('manage-member-canceled'))
         self.assertGet(reverse('manage-member-canceled'), member=self.member2, code=403)
 

@@ -29,6 +29,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
     def testPrimaryChange(self):
         self.assertGet(reverse('primary-change', args=[self.sub.pk]))
         Membership.objects.create(account=self.member3)
+        self.assertGet(reverse('primary-change', args=[self.sub.pk]))
         self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary_member': self.member3.pk}, 302)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.primary_member, self.member3)

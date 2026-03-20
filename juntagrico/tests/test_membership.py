@@ -185,6 +185,36 @@ class MembershipAdminTests(JuntagricoTestCase):
 
     def testMembershipManageActive(self):
         self.assertGet(reverse('manage-membership-active'), 200)
+        membership = self.member_active.memberships.first()
+        self.assertPost(reverse('manage-membership-cancel-deactivate'), {
+            'membership_ids': membership.id,
+            'cancellation_date': '2026-03-19',
+        }, 302)
+        membership.refresh_from_db()
+        self.assertTrue(membership.canceled)
+        self.assertEqual(len(mail.outbox), 0)  # no notification
+
+    def testMembershipManageCancelAndDeactivate(self):
+        membership = self.member_active.memberships.first()
+        self.assertPost(reverse('manage-membership-cancel-deactivate'), {
+            'membership_ids': membership.id,
+            'cancellation_date': '2026-03-19',
+            'deactivation_date': '2026-03-19'
+        }, 302)
+        membership.refresh_from_db()
+        self.assertTrue(membership.inactive)
+        self.assertEqual(len(mail.outbox), 1)  # member notification
+
+    def testMembershipManageCancelAndDeactivateInvalid(self):
+        # fails because cancellation date is missing
+        membership = self.member_active.memberships.first()
+        self.assertPost(reverse('manage-membership-cancel-deactivate'), {
+            'membership_ids': membership.id,
+            'deactivation_date': '2026-03-19'
+        }, 302)
+        membership.refresh_from_db()
+        self.assertTrue(membership.active)
+        self.assertEqual(len(mail.outbox), 0)  # no notification
 
     def testMembershipManageCanceled(self):
         self.assertGet(reverse('manage-membership-canceled'), 200)
