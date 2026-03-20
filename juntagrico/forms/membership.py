@@ -17,9 +17,6 @@ from ..util.management import create_share
 class MembershipForm(HorizontalFormMixin, forms.Form):
     membership = forms.BooleanField()
 
-    documents = [
-        (gettext_lazy('die Statuten'), Config.bylaws),
-    ]
     text = {
         'accept_with_docs': gettext_lazy(
             'Ich habe {documents} gelesen und erkläre meinen Willen, "{organization}" beizutreten. '
@@ -47,11 +44,15 @@ class MembershipForm(HorizontalFormMixin, forms.Form):
         )
 
     @classmethod
+    def get_documents(cls):
+        return Config.documents('membership-signup-accept', True)
+
+    @classmethod
     def get_label(cls):
         documents_html = format_html_join(
             ' ' + cls.text['and'] + ' ',
-            '<a target="_blank" href="{}">{}</a>',
-            ((link(), text) for text, link in cls.documents if link().strip())
+            '<a target="_blank" href="{1}">{0}</a>',
+            cls.get_documents()
         )
         if documents_html:
             return format_html(

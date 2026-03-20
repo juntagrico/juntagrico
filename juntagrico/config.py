@@ -4,7 +4,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico import defaults
 
@@ -302,6 +302,34 @@ class Config:
         enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
         disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])
         return name in enabled_notifications and name not in disabled_notifications
+
+    @classmethod
+    def documents(cls, tag, in_sentence=False):
+        documents = getattr(settings, 'DOCUMENTS', [])
+
+        # get values from dedicated settings
+        if business_regulations := cls.business_regulations().strip():
+            documents.append(((gettext('Betriebsreglement'), gettext('das Betriebsreglement')), business_regulations, 'account-signup-accept subscription'))
+        if bylaws := cls.bylaws().strip():
+            documents.append(((gettext('Statuten'), gettext('die Statuten')), bylaws, 'membership-signup-accept account subscription'))
+        if gdpr_info := cls.gdpr_info().strip():
+            documents.append(((gettext('DSGVO Infos'), gettext('die DSGVO Infos')), gdpr_info, 'account-signup-accept subscription'))
+        if faq_doc := cls.faq_doc().strip():
+            documents.append((gettext('Häufig gestellte Fragen'), faq_doc, 'account'))
+        if extra_sub_info := cls.extra_sub_info().strip():
+            documents.append((gettext('Infos zu den Zusatz-Abos'), extra_sub_info, 'extrasub'))
+        if activity_area_info := cls.activity_area_info().strip():
+            documents.append((gettext('Infoblatt'), activity_area_info, 'activityarea'))
+
+        normalized_documents = []
+        for names, link, tags in documents:
+            if tag in tags:
+                if isinstance(names, (list, tuple)):
+                    name = names[int(in_sentence)]
+                else:
+                    name = names
+                normalized_documents.append((name, link))
+        return normalized_documents
 
     # demo settings
     demouser = _get_setting('DEMO_USER')

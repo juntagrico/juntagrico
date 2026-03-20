@@ -41,23 +41,7 @@
         <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
     {% endif %}
 
-    {% config "bylaws" as c_bylaws %}
-    {% if c_bylaws.strip %}
-        {% block read_instructions %}
-            <p>
-                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
-                    Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
-                {% endblocktrans %}
-            </p>
-            <ul>
-                <li>
-                    <a target="_blank" href="{{ c_bylaws|safe }}">
-                        {% trans "Statuten" %}
-                    </a>
-                </li>
-            </ul>
-        {% endblock %}
-    {% endif %}
+    {% include "juntagrico/my/membership/snippets/documents.html" %}
 {% endblock %}
 
 {% block content %}

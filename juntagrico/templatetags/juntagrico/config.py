@@ -31,6 +31,11 @@ def notified(key):
 
 
 @register.simple_tag
+def documents(tag):
+    return Config.documents(tag)
+
+
+@register.simple_tag
 def enriched_organisation(case):
     return eo(case)
 

@@ -14,7 +14,7 @@
     {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
     {# Documents #}
     {% block documents %}
-        {% include "juntagrico/snippets/documents.html" %}
+        {% include "juntagrico/snippets/documents.html" with tag='subscription' %}
     {% endblock %}
     {# Additional #}
     {% block extend %}

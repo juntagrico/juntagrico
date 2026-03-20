@@ -4,9 +4,7 @@
 {% block content %}
 {% config "enable_shares" as c_enable_shares %}
 {% contacts "for_members" as contact_email %}
-{% config "bylaws" as c_bylaws %}
-{% config "business_regulations" as c_business_regulations %}
-{% config "gdpr_info" as c_gdpr_info %}
+{% documents "account-signup" as c_documents %}
 {% config "faq_doc" as c_faq_doc %}
 {% config "organisation_name" as c_organisation_name %}
 {% enriched_organisation "D" as v_d_enriched_organisation %}
@@ -31,12 +29,10 @@
 {% trans "Damit bestätigst du dass du damit einverstanden bist" %}:
 - {% blocktrans %}dem/r {{ v_subscription }} beizutreten{% endblocktrans %}
 {% if shares %}- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}{% endif %}
-{% if c_bylaws.strip or c_business_regulations.strip or c_gdpr_info.strip %}
-{% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
-{% if c_bylaws.strip %} - {% trans "die Statuten" %} ({{ c_bylaws|safe }}){% endif %}
-{% if c_business_regulations.strip %} - {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }}){% endif %}
-{% if c_gdpr_info.strip %} - {% trans "die DSGVO Infos" %} ({{ c_gdpr_info|safe }}){% endif %}
-{% endif %}
+
+{% if c_documents %}{% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
+{% for name, link in c_documents %}- {{ name }} ({{ link|safe }})
+{% endfor %}{% endif %}
 
 {% blocktrans %}Solltest du irrtümlicherweise hier eingetragen worden sein, melde dies bitte {{ contact_email }}.{% endblocktrans %}
 

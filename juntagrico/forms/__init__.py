@@ -246,10 +246,6 @@ class RegisterMemberForm(MemberBaseForm):
     comment = CharField(required=False, max_length=4000, label=gettext_lazy('Kommentar'), widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
-    documents = [
-        (gettext_lazy('das Betriebsreglement'), Config.business_regulations),
-        (gettext_lazy('die DSGVO Infos'), Config.gdpr_info),
-    ]
     text = {
         'confirm_read': gettext_lazy('Ich habe {documents} gelesen.'),
         'and': gettext_lazy('und')
@@ -258,7 +254,7 @@ class RegisterMemberForm(MemberBaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         fields = ['comment']
-        if any(document().strip() for _, document in self.documents):
+        if len(self.get_documents()) > 0:
             self.fields['agb'].label = self.agb_label()
             fields.append('agb')
         else:
@@ -273,11 +269,15 @@ class RegisterMemberForm(MemberBaseForm):
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
     @classmethod
+    def get_documents(cls):
+        return Config.documents('account-signup-accept', True)
+
+    @classmethod
     def agb_label(cls):
         documents_html = format_html_join(
             ' ' + cls.text['and'] + ' ',
-            '<a target="_blank" href="{}">{}</a>',
-            ((link(), text) for text, link in cls.documents if link().strip())
+            '<a target="_blank" href="{1}">{0}</a>',
+            cls.get_documents()
         )
         return format_html(
             str(cls.text['confirm_read']), documents=documents_html, organization=Config.organisation_long_name()

@@ -223,6 +223,8 @@ Default receivers:
 * handle_share_created: :ref:`Notify <reference-notifications-share-created>` users
   with permission :ref:`notified_on_share_creation <reference-permissions-notified_on_share_creation>` via email.
 
+.. _reference-signals-share_canceled:
+
 share_canceled
 ^^^^^^^^^^^^^^
 
