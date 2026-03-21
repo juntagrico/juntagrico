@@ -28,7 +28,7 @@
     {% endblock %}
 
     {% block subscription %}
-        <h4>{{ vocabulary.subscription }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+        <h4>{{ vocabulary.subscription|capfirst }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
         <p>
         {% for type, amount in subscriptions.items %}
             {% include 'juntagrico/subscription/create/summary/snippets/part.html' %}
@@ -48,7 +48,7 @@
         {% endif %}
 
         {% block depot %}
-            <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            <h4>{{ vocabulary.depot|capfirst }} <a href="{% url 'cs-depot' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
             <p>{{ depot.name }}
                 {% depot_fee depot subscriptions "<br><strong>" "</strong>" %}
                 <br>{% trans 'Abholung jeweils am' %} {{ depot.pickup_display }}

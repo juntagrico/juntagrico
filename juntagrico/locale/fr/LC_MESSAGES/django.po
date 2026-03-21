@@ -734,7 +734,7 @@ msgstr "Coordinateurs"
 
 #: juntagrico/entity/depot.py:146
 msgid "bis"
-msgstr "jusqu'à"
+msgstr "jusqu'au"
 
 #: juntagrico/entity/depot.py:159 juntagrico/entity/jobs.py:86
 msgid "Kann Beschreibung ändern"
@@ -1238,7 +1238,7 @@ msgstr ""
 #: juntagrico/templates/juntagrico/subscription/create/select_start_date.html:27
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:60
 msgid "Gewünschtes Startdatum"
-msgstr ""
+msgstr "Date de début souhaitée"
 
 #: juntagrico/entity/subs.py:42
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:77
@@ -1547,7 +1547,7 @@ msgstr ""
 #: juntagrico/forms/__init__.py:349
 #, python-brace-format
 msgid "{co_member} hinzufügen"
-msgstr ""
+msgstr "Ajouter {co_member}"
 
 #: juntagrico/forms/__init__.py:511 juntagrico/forms/__init__.py:846
 #: juntagrico/templates/juntagrico/subscription/create/select_depot.html:38
@@ -3357,8 +3357,7 @@ msgstr ""
 #, python-format
 msgid "Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe"
 msgstr ""
-"A bientôt et meilleures salutations le groupe d'organisation "
-"%(c_organisation_name)s"
+"À bientôt et cordialement, l'équipe de %(c_organisation_name)s"
 
 #: juntagrico/templates/juntagrico/mails/member/job/unsubscribed.txt:5
 #, python-format
@@ -4595,7 +4594,7 @@ msgstr "Devenir %(v_member_type)s"
 #: juntagrico/templates/juntagrico/signup/member.html:15
 #, python-format
 msgid "Interessiert an %(v_d_enriched_organisation)s?"
-msgstr "Intéressé par %(v_d_enriched_organisation)s."
+msgstr "Intéressé par %(v_d_enriched_organisation)s ?"
 
 #: juntagrico/templates/juntagrico/signup/member.html:21
 #, python-format
@@ -4911,7 +4910,7 @@ msgstr "Sans %(v_subscription_pl)s"
 
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:54
 msgid "Abholung jeweils am"
-msgstr ""
+msgstr "Enlèvement : "
 
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:80
 #, python-format
@@ -5191,7 +5190,7 @@ msgstr ""
 #: juntagrico/templates/mails/member/share_created.txt:16
 #, python-format
 msgid "%(v_share)s mit Systemnummer %(sid)s"
-msgstr ""
+msgstr "%(v_share)s n° %(sid)s"
 
 #: juntagrico/templates/mails/admin/share_created.txt:8
 #, python-format
@@ -5265,7 +5264,7 @@ msgstr ""
 #: juntagrico/templates/mails/member/member_welcome.txt:11
 #, python-format
 msgid "Wir freuen uns, dich bei %(v_d_enriched_organisation)s zu begrüssen."
-msgstr "Nous sommes heureux de t'accueillir sur %(v_d_enriched_organisation)s."
+msgstr "Nous sommes ravis de t'accueillir chez %(v_d_enriched_organisation)s."
 
 #: juntagrico/templates/mails/member/co_member_welcome.txt:20
 #, python-format
@@ -5279,7 +5278,7 @@ msgstr ""
 #, python-format
 msgid "Um dich auf %(serverurl)s einloggen zu können benutze folgende Daten"
 msgstr ""
-"Pour pouvoir te connecter sur %(serverurl)s, utilise les données suivantes :"
+"Pour te connecter à %(serverurl)s, utilise les informations suivantes :"
 
 #: juntagrico/templates/mails/member/co_member_welcome.txt:28
 msgid ""
@@ -5334,7 +5333,7 @@ msgstr ""
 #: juntagrico/templates/mails/member/member_welcome.txt:22
 #, python-format
 msgid "Für weitere Fragen schreibe eine Mail an %(contact_email)s."
-msgstr "Pour toute autre question, envoie un e-mail à %(contact_email)s."
+msgstr "Pour toute question, envoie un e-mail à %(contact_email)s."
 
 #: juntagrico/templates/mails/member/depot_changed.txt:9
 #, python-format
@@ -5409,6 +5408,7 @@ msgstr ""
 msgid ""
 "Du hast bei %(v_d_enriched_organisation)s %(sc)s %(v_share_pl)s bestellt"
 msgstr ""
+"Tu as commandé %(sc)s %(v_share_pl)s chez %(v_d_enriched_organisation)s"
 
 #: juntagrico/templates/mails/member/share_created.txt:18
 #, python-format
