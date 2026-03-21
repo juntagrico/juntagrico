@@ -62,7 +62,7 @@
         {% endblock %}
 
         {% block co_member %}
-            <h4>{{ vocabulary.co_member_pl }}</h4>
+            <h4>{{ vocabulary.co_member_pl|capfirst }}</h4>
             {% for co_member in co_members %}
                 <p>{{ co_member.first_name }} {{ co_member.last_name }}
                     {% if not co_member.pk %}<a href="{% url 'cs-co-members' %}?mod&edit={{forloop.counter}}" class="edit"><i class="bi bi-pencil-square"></i></a>{% endif %}
@@ -103,7 +103,7 @@
     {% if c_enable_shares %}
         {% block shares %}
             {% config "share_price" as c_share_price %}
-            <h4>{% vocabulary "share_pl" %} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            <h4>{{ vocabulary.share_pl|capfirst }} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
             <p>
                 {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
                 <b>{{ shares.of_member|default:'Keine' }}</b>
