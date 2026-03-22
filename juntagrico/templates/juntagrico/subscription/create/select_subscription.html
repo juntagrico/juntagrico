@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    {% blocktrans with v_subscription=vocabulary.subscription %}Wähle deine {{ v_subscription }}-Bestandteile{% endblocktrans %}
+    {% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} zusammenstellen{% endblocktrans %}
 {% endblock %}
 
 {% block content %}
