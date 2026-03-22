@@ -102,7 +102,7 @@ def check_sub_primary(instance):
     if instance.pk:  # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
         if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
             raise ValidationError(
-                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden Bestandteil.'
                   ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
                     Config.vocabulary('subscription')),
                 code='invalid')
