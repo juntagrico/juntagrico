@@ -2,7 +2,6 @@ from django.db import transaction
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.member import Member
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
 from juntagrico.mailer import adminnotification, membernotification
@@ -94,10 +93,7 @@ class SignupManager(SessionManager):
     def co_members(self):
         co_members = []
         for c in self.get('co_members', []):
-            existing_shares = 0
-            if c.get('exists'):
-                co_member = Member.objects.get(email=c['email'])
-                existing_shares = co_member.active_shares_count
+            existing_shares = 0  # TODO: existing shares of invited is always assumed to be 0.
             co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
@@ -149,27 +145,23 @@ class SignupManager(SessionManager):
             password = member.set_password()
         return MemberDetails(member, password)
 
-    def apply_co_member(self):
-        co_members = []
-        for co_member_data in self.get('co_members', []):
-            if co_member_data.get('exists'):
-                # member exists
-                co_members.append(MemberDetails(Member.objects.get(email=co_member_data['email'])))
-            else:
-                # create new co-member
-                co_member = CoMemberBaseForm(co_member_data).save()
-                co_members.append(MemberDetails(co_member, co_member.set_password()))
-        return co_members
+    def apply_co_member(self, subscription):
+        invitees = []
+        shares = self.get('shares')
+        for i, co_member_data in enumerate(self.get('co_members', [])):
+            # create invite for co-member
+            form = CoMemberBaseForm(co_member_data)
+            form.instance.subscription = subscription
+            form.instance.shares = int(shares[f'of_co_member[{i}]'])
+            invitees.append(form.save())
+        return invitees
 
-    def apply_shares(self, member, co_members):
+    def apply_shares(self, member):
         shares = self.get('shares')
         member.share_count = int(shares['of_member'])
         create_share(member.member, member.share_count)
-        for i, co_member in enumerate(co_members):
-            co_member.share_count = int(shares[f'of_co_member[{i}]'])
-            create_share(co_member.member, co_member.share_count)
 
-    def apply_subscriptions(self, member, co_members):
+    def apply_subscriptions(self, member):
         subscription = None
         if self.has_parts():
             # create instance
@@ -178,8 +170,6 @@ class SignupManager(SessionManager):
             subscription.save()
             # let members join it
             member.member.join_subscription(subscription, primary=True)
-            for co_member in co_members:
-                co_member.member.join_subscription(subscription)
             # add parts
             create_subscription_parts(subscription, self.subscriptions())
             # add extra parts
@@ -194,8 +184,7 @@ class SignupManager(SessionManager):
         if member.password:
             membernotification.welcome(member.member, member.password)
         for co_member in co_members:
-            membernotification.welcome_co_member(co_member.member, co_member.password, co_member.share_count,
-                                                 new=co_member.password is not None)
+            membernotification.invite_co_member(co_member)
 
     @transaction.atomic
     def apply(self):
@@ -204,13 +193,13 @@ class SignupManager(SessionManager):
         """
         # create memberd
         member = self.apply_member()
-        # create co-members
-        co_members = self.apply_co_member()
         # create shares (notifies member and admin)
         if Config.enable_shares():
-            self.apply_shares(member, co_members)
+            self.apply_shares(member)
         # create subscription
-        subscription = self.apply_subscriptions(member, co_members)
+        subscription = self.apply_subscriptions(member)
+        # create invites for co-members
+        co_members = self.apply_co_member(subscription)
         # send emails and notifications
         self.send_emails(member, co_members, subscription)
 

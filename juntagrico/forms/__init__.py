@@ -20,9 +20,8 @@ from django.utils.translation import gettext as _, gettext_lazy, ngettext_lazy
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.jobs import ActivityArea
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, Invitee
 from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
@@ -215,7 +214,6 @@ class MemberBaseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.existing_member = None
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
@@ -310,6 +308,9 @@ class EditMemberForm(RegisterMemberForm):
 
 
 class CoMemberBaseForm(MemberBaseForm):
+    class Meta(MemberBaseForm.Meta):
+        model = Invitee
+
     def __init__(self, *args, existing_emails=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.existing_emails = existing_emails or []  # list of emails that can not be used
@@ -321,23 +322,6 @@ class CoMemberBaseForm(MemberBaseForm):
                 escape(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {co_members} verwendet.'))
                 .format(co_members=Config.vocabulary('co_member_pl'))), 'email_exists'
             )
-        existing_member = MemberDao.member_by_email(email)
-        if existing_member:
-            if existing_member.blocked:
-                raise ValidationError(mark_safe(
-                    escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive '
-                             '{subscription}-BezierIn. Bitte meldet euch bei {email}, '
-                             'wenn ihr bestehende {members} als {co_members} hinzufügen möchtet.')).format(
-                        subscription=Config.vocabulary('subscription'),
-                        email='<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
-                        members=Config.vocabulary('member_type_pl'),
-                        co_members=Config.vocabulary('co_member_pl')
-                    )),
-                    'has_active_subscription'
-                )
-            else:
-                # store existing member for reevaluation
-                self.existing_member = existing_member
         return email
 
     def clean(self):
@@ -352,7 +336,8 @@ class CoMemberBaseForm(MemberBaseForm):
 
 
 class AddCoMemberForm(CoMemberBaseForm):
-    shares = IntegerField(label=Config.vocabulary('share_pl'), required=False, min_value=0, initial=0)
+    class Meta(CoMemberBaseForm.Meta):
+        fields = (*MemberBaseForm.Meta.fields, 'shares')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,7 +8,7 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api, config
+from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, signup
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -20,6 +20,7 @@ urlpatterns = [
     # /signup
     path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
     path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
+    path('signup/invitation/<str:key>', signup.invitation, name='invitation'),
     path('signup/welcome/', create_subscription.welcome, name='welcome'),
     path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
     path('signup/external', create_subscription.create_external, name='signup-external'),

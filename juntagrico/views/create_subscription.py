@@ -236,16 +236,9 @@ class AddMemberView(SignupView, FormView):
             'edit': str(self.edit)
         }
 
-    def form_invalid(self, form):
-        if form.existing_member:  # use existing member if found
-            return self.form_valid(form)
-        return super().form_invalid(form)
-
     def form_valid(self, form):
         # create new member from form data
         data = form.data.dict()
-        if form.existing_member:
-            data.update(exists=True)
         return self._add_or_replace_co_member(data)
 
     def _add_or_replace_co_member(self, member):

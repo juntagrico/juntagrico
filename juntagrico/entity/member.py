@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -26,19 +27,12 @@ def q_left_subscription(asof=None):
     return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
-class Member(JuntagricoBaseModel):
-    '''
-    Additional fields for Django's default user class.
-    '''
-
-    # user class is only used for logins, permissions, and other builtin django stuff
-    # all user information should be stored in the Member model
-    user = models.OneToOneField(
-        User, related_name='member', on_delete=models.CASCADE)
+class AbstractProfile(JuntagricoBaseModel):
+    class Meta:
+        abstract = True
 
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
-    email = LowercaseEmailField(unique=True)
 
     addr_street = models.CharField(_('Strasse'), max_length=100)
     addr_zipcode = models.CharField(_('PLZ'), max_length=10)
@@ -47,6 +41,29 @@ class Member(JuntagricoBaseModel):
     phone = models.CharField(_('Telefonnr'), max_length=50)
     mobile_phone = models.CharField(
         _('Mobile'), max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return self.get_name()
+
+    def get_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    def get_phone(self):
+        if self.mobile_phone and self.mobile_phone.strip('0- '):
+            return self.mobile_phone
+        return self.phone
+
+
+class Member(AbstractProfile):
+    '''
+    Additional fields for Django's default user class.
+    '''
+    # user class is only used for logins, permissions, and other builtin django stuff
+    # all user information should be stored in the Member model
+    user = models.OneToOneField(
+        User, related_name='member', on_delete=models.CASCADE)
+
+    email = LowercaseEmailField(unique=True)
 
     iban = models.CharField('IBAN', max_length=100, blank=True, default='', validators=[validate_iban])
 
@@ -246,14 +263,6 @@ class Member(JuntagricoBaseModel):
         current = self.subscription_current is not None and not self.subscription_current.inactive
         return future or current
 
-    def get_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
-    def get_phone(self):
-        if self.mobile_phone and self.mobile_phone.strip('0- '):
-            return self.mobile_phone
-        return self.phone
-
     def all_emails(self):
         """
         :return: a list of tuples (identifier, email) with all unique email addresses this member is allowed to send from
@@ -274,9 +283,6 @@ class Member(JuntagricoBaseModel):
 
     def get_hash(self):
         return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
-
-    def __str__(self):
-        return self.get_name()
 
     def clean(self):
         check_member_consistency(self)
@@ -327,6 +333,13 @@ class Member(JuntagricoBaseModel):
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
         permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
+
+
+class Invitee(AbstractProfile):
+    email = LowercaseEmailField()
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
+    shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
+    key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
 class SubscriptionMembership(JuntagricoBaseModel):

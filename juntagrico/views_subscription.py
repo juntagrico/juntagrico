@@ -26,7 +26,7 @@ from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.management import cancel_sub
-from juntagrico.util.management import create_or_update_co_member, create_share
+from juntagrico.util.management import create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, end_of_business_year, \
     cancelation_date, next_membership_end_date
@@ -176,12 +176,6 @@ class AddCoMemberView(FormView, ModelFormMixin):
         self.object = None
         self.subscription = None
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(
-            **{},
-            **kwargs
-        )
-
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs['existing_emails'] = self.subscription.current_members.values_list('email', flat=True)
@@ -202,14 +196,10 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # add existing member
-        co_member = getattr(form, 'existing_member', None)
-        shares = 0
-        # or create new member and order shares for them
-        if co_member is None:
-            shares = form.cleaned_data.get('shares', 0)
-            co_member = form.instance
-        create_or_update_co_member(co_member, self.subscription, shares)
+        # invite co-member
+        form.instance.subscription = self.subscription
+        invitee = form.save()
+        membernotification.invite_co_member(invitee)
         return self._done()
 
     def _done(self):
