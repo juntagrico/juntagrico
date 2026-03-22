@@ -20,19 +20,15 @@ def welcome(member, password):
     ).send()
 
 
-def welcome_co_member(co_member, password, new_shares, new=True):
-    # sends either welcome mail or just information mail to new/added co-member
-    EmailBuilder(
-        co_member,
-        _('Willkommen bei {0}').format(enriched_organisation('D')),
-        'co_welcome' if new else 'co_added',
-        {
-            'password': password,
-            'new_shares': new_shares,
-            'sub': co_member.subscription_future or co_member.subscription_current,
-        },
+def invite_co_member(invitee):
+    # sends invitation mail to invited co-member
+    EmailSender.get_sender_for_contact(
         'for_members',
-    ).send()
+        _('Einladung zu {0}').format(enriched_organisation('D')),
+        get_template('juntagrico/mails/member/subscription/invite.txt').render({
+            'invitee': invitee,
+        }),
+    ).send_to(invitee.email)
 
 
 def shares_created(member, shares):
