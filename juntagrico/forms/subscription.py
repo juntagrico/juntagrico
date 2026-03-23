@@ -15,12 +15,10 @@ class PrimaryMemberChangeForm(HorizontalFormMixin, forms.ModelForm):
         model = Subscription
         fields = ['primary_member']
         labels = {
-            'primary_member': _('Neue/r Haupt-{subscription}-BezieherIn').format(subscription=Config.vocabulary('subscription')),
+            'primary_member': _('Neue:r {subscription}-Verwalter:in').format(subscription=Config.vocabulary('subscription')),
         }
         help_texts = {
-            'primary_member': _('Wer soll künftig Haupt-{subscription}-BezieherIn sein?').format(
-                subscription=Config.vocabulary('subscription')
-            )
+            'primary_member': ''
         }
 
     def __init__(self, *args, **kwargs):
@@ -35,6 +33,12 @@ class PrimaryMemberChangeForm(HorizontalFormMixin, forms.ModelForm):
         self.helper.layout = Layout(
             'primary_member',
             FormActions(
-                Submit('submit', gettext('Ändern'), css_class='btn-success'),
+                Submit(
+                    'submit',
+                    gettext('{subscription} übergeben').format(
+                        subscription=Config.vocabulary('subscription')
+                    ),
+                    css_class='btn-success'
+                ),
             ),
         )

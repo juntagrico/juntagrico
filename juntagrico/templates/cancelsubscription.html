@@ -4,7 +4,7 @@
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
-        {% blocktrans %}Künde dein/e/n {{ v_subscription }}{% endblocktrans %}
+        {% blocktrans %}Künde {{ v_your_subscription_acc }}{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block content %}
@@ -12,21 +12,21 @@
     <div class="row mb-3">
         <div class="col-md-12">
             {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
-            Hier kannst du dein/e/n {{ v_subscription }} kündigen. Der nächste
-            reguläre Kündigungstermin ist der <b>{{ ed }}</b>.
+                Hier kannst du {{ v_your_subscription_acc }} kündigen.
+                Der nächste reguläre Kündigungstermin ist der <b>{{ ed }}</b>.
             {% endblocktrans %}
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du sicher diese/n/s {{ v_subscription }} verbindlich künden?{% endblocktrans %}')">
+            <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du {{ v_your_subscription_acc }} verbindlich künden?{% endblocktrans %}')">
                 {% csrf_token %}
                 <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group">
                     <label for="message">
                         {% trans "Mitteilung" %}
                     </label>
-                    <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
+                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-danger">

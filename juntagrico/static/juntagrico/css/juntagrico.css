@@ -76,6 +76,10 @@ body#juntagrico-views-profile .asteriskField {
     font-size: 30pt;
 }
 
+.capfirst::first-letter {
+    text-transform: uppercase;
+}
+
 .edit i, .delete i {
     font-size: 0.7em;
 }
