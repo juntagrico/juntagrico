@@ -398,6 +398,9 @@ ENABLE_EXTERNAL_SIGNUP
 
     False
 
+
+.. _settings-signup-manager:
+
 SIGNUP_MANAGER
 ^^^^^^^^^^^^^^
 

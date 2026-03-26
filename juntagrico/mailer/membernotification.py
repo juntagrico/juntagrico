@@ -33,7 +33,11 @@ def shares_created(member, shares):
     EmailSender.get_sender_for_contact(
         'for_shares',
         organisation_subject(_('Dein neuer Anteilschein')),
-        get_email_content('s_created', base_dict(locals())),
+        get_email_content('s_created', base_dict({
+            'member': member,
+            'shares': shares,
+            'total': len(shares) * int(Config.share_price())
+        })),
     ).send_to(member.email)
 
 

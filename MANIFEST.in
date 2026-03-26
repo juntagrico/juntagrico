@@ -4,6 +4,8 @@ recursive-include juntagrico/static *
 recursive-include juntagrico/templates *
 recursive-include juntagrico/locale *
 recursive-include juntagrico/fixtures *
+recursive-include juntagrico_legacy/templates *
+recursive-include juntagrico_legacy/locale *
 include requirements.txt
 global-exclude *.pyc
 exclude manage.py
