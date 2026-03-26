@@ -10,6 +10,7 @@ from django.template.loader import get_template
 from django.utils import translation
 
 from juntagrico.config import Config
+from juntagrico.context_processors import Vocabulary
 from juntagrico.util.decorators import chainable
 
 log = logging.getLogger('juntagrico.mailer')
@@ -20,6 +21,7 @@ def base_dict(add=None):
     """
     add = add or {}
     add['serverurl'] = Config.url_protocol() + Site.objects.get_current().domain
+    add['vocabulary'] = Vocabulary()
     return add
 
 

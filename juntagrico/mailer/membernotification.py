@@ -2,7 +2,7 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailBuilder
+from juntagrico.mailer import EmailBuilder, EmailSender, organisation_subject, get_template, base_dict
 from juntagrico.util.organisation_name import enriched_organisation
 
 """
@@ -42,6 +42,7 @@ def shares_created(member, shares):
         's_created',
         {
             'shares': shares,
+            'total': len(shares) * int(Config.share_price())
         },
         'for_shares',
     ).send()
@@ -54,6 +55,30 @@ def email_confirmation(member):
         'confirm',
         from_email='technical',
     ).send()
+
+
+def membership_activated(membership):
+    if Config.notifications('membership_activated'):
+        EmailSender.get_sender_for_contact(
+            'for_members',
+            organisation_subject(_('{} aktiviert').format(Config.vocabulary('membership'))),
+            get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
+                'account': membership.account,
+            })),
+            to=[membership.account.email],
+        ).send()
+
+
+def membership_deactivated(membership):
+    if Config.notifications('membership_deactivated'):
+        EmailSender.get_sender_for_contact(
+            'for_members',
+            organisation_subject(_('{} deaktiviert').format(Config.vocabulary('membership'))),
+            get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
+                'account': membership.account,
+            })),
+            to=[membership.account.email],
+        ).send()
 
 
 def depot_changed(subscription):

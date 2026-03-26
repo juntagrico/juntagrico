@@ -1,0 +1,15 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block content %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% blocktrans with name=account.first_name %}Hallo {{ name }}{% endblocktrans %}
+
+{% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+Soeben wurde dein Austritt von {{ v_d_enriched_organisation }} bestätigt.
+Du bist jetzt kein {{ v_member_type }} mehr.
+{% endblocktrans %}
+
+{% include "juntagrico/mails/member/signature.txt" %}
+{% endblock %}

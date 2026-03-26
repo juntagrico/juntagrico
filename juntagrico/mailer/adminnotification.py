@@ -1,8 +1,9 @@
+from django.template.loader import get_template
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailBuilder
+from juntagrico.mailer import EmailBuilder, requires_someone_with_perm, EmailSender, organisation_subject, base_dict
 
 """
 Admin notification emails
@@ -118,7 +119,7 @@ def member_created(member):
     member.comment = member.signup_comment  # backwards compatibility
     EmailBuilder(
         'notified_on_member_creation',
-        _('Neue/r/s {member_type}').format(member_type=Config.vocabulary('member_type')),
+        _('Neue/r/s {account}').format(account=Config.vocabulary('account')),
         'a_member_created',
         {
             'member': member,
@@ -129,13 +130,36 @@ def member_created(member):
 def member_canceled(member, message=''):
     EmailBuilder(
         'notified_on_member_cancellation',
-        _('{member_type} gekündigt').format(member_type=Config.vocabulary('member_type')),
+        _('{account} gekündigt').format(account=Config.vocabulary('account')),
         'm_canceled',
         {
             'member': member,
             'message': message,
             'end_date': member.end_date,  # backwards compatibility
         },
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_membership_creation')
+def membership_created(membership, emails=None):
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
+        get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
+            'account': membership.account
+        })),
+        bcc=emails or []
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_membership_cancellation')
+def membership_canceled(membership, message='', emails=None):
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
+        get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
+            'account': membership.account,
+            'message': message
+        })),
+        bcc=emails or []
     ).send()
 
 

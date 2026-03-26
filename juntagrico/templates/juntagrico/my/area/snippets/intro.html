@@ -1,25 +1,39 @@
+{% load juntagrico.snippets %}
 {% load juntagrico.config %}
 {% load i18n %}
 {% block all %}
-    <p>
-        {% enriched_organisation "D" as v_d_enriched_organisation %}
-        {% blocktrans trimmed%}
-        Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
-        Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
-        {% endblocktrans %}
-    </p>
-    <p>
-        {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
-    </p>
-    
-    {% config "activity_area_info" as activity_area_info %}
-    {% if activity_area_info.strip %}
+    {% block intro1 %}
         <p>
-        {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
-        <a target="_blank" href="{{ activity_area_info }}">
-            {% trans "Infoblatt" %}
-            <i class="bi bi-box-arrow-up-right small"></i>
-        </a>.
+            {% enriched_organisation "D" as v_d_enriched_organisation %}
+            {% blocktrans trimmed%}
+            Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
+            Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
+            {% endblocktrans %}
         </p>
-    {% endif %}
+    {% endblock %}
+
+    {% block intro2 %}
+        <p>
+            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
+        </p>
+    {% endblock %}
+
+    {% block documents %}
+        {% documents "activityarea" as c_documents %}
+        {% if c_documents %}
+            <p>
+                {% trans "Weitere Informationen zu den Tätigkeitsbereichen:" %}
+                {% if c_documents|length == 1 %}
+                    {% ext_link c_documents.0.0 c_documents.0.1 %}
+                {% endif %}
+            </p>
+            {% if c_documents|length > 1 %}
+                <ul>
+                    {% for name, link in c_documents %}
+                        <li>{% ext_link name link %}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}

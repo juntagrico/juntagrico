@@ -98,6 +98,8 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
         self.job1.refresh_from_db()
         self.assertTrue(self.job1.canceled)
+        # can save canceled job even when it has 0 slots
+        self.job1.save()
 
 
 class JobSignupAndNotificationTests(JuntagricoTestCase):

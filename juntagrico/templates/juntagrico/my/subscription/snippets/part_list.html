@@ -1,3 +1,4 @@
+{% load juntagrico.snippets %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
 {% load i18n %}
@@ -109,13 +110,12 @@
     </div>
 {% endif %}
 
-{% config "extra_sub_info" as extra_sub_info %}
-{% if extra_sub_info.strip %}
-    <a href="{{ extra_sub_info }}" target="_blank">
-        {% trans "Infos zu den Zusatz-Abos" %}
-        <i class="bi bi-box-arrow-up-right small"></i>
-    </a>
-{% endif %}
+{% block documents %}
+    {% documents "extrasub" as c_documents %}
+    {% for name, link in c_documents %}
+        <div>{% ext_link name link %}</div>
+    {% endfor %}
+{% endblock %}
 
 {% if not subscription.inactive %}
     <div class="mt-3">

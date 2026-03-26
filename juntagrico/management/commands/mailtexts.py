@@ -17,7 +17,7 @@ from juntagrico.entity.jobs import RecuringJob, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.mailer import membernotification, adminnotification
+from juntagrico.mailer import membernotification, adminnotification, base_dict
 from juntagrico.mailer.adminnotification import member_joined_activityarea, member_left_activityarea
 
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('selected', nargs='*', type=str,
-                            default='signup subscription share password job depot member activityarea')
+                            default='signup subscription share password job depot member membership activityarea')
         parser.add_argument('--language', '-l', type=str, default=None)
 
     # entry point used by manage.py
@@ -225,5 +225,31 @@ class Command(BaseCommand):
                 print('*** m_canceled ***')
                 member.end_date = datetime.date.today()
                 adminnotification.member_canceled(member, _('[Nachricht des Mitglieds]'))
+
+            if 'membership' in selected:
+                print('*** juntagrico/mails/admin/membership/created.txt ***')
+                print(get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
+                    'account': member
+                })))
+                print()
+
+                print('*** juntagrico/mails/admin/membership/canceled.txt ***')
+                print(get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
+                    'account': member,
+                    'message': 'Nachricht'
+                })))
+                print()
+
+                print('*** juntagrico/mails/member/membership/activated.txt ***')
+                print(get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
+                    'account': member
+                })))
+                print()
+
+                print('*** juntagrico/mails/member/membership/deactivated.txt ***')
+                print(get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
+                    'account': member,
+                })))
+                print()
 
         transaction.set_rollback(True)  # force rollback

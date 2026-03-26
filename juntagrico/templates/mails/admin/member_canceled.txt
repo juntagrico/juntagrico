@@ -3,7 +3,7 @@
 
 {% block member_message %}
 {% blocktrans trimmed with end_date=member.end_date %}
-Soeben hat {{ member }} die Mitgliedschaft per {{ end_date }} gekündet.
+Soeben hat {{ member }} das Konto per {{ end_date }} gekündet.
 {% endblocktrans %}
 
 {% if message %}
