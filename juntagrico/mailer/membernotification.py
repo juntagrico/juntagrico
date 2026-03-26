@@ -2,7 +2,7 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailBuilder, EmailSender, organisation_subject, get_template, base_dict
+from juntagrico.mailer import EmailBuilder
 from juntagrico.util.organisation_name import enriched_organisation
 
 """
@@ -59,25 +59,21 @@ def email_confirmation(member):
 
 def membership_activated(membership):
     if Config.notifications('membership_activated'):
-        EmailSender.get_sender_for_contact(
-            'for_members',
-            organisation_subject(_('{} aktiviert').format(Config.vocabulary('membership'))),
-            get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
-                'account': membership.account,
-            })),
-            to=[membership.account.email],
+        EmailBuilder(
+            membership.account,
+            _('{membership} aktiviert').format(membership=Config.vocabulary('membership')),
+            'juntagrico/mails/member/membership/activated.txt',
+            from_email='for_members',
         ).send()
 
 
 def membership_deactivated(membership):
     if Config.notifications('membership_deactivated'):
-        EmailSender.get_sender_for_contact(
-            'for_members',
-            organisation_subject(_('{} deaktiviert').format(Config.vocabulary('membership'))),
-            get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
-                'account': membership.account,
-            })),
-            to=[membership.account.email],
+        EmailBuilder(
+            membership.account,
+            _('{membership} deaktiviert').format(membership=Config.vocabulary('membership')),
+            'juntagrico/mails/member/membership/deactivated.txt',
+            from_email='for_members',
         ).send()
 
 

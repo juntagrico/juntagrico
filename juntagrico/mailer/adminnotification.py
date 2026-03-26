@@ -1,9 +1,8 @@
-from django.template.loader import get_template
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailBuilder, requires_someone_with_perm, EmailSender, organisation_subject, base_dict
+from juntagrico.mailer import EmailBuilder
 
 """
 Admin notification emails
@@ -140,26 +139,28 @@ def member_canceled(member, message=''):
     ).send()
 
 
-@requires_someone_with_perm('notified_on_membership_creation')
-def membership_created(membership, emails=None):
-    EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
-        get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
-            'account': membership.account
-        })),
-        bcc=emails or []
+def membership_created(membership):
+    EmailBuilder(
+        'notified_on_membership_creation',
+        _('{membership} beantragt').format(membership=Config.vocabulary('membership')),
+        'juntagrico/mails/admin/membership/created.txt',
+        {
+            'account': membership.account,
+            'member': membership.account,  # compatibility
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_membership_cancellation')
-def membership_canceled(membership, message='', emails=None):
-    EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('membership'))),
-        get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
+def membership_canceled(membership, message=''):
+    EmailBuilder(
+        'notified_on_membership_cancellation',
+        _('{membership} gekündigt').format(membership=Config.vocabulary('membership')),
+        'juntagrico/mails/admin/membership/canceled.txt',
+        {
             'account': membership.account,
+            'member': membership.account,  # compatibility
             'message': message
-        })),
-        bcc=emails or []
+        },
     ).send()
 
 

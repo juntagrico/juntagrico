@@ -106,6 +106,7 @@ class EmailBuilder:
         context = self.context
         if not isinstance(context, dict):
             context = {'message': context}
+        context['vocabulary'] = Vocabulary()
         context['server_url'] = Config.url_protocol() + Site.objects.get_current().domain
         context['serverurl'] = context['server_url']  # backwards compatibility
 

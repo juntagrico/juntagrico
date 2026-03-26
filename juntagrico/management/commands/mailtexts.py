@@ -15,9 +15,10 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob, ActivityArea
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.mailer import membernotification, adminnotification, base_dict
+from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.mailer.adminnotification import member_joined_activityarea, member_left_activityarea
 
 
@@ -46,6 +47,7 @@ class Command(BaseCommand):
         member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
         depot, new_depot = Depot.objects.all()[:2]
         area = ActivityArea.objects.first()
+        membership, created = Membership.objects.get_or_create(account=member)
         # ensure there is a recipient for these admin notifications
         member.user.user_permissions.add(
             *Permission.objects.filter(
@@ -60,6 +62,8 @@ class Command(BaseCommand):
                     'notified_on_member_creation',
                     'notified_on_member_cancellation',
                     'notified_on_depot_change',
+                    'notified_on_membership_creation',
+                    'notified_on_membership_cancellation',
                 ]
             )
         )
@@ -228,28 +232,15 @@ class Command(BaseCommand):
 
             if 'membership' in selected:
                 print('*** juntagrico/mails/admin/membership/created.txt ***')
-                print(get_template('juntagrico/mails/admin/membership/created.txt').render(base_dict({
-                    'account': member
-                })))
-                print()
+                adminnotification.membership_created(membership)
 
                 print('*** juntagrico/mails/admin/membership/canceled.txt ***')
-                print(get_template('juntagrico/mails/admin/membership/canceled.txt').render(base_dict({
-                    'account': member,
-                    'message': 'Nachricht'
-                })))
-                print()
+                adminnotification.membership_canceled(membership, _('[Nachricht des Mitglieds]'))
 
                 print('*** juntagrico/mails/member/membership/activated.txt ***')
-                print(get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
-                    'account': member
-                })))
-                print()
+                membernotification.membership_activated(membership)
 
                 print('*** juntagrico/mails/member/membership/deactivated.txt ***')
-                print(get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
-                    'account': member,
-                })))
-                print()
+                membernotification.membership_deactivated(membership)
 
         transaction.set_rollback(True)  # force rollback

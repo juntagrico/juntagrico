@@ -1,16 +1,14 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/member/base.txt" %}
 {% load i18n %}
-{% load juntagrico.config %}
-{% block content %}
-{% trans "Hallo" %}
-{% blocktrans with v_membership=vocabulary.membership e=account.email k=account.signup_comment %}
+
+{% block member_message %}
+{% blocktrans trimmed with v_membership=vocabulary.membership %}
 Soeben hat {{ account }} die {{ v_membership }} beantragt.
-E-Mail: {{ e }}
-Kommentar: {{ k }}
 {% endblocktrans %}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
 
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% if account.signup_comment %}
+{% blocktrans trimmed with comment=account.signup_comment %}
+Kommentar: {{ comment }}
+{% endblocktrans %}
+{% endif %}
 {% endblock %}
