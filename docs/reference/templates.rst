@@ -191,8 +191,10 @@ juntagrico/subscription/create/select_start_date.html
 juntagrico/subscription/create/select_shares.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``intro_1``: First part of intro
-- ``intro_2``:  Last part of intro
+- ``intro_membership``: Explaining required shares for membership
+- ``intro_subscriptions``: Explaining required shares for subscriptions
+- ``intro_signup``: Explaining required shares for signup
+- ``intro_additional``: Last part of intro
 
 juntagrico/subscription/create/summary.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

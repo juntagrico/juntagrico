@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count, Exists, OuterRef
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -13,14 +13,17 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
+from django.views.generic.edit import FormMixin
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
@@ -90,7 +93,101 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
-    title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
+    title = _('Aktive {members}').format(members=Config.vocabulary('member_pl'))
+
+
+class MemberArchiveView(MemberView):
+    queryset = Member.objects.inactive
+    title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
+
+
+class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
+    permission_required = [['juntagrico.view_membership', 'juntagrico.change_membership']]
+    template_name = 'juntagrico/manage/membership/show.html'
+    queryset = Membership.objects.active
+    title = _('Aktive {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        if Config.enable_shares():
+            context_data['required_shares'] = Config.membership('required_shares')
+        return context_data
+
+
+class MembershipActiveView(FormMixin, MembershipView):
+    form_class = forms.membership.CancelAndDeactivateForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        today = datetime.date.today()
+        form_kwargs['initial'] = {
+            'cancellation_date': today,
+            'deactivation_date': self.request.session.get('changedate') or today,
+        }
+        return form_kwargs
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+def membership_cancel_and_deactivate(request):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        form = forms.membership.CancelAndDeactivateForm(request.POST, instance=membership)
+        if form.is_valid():
+            form.save()
+            if form.cleaned_data['deactivation_date'] is not None:
+                message = _('{membership} erfolgreich gekündigt und deaktiviert.').format(membership=Config.vocabulary('membership'))
+            else:
+                message = _('{membership} erfolgreich gekündigt.').format(membership=Config.vocabulary('membership'))
+            messages.success(request, message)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, f'{error}')
+                    else:
+                        messages.error(request, f'{field}: {error}')
+    return return_to_previous_location(request)
+
+
+class MembershipRequestedView(MembershipView):
+    template_name = 'juntagrico/manage/membership/requested.html'
+    queryset = Membership.objects.requested
+    title = _('Beantragte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+@using_change_date
+def membership_activate(request, change_date):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        membership.activate(change_date)
+        membernotification.membership_activated(membership)
+    return return_to_previous_location(request)
+
+
+class MembershipCanceledView(MembershipView):
+    template_name = 'juntagrico/manage/membership/canceled.html'
+    queryset = Membership.objects.canceled
+    title = _('Gekündigte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
+
+
+@require_POST
+@permission_required('juntagrico.change_membership')
+@using_change_date
+def membership_deactivate(request, change_date):
+    memberships = Membership.objects.filter(id__in=request.POST.get('membership_ids').split('_'))
+    for membership in memberships:
+        membership.deactivate(change_date)
+        membernotification.membership_deactivated(membership)
+    return return_to_previous_location(request)
+
+
+class MembershipArchiveView(MembershipView):
+    template_name = 'juntagrico/manage/membership/archive.html'
+    queryset = Membership.objects.inactive
+    title = _('Ehemalige {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
 class AreaMemberView(MemberView):
@@ -141,7 +238,21 @@ def remove_area_member(request, area_id):
 class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_member', 'juntagrico.change_member']]
     template_name = 'juntagrico/manage/member/canceled.html'
-    queryset = Member.objects.canceled
+
+    def get_queryset(self):
+        today = datetime.date.today()
+        queryset = Member.objects.canceled().annotate(has_subscription=Exists(
+            SubscriptionMembership.objects.filter(member=OuterRef('pk')).exclude(leave_date__lte=today)
+        ))
+        if Config.enable_shares():
+            queryset = queryset.annotate(share_count=Count(
+                'share', filter=Q(share__paid_date__lte=today) & ~Q(share__payback_date__lte=today)
+            ))
+        if Config.membership('enable'):
+            queryset = queryset.annotate(membership=Exists(
+                Membership.objects.filter(account=OuterRef('pk')).active()
+            ))
+        return queryset
 
 
 @permission_required('juntagrico.change_member')

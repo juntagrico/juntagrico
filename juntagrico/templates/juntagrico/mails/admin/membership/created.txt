@@ -1,0 +1,16 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block content %}
+{% trans "Hallo" %}
+{% blocktrans with v_membership=vocabulary.membership e=account.email k=account.signup_comment %}
+Soeben hat {{ account }} die {{ v_membership }} beantragt.
+E-Mail: {{ e }}
+Kommentar: {{ k }}
+{% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}

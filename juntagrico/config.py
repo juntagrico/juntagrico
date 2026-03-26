@@ -4,7 +4,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico import defaults
 
@@ -42,8 +42,8 @@ class Config:
     vocabulary = _get_setting_with_key(
         'VOCABULARY',
         {
-            'member': _('Mitglied'),
-            'member_pl': _('Mitglieder'),
+            'member': _('Konto'),
+            'member_pl': _('Konten'),
             'assignment': _('Arbeitseinsatz'),
             'assignment_pl': _('Arbeitseinsätze'),
             'share': _('Anteilschein'),
@@ -55,6 +55,8 @@ class Config:
             'price': _('Betriebsbeitrag'),
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
+            'membership': _('Mitgliedschaft'),
+            'membership_pl': _('Mitgliedschaften'),
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
@@ -108,6 +110,20 @@ class Config:
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
+    membership = _get_setting_with_key(
+        'MEMBERSHIP',
+        {
+            'enable': True,
+            'required_shares': 1,
+            'required_on_signup': True,
+            'fee': 0,
+        }
+    )
+
+    @classmethod
+    def enable_membership(cls):
+        return cls.membership('enable')
+
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     require_subscription = _get_setting('REQUIRE_SUBSCRIPTION', False)
@@ -277,6 +293,8 @@ class Config:
         default_notifications = [
             'job_subscription_changed',
             'job_unsubscribed',
+            'membership_activated',
+            'membership_deactivated',
         ] + [
             # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
             FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
@@ -284,6 +302,34 @@ class Config:
         enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
         disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])
         return name in enabled_notifications and name not in disabled_notifications
+
+    @classmethod
+    def documents(cls, tag, in_sentence=False):
+        documents = getattr(settings, 'DOCUMENTS', [])
+
+        # get values from dedicated settings
+        if business_regulations := cls.business_regulations().strip():
+            documents.append(((gettext('Betriebsreglement'), gettext('das Betriebsreglement')), business_regulations, 'account-signup-accept subscription'))
+        if bylaws := cls.bylaws().strip():
+            documents.append(((gettext('Statuten'), gettext('die Statuten')), bylaws, 'membership-signup-accept account subscription'))
+        if gdpr_info := cls.gdpr_info().strip():
+            documents.append(((gettext('DSGVO Infos'), gettext('die DSGVO Infos')), gdpr_info, 'account-signup-accept subscription'))
+        if faq_doc := cls.faq_doc().strip():
+            documents.append((gettext('Häufig gestellte Fragen'), faq_doc, 'account'))
+        if extra_sub_info := cls.extra_sub_info().strip():
+            documents.append((gettext('Infos zu den Zusatz-Abos'), extra_sub_info, 'extrasub'))
+        if activity_area_info := cls.activity_area_info().strip():
+            documents.append((gettext('Infoblatt'), activity_area_info, 'activityarea'))
+
+        normalized_documents = []
+        for names, link, tags in documents:
+            if tag in tags:
+                if isinstance(names, (list, tuple)):
+                    name = names[int(in_sentence)]
+                else:
+                    name = names
+                normalized_documents.append((name, link))
+        return normalized_documents
 
     # demo settings
     demouser = _get_setting('DEMO_USER')

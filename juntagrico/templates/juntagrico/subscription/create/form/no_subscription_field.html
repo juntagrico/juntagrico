@@ -10,18 +10,18 @@
 {% block description %}
     {% block main_description %}
         {% config "organisation_name" as c_organisation_name %}
-        <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Mitgliedschaft ohne {{ v_subscription }}{% endblocktrans %}</strong>:
-        {% blocktrans trimmed with v_subscription=vocabulary.subscription v_member_type=vocabulary.member_type %}
-            Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
-            sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+        <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Ohne {{ v_subscription }} fortfahren{% endblocktrans %}</strong>:
+        {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
+            Du kannst auch ohne {{ v_subscription }} mitwirken.
+            Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
         {% endblocktrans %}
     {% endblock %}
     <br/>
     {% block base_fee %}
         {% config "base_fee" as c_base_fee %}
         {% if c_base_fee %}
-            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl v_subscription=vocabulary.subscription base_fee=c_base_fee|price %}
-                {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
+            {% blocktrans trimmed with v_subscription=vocabulary.subscription base_fee=c_base_fee|price %}
+                Ohne {{ v_subscription }} bezahlst du
                 einen Jahresbeitrag von {{ base_fee }}.
             {% endblocktrans %}
         {% endif %}

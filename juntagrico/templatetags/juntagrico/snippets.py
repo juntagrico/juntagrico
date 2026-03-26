@@ -75,3 +75,8 @@ def alert(message):
     else:
         alert_lvl = message.level_tag
     return {'message': message, 'alert_level': 'alert-' + alert_lvl}
+
+
+@register.inclusion_tag('juntagrico/snippets/external_link.html')
+def ext_link(text, link):
+    return {'text': text, 'link': link}

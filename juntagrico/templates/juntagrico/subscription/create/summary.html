@@ -1,4 +1,5 @@
 {% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
 {% load juntagrico.snippets %}
 {% load i18n %}
 {% load juntagrico.config %}
@@ -94,6 +95,18 @@
             </ul>
 
             <p>{% blocktrans %}Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern.{% endblocktrans %}</p>
+        {% endblock %}
+    {% endif %}
+
+    {% if membership is not None %}
+        {% block membership %}
+            <h4>{% vocabulary "membership" %} <a href="{% url 'cs-membership' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            <p>
+                {{ membership|yesno:_('Ja,Nein') }}
+            </p>
+            {% if membership and membership_fee %}
+                <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+            {% endif %}
         {% endblock %}
     {% endif %}
 

@@ -80,6 +80,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_parts(self):
+        # DEPRECATED: use parts.not_canceled() instead
         return self.parts.filter(~q_canceled() & ~q_deactivated())
 
     @property
@@ -154,6 +155,10 @@ class Subscription(Billable, SimpleStateModel):
         for part in self.future_parts.all():
             result += part.type.shares
         return result
+
+    @property
+    def requires_membership(self):
+        return self.parts.not_canceled().filter(type__requires_membership=True).exists()
 
     def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
