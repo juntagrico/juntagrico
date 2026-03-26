@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0051_tour_weekday'),
+        ('juntagrico', '0053_data_580'),
     ]
 
     operations = [

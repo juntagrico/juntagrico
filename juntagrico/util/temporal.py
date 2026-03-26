@@ -3,7 +3,7 @@ import datetime
 from datetime import timedelta
 
 from dateutil.relativedelta import relativedelta
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
 

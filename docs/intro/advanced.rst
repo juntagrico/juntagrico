@@ -1,6 +1,8 @@
 Advanced Setup
 ==============
 
+.. _intro-addons:
+
 Addons
 ------
 

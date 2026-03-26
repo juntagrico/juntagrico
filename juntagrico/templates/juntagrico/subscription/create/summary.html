@@ -1,4 +1,5 @@
 {% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
 {% load juntagrico.snippets %}
 {% load i18n %}
 {% load juntagrico.config %}
@@ -9,8 +10,6 @@
 {% endblock %}
 
 {% block content %}
-    {% config "currency" as c_currency %}
-
     {% block profile %}
         {% if main_member %}
             <h4>{% trans "Personalien" %}
@@ -28,7 +27,7 @@
     {% endblock %}
 
     {% block subscription %}
-        <h4>{{ vocabulary.subscription }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+        <h4>{{ vocabulary.subscription|capfirst }} <a href="{% url 'cs-subscription' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
         <p>
         {% for type, amount in subscriptions.items %}
             {% include 'juntagrico/subscription/create/summary/snippets/part.html' %}
@@ -48,7 +47,7 @@
         {% endif %}
 
         {% block depot %}
-            <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            <h4>{{ vocabulary.depot|capfirst }} <a href="{% url 'cs-depot' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
             <p>{{ depot.name }}
                 {% depot_fee depot subscriptions "<br><strong>" "</strong>" %}
                 <br>{% trans 'Abholung jeweils am' %} {{ depot.pickup_display }}
@@ -62,7 +61,7 @@
         {% endblock %}
 
         {% block co_member %}
-            <h4>{{ vocabulary.co_member_pl }}</h4>
+            <h4>{{ vocabulary.co_member_pl|capfirst }}</h4>
             {% for co_member in co_members %}
                 <p>{{ co_member.first_name }} {{ co_member.last_name }}
                     {% if not co_member.pk %}<a href="{% url 'cs-co-members' %}?mod&edit={{forloop.counter}}" class="edit"><i class="bi bi-pencil-square"></i></a>{% endif %}
@@ -99,11 +98,23 @@
         {% endblock %}
     {% endif %}
 
+    {% if membership is not None %}
+        {% block membership %}
+            <h4>{% vocabulary "membership" %} <a href="{% url 'cs-membership' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            <p>
+                {{ membership|yesno:_('Ja,Nein') }}
+            </p>
+            {% if membership and membership_fee %}
+                <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+            {% endif %}
+        {% endblock %}
+    {% endif %}
+
     {% config "enable_shares" as c_enable_shares %}
     {% if c_enable_shares %}
         {% block shares %}
-            {% config "share_price" as c_share_price %}
-            <h4>{% vocabulary "share_pl" %} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
+            {% config "share_price_display" as c_share_price %}
+            <h4>{{ vocabulary.share_pl|capfirst }} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
             <p>
                 {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
                 <b>{{ shares.of_member|default:'Keine' }}</b>
@@ -111,7 +122,7 @@
                     <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
                 {% endfor %}
             </p>
-            <p><strong>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</strong></p>
+            <p><strong>{% blocktrans %}Zu je einmalig {{ c_share_price }}{% endblocktrans %}</strong></p>
         {% endblock %}
     {% endif %}
 

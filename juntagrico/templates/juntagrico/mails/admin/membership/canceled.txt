@@ -1,0 +1,16 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% block content %}
+{% trans "Hallo" %}
+
+{% blocktrans %}Soeben hat {{ account }} die Mitgliedschaft gekündet.{% endblocktrans %}
+{% trans "E-Mail:" %} {{ account.email }}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
+
+{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
+{{ message }}
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}

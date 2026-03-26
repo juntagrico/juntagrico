@@ -68,16 +68,18 @@
                                     {{ share.state_text }}
                                 </td>
                                 <td>
-                                    {% if forloop.first %}
-                                        {% blocktrans %}Du brauchst mindestens 1 {{ v_share }}{% endblocktrans %}
-                                        {% if not required %}
+                                    {% if forloop.counter <= required_for_membership %}
+                                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                                            Diese/s/r {{ v_share }} wird für deine {{ v_membership }} benötigt
+                                        {% endblocktrans %}
+                                        {% if forloop.first and not required_for_subscription %}
                                             <div>
-                                                <a href="{% url 'cancel-membership' %}" class="btn btn-outline-danger">
-                                                    {% trans "Mitgliedschaft kündigen" %}
+                                                <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
+                                                    {% blocktrans with v_membership=vocabulary.membership %}{{ v_membership }} kündigen{% endblocktrans %}
                                                 </a>
                                             </div>
                                         {% endif %}
-                                    {% elif forloop.counter <= required %}
+                                    {% elif forloop.counter <= required_for_subscription %}
                                         {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
                                     {% elif ibanempty %}
                                         <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>
