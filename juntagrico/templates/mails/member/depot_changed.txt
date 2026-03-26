@@ -1,23 +1,19 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/member/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
+
+{% block message %}
 {% config "organisation_name" as c_organisation_name %}
 {% vocabulary "depot" as v_depot %}
-{% trans "Achtung" %}:
-
+{% trans "Achtung:" %}
 {% blocktrans %}Dein/e/n {{ c_organisation_name }}-{{ v_depot }} hat wie von dir gewünscht gewechselt.{% endblocktrans %}
 
-{% trans "Details" %}:
+{% trans "Details:" %}
 {% with depot=subscription.depot %}
-{% trans "Name" %}:            {{ depot.name }}
-{% trans "Ort" %}:             {{ depot.location.address }}
-{% trans "Abholung" %}:        {{ depot.pickup_display }}
-{% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}:  {% for contact in depot.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
-{% trans "Beschreibung" %}:    {{ depot.description|striptags }}
+{% trans "Name:            " %}{{ depot.name }}
+{% trans "Ort:             " %}{{ depot.location.address }}
+{% trans "Abholung         " %}{{ depot.pickup_display }}
+{% blocktrans %}{{ v_depot }}-Betreuung: {% endblocktrans %}{% for contact in depot.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
+{% trans "Beschreibung:    " %}{{ depot.description|striptags }}
 {% endwith %}
-
-{% blocktrans trimmed %}
-Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
-{% endblocktrans %}
 {% endblock %}

@@ -20,10 +20,10 @@ def _get_setting(setting_key, default: Any = ''):
 
 
 def _get_setting_with_key(setting_key, default):
-    def inner(key):
+    def inner(key, fallback=None):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
-        d = default[key]
+        d = default.get(key, fallback)
         return d() if callable(d) else d
 
     return inner

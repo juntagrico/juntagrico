@@ -48,15 +48,15 @@ def on_depot_changed(sender, **kwargs):
 
 
 def on_share_canceled(sender, instance, **kwargs):
-    adminnotification.share_canceled(instance, **kwargs)
+    adminnotification.share_canceled(instance)
 
 
 def on_depot_change_confirmed(sender, instance, **kwargs):
-    membernotification.depot_changed(instance, **kwargs)
+    membernotification.depot_changed(instance)
 
 
 def on_member_canceled(sender, instance, **kwargs):
-    adminnotification.member_canceled(instance, **kwargs)
+    adminnotification.member_canceled(instance, kwargs.get('message'))
 
 
 def on_job_subscribed(sender, **kwargs):
@@ -65,13 +65,13 @@ def on_job_subscribed(sender, **kwargs):
     initial_count = kwargs.get('initial_count')
     count = kwargs.get('count')
     if initial_count == 0 and count > 0:
-        membernotification.job_signup(member.email, job, count)
+        membernotification.job_signup(member, job, count)
         adminnotification.member_subscribed_to_job(job, **kwargs)
     elif count == 0:
-        membernotification.job_unsubscribed(member.email, job, initial_count)
+        membernotification.job_unsubscribed(member, job, initial_count)
         adminnotification.member_unsubscribed_from_job(job, **kwargs)
     else:
-        membernotification.job_subscription_changed(member.email, job, count)
+        membernotification.job_subscription_changed(member, job, count)
         adminnotification.member_changed_job_subscription(job, **kwargs)
 
 
@@ -81,9 +81,9 @@ def on_assignment_changed(sender, **kwargs):
     count = kwargs.get('count')
     if member != editor:  # don't send this notification if editor changed their own assignment
         if count == 0:
-            membernotification.assignment_removed(member.email, **kwargs)
+            membernotification.assignment_removed(member, **kwargs)
         else:
-            membernotification.assignment_changed(member.email, **kwargs)
+            membernotification.assignment_changed(member, **kwargs)
     if count == 0:
         adminnotification.assignment_removed(**kwargs)
     else:
