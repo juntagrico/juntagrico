@@ -277,54 +277,6 @@ Person sees the share entry in the administration menu.
 Search Hints:
     * German: Anteilsschein
 
-juntagrico.can_send_mails
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can access the email form in the administration menu.
-
-Search Hints:
-    * German: Emails versenden
-
-juntagrico.can_email_all_with_share
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can send emails to all users with active shares via the email form.
-
-Requires:
-    * juntagrico.can_send_mails
-
-Search Hints:
-    * German: Emails versenden
-
-juntagrico.can_email_all_with_sub
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Person send emails to all users with active subscription via the email form.
-
-Requires:
-    * juntagrico.can_send_mails
-
-Search Hints:
-    * German: Emails versenden
-
-juntagrico.can_view_lists
-^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can open the generated lists in the administration menu.
-
-Search Hints:
-    * German: Kann Listen öffnen
-
-juntagrico.can_generate_lists
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can generate lists (of depot etc.)
-
-Search Hints:
-    * German: Kann Listen erzeugen
-
-juntagrico.can_view_exports
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person sees the exports entry in the administration menu.
-
-Search Hints:
-    * German: Kann Exporte öffnen
-
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the member filter entry in the administration menu without the permission to change members.
@@ -343,6 +295,35 @@ Search Hints:
 Email Permissions
 -----------------
 These permissions are related to sending emails.
+
+juntagrico.can_send_mails
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can in general send emails to anyone.
+
+If you want to give limited access to send emails, use the area admin or depot admin features.
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_share
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person sees the option in the email form to send mass emails to all users with active shares.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_sub
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person sees the option in the email form to send mass emails to all users with active subscription.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
 
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -386,6 +367,23 @@ Person can add attachments when sending an email via the member contact form.
 
 Search Hints:
     * German: Kann Anhänge per E-Mail senden
+
+Depot List Permissions
+----------------------
+
+juntagrico.can_view_lists
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can open the generated lists.
+
+Search Hints:
+    * German: Kann Listen öffnen
+
+juntagrico.can_generate_lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can generate lists (of depot etc.)
+
+Search Hints:
+    * German: Kann Listen erzeugen
 
 
 Edit Permissions
