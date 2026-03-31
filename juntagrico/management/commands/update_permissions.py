@@ -65,14 +65,13 @@ class Command(BaseCommand):
         if options["dry"]:
             result = f"DRY RUN: {len(stale_perm_pks)} permissions NOT deleted, {len(renamed_perms)} permissions NOT renamed"
         else:
-            result = ""
             if stale_perm_pks:
                 Permission.objects.filter(pk__in=stale_perm_pks).delete()
-            result += f"{len(stale_perm_pks)} stale permissions deleted"
+            result = f"{len(stale_perm_pks)} stale permissions deleted"
             if renamed_perms:
                 for perm in Permission.objects.filter(pk__in=renamed_perms):
                     perm.name = renamed_perms[perm.pk]
                     perm.save()
-                result += f"{len(renamed_perms)} permissions renamed"
+            result += f"{len(renamed_perms)} permissions renamed"
 
         return result
