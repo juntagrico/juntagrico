@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0046_member_signup_comment'),
+        ('juntagrico', '0041_1_7'),
     ]
 
     operations = [

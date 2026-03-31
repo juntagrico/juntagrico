@@ -11,7 +11,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [('juntagrico', '0001_initial'), ('juntagrico', '0002_auto_20170922_1204'),
+    replaces = [('juntagrico', '0001_initial'), ('juntagrico', '0001_squashed_0040_post_1_6'),
+                ('juntagrico', '0002_auto_20170922_1204'),
                 ('juntagrico', '0003_auto_20171013_2124'), ('juntagrico', '0004_auto_20171017_2102'),
                 ('juntagrico', '0005_subscription_notes'), ('juntagrico', '0006_auto_20171102_1622'),
                 ('juntagrico', '0007_auto_20171222_0000'), ('juntagrico', '0008_auto_20180130_2321'),
@@ -30,6 +31,7 @@ class Migration(migrations.Migration):
                 ('juntagrico', '0034_auto_20210415_2041'), ('juntagrico', '0035_pre_1_5'),
                 ('juntagrico', '0036_data_1_5'), ('juntagrico', '0037_post_1_5'), ('juntagrico', '0038_pre_1_6'),
                 ('juntagrico', '0039_data_1_6'), ('juntagrico', '0040_post_1_6'),
+                ('juntagrico', '0041_1_7'),
                 ('juntagrico', '0041_depot_fee_depotsubscriptiontypecondition_and_more'),
                 ('juntagrico', '0042_depot_pickup_duration_depot_pickup_time_and_more'),
                 ('juntagrico', '0043_member_subscriptions_subscription_types_and_more'),
