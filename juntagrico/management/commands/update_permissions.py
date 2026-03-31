@@ -67,11 +67,10 @@ class Command(BaseCommand):
         else:
             if stale_perm_pks:
                 Permission.objects.filter(pk__in=stale_perm_pks).delete()
-            result = f"{len(stale_perm_pks)} stale permissions deleted"
             if renamed_perms:
                 for perm in Permission.objects.filter(pk__in=renamed_perms):
                     perm.name = renamed_perms[perm.pk]
                     perm.save()
-            result += f"{len(renamed_perms)} permissions renamed"
+            result = f"{len(stale_perm_pks)} stale permissions deleted, {len(renamed_perms)} permissions renamed"
 
         return result
