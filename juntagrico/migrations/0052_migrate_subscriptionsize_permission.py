@@ -17,7 +17,6 @@ def transfer_perms(apps, old_model, new_model, app_label, remove=True):
         new_perm = Permission.objects.filter(codename=f"{action}_{new_model}",
                                              content_type__app_label=app_label).first()
 
-        print(old_perm, new_perm)
         if old_perm and new_perm:
             # Assign to users: add new permission to users who have the old permission
             for user in User.objects.filter(user_permissions=old_perm):
