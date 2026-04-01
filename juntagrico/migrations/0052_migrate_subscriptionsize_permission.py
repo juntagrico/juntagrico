@@ -50,7 +50,7 @@ def forwards_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0051_tour_weekday'),
+        ('juntagrico', '0001_squashed_0051_initial'),
     ]
 
     operations = [
