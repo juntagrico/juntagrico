@@ -14,7 +14,9 @@ class JuntagricoAppconfig(AppConfig):
         from .models import Subscription, Job, Share, Member, SubscriptionMembership
         from .lifecycle.submembership import add_subscription_member_to_activity_area
         from .management.commands import generate_depot_list
+        from .management import inject_rename_permissions
 
+        models.signals.pre_migrate.connect(inject_rename_permissions, sender=self)
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
         signals.canceled.connect(signals.on_member_canceled, sender=Member)
