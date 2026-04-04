@@ -98,6 +98,8 @@ class EmailBuilder:
         self.headers = {}
 
     def send(self):
+        from juntagrico.signals import pre_render
+
         if not self.recipients:
             return 0
 
@@ -124,7 +126,7 @@ class EmailBuilder:
                 else:
                     email = recipient.email
 
-                # TODO: activate language of recipient here
+                pre_render.send(EmailBuilder, recipient=recipient)
                 if language := getattr(settings, 'EMAIL_LANGUAGE', None):
                     translation.activate(language)
                 count += EmailMultiAlternatives(

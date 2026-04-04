@@ -326,6 +326,23 @@ Default receivers:
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
 
 
+Email signals
+-------------
+
+pre_render
+^^^^^^^^^^
+
+Sender: mailer.EmailBuilder
+
+Trigger: Before email is rendered. This includes all notification emails and emails sent via the contact form.
+
+Arguments:
+
+* recipient: The member instance who will receive the email. Is None for recipients that aren't members.
+
+Default receivers: None
+
+
 Management Command signals
 --------------------------
 

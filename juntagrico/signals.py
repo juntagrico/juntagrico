@@ -5,6 +5,7 @@ from juntagrico.mailer import adminnotification, membernotification
 subscribed = Signal()
 canceled = Signal()
 called = Signal()
+pre_render = Signal()
 
 ''' job related signals'''
 job_canceled = Signal()
