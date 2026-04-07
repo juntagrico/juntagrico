@@ -6,8 +6,8 @@
 Soeben hat {{ account }} die {{ v_membership }} beantragt.
 {% endblocktrans %}
 
-{% if account.signup_comment %}
-{% blocktrans trimmed with comment=account.signup_comment %}
+{% if comment %}
+{% blocktrans trimmed %}
 Kommentar: {{ comment }}
 {% endblocktrans %}
 {% endif %}

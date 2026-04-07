@@ -139,7 +139,7 @@ def member_canceled(member, message=''):
     ).send()
 
 
-def membership_created(membership):
+def membership_created(membership, comment=None):
     EmailBuilder(
         'notified_on_membership_creation',
         _('{membership} beantragt').format(membership=Config.vocabulary('membership')),
@@ -147,6 +147,7 @@ def membership_created(membership):
         {
             'account': membership.account,
             'member': membership.account,  # compatibility
+            'comment': comment,
         },
     ).send()
 

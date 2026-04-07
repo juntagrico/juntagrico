@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from . import JuntagricoTestCase, JuntagricoJobTestCase
 from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob
@@ -24,6 +25,7 @@ class JobTests(JuntagricoTestCase):
 
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
+        self.assertGet(reverse('job', args=[self.past_job.pk]))
 
     def testJobExtras(self):
         self.assertPost(reverse('job', args=[self.job3.pk]), {'slots': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id), 'subscribe': True}, 302)
@@ -98,8 +100,14 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
         self.job1.refresh_from_db()
         self.assertTrue(self.job1.canceled)
+        self.assertGet(reverse('job', args=[self.job1.pk]))
         # can save canceled job even when it has 0 slots
         self.job1.save()
+
+    def testJobTimeChange(self):
+        self.job2.time = timezone.now()
+        self.job2.save()
+        self.assertEqual(len(mail.outbox), 1)  # member notification
 
 
 class JobSignupAndNotificationTests(JuntagricoTestCase):

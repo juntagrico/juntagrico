@@ -232,7 +232,7 @@ class Command(BaseCommand):
 
             if 'membership' in selected:
                 print('*** juntagrico/mails/admin/membership/created.txt ***')
-                adminnotification.membership_created(membership)
+                adminnotification.membership_created(membership, _('[Nachricht des Mitglieds]'))
 
                 print('*** juntagrico/mails/admin/membership/canceled.txt ***')
                 adminnotification.membership_canceled(membership, _('[Nachricht des Mitglieds]'))
