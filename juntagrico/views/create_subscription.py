@@ -130,11 +130,17 @@ def create_external(request):
         raise Http404
     if request.method == "GET":
         depots = list(DepotDao.all_visible_depots().values('id', 'name'))
-        subs = list(SubscriptionType.objects.visible()
-                    .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
-                            'price', 'trial', 'description', 'is_extra'))
-        external_details = {'depots': depots,
-                    'subscriptions': subs}
+        subs = list(
+            SubscriptionType.objects.visible()
+            .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
+                    'price', 'trial_days', 'description', 'is_extra')
+        )
+        for sub in subs:
+            sub['trial'] = sub['trial_days'] > 0
+        external_details = {
+            'depots': depots,
+            'subscriptions': subs,
+        }
         return JsonResponse(external_details, safe=False)
     if not request.method == 'POST':
         raise BadRequest("POST request method expected")
