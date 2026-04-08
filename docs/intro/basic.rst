@@ -75,7 +75,7 @@ Depot list setup
 Initial List Generation
 ^^^^^^^^^^^^^^^^^^^^^^^
 The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`. This command can
-be called manually or using a cronjob.settings-depot
+be called manually or using a cronjob.
 
 Make sure to set the :ref:`depot list settings <settings-depot>` according to your needs.
 

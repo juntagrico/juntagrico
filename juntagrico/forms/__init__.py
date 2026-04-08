@@ -839,9 +839,11 @@ class ShareOrderForm(Form):
         for i, co_member in enumerate(self.co_members):
             name = co_member[0]
             existing_shares = co_member[1]
-            help_text = self.text['co_member_info'].format(
-                num=existing_shares, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
-            )
+            help_text = ''
+            if existing_shares > 0:
+                help_text = self.text['co_member_info'].format(
+                    num=existing_shares, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
+                )
             self.fields[f'of_co_member[{i}]'] = IntegerField(
                 label=name, initial=0, min_value=0,
                 help_text=help_text

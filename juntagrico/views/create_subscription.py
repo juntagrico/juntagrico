@@ -78,9 +78,9 @@ def select_depot(request, signup_manager):
 
 
 @signup_session
-def select_start_date(request, signup_manager):
+def select_start_date(request, signup_manager, default=temporal.start_of_next_business_year):
     subscription_form = StartDateForm(initial={
-        'start_date': signup_manager.get('start_date', temporal.start_of_next_business_year())
+        'start_date': signup_manager.get('start_date', default())
     })
     if request.method == 'POST':
         subscription_form = StartDateForm(request.POST)
@@ -88,7 +88,7 @@ def select_start_date(request, signup_manager):
             signup_manager.set('start_date', subscription_form.data['start_date'])
             return redirect(signup_manager.get_next_page())
     render_dict = {
-        'start_date': temporal.start_of_next_business_year(),
+        'start_date': default(),
         'subscriptionform': subscription_form,
     }
     return render(request, 'juntagrico/subscription/create/select_start_date.html', render_dict)
@@ -131,11 +131,17 @@ def create_external(request):
         raise Http404
     if request.method == "GET":
         depots = list(DepotDao.all_visible_depots().values('id', 'name'))
-        subs = list(SubscriptionType.objects.visible()
-                    .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
-                            'price', 'trial', 'description', 'is_extra'))
-        external_details = {'depots': depots,
-                    'subscriptions': subs}
+        subs = list(
+            SubscriptionType.objects.visible()
+            .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
+                    'price', 'trial_days', 'description', 'is_extra')
+        )
+        for sub in subs:
+            sub['trial'] = sub['trial_days'] > 0
+        external_details = {
+            'depots': depots,
+            'subscriptions': subs,
+        }
         return JsonResponse(external_details, safe=False)
     if not request.method == 'POST':
         raise BadRequest("POST request method expected")

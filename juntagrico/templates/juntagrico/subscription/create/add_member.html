@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    {% blocktrans with v_co_member=vocabulary.co_member %}{{ v_co_member }} hinzufügen{% endblocktrans %}
+    {% blocktrans with v_co_member_pl=vocabulary.co_member_pl %}{{ v_co_member_pl }} hinzufügen{% endblocktrans %}
 {% endblock %}
 
 {% block intro %}
@@ -40,11 +40,11 @@
     {% endif %}
 
     <h4>
-        {% with v_co_member=vocabulary.co_member %}
+        {% with v_co_member=vocabulary.co_member v_co_member_pl=vocabulary.co_member_pl %}
             {% if edit %}
                 {% blocktrans %}{{ v_co_member }} bearbeiten{% endblocktrans %}
             {% elif co_members|length > 0 %}
-                {% blocktrans %}Weitere {{ v_co_member }} hinzufügen{% endblocktrans %}
+                {% blocktrans %}Weitere {{ v_co_member_pl }} hinzufügen{% endblocktrans %}
             {% else %}
                 {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}
             {% endif %}

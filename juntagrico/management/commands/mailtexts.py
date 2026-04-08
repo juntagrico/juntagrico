@@ -107,7 +107,11 @@ class Command(BaseCommand):
 
         if 'share' in selected and Config.enable_shares():
             print('*** s_created ***')
-            print(get_email_content('s_created', base_dict({'shares': shares})))
+            print(get_email_content('s_created', base_dict({
+                'member': member,
+                'shares': shares,
+                'total': 1000,
+            })))
             print()
 
             print('*** a_share_created ***')
