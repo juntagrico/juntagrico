@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if can_impersonate %}
     <a class="impersonate-action" href="{% url 'impersonate-start' user.id %}" target="_blank">
-        <i class="bi bi-person-workspace" title="{% trans "Mitglied imitieren" %}"></i>
+        <i class="bi bi-person-workspace" title="{% trans "Person imitieren" %}"></i>
     </a>
 {% endif %}

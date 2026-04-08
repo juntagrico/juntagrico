@@ -50,6 +50,30 @@ def email_confirmation(member):
     ).send_to(member.email)
 
 
+def membership_activated(membership):
+    if Config.notifications('membership_activated'):
+        EmailSender.get_sender_for_contact(
+            'for_members',
+            organisation_subject(_('{} aktiviert').format(Config.vocabulary('membership'))),
+            get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
+                'account': membership.account,
+            })),
+            to=[membership.account.email],
+        ).send()
+
+
+def membership_deactivated(membership):
+    if Config.notifications('membership_deactivated'):
+        EmailSender.get_sender_for_contact(
+            'for_members',
+            organisation_subject(_('{} deaktiviert').format(Config.vocabulary('membership'))),
+            get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
+                'account': membership.account,
+            })),
+            to=[membership.account.email],
+        ).send()
+
+
 def depot_changed(subscription, **kwargs):
     EmailSender.get_sender_for_contact(
         'for_subscriptions',

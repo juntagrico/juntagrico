@@ -33,7 +33,7 @@ class AuthenticateWithEmail(object):
 class JuntagricoAuthenticationForm(AuthenticationForm):
     error_messages = {
         'invalid_login': _('Sorry, das ist kein gültiges Login'),
-        'inactive': _('Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
+        'inactive': _('Dein Konto ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
             '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members'))
         ),
         'mail_unconfirmed': _('Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '

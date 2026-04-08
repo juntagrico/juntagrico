@@ -109,8 +109,11 @@ class SubscriptionType(JuntagricoBaseModel):
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
     bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.PROTECT,
                                related_name='types', verbose_name=_('Paket'))
-    shares = models.PositiveIntegerField(
-        _('Anz benötigter Anteilsscheine'), default=0)
+    requires_membership = models.BooleanField(
+        _('Erfordert {membership}').format(membership=Config.vocabulary('membership')),
+        default=True
+    )
+    shares = models.PositiveIntegerField(_('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)

@@ -201,7 +201,10 @@ ORGANISATION_BANK_CONNECTION
 
 CURRENCY
 ^^^^^^^^
-  The default currency used within the system
+  The default currency used within the system.
+
+  .. note::
+    Changed in version 2.1.0: use ``{}`` to control where the numeric value is placed.
 
   Type: String
 
@@ -209,11 +212,53 @@ CURRENCY
 
   .. code-block:: python
 
-    "CHF"
+    "CHF {}"
 
 
 External Documents
 ------------------
+
+DOCUMENTS
+^^^^^^^^^
+
+  Define name and url of external documents and where they are displayed.
+  Some urls can instead be defined with the respective settings (e.g. BUSINESS_REGULATIONS).
+  However this setting gives more flexibility and allows naming the documents and adding custom documents.
+
+  DOCUMENTS is a list that contains tuples with the following 3 entries
+
+  1. Name of the document. If the document should be used in a sentence the name should be a tuple with 2 entries:
+     The name as such and the name with the article (e.g. "the document").
+  2. URL of the document or Website.
+  3. One or more space separated tags defining where the document should be displayed. See below.
+
+  Tags define where the document is shown:
+
+  - 'account': show on profile/membership page
+  - 'account-signup': same as above and additionally show it in the first step of the signup process
+  - 'account-signup-accept': same as above and must confirm checkbox that it has been read
+  - 'membership-signup' show on step "membership" during signup process
+  - 'membership-signup-accept': same as above and must confirm checkbox that it has been read
+  - 'subscription': show on subscription overview page
+  - 'extrasub': show below subscription parts on subscription overview page
+  - 'activityarea': show on activity area overview page
+
+  Type: List of Tuples or Strings
+
+  Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and
+  adding the same document in DOCUMENTS will show the document twice.
+
+  .. code-block:: python
+
+    [
+        ((_('Betriebsreglement'), _('das Betriebsreglement')), BUSINESS_REGULATIONS, 'account-signup-accept subscription'),
+        ((_('Statuten'), _('die Statuten')), BYLAWS, 'membership-signup-accept account subscription'),
+        ((_('DSGVO Infos'), _('die DSGVO Infos')), GDPR_INFO, 'account-signup-accept subscription'),
+        (_('Häufig gestellte Fragen'), FAQ_DOC, 'account subscription'),
+        (_('Infos zu den Zusatz-Abos'), EXTRA_SUB_INFO, 'extrasub'),
+        (_('Infoblatt'), ACTIVITY_AREA_INFO, 'activityarea'),
+    ]
+
 
 BUSINESS_REGULATIONS
 ^^^^^^^^^^^^^^^^^^^^
@@ -338,7 +383,7 @@ REQUIRE_SUBSCRIPTION
 
 
 ENABLE_EXTERNAL_SIGNUP
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
   Activates the external signup API and exposes internal depot and subscription info as json.
 
   Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'
@@ -371,7 +416,7 @@ SIGNUP_MANAGER
     "juntagrico.util.sessions.SignupManager"
 
 ENFORCE_MAIL_CONFIRMATION
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
   At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link.
 
   Type: Boolean
@@ -385,17 +430,39 @@ ENFORCE_MAIL_CONFIRMATION
 Membership
 ----------
 
-BASE_FEE
-^^^^^^^^
-  Yearly fee for members without a subscription
+MEMBERSHIP
+^^^^^^^^^^
+  Membership configuration
 
-  Type: String
+  The setting takes a dictionary of key-value pairs:
+    - ``'enable'``: enable all membership related functions (Bool)
+    - ``'required_shares'``: amount of shares required for a membership (Integer)
+    - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
+    - ``'fee'``: yearly membership fee (Float, Integer or String)
 
   default value
 
   .. code-block:: python
 
-    ""
+        {
+            'enable': True,
+            'required_shares': 1,
+            'required_on_signup': True,
+            'fee': 0,
+        }
+
+
+BASE_FEE
+^^^^^^^^
+  Yearly fee for anybody without a subscription, regardless of membership status.
+
+  Type: Integer, Float or String
+
+  default value
+
+  .. code-block:: python
+
+    None
 
 MEMBERSHIP_END_MONTH
 ^^^^^^^^^^^^^^^^^^^^
@@ -456,13 +523,13 @@ SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share
 
-  Type: String
+  Type: Integer, Float or String
 
   default value
 
   .. code-block:: python
 
-    "250"
+    250
 
 
 Jobs
@@ -527,7 +594,7 @@ ALLOW_JOB_UNSUBSCRIBE
 
 
 JOBS_FRONTPAGE
-^^^^^^^^
+^^^^^^^^^^^^^^
 
   Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs.
 
@@ -651,8 +718,8 @@ VOCABULARY
   .. code-block:: python
 
     {
-        'member': 'Mitglied',
-        'member_pl' : 'Mitglieder',
+        'member': 'Konto',
+        'member_pl' : 'Konten',
         'assignment' : 'Arbeitseinsatz',
         'assignment_pl' : 'Arbeitseinsätze',
         'share' : 'Anteilschein',
@@ -664,6 +731,8 @@ VOCABULARY
         'price' : 'Betriebsbeitrag',
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
+        'membership' : 'Mitgliedschaft',
+        'membership_pl' : 'Mitgliedschaften',
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
         'package': 'Tasche',
@@ -905,6 +974,8 @@ DISABLE_NOTIFICATIONS
 
   - `'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message.
   - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
+  - `'membership_activated'`: Don't notify new members when their membership is activated.
+  - `'membership_deactivated'`: Don't notify leaving members when their membership is deactivated.
 
   .. note::
     Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
