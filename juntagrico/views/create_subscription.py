@@ -15,6 +15,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.depot import Depot
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
 from juntagrico.util import temporal
@@ -129,7 +130,7 @@ def create_external(request):
     if not Config.enable_external_signup():
         raise Http404
     if request.method == "GET":
-        depots = list(DepotDao.all_visible_depots().values('id', 'name'))
+        depots = list(Depot.objects.all().values('id', 'name', 'visible'))
         subs = list(
             SubscriptionType.objects.visible()
             .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
