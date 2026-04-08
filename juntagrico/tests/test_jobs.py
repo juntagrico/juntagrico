@@ -22,6 +22,7 @@ class JobTests(JuntagricoTestCase):
     def testJob(self):
         self.assertGet(reverse('job', args=[self.job1.pk]))
         self.assertGet(reverse('job', args=[self.one_time_job1.pk]))
+        self.assertGet(reverse('job', args=[self.canceled_job.pk]))
 
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
@@ -100,7 +101,6 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
         self.job1.refresh_from_db()
         self.assertTrue(self.job1.canceled)
-        self.assertGet(reverse('job', args=[self.job1.pk]))
         # can save canceled job even when it has 0 slots
         self.job1.save()
 
