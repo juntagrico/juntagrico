@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-22 14:17-0500\n"
+"POT-Creation-Date: 2026-04-06 20:37-0500\n"
 "PO-Revision-Date: 2021-10-18 06:38+0000\n"
 "Last-Translator: admin juntagrico, 2026\n"
 "Language-Team: French (https://app.transifex.com/juntagrico/teams/126289/"
@@ -775,8 +775,6 @@ msgstr "{0}-Types de {1}"
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:14
 #: juntagrico/templates/memberjobs.html:63
 #: juntagrico/templates/snippets/snippet_jobs.html:50
-#: juntagrico/templates/widgets/assignements.html:14
-#: juntagrico/templates/widgets/assignements.html:15
 msgid "Kernbereich"
 msgstr "Domaine clé"
 
@@ -2201,7 +2199,7 @@ msgstr ""
 msgid "{0}: {1} nach Tätigkeitsbereich"
 msgstr ""
 
-#: juntagrico/templates/add_member.html:10
+#: juntagrico/templates/add_member.html:9
 #: juntagrico/templates/juntagrico/subscription/create/add_member.html:49
 #, python-format
 msgid "%(v_co_member)s hinzufügen"
@@ -3956,7 +3954,6 @@ msgstr ""
 #: juntagrico/templates/juntagrico/menu/admin/assignments.html:13
 #: juntagrico/templates/juntagrico/widgets/assignment_progress.html:8
 #: juntagrico/templates/manage_shares.html:43
-#: juntagrico/templates/widgets/assignements.html:9
 msgid "Übersicht"
 msgstr "Aperçu"
 
@@ -4900,7 +4897,6 @@ msgstr "La date de début sélectionnée n'est pas valide"
 
 #: juntagrico/templates/juntagrico/subscription/create/select_subscription.html:7
 #, python-format
-#| msgid "Wähle deine %(v_subscription)s-Bestandteile"
 msgid "%(v_subscription)s zusammenstellen"
 msgstr "Composer %(v_subscription)s"
 
@@ -4973,29 +4969,21 @@ msgstr ""
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:18
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:42
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:43
-#: juntagrico/templates/widgets/assignements.html:18
-#: juntagrico/templates/widgets/assignements.html:19
 msgid "anderer Tätigkeitsbereich"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:21
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:22
-#: juntagrico/templates/widgets/assignements.html:22
-#: juntagrico/templates/widgets/assignements.html:23
 msgid "Kernbereich Partner"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:25
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:26
-#: juntagrico/templates/widgets/assignements.html:26
-#: juntagrico/templates/widgets/assignements.html:27
 msgid "anderer Tätigkeitsbereich Partner"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:29
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/classic.html:30
-#: juntagrico/templates/widgets/assignements.html:30
-#: juntagrico/templates/widgets/assignements.html:31
 msgid "noch zu erledigen"
 msgstr ""
 
