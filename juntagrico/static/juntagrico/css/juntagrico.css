@@ -527,3 +527,9 @@ a.phone-number {
     line-height: 1.5;
     background-color: #fff6;
 }
+
+.select2-selection.select2-selection--multiple {
+    /* handles large multi selection fields like in the email form */
+    max-height: 15em;
+    overflow: scroll;
+}

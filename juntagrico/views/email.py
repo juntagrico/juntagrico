@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import Template, Context
 from django.utils.translation import ngettext, gettext as _
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django_select2.views import AutoResponseView
 
 from juntagrico.entity.jobs import Job
@@ -15,6 +16,7 @@ from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm, AreaForm, \
     AreaRecipientsForm, JobForm, JobRecipientsForm, MemberForm
+from juntagrico.util.string import int_array_decompress
 from juntagrico.view_decorators import requires_permission_to_contact
 
 
@@ -100,14 +102,20 @@ def to_job(request, job_id):
 
 
 @requires_permission_to_contact
+@csrf_exempt
 def write(request):
     initial = dict(
         to_jobs=[request.GET.get('job')],
-        to_members=request.GET.get('members', '').split('-')
+        to_members=int_array_decompress(request.GET.get('members', '') or request.POST.get('members', ''))
     )
+    if 'members' in request.POST:
+        # members may be passed as POST, but request should behave like GET
+        # bypasses csrf protection and prevents processing the post
+        request.method = 'GET'
     return email_view(request, EmailForm, initial)
 
 
+@csrf_protect
 def email_view(request, form_class: type[BaseForm] = EmailForm, initial=None, **kwargs):
     user = request.user
     member = user.member
