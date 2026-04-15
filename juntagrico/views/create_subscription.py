@@ -130,7 +130,17 @@ def create_external(request):
     if not Config.enable_external_signup():
         raise Http404
     if request.method == "GET":
-        depots = list(Depot.objects.all().values('id', 'name', 'visible'))
+        depots = Depot.objects.all().select_related('location')
+        depot_list = []
+        for depot in depots:
+            depot_list.append({
+                'id': depot.id,
+                'name': depot.name,
+                'visible': depot.visible,
+                'weekday': depot.weekday,
+                'description': depot.description,
+                'location': depot.location.map_info,
+            })
         subs = list(
             SubscriptionType.objects.visible()
             .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
@@ -139,7 +149,7 @@ def create_external(request):
         for sub in subs:
             sub['trial'] = sub['trial_days'] > 0
         external_details = {
-            'depots': depots,
+            'depots': depot_list,
             'subscriptions': subs,
         }
         return JsonResponse(external_details, safe=False)
