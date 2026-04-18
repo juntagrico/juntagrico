@@ -76,7 +76,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):
-        part = self.sub.parts.all()[0]
+        part = self.sub.parts.get(type=self.sub_type)
         self.assertGet(reverse('part-change', args=[part.pk]))
         initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
@@ -92,7 +92,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.create_paid_share(self.member)
         mail.outbox.clear()
         # change active part
-        part = self.sub.active_parts.first()
+        part = self.sub.active_parts.get(type=self.sub_type)
         self.assertGet(reverse('part-change', args=[part.pk]))
         initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
