@@ -47,7 +47,9 @@ def check_sub_membership_consistency(instance):
     if hasattr(instance, 'subscription'):
         subscription = instance.subscription
         # keep leave date consistent with deactivation date
-        if subscription.deactivation_date is not None and instance.leave_date is None:
+        if subscription.deactivation_date is not None and (
+                instance.leave_date is None or instance.leave_date > subscription.deactivation_date
+        ):
             instance.leave_date = subscription.deactivation_date
         # check consistency
         check_submembership_parent_dates(instance)

@@ -19,7 +19,6 @@ def sub_post_save(sender, instance, created, **kwargs):
 def sub_pre_save(sender, instance, **kwargs):
     if not kwargs.get('raw', False):
         with transaction.atomic():
-            check_sub_reactivation(instance)
             instance.check_date_order()
             handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
             if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
@@ -79,7 +78,6 @@ def handle_sub_created(sender, instance, **kwargs):
 
 
 def check_sub_consistency(instance):
-    check_sub_reactivation(instance)
     instance.check_date_order()
     check_children_dates(instance)
     check_sub_primary(instance)
@@ -88,8 +86,10 @@ def check_sub_consistency(instance):
 def check_sub_reactivation(instance):
     if instance._old['deactivation_date'] is not None and instance.deactivation_date is None:
         raise ValidationError(
-            _('Deaktivierte {0} können nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
-            code='invalid')
+            _('Um deaktivierte {0} wieder zu aktivieren: '
+              '1. Entferne das Deaktivierungsdatum eines Bestandteils oder füge einen neuen Bestandteil hinzu.'
+              '2. Entferne, falls nötig, weitere Austrittsdaten.').format(Config.vocabulary('subscription_pl')),
+            code='reactivation')
 
 
 def check_sub_primary(instance):

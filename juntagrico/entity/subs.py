@@ -12,7 +12,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.lifecycle.sub import check_sub_consistency
+from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
@@ -229,6 +229,7 @@ class Subscription(Billable, SimpleStateModel):
             depot_change_confirmed.send(Subscription, instance=self)
 
     def clean(self):
+        check_sub_reactivation(self)
         check_sub_consistency(self)
 
     @notifiable
