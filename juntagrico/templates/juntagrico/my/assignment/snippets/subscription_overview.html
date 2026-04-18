@@ -8,9 +8,8 @@
     </div>
     <div class="col-md-9">
         <div class="mb-3">
-            {% vocabulary "subscription" as v_subscription %}
-            {% blocktrans trimmed with ra=subscription.required_assignments|floatformat:-1 %}
-                Benötigt für diese/n/s {{ v_subscription }}: {{ ra }}{{ unit }}
+            {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc ra=subscription.required_assignments|floatformat:-1 %}
+                Benötigt für {{ v_the_subscription_acc }}: {{ ra }}{{ unit }}
             {% endblocktrans %}
             {% if subscription.required_core_assignments %}
                 {% blocktrans trimmed with rca=subscription.required_core_assignments|floatformat:-1 %}

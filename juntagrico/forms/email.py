@@ -155,7 +155,10 @@ class RecipientsForm(BaseRecipientsForm):
     )
     to_depots = forms.ModelMultipleChoiceField(
         Depot.objects.order_by('id'),
-        label=_('An alle mit aktivem/r {} in diesen {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot_pl')),
+        label=_('An alle {with_active_subscription} in diesen {depots}').format(
+            with_active_subscription=Config.vocabulary('with_active_subscription'),
+            depots=Config.vocabulary('depot_pl')
+        ),
         required=False,
         widget=InternalModelSelect2MultipleWidget(
             model=Depot,
@@ -197,12 +200,14 @@ class RecipientsForm(BaseRecipientsForm):
         if self.sender.user.has_perm('juntagrico.can_email_all_with_sub'):
             choices.append((
                 'all_subscriptions',
-                _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription'))
+                _('Alle {with_active_subscription}').format(
+                    with_active_subscription=Config.vocabulary('with_active_subscription')
+                )
             ))
         if Config.enable_shares() and self.sender.user.has_perm('juntagrico.can_email_all_with_share'):
             choices.append((
                 'all_shares',
-                _('Alle mit {}').format(Config.vocabulary('share'))
+                _('Alle mit {share}').format(share=Config.vocabulary('share'))
             ))
         return choices
 
@@ -229,7 +234,11 @@ class RecipientsForm(BaseRecipientsForm):
 
 class DepotRecipientsForm(BaseRecipientsForm):
     to_depot = forms.BooleanField(
-        label=_('An alle mit aktivem/r {} in {} {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot'), '{}'),
+        label=_('An alle {with_active_subscription} in {depot} {depot_name}').format(
+            with_active_subscription=Config.vocabulary('subscription'),
+            depot=Config.vocabulary('depot'),
+            depot_name='{}'
+        ),
         required=False
     )
 

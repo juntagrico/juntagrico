@@ -76,7 +76,7 @@ class MemberAdminWithShares(MemberAdmin):
     @admin.display(description=Config.vocabulary('share_pl'))
     def share_link(self, obj):
         return self._get_multi_link(obj.share_set.all(), 'juntagrico_share_change') \
-            or _('Kein/e/n {}').format(Config.vocabulary('share'))
+            or Config.vocabulary('no_share')
 
 
 class MembershipInline(admin.TabularInline):

@@ -37,13 +37,17 @@ def fallback_static(path):
         return path
 
 
+def v_format(text, key):
+    return lambda: text.format(**{key: Config.vocabulary(key)})
+
+
 class Config:
     # organisation settings
     vocabulary = _get_setting_with_key(
         'VOCABULARY',
         {
-            'member': _('Konto'),
-            'member_pl': _('Konten'),
+            'account': _('Konto'),
+            'account_pl': _('Konten'),
             'assignment': _('Arbeitseinsatz'),
             'assignment_pl': _('Arbeitseinsätze'),
             'share': _('Anteilschein'),
@@ -61,6 +65,28 @@ class Config:
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
             'from': _('{} von {}'),
+            # backward compatibility
+            'member': lambda: Config.vocabulary('account'),
+            'member_pl': lambda: Config.vocabulary('account_pl'),
+            # additional vocabulary to adjust for gender and cases
+            'this_account': v_format(_('dieses {account}'), 'account'),
+            'the_assignment_acc': v_format(_('den {assignment}'), 'assignment'),
+            'not_a_member_type': v_format(_('kein {member_type}'), 'member_type'),
+            'your_membership_acc': v_format(_('deine {membership}'), 'membership'),
+            'this_share': v_format(_('dieser {share}'), 'share'),
+            'this_share_acc': v_format(_('diesen {share}'), 'share'),
+            'no_share': v_format(_('kein {share}'), 'share'),
+            'the_depot_acc': v_format(_('das {depot}'), 'depot'),
+            'the_depot_dat': v_format(_('dem {depot}'), 'depot'),
+            'to_the_depot': v_format(_('zum {depot}'), 'depot'),
+            'your_depot': v_format(_('dein {depot}'), 'depot'),
+            'the_subscription': v_format(_('das {subscription}'), 'subscription'),
+            'the_subscription_acc': lambda: Config.vocabulary('the_subscription'),
+            'no_subscription_acc': v_format(_('kein {subscription}'), 'subscription'),
+            'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
+            'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
+            'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
+
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
