@@ -705,11 +705,18 @@ DEFAULT_DEPOTLIST_GENERATORS
 Appearance
 ----------
 
+.. _settings-vocabulary:
+
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word.
+  the member key describes the custom name you give your members.
+  the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
+
+  If you use vocabulary with a different gender than the default you will also have to adjust the related fragments.
+  When using the same gender it is sufficient to only change the singular and plural form of your vocabulary.
 
   Type: Dictionary
 
@@ -718,23 +725,48 @@ VOCABULARY
   .. code-block:: python
 
     {
-        'member': 'Konto',
-        'member_pl' : 'Konten',
+        # account
+        'account': 'Konto',
+        'account_pl' : 'Konten',
+        'this_account':'dieses Konto',
+        # assignment
         'assignment' : 'Arbeitseinsatz',
         'assignment_pl' : 'Arbeitseinsätze',
-        'share' : 'Anteilschein',
-        'share_pl' : 'Anteilscheine',
-        'subscription' : 'Abo',
-        'subscription_pl' : 'Abos',
-        'co_member' : 'Mitabonnent',
-        'co_member_pl' : 'Mitabonnenten',
-        'price' : 'Betriebsbeitrag',
+        'the_assignment_acc' : 'den Arbeitseinsatz',  # für ...
+        # membership/type
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
+        'not_a_member_type': 'kein Mitglied',  # das ist ...
         'membership' : 'Mitgliedschaft',
         'membership_pl' : 'Mitgliedschaften',
+        'your_membership_acc': 'deine Mitgliedschaft',  # für ...
+        # share
+        'share' : 'Anteilschein',
+        'share_pl' : 'Anteilscheine',
+        'this_share': 'dieser Anteilschein',
+        'this_share_acc': 'diesen Anteilschein',  # für ...
+        'no_share': 'kein Anteilschein',
+        # subscription
+        'subscription' : 'Abo',
+        'subscription_pl' : 'Abos',
+        'the_subscription': 'das Abo',
+        'the_subscription_acc': 'das Abo',  # für ...
+        'no_subscription_acc': 'kein Abo',
+        'this_subscription_dat': 'diesem Abo',  # von ...
+        'your_subscription_acc': 'dein Abo',  # für ...
+        'with_active_subscription': 'mit aktivem Abo',
+        # co-member
+        'co_member' : 'Mitabonnent',
+        'co_member_pl' : 'Mitabonnenten',
+        # depot
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
+        'the_depot_acc': 'das Depot',
+        'the_depot_dat': 'dem Depot',  # von ...
+        'to_the_depot': 'zum Depot',  # ich wechsle ...
+        'your_depot': 'dein Depot',
+        # others
+        'price' : 'Betriebsbeitrag',
         'package': 'Tasche',
         'from': '{} von {}'
     }

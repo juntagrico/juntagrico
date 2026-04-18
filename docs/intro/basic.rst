@@ -74,8 +74,8 @@ Depot list setup
 ----------------
 Initial List Generation
 ^^^^^^^^^^^^^^^^^^^^^^^
-The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`. This command can
-be called manually or using a cronjob.
+The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`.
+This command can be called manually or using a cronjob.
 
 Make sure to set the :ref:`depot list settings <settings-depot>` according to your needs.
 
@@ -112,7 +112,18 @@ Only set the terms you want to override, e.g.:
     VOCABULARY = {
         'subscription': 'Ernteanteil',
         'subscription_pl': 'Ernteanteile'
+        # Adjust vocabulary fragments
+        'the_subscription': 'der Ernteanteil',
+        'the_subscription_acc': 'den Ernteanteil',
+        'no_subscription_acc': 'keinen Ernteanteil',
+        'this_subscription_dat': 'diesem Ernteanteil',
+        'your_subscription_acc': 'deinen Ernteanteil',
+        'with_active_subscription': 'mit aktivem Ernteanteil',
     }
+
+Related fragments need to be adjusted, only if the gender of your vocabulary is different from the default vocabulary.
+
+See the :ref:`VOCABULARY setting <settings-vocabulary>` for the full list of options.
 
 Change Texts
 ^^^^^^^^^^^^
