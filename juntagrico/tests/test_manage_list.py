@@ -20,9 +20,13 @@ class ManageListTests(JuntagricoTestCase):
 
     def testDepotSubscription(self):
         url = reverse('manage-depot-subs', args=[self.depot.pk])
-        self.assertGet(url, member=self.depot_coordinator)
+        # anonymous has no access
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302, msg=f'url: {url}')
         # member2 has no access
         self.assertGet(url, member=self.member2, code=404)
+        # coordinator has access
+        self.assertGet(url, member=self.depot_coordinator)
 
     def testMember(self):
         response = self.assertGet(reverse('manage-member-active'))
@@ -52,11 +56,17 @@ class ManageListTests(JuntagricoTestCase):
         self.assertGet(reverse('manage-member-archive'), member=self.member2, code=403)
 
     def testAreaMember(self):
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), code=404)
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin)
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin_viewer)
+        url = reverse('manage-area-member', args=[self.area.pk])
+        # anonymous has no access
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302, msg=f'url: {url}')
+        # member has no access
+        self.assertGet(url, code=404)
         # member2 has no access
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=404)
+        self.assertGet(url, member=self.member2, code=404)
+        # area admins have access
+        self.assertGet(url, member=self.area_admin)
+        self.assertGet(url, member=self.area_admin_viewer)
 
     def testAreaMemberRemove(self):
         # incomplete and unpriviledged requests should fail
