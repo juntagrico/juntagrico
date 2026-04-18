@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
 from django.db.models import Q
@@ -93,7 +93,7 @@ class MemberActiveView(MemberView):
     title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
 
 
-class AreaMemberView(MemberView):
+class AreaMemberView(LoginRequiredMixin, MemberView):
     permission_required = []  # checked in get_queryset
     template_name = 'juntagrico/manage/member/show_for_area.html'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
@@ -351,7 +351,7 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
     })
 
 
-class DepotSubscriptionView(SubscriptionView):
+class DepotSubscriptionView(LoginRequiredMixin, SubscriptionView):
     permission_required = []
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
