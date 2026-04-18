@@ -3,18 +3,18 @@
 {% load juntagrico.config %}
 
 {% block message %}
-{% vocabulary "depot" as v_depot %}
-{% vocabulary "subscription" as v_subscription %}
+{% vocabulary "the_depot_acc" as v_the_depot_acc %}
+{% vocabulary "the_subscription" as v_the_subscription %}
 {% blocktrans trimmed %}
-Soeben hat {{ member }} der/die/das {{ v_depot }} geändert von "{{ old_depot }}" nach "{{ new_depot }}".
+Soeben hat {{ member }} {{ v_the_depot_acc }} geändert von "{{ old_depot }}" nach "{{ new_depot }}".
 {% endblocktrans %}
 {{ subscription }}
 {{ server_url }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
 {% if immediate %}
-{% blocktrans %}Die Änderung erfolgt sofort, weil der/die/das {{ v_subscription }} noch nicht aktiv ist.{% endblocktrans %}
-{% else %}
-{% blocktrans %}Die Änderung erfolgt bei der nächsten automatischen Erstellung der Depotliste, falls diese so eingerichtet ist.
+{% blocktrans %}Die Änderung erfolgt sofort, weil {{ v_the_subscription }} noch nicht aktiv ist.
+{% endblocktrans %}
+{% else %}{% blocktrans %}Die Änderung erfolgt bei der nächsten automatischen Erstellung der Depotliste, falls diese so eingerichtet ist.
 Andernfalls, musst du die Änderung hier aktivieren:{% endblocktrans %}
 {{ server_url }}{% url 'manage-sub-depot-changes' %}
 {% endif %}

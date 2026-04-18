@@ -11,7 +11,7 @@
 {% vocabulary "co_member" as v_co_member %}
 {% vocabulary "share_pl" as v_share_pl %}
 {% vocabulary "member_type" as v_member_type %}
-{% vocabulary "subscription" as v_subscription %}
+{% vocabulary "this_subscription_dat" as v_this_subscription_dat %}
 {% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
 
 {% if shares %}
@@ -27,7 +27,7 @@
 {% trans "Bestätigungslink" %}: {{ server_url }}{% url 'confirm' recipient.get_hash %}
 
 {% trans "Damit bestätigst du dass du damit einverstanden bist" %}:
-- {% blocktrans %}dem/r {{ v_subscription }} beizutreten{% endblocktrans %}
+- {% blocktrans %}{{ v_this_subscription_dat }} beizutreten{% endblocktrans %}
 {% if shares %}- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}{% endif %}
 
 {% if c_documents %}{% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:

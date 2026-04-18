@@ -4,7 +4,7 @@
 
 {% block subscription_message %}
 {% vocabulary "subscription" as v_subscription %}
-{% blocktrans %}Soeben wurde ein/e neue/s/r {{ v_subscription }} bestellt{% endblocktrans %}
+{% blocktrans %}Soeben wurde 1 neue/s/r {{ v_subscription }} bestellt{% endblocktrans %}
 
 {% if comment %}
 {% trans "Kommentar:" %} {{ comment }}

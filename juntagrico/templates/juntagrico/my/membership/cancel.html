@@ -12,6 +12,7 @@
 {% block content %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "your_subscription_acc" as v_your_subscription_acc %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% config "enable_shares" as enable_shares %}
     <div class="row mb-3">
@@ -36,7 +37,7 @@
                         {% trans "Du erhältst keine Emails mehr" %}
                     </li>
                     <li>
-                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
+                        {% blocktrans %}Du verlässt {{ v_your_subscription_acc }}{% endblocktrans %}
                     </li>
                     {% if enable_shares %}
                         <li>
@@ -50,7 +51,7 @@
                         {% trans "Du erhältst keine Emails mehr" %}
                     </li>
                     <li>
-                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
+                        {% blocktrans %}Du verlässt {{ v_your_subscription_acc }}{% endblocktrans %}
                     </li>
                     <li>
                         {% trans "Dein Zugang wird deaktiviert" %}
@@ -71,10 +72,10 @@
                     <br>
                     {% if share_error %}
                         {% blocktrans trimmed %}
-                        Deine {{ v_share_pl }} werden noch benötigt in einem Abo.
+                            Deine {{ v_share_pl }} werden noch benötigt in 1 {{ v_subscription }}.
                         {% endblocktrans %}
                     {% else %}
-                        {% blocktrans%}Du bist noch in eine/r/m {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
+                        {% blocktrans%}Du bist noch in 1 {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
                     {% endif %}
                 </div>
             {% endif %}

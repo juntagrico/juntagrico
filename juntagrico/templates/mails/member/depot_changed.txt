@@ -6,7 +6,8 @@
 {% config "organisation_name" as c_organisation_name %}
 {% vocabulary "depot" as v_depot %}
 {% trans "Achtung:" %}
-{% blocktrans %}Dein/e/n {{ c_organisation_name }}-{{ v_depot }} hat wie von dir gewünscht gewechselt.{% endblocktrans %}
+{% blocktrans asvar text with v_your_depot=vocabulary.your_depot %}{{ v_your_depot }} wurde wie von dir gewünscht gewechselt.{% endblocktrans %}
+{{ text|capfirst }}
 
 {% trans "Details:" %}
 {% with depot=subscription.depot %}

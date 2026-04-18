@@ -26,9 +26,9 @@
         <p>
             {% block intro_subscriptions %}
                 {% blocktrans trimmed with v_subscription=vocabulary.subscription v_share=vocabulary.share v_share_pl=vocabulary.share_pl count count=required_shares.for_subscription %}
-                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ count }} {{ v_share }}.
+                    Für die gewählte {{ v_subscription }}-Zusammenstellung brauchst du insgesamt {{ count }} {{ v_share }}.
                 {% plural %}
-                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ count }} {{ v_share_pl }}.
+                    Für die gewählte {{ v_subscription }}-Zusammenstellung brauchst du insgesamt {{ count }} {{ v_share_pl }}.
                 {% endblocktrans %}
                 {% if required_shares.for_subscription > 1 and form.co_members %}
                     {% blocktrans trimmed with v_co_member_pl=vocabulary.co_member_pl %}

@@ -2,12 +2,14 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
     <h3>
         {% blocktrans %}{{ v_share_pl }} Verwalten{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% vocabulary "share" as v_share %}
@@ -69,9 +71,10 @@
                                 </td>
                                 <td>
                                     {% if forloop.counter <= required_for_membership %}
-                                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
-                                            Diese/s/r {{ v_share }} wird für deine {{ v_membership }} benötigt
+                                        {% blocktrans asvar share_required trimmed with v_this_share=vocabulary.this_share v_your_membership_acc=vocabulary.your_membership_acc %}
+                                            {{ v_this_share }} wird für {{ v_your_membership_acc }} benötigt
                                         {% endblocktrans %}
+                                        {{ share_required|capfirst }}
                                         {% if forloop.first and not required_for_subscription %}
                                             <div>
                                                 <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
@@ -80,12 +83,18 @@
                                             </div>
                                         {% endif %}
                                     {% elif forloop.counter <= required_for_subscription %}
-                                        {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
+                                        {% blocktrans asvar share_required trimmed with v_this_share=vocabulary.this_share v_subscription=vocabulary.subscription %}
+                                            {{ v_this_share }} wird in 1 {{ v_subscription }} benötigt
+                                        {% endblocktrans %}
+                                        {{ share_required|capfirst }}
                                     {% elif ibanempty %}
                                         <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>
                                     {% elif share.cancelled_date is None %}
+                                        {% blocktrans asvar confirm_text trimmed with v_this_share_acc=vocabulary.this_share_acc %}
+                                            Möchtest du {{ v_this_share_acc }} verbindlich zum {{ next_membership_end_date }} kündigen?
+                                        {% endblocktrans%}
                                         <a href="{% url 'share-cancel' share.id %}" class="btn btn-outline-danger"
-                                           onclick="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ next_membership_end_date }} kündigen? {% endblocktrans%}')">
+                                           onclick="return confirm('{{ confirm_text }}')">
                                             {% trans "kündigen" %}
                                         </a>
                                     {% endif %}

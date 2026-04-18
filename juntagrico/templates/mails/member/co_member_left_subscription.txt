@@ -4,8 +4,8 @@
 
 {% block message %}
 {% vocabulary "subscription" as v_subscription %}
-{% blocktrans trimmed %}
-Soeben ist {{ co_member }} aus eurer/m gemeinsamen {{ v_subscription }} ausgetreten und hat folgende Nachricht hinterlassen:
+{% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc %}
+Soeben hat {{ co_member }} {{ v_your_subscription_acc }} verlassen und hat folgende Nachricht hinterlassen:
 {% endblocktrans %}
 {{ message }}
 {% endblock %}

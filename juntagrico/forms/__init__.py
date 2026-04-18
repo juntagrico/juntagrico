@@ -566,7 +566,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             FormActions(
                 Submit(
                     'submit',
-                    _('{subscription}-Bestandteile bestellen').format(subscription=Config.vocabulary('subscription')),
+                    _('bestellen'),
                     css_class='btn-success'
                 )
             )
@@ -577,7 +577,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
         # check that subscription is not canceled:
         if self.subscription.cancellation_date:
             raise ValidationError(
-                _('Für gekündigte {subscriptions} können keine Bestandteile oder Zusatzabos bestellt werden').
+                _('Für gekündigte {subscriptions} können keine Bestellungen getätigt werden').
                 format(subscriptions=Config.vocabulary('subscription_pl')), code='no_order_if_canceled'
             )
         # check if members in subscription have sufficient shares
@@ -587,7 +587,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
                 share_error_message = mark_safe(
-                    _('Es sind zu wenig {shares} vorhanden für diese Bestandteile!').format(
+                    _('Es werden mehr {shares} benötigt.').format(
                         shares=Config.vocabulary('share_pl')
                     ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                         reverse('manage-shares'),
@@ -657,7 +657,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
                     share_error_message = mark_safe(
-                        _('Es sind zu wenig {shares} vorhanden für diesen Bestandteil!').format(
+                        _('Es werden mehr {shares} benötigt.').format(
                             shares=Config.vocabulary('share_pl'),
                         ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                             reverse('manage-shares'),
