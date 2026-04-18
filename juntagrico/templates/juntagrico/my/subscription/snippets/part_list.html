@@ -2,7 +2,6 @@
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
 {% load i18n %}
-{% load juntagrico.subscription %}
 
 {% if parts.exists %}
     <table class="table subscription-table">
@@ -64,7 +63,7 @@
                                     <br>
                                 {% endif %}
                             {% endwith %}
-                            {% if subscription.primary_member == member %}
+                            {% if not no_actions and subscription.primary_member == member %}
                                 {% if part.is_trial %}
                                     {% if not part.follow_up_parts.exists %}
                                         <div>{% trans "Willst du weitermachen?" %}</div>
@@ -107,34 +106,5 @@
 {% else %}
     <div>
         {% trans "Keine" %}
-    </div>
-{% endif %}
-
-{% block documents %}
-    {% documents "extrasub" as c_documents %}
-    {% for name, link in c_documents %}
-        <div>{% ext_link name link %}</div>
-    {% endfor %}
-{% endblock %}
-
-{% if not subscription.inactive %}
-    <div class="mt-3">
-        {% if subscription.primary_member == member %}
-            {% if not subscription.canceled %}
-                <a href="{% url 'part-order' subscription.id %}" class="btn btn-primary mb-3">
-                    {% trans "Weitere Bestandteile bestellen" %}
-                </a>
-                {% if has_extra %}
-                    <a href="{% url 'extra-order' subscription.id %}" class="btn btn-outline-primary mb-3">
-                        {% trans "Zusatzabos bestellen" %}
-                    </a>
-                {% endif %}
-            {% else %}
-                {% vocabulary "subscription_pl" as v_subscription_pl %}
-                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestellungen getätigt werden.{% endblocktrans %}</i>
-            {% endif %}
-        {% else %}
-            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestellungen tätigen.{% endblocktrans %}</i>
-        {% endif %}
     </div>
 {% endif %}

@@ -14,6 +14,7 @@ from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
+from juntagrico.mailer import adminnotification
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
@@ -227,6 +228,11 @@ class Subscription(Billable, SimpleStateModel):
             self.future_depot = None
             self.save()
             depot_change_confirmed.send(Subscription, instance=self)
+
+    def cancel(self, date=None, end_date=None, message=None):
+        self.end_date = end_date
+        super().cancel(date)
+        adminnotification.subscription_canceled(self, message)
 
     def clean(self):
         check_sub_reactivation(self)

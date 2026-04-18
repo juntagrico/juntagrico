@@ -26,7 +26,6 @@ from juntagrico.forms.subscription import PrimaryMemberChangeForm
 from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.management import cancel_sub
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, end_of_business_year, \
@@ -251,7 +250,7 @@ def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
-        cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
+        subscription.cancel(end_date=request.POST.get('end_date'), message=request.POST.get('message'))
         return redirect('subscription-landing')
     renderdict = {
         'end_date': end_date,

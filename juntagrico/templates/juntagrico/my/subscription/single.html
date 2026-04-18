@@ -36,7 +36,7 @@
                     {% trans 'Zusammensetzung' %}
                 </div>
                 <div class="col-md-9">
-                    {% include 'juntagrico/my/subscription/snippets/part_list.html' with parts=subscription.parts.waiting_or_active %}
+                    {% include 'juntagrico/my/subscription/snippets/part_overview.html' with parts=subscription.parts.waiting_or_active %}
                 </div>
             </div>
         {% endblock %}
