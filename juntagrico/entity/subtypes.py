@@ -120,7 +120,7 @@ class SubscriptionType(JuntagricoBaseModel):
     visible = models.BooleanField(_('Sichtbar'), default=True)
     is_extra = models.BooleanField(_('Ist Zusatzabo'), default=False)
     trial = models.BooleanField(_('Probe-Abo'), default=False)  # Deprecated
-    trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
+    trial_days = models.IntegerField(_('Probedauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     # Interval of the subscription (e.g 2 for every 2 weeks)

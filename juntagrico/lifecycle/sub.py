@@ -41,8 +41,11 @@ def handle_sub_activated(sender, instance, **kwargs):
         dates_do_not_overlap = current_sub and sub_deactivated and member.subscription_current.deactivation_date <= activation_date
         if (current_sub and not sub_deactivated) or (current_sub and sub_deactivated and not dates_do_not_overlap):
             raise ValidationError(
-                _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
-                code='invalid')
+                _('Ein:e Bezüger:in hat noch 1 aktive/n/s {subscription}').format(
+                    subscription=Config.vocabulary('subscription')
+                ),
+                code='invalid'
+            )
     instance.activation_date = activation_date
     change_date = instance.activation_date
     if not getattr(instance, '__skip_part_activation__', False):
@@ -97,15 +100,17 @@ def check_sub_primary(instance):
         pm_form = instance.future_members and instance.primary_member in instance.future_members
         if not (pm_sub or pm_form):
             raise ValidationError(
-                _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
-                code='invalid')
+                _('Verwalter:in muss auch {subscription}-Bezieher:in sein').format(subscription=Config.vocabulary('subscription')),
+                code='invalid_primary'
+            )
     if instance.pk:  # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
         if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
             raise ValidationError(
-                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden Bestandteil.'
                   ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
                     Config.vocabulary('subscription')),
-                code='invalid')
+                code='empty_subscription'
+            )
 
 
 def check_children_dates(instance):

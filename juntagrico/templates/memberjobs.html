@@ -14,10 +14,10 @@
 {% block content %}
     {% if request.user.member.subscription_current.current_members.count > 1 %}
         <div class="alert alert-info">
-            {% blocktrans trimmed with v_subscription=vocabulary.subscription v_assignment_pl=vocabulary.assignment_pl %}
+            {% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc v_assignment_pl=vocabulary.assignment_pl %}
                 Hier werden nur deine eigenen {{ v_assignment_pl }} angezeigt.
-                Eine Übersicht der {{ v_assignment_pl }} für dein/e
-                {{ v_subscription }} findest du im Abschnitt {{ v_assignment_pl }} hier:
+                Eine Übersicht der {{ v_assignment_pl }} für {{ v_your_subscription_acc }}
+                findest du im Abschnitt {{ v_assignment_pl }} hier:
             {% endblocktrans %}
             <a href="{% url 'subscription-landing' %}">{{ vocabulary.subscription }}</a>
         </div>

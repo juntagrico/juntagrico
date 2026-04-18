@@ -515,7 +515,7 @@ def subscription_inconsistencies(request):
         except Exception as e:
             management_list.append({'subscription': sub, 'error': e})
         if sub.primary_member is None:
-            management_list.append({'subscription': sub, 'error': _('HauptbezieherIn ist nicht gesetzt')})
+            management_list.append({'subscription': sub, 'error': _('Verwalter:in ist nicht gesetzt')})
     render_dict = {
         'object_list': management_list,
     }

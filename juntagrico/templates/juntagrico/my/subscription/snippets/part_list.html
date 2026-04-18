@@ -131,10 +131,10 @@
                 {% endif %}
             {% else %}
                 {% vocabulary "subscription_pl" as v_subscription_pl %}
-                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestandteile bestellt werden.{% endblocktrans %}</i>
+                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestellungen getätigt werden.{% endblocktrans %}</i>
             {% endif %}
         {% else %}
-            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestandteile bestellen.{% endblocktrans %}</i>
+            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestellungen tätigen.{% endblocktrans %}</i>
         {% endif %}
     </div>
 {% endif %}

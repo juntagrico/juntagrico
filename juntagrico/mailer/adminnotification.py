@@ -68,7 +68,7 @@ def subpart_canceled(part, **kwargs):
 @requires_someone_with_perm('notified_on_share_creation')
 def share_created(share, **kwargs):
     EmailSender.get_sender(
-        organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
+        organisation_subject(_('Neue/r/s {share} erstellt').format(share=Config.vocabulary('share'))),
         get_email_content('a_share_created', base_dict(locals())),
         bcc=kwargs['emails']
     ).send()
