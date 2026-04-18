@@ -1,12 +1,8 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/member/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
-{% config "organisation_name" as c_organisation_name %}
-{% blocktrans %}Klicke bitte auf den Bestätigungslink:{% endblocktrans %}
-{{ serverurl }}{% url 'confirm' hash %}
 
-{% blocktrans trimmed %}
-Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
-{% endblocktrans %}
+{% block message %}
+{% blocktrans %}Klicke bitte auf den Bestätigungslink:{% endblocktrans %}
+{{ server_url }}{% url 'confirm' recipient.get_hash %}
 {% endblock %}

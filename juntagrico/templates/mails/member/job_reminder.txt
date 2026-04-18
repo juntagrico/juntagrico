@@ -1,27 +1,11 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/member/job/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
-{% config "organisation_name" as c_organisation_name %}
-{% trans "Nicht vergessen" %}:
 
+{% block warning %}{% trans "Nicht vergessen:" %}{% endblock %}
+
+{% block job_message %}{% config "organisation_name" as c_organisation_name %}
 {% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
 Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" statt.
-{% endblocktrans %}
-
-{% trans "Details" %}:
-
-{% trans "Job" %}:             {{ job.type.description|striptags }}
-{% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-{% trans "Ort" %}:             {{ job.type.location }}
-{% trans "Teilnehmer" %}:      {{ job.participant_names }}
-{% trans "Kontakt" %}:         {% for contact in job.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
-{% trans "Einsatz ansehen" %}: {{ serverurl }}{% url 'job' job.id %}
-{% blocktrans trimmed %}
-Wir freuen uns, dich zu sehen und zählen auf dich!
-{% endblocktrans %}
-
-{% blocktrans trimmed %}
-Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
 {% endblocktrans %}
 {% endblock %}

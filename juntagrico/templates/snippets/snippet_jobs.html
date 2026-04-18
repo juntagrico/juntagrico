@@ -52,18 +52,24 @@
                     </td>
                 {% endif %}
                 <td class="
-                    {% if job.status_percentage < 25 %}
+                    {% if job.canceled %}
+                        text-muted
+                    {% elif job.status_percentage < 25 %}
                         text-danger
                     {% elif job.status_percentage < 100%}
                     {% else %}
                         text-success
                     {% endif %}
                 ">
-                    {% block job_status %}
-                        {% if job.free_slots > -1 %}
-                        {{ job.occupied_slots }} / {{ job.slots }}
-                        {% endif %}
-                    {% endblock %}
+                    {% if job.canceled %}
+                        -
+                    {% else %}
+                        {% block job_status %}
+                            {% if job.free_slots > -1 %}
+                            {{ job.occupied_slots }} / {{ job.slots }}
+                            {% endif %}
+                        {% endblock %}
+                    {% endif %}
                 </td>
                 {% if show_free_slot_filter %}
                     <td class="d-none">

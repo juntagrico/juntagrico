@@ -1,9 +1,8 @@
-from django.template.loader import get_template
-from django.utils.translation import gettext as _
+from django.utils.text import capfirst
+from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailSender, get_email_content, base_dict, organisation_subject
-from juntagrico.util.ical import generate_ical_for_job
+from juntagrico.mailer import EmailBuilder
 from juntagrico.util.organisation_name import enriched_organisation
 
 """
@@ -12,174 +11,213 @@ Member notification emails
 
 
 def welcome(member, password):
-    EmailSender.get_sender_for_contact(
-        'for_members',
+    EmailBuilder(
+        member,
         _('Willkommen bei {0}').format(enriched_organisation('D')),
-        get_email_content('welcome', base_dict(locals())),
-    ).send_to(member.email)
+        'welcome',
+        {'password': password},
+        'for_members',
+    ).send()
 
 
 def welcome_co_member(co_member, password, new_shares, new=True):
     # sends either welcome mail or just information mail to new/added co-member
-    sub = co_member.subscription_future or co_member.subscription_current
-    EmailSender.get_sender_for_contact(
-        'for_members',
+    EmailBuilder(
+        co_member,
         _('Willkommen bei {0}').format(enriched_organisation('D')),
-        get_email_content('co_welcome' if new else 'co_added', base_dict(locals())),
-    ).send_to(co_member.email)
+        'co_welcome' if new else 'co_added',
+        {
+            'password': password,
+            'new_shares': new_shares,
+            'sub': co_member.subscription_future or co_member.subscription_current,
+        },
+        'for_members',
+    ).send()
 
 
 def shares_created(member, shares):
-    EmailSender.get_sender_for_contact(
-        'for_shares',
-        organisation_subject(_('Dein neuer Anteilschein')),
-        get_email_content('s_created', base_dict({
-            'member': member,
+    EmailBuilder(
+        member,
+        _('Dein neuer {share}').format(share=Config.vocabulary('share')),
+        's_created',
+        {
             'shares': shares,
             'total': len(shares) * int(Config.share_price())
-        })),
-    ).send_to(member.email)
+        },
+        'for_shares',
+    ).send()
 
 
 def email_confirmation(member):
-    d = {'hash': member.get_hash()}
-    EmailSender.get_sender_for_contact(
-        'technical',
-        organisation_subject(_('E-Mail-Adresse bestätigen')),
-        get_email_content('confirm', base_dict(d)),
-    ).send_to(member.email)
+    EmailBuilder(
+        member,
+        _('E-Mail-Adresse bestätigen'),
+        'confirm',
+        from_email='technical',
+    ).send()
 
 
 def membership_activated(membership):
     if Config.notifications('membership_activated'):
-        EmailSender.get_sender_for_contact(
-            'for_members',
-            organisation_subject(_('{} aktiviert').format(Config.vocabulary('membership'))),
-            get_template('juntagrico/mails/member/membership/activated.txt').render(base_dict({
-                'account': membership.account,
-            })),
-            to=[membership.account.email],
+        EmailBuilder(
+            membership.account,
+            _('{membership} aktiviert').format(membership=Config.vocabulary('membership')),
+            'juntagrico/mails/member/membership/activated.txt',
+            from_email='for_members',
         ).send()
 
 
 def membership_deactivated(membership):
     if Config.notifications('membership_deactivated'):
-        EmailSender.get_sender_for_contact(
-            'for_members',
-            organisation_subject(_('{} deaktiviert').format(Config.vocabulary('membership'))),
-            get_template('juntagrico/mails/member/membership/deactivated.txt').render(base_dict({
-                'account': membership.account,
-            })),
-            to=[membership.account.email],
+        EmailBuilder(
+            membership.account,
+            _('{membership} deaktiviert').format(membership=Config.vocabulary('membership')),
+            'juntagrico/mails/member/membership/deactivated.txt',
+            from_email='for_members',
         ).send()
 
 
-def depot_changed(subscription, **kwargs):
-    EmailSender.get_sender_for_contact(
+def depot_changed(subscription):
+    EmailBuilder(
+        subscription.current_members,
+        capfirst(_('{depot} geändert')).format(depot=Config.vocabulary('depot')),
+        'd_changed',
+        {
+            'subscription': subscription,
+        },
         'for_subscriptions',
-        organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
-        get_email_content('d_changed', base_dict(locals())),
-        to=[subscription.primary_member.email],
-        cc=subscription.co_members().values_list('email', flat=True)
     ).send()
 
 
 def co_member_left_subscription(primary_member, co_member, message):
-    EmailSender.get_sender_for_contact(
+    EmailBuilder(
+        primary_member,
+        _('Austritt aus {subscription}').format(subscription=Config.vocabulary('subscription')),
+        'm_left_subscription',
+        {
+            'co_member': co_member,
+            'message': message,
+        },
         'for_subscriptions',
-        organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
-        get_email_content('m_left_subscription', base_dict(locals())),
-        to=[primary_member.email]
     ).send()
 
 
 def part_canceled_for_you(part):
     member = part.subscription.primary_member
     if member is not None:
-        EmailSender.get_sender(
-            organisation_subject(_('Bestandteil gekündigt')),
-            get_template('juntagrico/mails/member/subscription/part/canceled.txt').render({
-                'member': member,
+        EmailBuilder(
+            member,
+            _('Bestandteil gekündigt'),
+            'juntagrico/mails/member/subscription/part/canceled.txt',
+            {
                 'part': part,
-            }),
-            reply_to=[Config.contacts('for_subscriptions')]
-        ).send_to(member.email)
+            },
+            'for_subscriptions'
+        ).send()
 
 
 def trial_continued_for_you(trial_part, follow_up_part):
     member = trial_part.subscription.primary_member
     if member is not None:
-        EmailSender.get_sender(
-            organisation_subject(_('Fortsetzung nach Probe-{0}').format(Config.vocabulary('subscription'))),
-            get_template('juntagrico/mails/member/subscription/trial/continue.txt').render({
-                'member': member,
+        EmailBuilder(
+            member,
+            _('Fortsetzung nach Probe-{subscription}').format(subscription=Config.vocabulary('subscription')),
+            'juntagrico/mails/member/subscription/trial/continue.txt',
+            {
                 'trial_part': trial_part,
                 'follow_up_part': follow_up_part,
-            }),
-            reply_to=[Config.contacts('for_subscriptions')]
-        ).send_to(member.email)
+            },
+            'for_subscriptions'
+        ).send()
 
 
-def job_signup(email, job, count):
-    EmailSender.get_sender(
-        organisation_subject(_('Für Einsatz angemeldet')),
-        get_email_content('j_signup', base_dict(locals()))
-    ).attach_ics(generate_ical_for_job(job)).start_thread(job).send_to(email)
+def job_signup(participant, job, count):
+    EmailBuilder(
+        participant,
+        _('Für Einsatz angemeldet'),
+        'j_signup',
+        {
+            'job': job,
+            'count': count,
+        },
+    ).attach(job.to_email_attachment).start_thread(job).send()
 
 
-def job_subscription_changed(email, job, count):
-    EmailSender.get_sender(
-        organisation_subject(_('Von Einsatz abgemeldet')),
-        get_template('juntagrico/mails/member/job/subscription_changed.txt').render(base_dict(
-            dict(job=job, count=count)
-        ))
-    ).continue_thread(job).send_to(email)
-
-
-def job_unsubscribed(email, job, count):
-    EmailSender.get_sender(
-        organisation_subject(_('Von Einsatz abgemeldet')),
-        get_template('juntagrico/mails/member/job/unsubscribed.txt').render(base_dict(
-            dict(job=job, count=count)
-        ))
-    ).continue_thread(job).send_to(email)
-
-
-def assignment_changed(email, job, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Einsatz geändert')),
-        get_template('juntagrico/mails/member/assignment/changed.txt').render(base_dict({'job': job, **kwargs})),
-        reply_to=[kwargs.get('editor').email]
-    ).continue_thread(job).send_to(email)
-
-
-def assignment_removed(email, job, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Einsatz gelöscht')),
-        get_template('juntagrico/mails/member/assignment/removed.txt').render(base_dict({'job': job, **kwargs})),
-        reply_to=[kwargs.get('editor').email]
-    ).continue_thread(job).send_to(email)
-
-
-def job_reminder(emails, job):
-    EmailSender.get_sender(
-        organisation_subject(_('Einsatz-Erinnerung')),
-        get_email_content('j_reminder', base_dict(locals())),
-        bcc=emails
-    ).attach_ics(generate_ical_for_job(job)).continue_thread(job).send()
-
-
-def job_time_changed(emails, job):
-    EmailSender.get_sender(
-        organisation_subject(_('Einsatz-Zeit geändert')),
-        get_email_content('j_changed', base_dict(locals())),
-        bcc=emails
-    ).attach_ics(generate_ical_for_job(job)).continue_thread(job).send()
-
-
-def job_canceled(emails, job):
-    EmailSender.get_sender(
-        organisation_subject(_('Einsatz abgesagt')),
-        get_email_content('j_canceled', base_dict(locals())),
-        bcc=emails
+def job_subscription_changed(participant, job, count):
+    EmailBuilder(
+        participant,
+        _('Einsatzanmeldung geändert'),
+        'juntagrico/mails/member/job/subscription_changed.txt',
+        {
+            'job': job,
+            'count': count,
+        },
     ).continue_thread(job).send()
+
+
+def job_unsubscribed(participant, job, count):
+    EmailBuilder(
+        participant,
+        _('Von Einsatz abgemeldet'),
+        'juntagrico/mails/member/job/unsubscribed.txt',
+        {
+            'job': job,
+            'count': count,
+        },
+    ).continue_thread(job).send()
+
+
+def assignment_changed(participant, **kwargs):
+    EmailBuilder(
+        participant,
+        _('Einsatz geändert'),
+        'juntagrico/mails/member/assignment/changed.txt',
+        kwargs,
+        reply_to=[kwargs.get('editor').email]
+    ).continue_thread(kwargs['job']).send()
+
+
+def assignment_removed(participant, **kwargs):
+    EmailBuilder(
+        participant,
+        _('Einsatz gelöscht'),
+        'juntagrico/mails/member/assignment/removed.txt',
+        kwargs,
+        reply_to=[kwargs.get('editor').email]
+    ).continue_thread(kwargs['job']).send()
+
+
+def job_reminder(job):
+    if recipients := job.members.distinct():
+        EmailBuilder(
+            recipients,
+            _('Einsatz-Erinnerung'),
+            'j_reminder',
+            {
+                'job': job,
+            },
+        ).attach(job.to_email_attachment).continue_thread(job).send()
+
+
+def job_time_changed(job):
+    if recipients := job.members.distinct():
+        EmailBuilder(
+            recipients,
+            _('Einsatz-Zeit geändert'),
+            'j_changed',
+            {
+                'job': job,
+            },
+        ).attach(job.to_email_attachment).continue_thread(job).send()
+
+
+def job_canceled(job):
+    if recipients := job.members.distinct():
+        EmailBuilder(
+            recipients,
+            _('Einsatz abgesagt'),
+            'j_canceled',
+            {
+                'job': job,
+            },
+        ).continue_thread(job).send()

@@ -1,19 +1,21 @@
-{% extends "mails/email.txt" %}
+{% extends "./base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
+
+{% block message %}
 {% vocabulary "the_depot_acc" as v_the_depot_acc %}
 {% vocabulary "the_subscription" as v_the_subscription %}
-{% trans "Hallo" %}
+{% blocktrans trimmed %}
+Soeben hat {{ member }} {{ v_the_depot_acc }} geändert von "{{ old_depot }}" nach "{{ new_depot }}".
+{% endblocktrans %}
+{{ subscription }}
+{{ server_url }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
-{% blocktrans with fn=member.first_name ln=member.last_name %}Soeben hat {{ fn }} {{ ln }} für {{ subscription }} {{ v_the_depot_acc }} geändert von "{{ old_depot }}" nach "{{ new_depot }}".{% endblocktrans %}
-{% if immediate %}{% blocktrans %}Die Änderung erfolgt sofort, weil {{ v_the_subscription }} noch nicht aktiv ist.{% endblocktrans %}
+{% if immediate %}
+{% blocktrans %}Die Änderung erfolgt sofort, weil {{ v_the_subscription }} noch nicht aktiv ist.
+{% endblocktrans %}
 {% else %}{% blocktrans %}Die Änderung erfolgt bei der nächsten automatischen Erstellung der Depotliste, falls diese so eingerichtet ist.
 Andernfalls, musst du die Änderung hier aktivieren:{% endblocktrans %}
-{{ serverurl }}{% url 'manage-sub-depot-changes' %}
+{{ server_url }}{% url 'manage-sub-depot-changes' %}
 {% endif %}
-
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
 {% endblock %}

@@ -165,6 +165,7 @@ class JuntagricoTestCase(TestCase):
         cls.job4 = RecuringJob.objects.create(**job_data2)
         cls.job5 = RecuringJob.objects.create(**job_data)
         cls.job6 = RecuringJob.objects.create(**job_data3)
+        cls.canceled_job = RecuringJob.objects.create(**job_data, canceled=True)
         cls.past_job = RecuringJob.objects.create(
             slots=2,
             time=timezone.now() - timezone.timedelta(hours=2),

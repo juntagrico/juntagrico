@@ -16,10 +16,10 @@
     {% if error %}
         {% include "messages/error.html" %}
     {% endif %}
-    {% if form.current_assignments.count %}
-        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
-    {% elif job.canceled %}
+    {% if job.canceled %}
         {% include "messages/job_canceled.html" %}
+    {% elif form.current_assignments.count %}
+        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
     {% elif job.has_ended %}
         {% include "messages/job_past.html" %}
     {% elif job.has_started %}
@@ -127,25 +127,31 @@
         </div>
     {% endblock %}
 
-    {% if not job.infinite_slots %}
+    {% if not job.infinite_slots or job.canceled %}
         {% block status %}
             <div class="row pb-4">
                 <div class="col-lg-3">
-                    {% trans "Status" %}:
+                    {% trans "Status:" %}
                 </div>
-                {% with slots_taken=job.occupied_slots %}
-                    <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
-                        {% spaceless %}
-                            {% for _ in ''|ljust:job.slots %}
-                                {% if forloop.counter <= slots_taken %}
-                                    <img src="{% images "single_full" %}" alt="{% trans "Belegter Platz" %}"/>
-                                {% else %}
-                                    <img src="{% images "single_empty" %}" alt="{% trans "Freier Platz" %}"/>
-                                {% endif %}
-                            {% endfor %}
-                        {% endspaceless %}
+                {% if job.canceled %}
+                    <div class="col-lg-9 text-danger">
+                        {% trans "abgesagt" %}
                     </div>
-                {% endwith %}
+                {% else %}
+                    {% with slots_taken=job.occupied_slots %}
+                        <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
+                            {% spaceless %}
+                                {% for _ in ''|ljust:job.slots %}
+                                    {% if forloop.counter <= slots_taken %}
+                                        <img src="{% images "single_full" %}" alt="{% trans "Belegter Platz" %}"/>
+                                    {% else %}
+                                        <img src="{% images "single_empty" %}" alt="{% trans "Freier Platz" %}"/>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endspaceless %}
+                        </div>
+                    {% endwith %}
+                {% endif %}
             </div>
         {% endblock %}
     {% endif %}
@@ -257,7 +263,13 @@
     {% block participants %}
         <div class="row pb-4">
             <div class="col-lg-3">
-                {% trans "Dabei sind" %}:
+                {% if job.canceled %}
+                    {% trans "Dabei wären gewesen:" %}
+                {% elif job.has_ended %}
+                    {% trans "Dabei waren:" %}
+                {% else %}
+                    {% trans "Dabei sind:" %}
+                {% endif %}
             </div>
             <div class="col-lg-9">
                 {% if job.occupied_slots == 0 and job.free_slots != 0 %}
