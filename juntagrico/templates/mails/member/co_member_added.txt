@@ -1,14 +1,12 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/member/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
+
+{% block message %}
 {% config "enable_shares" as c_enable_shares %}
 {% contacts "for_members" as contact_email %}
-{% config "organisation_name" as c_organisation_name %}
 {% vocabulary "co_member" as v_co_member %}
 {% vocabulary "share_pl" as v_share_pl %}
-{% trans "Hallo" %}
-
 {% if c_enable_shares %}
 {% blocktrans with pm=sub.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt und für dich {{ new_shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
 {% else %}
@@ -18,7 +16,4 @@
 {% blocktrans %}Solltest du irrtümlicherweise hier eingetragen worden sein melde dies bitte {{ contact_email }}.
 Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.{% endblocktrans %}
 
-{% blocktrans trimmed %}
-Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
-{% endblocktrans %}
 {% endblock %}

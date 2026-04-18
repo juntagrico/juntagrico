@@ -1,9 +1,8 @@
-from django.template.loader import get_template
-from django.utils.translation import gettext as _
+from django.utils.text import capfirst
+from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailSender, organisation_subject, get_email_content, base_dict, \
-    requires_someone_with_perm
+from juntagrico.mailer import EmailBuilder
 
 """
 Admin notification emails
@@ -11,122 +10,185 @@ Admin notification emails
 
 
 def member_joined_activityarea(area, member):
-    EmailSender.get_sender(
-        organisation_subject(_('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name)),
-        _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
-            member.first_name, member.last_name, area.name
+    EmailBuilder(
+        area.get_emails(get_member=True),
+        _('Neue/r/s {member_type} im Tätigkeitsbereich {area}').format(
+            member_type=Config.vocabulary('member_type'),
+            area=area.name
         ),
-    ).send_to(area.get_emails())
+        'admin',
+        _('Soeben hat sich {member} in den Tätigkeitsbereich {area} eingetragen.').format(
+            member=member,
+            area=area.name
+        ),
+    ).send()
 
 
 def member_left_activityarea(area, member):
-    EmailSender.get_sender(
-        organisation_subject(_('Mitglied verlässt Taetigkeitsbereich {0}').format(area.name)),
-        _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
-          'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
-            member.first_name, member.last_name, area.name
+    EmailBuilder(
+        area.get_emails(get_member=True),
+        capfirst(_('{member_type} verlässt Tätigkeitsbereich {area}').format(
+            member_type=Config.vocabulary('member_type'),
+            area=area.name
+        )),
+        'admin',
+        _('Soeben hat sich {member} aus dem Tätigkeitsbereich {area} ausgetragen. '
+          'Bitte lösche seine/ihre Kontaktdaten aus allen deinen privaten Adressbüchern.').format(
+            member=member,
+            area=area.name
         ),
-    ).send_to(area.get_emails())
-
-
-@requires_someone_with_perm('notified_on_subscription_creation')
-def subscription_created(subscription, comment='', **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
-        get_email_content('n_sub', base_dict(locals())),
-        bcc=kwargs['emails']
     ).send()
 
 
-@requires_someone_with_perm('notified_on_subscription_cancellation')
-def subscription_canceled(subscription, message, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('subscription'))),
-        get_email_content('s_canceled', base_dict(locals())),
-        bcc=kwargs['emails']
+def subscription_created(subscription, comment=''):
+    EmailBuilder(
+        'notified_on_subscription_creation',
+        capfirst(_('Neue/r/s {subscription} erstellt').format(
+            subscription=Config.vocabulary('subscription')
+        )),
+        'n_sub',
+        {
+            'subscription': subscription,
+            'comment': comment,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_subscriptionpart_creation')
-def subparts_created(parts, subscription, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Neuer Bestandteil erstellt')),
-        get_email_content('a_subpart_created', base_dict(locals())),
-        bcc=kwargs['emails']
+def subscription_canceled(subscription, message):
+    EmailBuilder(
+        'notified_on_subscription_cancellation',
+        capfirst(_('{subscription} gekündigt').format(
+            subscription=Config.vocabulary('subscription')
+        )),
+        's_canceled',
+        {
+            'subscription': subscription,
+            'message': message,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_subscriptionpart_cancellation')
-def subpart_canceled(part, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Bestandteil gekündigt')),
-        get_email_content('a_subpart_canceled', base_dict(locals())),
-        bcc=kwargs['emails']
+def subparts_created(parts, subscription):
+    EmailBuilder(
+        'notified_on_subscriptionpart_creation',
+        _('Neuer Bestandteil erstellt'),
+        'a_subpart_created',
+        {
+            'parts': parts,
+            'subscription': subscription,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_share_creation')
-def share_created(share, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
-        get_email_content('a_share_created', base_dict(locals())),
-        bcc=kwargs['emails']
+def subpart_canceled(part):
+    EmailBuilder(
+        'notified_on_subscriptionpart_cancellation',
+        _('Bestandteil gekündigt'),
+        'a_subpart_canceled',
+        {
+            'part': part,
+            'subscription': part.subscription
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_share_cancellation')
-def share_canceled(share, **kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('share'))),
-        get_email_content('a_share_canceled', base_dict(locals())),
-        bcc=kwargs['emails']
+def share_created(share):
+    EmailBuilder(
+        'notified_on_share_creation',
+        _('Neue/r/s {share} erstellt').format(share=Config.vocabulary('share')),
+        'a_share_created',
+        {
+            'share': share,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_member_creation')
-def member_created(member, **kwargs):
+def share_canceled(share):
+    EmailBuilder(
+        'notified_on_share_cancellation',
+        capfirst(_('{share} gekündigt').format(share=Config.vocabulary('share'))),
+        'a_share_canceled',
+        {
+            'share': share,
+        },
+    ).send()
+
+
+def member_created(member):
     member.comment = member.signup_comment  # backwards compatibility
-    EmailSender.get_sender(
-        organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
-        get_email_content('a_member_created', base_dict(locals())),
-        bcc=kwargs['emails']
+    EmailBuilder(
+        'notified_on_member_creation',
+        _('Neue/r/s {account}').format(account=Config.vocabulary('account')),
+        'a_member_created',
+        {
+            'member': member,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_member_cancellation')
-def member_canceled(member, message='', **kwargs):
-    end_date = member.end_date
-    EmailSender.get_sender(
-        organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
-        get_email_content('m_canceled', base_dict(locals())),
-        bcc=kwargs['emails']
+def member_canceled(member, message=''):
+    EmailBuilder(
+        'notified_on_member_cancellation',
+        _('{account} gekündigt').format(account=Config.vocabulary('account')),
+        'm_canceled',
+        {
+            'member': member,
+            'message': message,
+            'end_date': member.end_date,  # backwards compatibility
+        },
     ).send()
 
 
-@requires_someone_with_perm('depot_list_notification')
-def depot_list_generated(**kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('Neue {}-Liste generiert').format(Config.vocabulary('depot'))),
-        get_email_content('a_depot_list_generated', base_dict(locals())),
-        bcc=kwargs['emails']
+def membership_created(membership, comment=None):
+    EmailBuilder(
+        'notified_on_membership_creation',
+        _('{membership} beantragt').format(membership=Config.vocabulary('membership')),
+        'juntagrico/mails/admin/membership/created.txt',
+        {
+            'account': membership.account,
+            'member': membership.account,  # compatibility
+            'comment': comment,
+        },
     ).send()
 
 
-@requires_someone_with_perm('notified_on_depot_change')
+def membership_canceled(membership, message=''):
+    EmailBuilder(
+        'notified_on_membership_cancellation',
+        _('{membership} gekündigt').format(membership=Config.vocabulary('membership')),
+        'juntagrico/mails/admin/membership/canceled.txt',
+        {
+            'account': membership.account,
+            'member': membership.account,  # compatibility
+            'message': message
+        },
+    ).send()
+
+
+def depot_list_generated():
+    EmailBuilder(
+        'depot_list_notification',
+        _('Neue {depot}-Liste generiert').format(depot=Config.vocabulary('depot')),
+        'a_depot_list_generated',
+    ).send()
+
+
 def member_changed_depot(**kwargs):
-    EmailSender.get_sender(
-        organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
-        get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict(kwargs)),
-        bcc=kwargs['emails']
+    EmailBuilder(
+        'notified_on_depot_change',
+        capfirst(_('{depot} geändert').format(depot=Config.vocabulary('depot'))),
+        'juntagrico/mails/admin/depot_changed.txt',
+        kwargs
     ).send()
 
 
 def _template_member_in_job(job, subject, template_name, **kwargs):
     kwargs['job'] = job
-    EmailSender.get_sender(
-        organisation_subject(subject),
-        get_template(f'juntagrico/mails/admin/job/{template_name}.txt').render(base_dict(kwargs)),
-        to=job.get_emails(),
+    EmailBuilder(
+        job.get_emails(get_member=True),
+        subject,
+        f'juntagrico/mails/admin/job/{template_name}.txt',
+        kwargs,
         reply_to=[kwargs['member'].email],
     ).send()
 
@@ -184,15 +246,15 @@ def member_unsubscribed_from_job(job, **kwargs):
 
 
 def _template_assignment_changed(job, subject, template_name, **kwargs):
-    to = job.get_emails(exclude=kwargs['editor'].email)
-    if to:
+    if recipients := job.get_emails(get_member=True, exclude=kwargs['editor'].email):
         kwargs['job'] = job
         kwargs['member'] = kwargs.get('instance')  # templates expect 'member', signal sends 'instance'
-        EmailSender.get_sender(
-            organisation_subject(subject),
-            get_template(f'juntagrico/mails/admin/assignment/{template_name}.txt').render(base_dict(kwargs)),
-            to=to,
-            reply_to=[kwargs['editor'].email],
+        EmailBuilder(
+            recipients,
+            subject,
+            f'juntagrico/mails/admin/assignment/{template_name}.txt',
+            kwargs,
+            reply_to=[kwargs['member'].email],
         ).send()
 
 

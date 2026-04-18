@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} transferieren{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% if form.fields.primary_member.queryset %}
+        <p>
+            {% blocktrans trimmed with v_co_member=vocabulary.co_member v_the_subscription_acc=vocabulary.the_subscription_acc %}
+                Du bleibst weiterhin {{ v_co_member }}, kannst {{ v_the_subscription_acc }} aber nicht mehr verwalten.
+            {% endblocktrans %}
+        </p>
+        {% crispy form %}
+    {% else %}
+        {% vocabulary "co_member_pl" as v_co_member_pl %}
+         <div class="alert alert-warning">
+                {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc %}
+                    Leider kann niemand deiner {{ v_co_member_pl }} {{ v_the_subscription_acc }} übernehmen.
+                {% endblocktrans %}
+            <br/>
+            <a href="{% url 'subscription-single' form.instance.id %}">
+                {% blocktrans %}Zurück zur Übersicht{% endblocktrans %}
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

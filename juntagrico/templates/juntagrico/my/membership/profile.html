@@ -5,54 +5,110 @@
 
 {% block page_title %}
     <h3>
-        {% trans "Mitgliedschaft" %}
+        {% config "enable_membership" as c_enable_membership %}
+        {% if c_enable_membership %}
+            {{ vocabulary.membership }}
+        {% else %}
+            {% trans "Konto" %}
+        {% endif %}
     </h3>
 {% endblock %}
 
 {% block content %}
-    {% block membership %}
-        <div class="row mb-5 membership-status">
-            <div class="col-md-3">
-                {% trans "Status" %}
-            </div>
-            <div class="col-md-9">
-                {% if member.canceled %}
-                    <div class="alert alert-warning">
-                        {% block info_canceled %}
-                            {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y" v_member_type=vocabulary.member_type %}
-                                Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
-                            {% endblocktrans %}
-                        {% endblock %}
+    {% config "enable_membership" as c_enable_membership %}
+    {% if c_enable_membership %}
+        {% block membership %}
+            {% with membership=member.memberships.active_or_requested.first %}
+                <div class="row mb-5 membership-status">
+                    <div class="col-md-3">
+                        {% trans "Status" %}
                     </div>
-                {% elif not member.inactive%}
-                    <div class="alert alert-success">
-                        {% block info_active %}
-                            {% blocktrans with v_member_type=vocabulary.member_type %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
-                        {% endblock %}
+                    <div class="col-md-9">
+                        {% if not membership %}
+                            <div class="alert alert-warning">
+                                {% block info_inactive %}
+                                    {% blocktrans trimmed with v_not_a_member_type=vocabulary.not_a_member_type %}
+                                        Du bist {{ v_not_a_member_type }}.
+                                    {% endblocktrans %}
+                                {% endblock %}
+                            </div>
+
+                            {% block button_create_membership %}
+                                <a href="{% url 'membership-create' %}" class="btn btn-success">
+                                    {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                                        {{ v_member_type }} werden
+                                    {% endblocktrans %}
+                                </a>
+                            {% endblock %}
+                        {% else %}
+                            {% if membership.canceled %}
+                                <div class="alert alert-warning">
+                                    {% block info_canceled %}
+                                        {% blocktrans trimmed with cd=membership.cancellation_date|date:"d.m.Y" v_membership=vocabulary.membership %}
+                                            Deine {{ v_membership }} ist seit dem {{ cd }} gekündigt.
+                                        {% endblocktrans %}
+                                    {% endblock %}
+                                </div>
+
+                                {% block button_recreate_membership %}
+                                    <a href="{% url 'membership-create' %}" class="btn btn-success">
+                                        {% trans "Kündigung zurückziehen" %}
+                                    </a>
+                                {% endblock %}
+                            {% elif not membership.active %}
+                                <div class="alert alert-warning">
+                                    {% block info_requested %}
+                                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                                            Du hast die {{ v_membership }} beantragt.
+                                        {% endblocktrans %}
+                                    {% endblock %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    {% block info_active %}
+                                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                                            Deine {{ v_membership }} ist aktiv.
+                                        {% endblocktrans %}
+                                    {% endblock %}
+                                </div>
+                            {% endif %}
+
+                            {% if membership.number %}
+                                <p>
+                                    {% blocktrans trimmed with v_membership=vocabulary.membership number=member.number %}
+                                        Nummer der {{ v_membership }}: {{ number }}
+                                    {% endblocktrans %}
+                                </p>
+                            {% endif %}
+
+                            {% if not membership.canceled %}
+                                {% block button_cancel_membership %}
+                                    <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
+                                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                                            {{ v_membership }} künden
+                                        {% endblocktrans %}
+                                    </a>
+                                {% endblock %}
+                            {% endif %}
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
+            {% endwith %}
+        {% endblock %}
+    {% endif %}
 
-                {% if member.number %}
-                    <p>
-                        {% blocktrans trimmed with number=member.number %}
-                            Nummer: {{ number }}
-                        {% endblocktrans %}
-                    </p>
-                {% endif %}
-
-                {% if not member.canceled %}
-                    {% block button_cancel_membership %}
-                        <a href="{% url 'cancel-membership' %}" class="btn btn-outline-danger">
-                            {% trans "Mitgliedschaft künden" %}
-                        </a>
-                    {% endblock %}
-                {% endif %}
-            </div>
-        </div>
+    {% block account_number %}
+        {% if member.number %}
+            <p>
+                {% blocktrans trimmed with number=member.number %}
+                    Konto-Nummer: {{ number }}
+                {% endblocktrans %}
+            </p>
+        {% endif %}
     {% endblock %}
 
     {% block documents %}
-        {% include "juntagrico/snippets/documents.html" %}
+        {% include "juntagrico/snippets/documents.html" with tag='account' %}
     {% endblock %}
 
     {% block password %}

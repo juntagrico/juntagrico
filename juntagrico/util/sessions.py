@@ -5,6 +5,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
+from juntagrico.forms.membership import MembershipForm
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.util.management import create_share, create_subscription_parts
 
@@ -101,8 +102,38 @@ class SignupManager(SessionManager):
             co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
+    def _membership_form(self):
+        form = MembershipForm(False, {'membership': self.data.get('membership', False)})
+        form.full_clean()
+        return form
+
+    def requires_membership(self):
+        return Config.membership('enable') and (
+            Config.membership('required_on_signup') or
+            any([sub.requires_membership for sub in self.subscriptions()])
+        )
+
+    def membership_ok(self):
+        return (
+            self.request.user.is_authenticated
+            and self.request.user.member.memberships.filter(cancellation_date__isnull=False).exists()
+        ) or (
+            self.get('membership') is not None
+        )
+
+    def required_shares_details(self):
+        return {
+            'for_signup': Config.required_shares(),
+            'for_membership': Config.membership('required_shares') if self.get('membership') else 0,
+            'for_subscription': sum([s.shares * amount for s, amount in self.subscriptions().items()]),
+        }
+
     def required_shares(self):
-        return sum([s.shares * amount for s, amount in self.subscriptions().items()])
+        required = self.required_shares_details()
+        return {
+            'total': max(required.values()),
+            'for_primary': max(required['for_membership'], required['for_signup']),
+        }
 
     def existing_shares(self):
         return self.request.user.member.active_shares_count if self.request.user.is_authenticated else 0
@@ -132,21 +163,27 @@ class SignupManager(SessionManager):
             return 'cs-start'
         elif has_parts and not self.get('co_members_done'):
             return 'cs-co-members'
+        elif Config.membership('enable') and not self.membership_ok():
+            return 'cs-membership'
         elif Config.enable_shares() and not self.shares_ok():
             return 'cs-shares'
         return 'cs-summary'
 
     def apply_member(self):
+        comment = self.get('comment', '')
         if self.request.user.is_authenticated:
             member = self.request.user.member
-            member.signup_comment = self.get('comment', '')  # save new comment
+            member.signup_comment = comment  # save new comment
             member.save()
             password = None
         else:
             member_form = self._main_member_form()
-            member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
+            member_form.instance.signup_comment = comment  # inject comment to be available in admin notification
             member = member_form.save()
             password = member.set_password()
+        if self.get('membership'):
+            membership_form = self._membership_form()
+            membership_form.save(member, comment)
         return MemberDetails(member, password)
 
     def apply_co_member(self):

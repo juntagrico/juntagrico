@@ -1,3 +1,4 @@
+{% load juntagrico.snippets %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
 {% load i18n %}
@@ -109,13 +110,12 @@
     </div>
 {% endif %}
 
-{% config "extra_sub_info" as extra_sub_info %}
-{% if extra_sub_info.strip %}
-    <a href="{{ extra_sub_info }}" target="_blank">
-        {% trans "Infos zu den Zusatz-Abos" %}
-        <i class="bi bi-box-arrow-up-right small"></i>
-    </a>
-{% endif %}
+{% block documents %}
+    {% documents "extrasub" as c_documents %}
+    {% for name, link in c_documents %}
+        <div>{% ext_link name link %}</div>
+    {% endfor %}
+{% endblock %}
 
 {% if not subscription.inactive %}
     <div class="mt-3">
@@ -131,10 +131,10 @@
                 {% endif %}
             {% else %}
                 {% vocabulary "subscription_pl" as v_subscription_pl %}
-                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestandteile bestellt werden.{% endblocktrans %}</i>
+                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestellungen getätigt werden.{% endblocktrans %}</i>
             {% endif %}
         {% else %}
-            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestandteile bestellen.{% endblocktrans %}</i>
+            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestellungen tätigen.{% endblocktrans %}</i>
         {% endif %}
     </div>
 {% endif %}

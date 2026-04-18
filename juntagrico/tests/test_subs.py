@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership
+from ..entity.membership import Membership
 from ..entity.subs import SubscriptionPart
 from ..entity.subtypes import SubscriptionType
 
@@ -27,13 +28,17 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     def testPrimaryChange(self):
         self.assertGet(reverse('primary-change', args=[self.sub.pk]))
-        self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member3.pk}, 302)
+        Membership.objects.create(account=self.member3)
+        self.assertGet(reverse('primary-change', args=[self.sub.pk]))
+        self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary_member': self.member3.pk}, 302)
         self.sub.refresh_from_db()
-        self.assertEqual(self.sub.primary_member.id, self.member3.id)
+        self.assertEqual(self.sub.primary_member, self.member3)
 
     def testPrimaryChangeError(self):
-        with self.assertRaises(ValidationError):
-            self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
+        # can't change to non-member as sub-type requires membership
+        self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary_member': self.member3.pk}, 200)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.primary_member, self.member)
 
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.depot.pk]))
@@ -71,7 +76,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):
-        part = self.sub.parts.all()[0]
+        part = self.sub.parts.get(type=self.sub_type)
         self.assertGet(reverse('part-change', args=[part.pk]))
         initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
@@ -87,7 +92,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.create_paid_share(self.member)
         mail.outbox.clear()
         # change active part
-        part = self.sub.active_parts.first()
+        part = self.sub.active_parts.get(type=self.sub_type)
         self.assertGet(reverse('part-change', args=[part.pk]))
         initial_count = self.sub.future_parts.count()
         post_data = {'part_type': self.sub_type2.pk}
@@ -129,9 +134,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertLess(part.cancellation_date, part.activation_date)
 
     def testLeave(self):
-        if settings.ENABLE_SHARES:
-            self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-            self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()

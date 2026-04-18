@@ -12,7 +12,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.lifecycle.sub import check_sub_consistency
+from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
@@ -30,26 +30,38 @@ class Subscription(Billable, SimpleStateModel):
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
         verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
         help_text='Nur setzen, wenn {} geändert werden soll'.format(Config.vocabulary('depot')))
-    primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
-                                       on_delete=models.PROTECT,
-                                       verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
-    nickname = models.CharField(_('Spitzname'), max_length=30, blank=True,
-                                help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(
-                                    Config.vocabulary('subscription'), Config.vocabulary('depot'))))
+    primary_member = models.ForeignKey(
+        'Member', related_name='subscription_primary', null=True, blank=True, on_delete=models.PROTECT,
+        verbose_name=_('Verwalter:in')
+    )
+    nickname = models.CharField(
+        _('Spitzname'), max_length=30, blank=True,
+        help_text=_('Ersetzt die {co_members} auf der {depot}-Liste.').format(
+            co_members=Config.vocabulary('co_member_pl'),
+            depot=Config.vocabulary('depot'),
+        )
+    )
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
         _('Notizen'), blank=True,
-        help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+        help_text=_('Notizen für Administration. Nicht sichtbar für {member}').format(
+            member=Config.vocabulary('member')
+        )
+    )
 
     types = models.ManyToManyField('SubscriptionType', through='SubscriptionPart', related_name='subscriptions')
 
     objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
     def __str__(self):
-        return gettext('Abo ({1}) {0}').format(self.size, self.id)
+        return gettext('{subscription} ({id}) {content}').format(
+            subscription=Config.vocabulary('subscription'),
+            id=self.id,
+            content=self.size,
+        )
 
     @staticmethod
     def get_part_overview(parts):
@@ -80,6 +92,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_parts(self):
+        # DEPRECATED: use parts.not_canceled() instead
         return self.parts.filter(~q_canceled() & ~q_deactivated())
 
     @property
@@ -155,6 +168,10 @@ class Subscription(Billable, SimpleStateModel):
             result += part.type.shares
         return result
 
+    @property
+    def requires_membership(self):
+        return self.parts.not_canceled().filter(type__requires_membership=True).exists()
+
     def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
         if of_member is None:
@@ -212,6 +229,7 @@ class Subscription(Billable, SimpleStateModel):
             depot_change_confirmed.send(Subscription, instance=self)
 
     def clean(self):
+        check_sub_reactivation(self)
         check_sub_consistency(self)
 
     @notifiable

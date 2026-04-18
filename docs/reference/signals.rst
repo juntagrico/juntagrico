@@ -223,6 +223,8 @@ Default receivers:
 * handle_share_created: :ref:`Notify <reference-notifications-share-created>` users
   with permission :ref:`notified_on_share_creation <reference-permissions-notified_on_share_creation>` via email.
 
+.. _reference-signals-share_canceled:
+
 share_canceled
 ^^^^^^^^^^^^^^
 
@@ -278,7 +280,7 @@ canceled
 
 Sender: Member
 
-Trigger: Member cancels their membership
+Trigger: Member closes their account
 
 Arguments:
 
@@ -322,6 +324,23 @@ Arguments:
 Default receivers:
 
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
+
+
+Email signals
+-------------
+
+pre_render
+^^^^^^^^^^
+
+Sender: mailer.EmailBuilder
+
+Trigger: Before email is rendered. This includes all notification emails and emails sent via the contact form.
+
+Arguments:
+
+* recipient: The member instance who will receive the email. Is None for recipients that aren't members.
+
+Default receivers: None
 
 
 Management Command signals

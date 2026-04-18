@@ -1,19 +1,25 @@
 import datetime
 
+from gettext import gettext as _
+
+from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
 from django.core import management
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.template.loader import get_template
+from django.test import override_settings
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import RecuringJob
+from juntagrico.entity.jobs import RecuringJob, ActivityArea
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.mailer import get_email_content, base_dict
+from juntagrico.mailer import membernotification, adminnotification
+from juntagrico.mailer.adminnotification import member_joined_activityarea, member_left_activityarea
 
 
 class Command(BaseCommand):
@@ -21,11 +27,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('selected', nargs='*', type=str,
-                            default='signup subscription share password job depot member')
+                            default='signup subscription share password job depot member membership activityarea')
+        parser.add_argument('--language', '-l', type=str, default=None)
 
     # entry point used by manage.py
     @transaction.atomic(durable=True)
-    def handle(self, selected, *args, **options):
+    @override_settings(EMAIL_BACKEND='juntagrico.backends.email.MailTextBackend')
+    def handle(self, selected, language, *args, **options):
         # generate temporary test data to ensure that required objects are available
         management.call_command('generate_testdata')
         subscription = Subscription.objects.filter(parts__isnull=False).first()
@@ -34,201 +42,205 @@ class Command(BaseCommand):
         canceled_part = subscription.parts.first()
         if Config.enable_shares():
             shares = list(Share.objects.all()[:2])
-        job = RecuringJob.objects.filter(members__isnull=False)[0]
+        job = RecuringJob.objects.filter(members__isnull=False).order_by('time')[0]
         member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
         member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
         depot, new_depot = Depot.objects.all()[:2]
+        area = ActivityArea.objects.first()
+        membership, created = Membership.objects.get_or_create(account=member)
+        # ensure there is a recipient for these admin notifications
+        member.user.user_permissions.add(
+            *Permission.objects.filter(
+                content_type__app_label='juntagrico',
+                codename__in=[
+                    'notified_on_subscription_creation',
+                    'notified_on_subscription_cancellation',
+                    'notified_on_subscriptionpart_creation',
+                    'notified_on_subscriptionpart_cancellation',
+                    'notified_on_share_creation',
+                    'notified_on_share_cancellation',
+                    'notified_on_member_creation',
+                    'notified_on_member_cancellation',
+                    'notified_on_depot_change',
+                    'notified_on_membership_creation',
+                    'notified_on_membership_cancellation',
+                ]
+            )
+        )
+        separator = '\n' + '-' * 72 + '\n'
 
-        if 'signup' in selected:
-            print('*** welcome  mit abo***')
-            print(get_email_content('welcome', base_dict({
-                'member': member,
-                'password': 'password'
-            })))
-            print()
+        with override_settings(EMAIL_LANGUAGE=language):
+            if 'signup' in selected:
+                print('*** welcome  mit abo***')
+                membernotification.welcome(member, 'password')
 
-            print('*** welcome  ohne abo***')
-            print(get_email_content('welcome', base_dict({
-                'member': member_wo_subs,
-                'password': 'password'
-            })))
-            print()
+                print('*** welcome  ohne abo***')
+                membernotification.welcome(member_wo_subs, 'password')
 
-            print('*** co_welcome ***')
-            print(get_email_content('co_welcome', base_dict({
-                'co_member': co_member,
-                'password': 'password',
-                'sub': co_member.subscription_future or co_member.subscription_current
-            })))
-            print()
+                print('*** co_welcome ***')
+                membernotification.welcome_co_member(co_member, 'password', 1)
 
-            print('*** co_added ***')
-            print(get_email_content('co_added', base_dict({
-                'co_member': co_member,
-                'password': 'password',
-                'new_shares': '9',
-                'sub': co_member.subscription_future or co_member.subscription_current
-            })))
-            print()
+                print('*** co_added ***')
+                membernotification.welcome_co_member(co_member, 'password', 2, False)
 
-            print('*** confirm ***')
-            print(get_email_content('confirm', base_dict({'hash': 'hash'})))
-            print()
+                print('*** confirm ***')
+                membernotification.email_confirmation(member)
 
-        if 'subscription' in selected:
-            print('*** n_sub ***')
-            print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
-            print()
+            if 'subscription' in selected:
+                print('*** n_sub ***')
+                adminnotification.subscription_created(subscription, _('Kommentar'))
 
-            print('*** s_canceled ***')
-            print(get_email_content('s_canceled', base_dict({
-                'subscription': canceled_subscription,
-                'message': 'Nachricht'
-            })))
-            print()
+                print('*** s_canceled ***')
+                adminnotification.subscription_canceled(canceled_subscription, _('Nachricht'))
 
-            print('*** mails/admin/subpart_created.txt (a_subpart_created) ***')
-            print(get_email_content('a_subpart_created', base_dict({
-                'subscription': subscription,
-                'parts': future_parts,
-            })), end='\n\n')
+                print('*** mails/admin/subpart_created.txt (a_subpart_created) ***')
+                adminnotification.subparts_created(future_parts, subscription)
 
-            print('*** mails/admin/subpart_canceled.txt (a_subpart_canceled) ***')
-            print(get_email_content('a_subpart_canceled', base_dict({
-                'part': canceled_part,
-            })), end='\n\n')
+                print('*** mails/admin/subpart_canceled.txt (a_subpart_canceled) ***')
+                adminnotification.subpart_canceled(canceled_part)
 
-            print('*** mails/member/co_member_left_subscription.txt (m_left_subscription) ***')
-            print(get_email_content('m_left_subscription', base_dict({
-                'primary_member': member,
-                'co_member': co_member,
-                'message': '[Nachricht des Mitglieds]',
-            })), end='\n\n')
+                print('*** mails/member/subscription/part/canceled.txt ***')
+                membernotification.part_canceled_for_you(canceled_part)
 
-        if 'share' in selected and Config.enable_shares():
-            print('*** s_created ***')
-            print(get_email_content('s_created', base_dict({
-                'member': member,
-                'shares': shares,
-                'total': 1000,
-            })))
-            print()
+                print('*** mails/member/subscription/trial/continue.txt ***')
+                membernotification.trial_continued_for_you(canceled_part, canceled_part)
 
-            print('*** a_share_created ***')
-            print(get_email_content('a_share_created', base_dict({
-                'share': shares[0]
-            })))
-            print()
+                print('*** mails/member/co_member_left_subscription.txt (m_left_subscription) ***')
+                membernotification.co_member_left_subscription(member, co_member, _('[Nachricht des Mitglieds]'))
 
-        if 'password' in selected:
-            print('*** password ***')
-            print(get_email_content('password', base_dict({
-                'email': 'email@email.org',
-                'password': 'password',
-                'protocol': 'https',
-                'domain': Site.objects.get_current().domain,
-                'uid': 'uid',
-                'token': 'token'
-            })))
-            print()
+            if 'share' in selected and Config.enable_shares():
+                print('*** s_created ***')
+                membernotification.shares_created(member, shares)
 
-        if 'job' in selected:
-            print('*** j_reminder ***')
-            job_dict = base_dict({'job': job})
-            print(get_email_content('j_reminder', job_dict))
-            print()
+                print('*** a_share_created ***')
+                adminnotification.share_created(shares[0])
 
-            print('*** j_canceled ***')
-            print(get_email_content('j_canceled', job_dict))
-            print()
+                print('*** a_share_canceled ***')
+                adminnotification.share_canceled(shares[0])
 
-            print('*** j_changed ***')
-            print(get_email_content('j_changed', job_dict), end='\n\n')
+            if 'password' in selected:
+                print('*** password ***')
+                email = get_template(Config.emails('password')).render({
+                    'email': 'email@email.org',
+                    'password': 'password',
+                    'protocol': 'https',
+                    'domain': Site.objects.get_current().domain,
+                    'uid': 'uid',
+                    'token': 'token'
+                })
+                print(email, end=separator)
 
-            job_dict['count'] = 1
-            print('*** j_signup ***')
-            print(get_email_content('j_signup', job_dict), end='\n\n')
+            if 'job' in selected:
+                print('*** j_reminder ***')
+                membernotification.job_reminder(job)
 
-            print('*** member/job/subscription_changed ***')
-            print(get_template('juntagrico/mails/member/job/subscription_changed.txt').render(job_dict), end='\n\n')
+                print('*** j_canceled ***')
+                membernotification.job_canceled(job)
 
-            print('*** member/job/unsubscribed ***')
-            print(get_template('juntagrico/mails/member/job/unsubscribed.txt').render(job_dict), end='\n\n')
+                print('*** j_changed ***')
+                membernotification.job_time_changed(job)
 
-            admin_job_dict = base_dict(dict(
-                job=job,
-                instance=job,
-                member=member,
-                initial_count=2,
-                count=1,
-                message='[Nachricht des Mitglieds]'
-            ))
-            print('*** admin/job/signup ***')
-            print(get_template('juntagrico/mails/admin/job/signup.txt').render(admin_job_dict), end='\n\n')
+                print('*** j_signup ***')
+                membernotification.job_signup(member, job, count=1)
 
-            print('*** admin/job/first_signup ***')
-            print(get_template('juntagrico/mails/admin/job/first_signup.txt').render(admin_job_dict), end='\n\n')
+                print('*** member/job/subscription_changed ***')
+                membernotification.job_subscription_changed(member, job, count=1)
 
-            print('*** admin/job/first_signup_in_area ***')
-            print(get_template('juntagrico/mails/admin/job/first_signup_in_area.txt').render(admin_job_dict), end='\n\n')
+                print('*** member/job/unsubscribed ***')
+                membernotification.job_unsubscribed(member, job, count=1)
 
-            print('*** admin/job/first_signup_in_type ***')
-            print(get_template('juntagrico/mails/admin/job/first_signup_in_type.txt').render(admin_job_dict), end='\n\n')
+                print('*** admin/job/signup ***')
+                with override_settings(FIRST_JOB_INFO=[], ENABLE_NOTIFICATIONS=['job_subscribed']):
+                    adminnotification.member_subscribed_to_job(job, member=member, count=1)
 
-            print('*** admin/job/subscription_changed ***')
-            print(get_template('juntagrico/mails/admin/job/changed_subscription.txt').render(admin_job_dict), end='\n\n')
+                print('*** admin/job/first_signup ***')
+                with override_settings(FIRST_JOB_INFO=['overall']):
+                    adminnotification.member_subscribed_to_job(job, member=member, count=1)
 
-            print('*** admin/job/unsubscribed ***')
-            print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
+                print('*** admin/job/first_signup_in_area ***')
+                with override_settings(FIRST_JOB_INFO=['per_area']):
+                    adminnotification.member_subscribed_to_job(job, member=member, count=1)
 
-            member_assignment_dict = base_dict(dict(
-                job=job,
-                instance=member,
-                member=member,
-                editor=co_member,
-                initial_count=2,
-                count=1,
-                message='[Nachricht an Mitglied]'
-            ))
-            print('*** member/assignment/changed ***')
-            print(get_template('juntagrico/mails/member/assignment/changed.txt').render(member_assignment_dict), end='\n\n')
+                print('*** admin/job/first_signup_in_type ***')
+                with override_settings(FIRST_JOB_INFO=['per_type']):
+                    adminnotification.member_subscribed_to_job(job, member=member, count=1)
 
-            print('*** member/assignment/removed ***')
-            print(get_template('juntagrico/mails/member/assignment/removed.txt').render(member_assignment_dict), end='\n\n')
+                print('*** admin/job/subscription_changed ***')
+                adminnotification.member_changed_job_subscription(
+                    job, member=member, count=1, initial_count=2, message=_('[Nachricht des Mitglieds]')
+                )
 
-            print('*** admin/assignment/changed ***')
-            print(get_template('juntagrico/mails/admin/assignment/changed.txt').render(member_assignment_dict), end='\n\n')
+                print('*** admin/job/unsubscribed ***')
+                adminnotification.member_unsubscribed_from_job(
+                    job, member=member, initial_count=1, message=_('[Nachricht des Mitglieds]')
+                )
 
-            print('*** admin/assignment/removed ***')
-            print(get_template('juntagrico/mails/admin/assignment/removed.txt').render(member_assignment_dict), end='\n\n')
+                assignment_context = dict(
+                    job=job,
+                    instance=member,
+                    member=member,
+                    editor=co_member,
+                    initial_count=2,
+                    count=1,
+                    message='[Nachricht an Mitglied]'
+                )
+                print('*** member/assignment/changed ***')
+                membernotification.assignment_changed(member, **assignment_context)
 
-        if 'depot' in selected:
-            print('*** d_changed ***')
-            print(get_email_content('d_changed', base_dict({'subscription': subscription})))
-            print()
+                print('*** member/assignment/removed ***')
+                membernotification.assignment_removed(member, **assignment_context)
 
-            print('*** juntagrico/mails/admin/depot_changed.txt ***')
-            print(get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict({
-                'subscription': subscription,
-                'member': member,
-                'old_depot': depot,
-                'new_depot': new_depot,
-                'immediate': False,
-            })), end='\n\n')
+                print('*** admin/assignment/changed ***')
+                adminnotification.assignment_changed(**assignment_context)
 
-        if 'member' in selected:
-            print('*** a_member_created ***')
-            print(get_email_content('a_member_created', base_dict({
-                'member': member
-            })))
-            print()
+                print('*** admin/assignment/removed ***')
+                adminnotification.assignment_removed(**assignment_context)
 
-            print('*** m_canceled ***')
-            print(get_email_content('m_canceled', base_dict({
-                'member': member,
-                'end_date': datetime.date.today(),
-                'message': 'Nachricht'
-            })))
-            print()
+            if 'depot' in selected:
+                print('*** d_changed ***')
+                membernotification.depot_changed(subscription)
+
+                print('*** juntagrico/mails/admin/depot_changed.txt ***')
+                depot_changed_context = {
+                    'subscription': subscription,
+                    'member': member,
+                    'old_depot': depot,
+                    'new_depot': new_depot,
+                }
+                adminnotification.member_changed_depot(**depot_changed_context)
+
+                print('*** juntagrico/mails/admin/depot_changed.txt immediate ***')
+                adminnotification.member_changed_depot(**depot_changed_context, immediate=True)
+
+                print('*** a_depot_list_generated ***')
+                adminnotification.depot_list_generated()
+
+            if 'activityarea' in selected:
+                print('*** member_joined_activityarea ***')
+                member_joined_activityarea(area, member)
+
+                print('*** member_left_activityarea ***')
+                member_left_activityarea(area, member)
+
+            if 'member' in selected:
+                print('*** a_member_created ***')
+                adminnotification.member_created(member)
+
+                print('*** m_canceled ***')
+                member.end_date = datetime.date.today()
+                adminnotification.member_canceled(member, _('[Nachricht des Mitglieds]'))
+
+            if 'membership' in selected:
+                print('*** juntagrico/mails/admin/membership/created.txt ***')
+                adminnotification.membership_created(membership, _('[Nachricht des Mitglieds]'))
+
+                print('*** juntagrico/mails/admin/membership/canceled.txt ***')
+                adminnotification.membership_canceled(membership, _('[Nachricht des Mitglieds]'))
+
+                print('*** juntagrico/mails/member/membership/activated.txt ***')
+                membernotification.membership_activated(membership)
+
+                print('*** juntagrico/mails/member/membership/deactivated.txt ***')
+                membernotification.membership_deactivated(membership)
 
         transaction.set_rollback(True)  # force rollback

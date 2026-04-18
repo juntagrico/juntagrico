@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -25,19 +26,24 @@ def handle_member_deactivated(sender, instance, **kwargs):
 
 
 def check_member_consistency(instance):
+    # TODO: do something similar when deactivating membership
     if instance._old['deactivation_date'] != instance.deactivation_date and instance.deactivation_date is not None:
-        if instance.is_cooperation_member:
+        if instance.shares.active().exists():
             raise ValidationError(
-                _('Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}').format(Config.vocabulary('member'), Config.vocabulary('share')),
-                code='invalid')
-        if instance.subscription_future is not None and instance.subscription_future.primary_member.pk == instance.pk:
+                capfirst(_('{this_account} hat noch aktive {shares}').format(
+                    this_account=Config.vocabulary('this_account'),
+                    shares=Config.vocabulary('share_pl')
+                )),
+                code='has_shares'
+            )
+        if instance.subscription_primary.exists():
             raise ValidationError(
-                _('Diese/r/s {} ist noch HauptbezieherIn in einer/m {}').format(Config.vocabulary('member'), Config.vocabulary('subscription')),
-                code='invalid')
-        if instance.subscription_current is not None and instance.subscription_current.primary_member.pk == instance.pk:
-            raise ValidationError(
-                _('Diese/r/s {} ist noch HauptbezieherIn in einer/m {}').format(Config.vocabulary('member'), Config.vocabulary('subscription')),
-                code='invalid')
+                capfirst(_('{this_account} ist noch Verwalter:in von 1 {subscription}').format(
+                    this_account=Config.vocabulary('this_account'),
+                    subscription=Config.vocabulary('subscription')
+                )),
+                code='is_primary_member'
+            )
 
 
 def handle_member_created(sender, instance, **kwargs):

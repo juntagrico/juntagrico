@@ -9,6 +9,7 @@ from juntagrico.admins import BaseAdmin, DateRangeExportMixin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInline
 from juntagrico.config import Config
+from juntagrico.entity.membership import Membership
 from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea, MemberWithAssignmentsAndAreaResource
 
 
@@ -75,4 +76,18 @@ class MemberAdminWithShares(MemberAdmin):
     @admin.display(description=Config.vocabulary('share_pl'))
     def share_link(self, obj):
         return self._get_multi_link(obj.share_set.all(), 'juntagrico_share_change') \
-            or _('Kein/e/n {}').format(Config.vocabulary('share'))
+            or Config.vocabulary('no_share')
+
+
+class MembershipInline(admin.TabularInline):
+    model = Membership
+    autocomplete_fields = ['account']
+    ordering = ['activation_date']
+
+    verbose_name = Config.vocabulary('membership')
+    verbose_name_plural = Config.vocabulary('membership_pl')
+    extra = 1
+
+
+if Config.membership('enable'):
+    MemberAdmin.inlines.append(MembershipInline)

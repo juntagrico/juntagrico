@@ -15,6 +15,7 @@ class JuntagricoAppconfig(AppConfig):
         from .lifecycle.submembership import add_subscription_member_to_activity_area
         from .management.commands import generate_depot_list
         from .management import inject_rename_permissions
+        from . import lifecycle, entity
 
         models.signals.pre_migrate.connect(inject_rename_permissions, sender=self)
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
@@ -25,6 +26,8 @@ class JuntagricoAppconfig(AppConfig):
         signals.share_canceled.connect(signals.on_share_canceled, sender=Share)
         models.signals.post_save.connect(add_subscription_member_to_activity_area, sender=SubscriptionMembership)
         signals.called.connect(signals.on_depot_list_generated, sender=generate_depot_list.Command)
+        models.signals.pre_save.connect(lifecycle.membership.pre_save, sender=entity.membership.Membership)
+
         # See models.py for older signal connections
 
         '''monkey patch User email method for password reset'''

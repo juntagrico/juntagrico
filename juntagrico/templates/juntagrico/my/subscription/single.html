@@ -33,7 +33,7 @@
         {% block part-list %}
             <div class="row mb-5 part-list">
                 <div class="col-md-3">
-                    {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
+                    {% trans 'Zusammensetzung' %}
                 </div>
                 <div class="col-md-9">
                     {% include 'juntagrico/my/subscription/snippets/part_list.html' with parts=subscription.parts.waiting_or_active %}
@@ -57,7 +57,7 @@
         {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
         {# Documents #}
         {% block documents %}
-            {% include "juntagrico/snippets/documents.html" %}
+            {% include "juntagrico/snippets/documents.html" with tag='subscription' %}
         {% endblock %}
         {# Additional #}
         {% block extend %}

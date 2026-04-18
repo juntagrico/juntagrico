@@ -1,9 +1,10 @@
+import sys
 from typing import Any
 
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico import defaults
 
@@ -20,10 +21,10 @@ def _get_setting(setting_key, default: Any = ''):
 
 
 def _get_setting_with_key(setting_key, default):
-    def inner(key):
+    def inner(key, fallback=None):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
-        d = default[key]
+        d = default.get(key, fallback)
         return d() if callable(d) else d
 
     return inner
@@ -36,13 +37,17 @@ def fallback_static(path):
         return path
 
 
+def v_format(text, key):
+    return lambda: text.format(**{key: Config.vocabulary(key)})
+
+
 class Config:
     # organisation settings
     vocabulary = _get_setting_with_key(
         'VOCABULARY',
         {
-            'member': _('Mitglied'),
-            'member_pl': _('Mitglieder'),
+            'account': _('Konto'),
+            'account_pl': _('Konten'),
             'assignment': _('Arbeitseinsatz'),
             'assignment_pl': _('Arbeitseinsätze'),
             'share': _('Anteilschein'),
@@ -54,10 +59,34 @@ class Config:
             'price': _('Betriebsbeitrag'),
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
+            'membership': _('Mitgliedschaft'),
+            'membership_pl': _('Mitgliedschaften'),
             'depot': _('Depot'),
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
             'from': _('{} von {}'),
+            # backward compatibility
+            'member': lambda: Config.vocabulary('account'),
+            'member_pl': lambda: Config.vocabulary('account_pl'),
+            # additional vocabulary to adjust for gender and cases
+            'this_account': v_format(_('dieses {account}'), 'account'),
+            'the_assignment_acc': v_format(_('den {assignment}'), 'assignment'),
+            'not_a_member_type': v_format(_('kein {member_type}'), 'member_type'),
+            'your_membership_acc': v_format(_('deine {membership}'), 'membership'),
+            'this_share': v_format(_('dieser {share}'), 'share'),
+            'this_share_acc': v_format(_('diesen {share}'), 'share'),
+            'no_share': v_format(_('kein {share}'), 'share'),
+            'the_depot_acc': v_format(_('das {depot}'), 'depot'),
+            'the_depot_dat': v_format(_('dem {depot}'), 'depot'),
+            'to_the_depot': v_format(_('zum {depot}'), 'depot'),
+            'your_depot': v_format(_('dein {depot}'), 'depot'),
+            'the_subscription': v_format(_('das {subscription}'), 'subscription'),
+            'the_subscription_acc': lambda: Config.vocabulary('the_subscription'),
+            'no_subscription_acc': v_format(_('kein {subscription}'), 'subscription'),
+            'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
+            'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
+            'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
+
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -91,7 +120,15 @@ class Config:
             'NAME': 'Juntagrico Bank',
         }
     )
-    share_price = _get_setting('SHARE_PRICE', '250')
+    share_price = _get_setting('SHARE_PRICE', 250)
+
+    @classmethod
+    def share_price_display(cls):
+        if not hasattr(cls, '_share_price_display'):
+            from juntagrico.templatetags.juntagrico.common import price
+            cls._share_price_display = price(cls.share_price())
+        return cls._share_price_display
+
     business_regulations = _get_setting('BUSINESS_REGULATIONS')
     bylaws = _get_setting('BYLAWS')
     gdpr_info = _get_setting('GDPR_INFO')
@@ -99,6 +136,20 @@ class Config:
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
+    membership = _get_setting_with_key(
+        'MEMBERSHIP',
+        {
+            'enable': True,
+            'required_shares': 1,
+            'required_on_signup': True,
+            'fee': 0,
+        }
+    )
+
+    @classmethod
+    def enable_membership(cls):
+        return cls.membership('enable')
+
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     require_subscription = _get_setting('REQUIRE_SUBSCRIPTION', False)
@@ -107,7 +158,22 @@ class Config:
     enforce_mail_confirmation = _get_setting('ENFORCE_MAIL_CONFIRMATION', True)
 
     base_fee = _get_setting('BASE_FEE')
-    currency = _get_setting('CURRENCY', 'CHF')
+    raw_currency = _get_setting('CURRENCY', 'CHF {}')
+
+    @classmethod
+    def currency(cls):
+        if not hasattr(cls, '_currency'):
+            sys.stderr.write('Config.currency is deprecated since 2.1. Use currency_format instead.\n')
+            raw_currency = cls.raw_currency()
+            cls._currency = raw_currency.strip(' {}')
+        return cls._currency
+
+    @classmethod
+    def currency_format(cls):
+        if not hasattr(cls, '_currency_format'):
+            raw_currency = cls.raw_currency()
+            cls._currency_format = raw_currency if '{}' in raw_currency else (str(raw_currency) + ' {}').strip()
+        return cls._currency_format
 
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
     allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
@@ -253,6 +319,8 @@ class Config:
         default_notifications = [
             'job_subscription_changed',
             'job_unsubscribed',
+            'membership_activated',
+            'membership_deactivated',
         ] + [
             # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
             FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
@@ -260,6 +328,34 @@ class Config:
         enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
         disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])
         return name in enabled_notifications and name not in disabled_notifications
+
+    @classmethod
+    def documents(cls, tag, in_sentence=False):
+        documents = getattr(settings, 'DOCUMENTS', [])
+
+        # get values from dedicated settings
+        if business_regulations := cls.business_regulations().strip():
+            documents.append(((gettext('Betriebsreglement'), gettext('das Betriebsreglement')), business_regulations, 'account-signup-accept subscription'))
+        if bylaws := cls.bylaws().strip():
+            documents.append(((gettext('Statuten'), gettext('die Statuten')), bylaws, 'membership-signup-accept account subscription'))
+        if gdpr_info := cls.gdpr_info().strip():
+            documents.append(((gettext('DSGVO Infos'), gettext('die DSGVO Infos')), gdpr_info, 'account-signup-accept subscription'))
+        if faq_doc := cls.faq_doc().strip():
+            documents.append((gettext('Häufig gestellte Fragen'), faq_doc, 'account'))
+        if extra_sub_info := cls.extra_sub_info().strip():
+            documents.append((gettext('Infos zu den Zusatz-Abos'), extra_sub_info, 'extrasub'))
+        if activity_area_info := cls.activity_area_info().strip():
+            documents.append((gettext('Infoblatt'), activity_area_info, 'activityarea'))
+
+        normalized_documents = []
+        for names, link, tags in documents:
+            if tag in tags:
+                if isinstance(names, (list, tuple)):
+                    name = names[int(in_sentence)]
+                else:
+                    name = names
+                normalized_documents.append((name, link))
+        return normalized_documents
 
     # demo settings
     demouser = _get_setting('DEMO_USER')

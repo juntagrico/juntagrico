@@ -88,6 +88,50 @@ Template: ``mails/admin/member_canceled.txt``
 Recipients: Users with the permission :ref:`juntagrico.notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>`
 
 
+.. _reference-notifications-membership-created:
+
+Membership Created
+^^^^^^^^^^^^^^^^^^
+
+Trigger: A membership is requested during signup or from an existing account
+
+Template: ``juntagrico/mails/admin/membership/created.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_creation <reference-permissions-notified_on_membership_creation>`
+
+
+Membership Activated
+^^^^^^^^^^^^^^^^^^^^
+
+Trigger: Admin activates a membership on the management list
+
+Template: ``juntagrico/mails/admin/membership/activated.txt``
+
+Recipients: Member of the activated Membership
+
+
+.. _reference-notifications-membership-canceled:
+
+Membership Canceled
+^^^^^^^^^^^^^^^^^^^
+
+Trigger: Member cancels their membership
+
+Template: ``juntagrico/mails/admin/membership/canceled.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>`
+
+
+Membership Deactivated
+^^^^^^^^^^^^^^^^^^^^^^
+
+Trigger: Admin deactivates a membership on the management list
+
+Template: ``juntagrico/mails/admin/membership/deactivated.txt``
+
+Recipients: Former member of the deactivated Membership
+
+
 Subscription Notifications
 --------------------------
 

@@ -1,18 +1,14 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/member/base.txt" %}
 {% load i18n %}
-{% block content %}
-{% trans "Hallo" %}
 
-{% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date %}
-Soeben hat {{ fn }} {{ ln }} die Mitgliedschaft per {{ ed }} gekündet.
-E-Mail: {{ e }}
+{% block member_message %}
+{% blocktrans trimmed with end_date=member.end_date %}
+Soeben hat {{ member }} das Konto per {{ end_date }} gekündet.
 {% endblocktrans %}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
 
-{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
-{{ message }}
-
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% if message %}
+{% blocktrans trimmed %}
+Kommentar: {{ message }}
+{% endblocktrans %}
+{% endif %}
 {% endblock %}
