@@ -22,14 +22,13 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
-from juntagrico.forms.subscription import PrimaryMemberChangeForm
-from juntagrico.mailer import membernotification, adminnotification
+from juntagrico.forms.subscription import PrimaryMemberChangeForm, CancellationForm, LeaveForm
+from juntagrico.mailer import adminnotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
-from juntagrico.util.temporal import end_of_next_business_year, end_of_business_year, \
-    cancelation_date, next_membership_end_date
+from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
     using_change_date
 
@@ -246,34 +245,41 @@ def cancel_part(request, part):
 
 
 @primary_member_of_subscription
-def cancel_subscription(request, subscription_id):
+def cancel_subscription(request, subscription_id, form_class=CancellationForm):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
-        subscription.cancel(end_date=request.POST.get('end_date'), message=request.POST.get('message'))
-        return redirect('subscription-landing')
-    renderdict = {
-        'end_date': end_date,
-    }
-    return render(request, 'cancelsubscription.html', renderdict)
+        form = form_class(instance=subscription, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('subscription-landing')
+    else:
+        form = form_class(instance=subscription)
+
+    return render(request, 'cancelsubscription.html', {
+        'form': form,
+    })
 
 
 @login_required
-def leave_subscription(request, subscription_id):
+def leave_subscription(request, subscription_id, form_class=LeaveForm):
     member = request.user.member
-    subscription = member.subscriptions.get(id=subscription_id)
-    share_error = Config.enable_shares() and subscription.share_overflow - member.usable_shares_count < 0
-    is_primary = subscription.primary_member.id == member.id
+    subscription_membership = member.subscriptionmembership_set.get(subscription_id=subscription_id)
+    share_error = Config.enable_shares() and subscription_membership.subscription.share_overflow - member.usable_shares_count < 0
+    is_primary = subscription_membership.subscription.primary_member.id == member.id
     if share_error or is_primary:
-        return redirect('subscription-landing')
+        return redirect('subscription-single', subscription_id=subscription_id)
 
     if request.method == 'POST':
-        member.leave_subscription(subscription)
-        primary_member = subscription.primary_member
-        membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
-        return redirect('home')
+        form = form_class(instance=subscription_membership, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('subscription-landing')
+    else:
+        form = form_class(instance=subscription_membership)
 
-    return render(request, 'juntagrico/my/subscription/leave.html')
+    return render(request, 'juntagrico/my/subscription/leave.html', {
+        'form': form,
+    })
 
 
 @primary_member_of_subscription

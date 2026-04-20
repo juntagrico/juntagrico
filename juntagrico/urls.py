@@ -63,7 +63,6 @@ urlpatterns = [
     # /my/membership
     path('my/profile', juntagrico.profile, name='profile'),
     path('my/membership/create', membership.create, name='membership-create'),
-    path('my/membership/cancel', membership.cancel, name='membership-cancel'),
     # /my/share
     path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),
     path('my/share/certificate', juntagrico_subscription.share_certificate, name='share-certificate'),

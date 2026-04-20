@@ -83,7 +83,7 @@
 
                             {% if not membership.canceled %}
                                 {% block button_cancel_membership %}
-                                    <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
+                                    <a href="{% url 'cancel' %}" class="btn btn-outline-danger">
                                         {% blocktrans trimmed with v_membership=vocabulary.membership %}
                                             {{ v_membership }} künden
                                         {% endblocktrans %}

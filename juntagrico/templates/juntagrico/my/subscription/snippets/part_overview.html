@@ -17,7 +17,7 @@
         {% if subscription.primary_member == member %}
             {% if not subscription.canceled %}
                 <a href="{% url 'part-order' subscription.id %}" class="btn btn-primary mb-3">
-                    {% trans "Weitere Bestandteile bestellen" %}
+                    {% trans "weitere Bestandteile bestellen" %}
                 </a>
                 {% if has_extra %}
                     <a href="{% url 'extra-order' subscription.id %}" class="btn btn-outline-primary mb-3">
@@ -26,7 +26,9 @@
                 {% endif %}
                 {% if member.subscriptions.not_terminated.count > 1 %}
                     <a href="{% url 'sub-cancel' subscription.id %}" class="btn btn-danger mb-3">
-                        {% blocktrans %}Diese/n/s {{ v_subscription }} künden{% endblocktrans %}
+                        {% blocktrans trimmed with v_this_subscription_acc=vocabulary.this_subscription_acc %}
+                            {{ v_this_subscription_acc }} künden
+                        {% endblocktrans %}
                     </a>
                 {% else %}
                     <a href="{% url 'cancel' %}" class="btn btn-danger mb-3">

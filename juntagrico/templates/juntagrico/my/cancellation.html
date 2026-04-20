@@ -19,46 +19,7 @@
                 </p>
 
                 {% for subscription, form_field in form.get_primary_subscriptions_and_fields %}
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                {{ vocabulary.subscription }} {{ subscription.id }}
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                {% with co_members=subscription.co_members %}
-                                    {% if co_members %}
-                                        {% blocktrans trimmed with cm=co_members|join:", " %}
-                                            Geteilt mit {{ cm }}
-                                        {% endblocktrans %}
-                                    {% endif %}
-                                {% endwith %}
-                            </h6>
-                            {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription.parts.waiting_or_active no_actions=True only %}
-
-                            <a class="btn btn-outline-secondary" href="{% url 'subscription-single' subscription.id %}">
-                                {% blocktrans trimmed %}
-                                    nur Zusammensetzung ändern &rarr;
-                                {% endblocktrans %}
-                            </a>
-
-                            {# TODO: if no co-member can take subscription, add instructions how to solve it #}
-                            <a class="btn btn-outline-secondary" href="{% url 'primary-change' subscription.id %}">
-                                {% blocktrans trimmed %}
-                                    stattdessen transferieren &rarr;
-                                {% endblocktrans %}
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            {{ form_field|as_crispy_field }}
-                            <p>
-                                {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
-                                    Es besteht kein Anspruch auf eine vorzeitige Beendigung.
-                                    Falls du selbst eine Nachfolge findest, kannst du der/die/das {{ v_subscription }}
-                                    stattdessen transferieren.
-                                {% endblocktrans %}
-                            </p>
-                        </div>
-                    </div>
+                    {% include 'juntagrico/my/subscription/snippets/card.html' %}
                 {% endfor %}
 
             </div>
@@ -68,30 +29,8 @@
             <div class="mb-5">
                 <h4>{% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} verlassen{% endblocktrans %}</h4>
                 {# TODO: check if subscription can be left and describe what to do if not. #}
-                {% for subscription_membership, form_field in form.get_co_memberships_and_fields %}
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                {{ vocabulary.subscription }} {{ subscription_membership.subscription.id }}
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                {% blocktrans trimmed with primary_member=subscription_membership.subscription.primary_member %}
-                                    Verwaltet von {{ primary_member }}
-                                {% endblocktrans %}
-                            </h6>
-                            {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription_membership.subscription.parts.waiting_or_active no_actions=True only %}
-                        </div>
-                        <div class="card-body">
-                            {# TODO: if can't leave add instructions how to leave it #}
-                            <p>
-                                {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
-                                    Das {{ v_subscription }} wird nicht von dir verwaltet. Es bleibt ohne dich bestehen.
-                                {% endblocktrans %}
-                            </p>
-                            {{ form_field.keep|as_crispy_field }}
-                            {{ form_field.date|as_crispy_field }}
-                        </div>
-                    </div>
+                {% for subscription, form_fields in form.get_co_memberships_and_fields %}
+                    {% include 'juntagrico/my/subscription/snippets/co_membership_card.html' %}
                 {% endfor %}
             </div>
         {% endif %}
@@ -106,6 +45,11 @@
         {% if form.membership %}
             <div class="mb-5">
                 <h4>{% blocktrans with v_membership=vocabulary.membership %}{{ v_membership }} kündigen{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans trimmed with end_date=next_membership_end_date|date:"d.m.Y" %}
+                        Der nächste reguläre Kündigungstermin ist der {{ end_date }}.
+                    {% endblocktrans %}
+                </p>
                 {{ form.membership|as_crispy_field }}
             </div>
         {% endif %}

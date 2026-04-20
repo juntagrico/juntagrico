@@ -19,7 +19,7 @@ class MembershipTests(JuntagricoTestCase):
     def setUpTestData(cls):
         cls.member = cls.create_member('member_with_shares@email.org', True)
         cls.default_member = cls.member
-        cls.member_without_shares = cls.create_member('member_without_shares@email.org', True)
+        cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org', True)
         cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org', True)
         cls.member_without_membership = cls.create_member('member_without_membership@email.org')
@@ -33,7 +33,10 @@ class MembershipTests(JuntagricoTestCase):
             Permission.objects.get(codename='notified_on_membership_creation')
         )
         cls.cancellation_data = {
-            'message': 'my last message',
+            'shares': 1,
+            'membership': False,
+            'account': True,
+            'comment': 'my last message',
             'iban': 'CH61 0900 0000 1900 0012 6',
             'addr_street': 'addr_street',
             'addr_zipcode': ' 1234',
@@ -61,10 +64,10 @@ class MembershipTests(JuntagricoTestCase):
         self.assertGet(reverse('membership-create'), member=self.member_without_membership)
 
     def testCancelMembership(self):
-        self.assertGet(reverse('membership-cancel'))
+        self.assertGet(reverse('cancel'))
 
     def testCancelMembershipPost(self):
-        self.assertPost(reverse('membership-cancel'), code=302, data=self.cancellation_data)
+        self.assertPost(reverse('cancel'), code=302, data=self.cancellation_data)
         membership = self.member.memberships.first()
         self.assertTrue(membership.canceled)
         self.assertEqual(self.member.usable_shares_count, 0)
@@ -77,30 +80,19 @@ class MembershipTests(JuntagricoTestCase):
         self._testDeactivateMembership(membership)
 
     def testCancelMembershipPostWithUnpaidShares(self):
-        self.assertPost(reverse('membership-cancel'), code=302, member=self.member_with_unpaid_share,
+        self.assertPost(reverse('cancel'), code=302, member=self.member_with_unpaid_share,
                         data=self.cancellation_data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(self.cancellation_data['message'] in mail.outbox[0].body,
+        self.assertTrue(self.cancellation_data['comment'] in mail.outbox[0].body,
                         f'message not found in: {mail.outbox[0].body}')
         membership = self.member_with_unpaid_share.memberships.first()
         self.assertTrue(membership.canceled)
         self.assertEqual(self.member_with_unpaid_share.usable_shares_count, 0)
         self._testDeactivateMembership(membership)
 
-    def testCancelMembershipNonCoopPost(self):
-        data = {
-            'message': 'a personal message',
-        }
-        self.assertPost(reverse('membership-cancel'), code=302, member=self.member_without_shares, data=data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(data['message'] in mail.outbox[0].body, f'message not found in: {mail.outbox[0].body}')
-        self.member_without_shares.refresh_from_db()
-        membership = self.member_without_shares.memberships.first()
-        self.assertTrue(membership.inactive)
-        self._testDeactivateMembership(membership)
-
     def testCancelMembershipWithCanceledShares(self):
-        self.assertPost(reverse('membership-cancel'), code=302, member=self.member_with_canceled_share)
+        self.assertPost(reverse('cancel'), code=302, member=self.member_with_canceled_share,
+                        data=self.cancellation_data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
         membership = self.member_with_canceled_share.memberships.first()
         self.assertTrue(membership.canceled)
@@ -116,16 +108,25 @@ class MembershipTests(JuntagricoTestCase):
         self.set_up_sub_types()
         sub = self.create_sub_now(self.depot)
         self.member.join_subscription(sub, True)
-        # don't cancel while subscription is active
-        self.assertPost(reverse('membership-cancel'), code=200, member=self.member, data=self.cancellation_data)
+        # don't cancel membership while keeping subscription
+        response = self.assertPost(reverse('cancel'), code=200, member=self.member, data=self.cancellation_data | {
+            f'primary_subscription_{sub.id}': 'keep',
+            'shares': 0,
+        })
+        self.assertListEqual(
+            ['membership'],
+            list(response.context['form'].errors.keys())
+        )
         self.member.refresh_from_db()
         self.assertFalse(self.member.canceled)
+        self.assertFalse(self.member.memberships.first().canceled)
         self.assertEqual(len(mail.outbox), 0)
         # succeed when canceled
         sub.cancel()
-        self.assertPost(reverse('membership-cancel'), code=302, member=self.member, data=self.cancellation_data)
+        self.assertPost(reverse('cancel'), code=302, member=self.member, data=self.cancellation_data)
         self.assertTrue(self.member.memberships.first().canceled)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
+        # area admin gets notified, that member left the area and admin gets notified that member canceled membership
+        self.assertEqual(len(mail.outbox), 2)
 
     def _testDeactivateMembership(self, membership):
         # Expected result: members that have no paid shares, can be deactivated.

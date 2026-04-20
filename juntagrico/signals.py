@@ -56,10 +56,6 @@ def on_depot_change_confirmed(sender, instance, **kwargs):
     membernotification.depot_changed(instance)
 
 
-def on_member_canceled(sender, instance, **kwargs):
-    adminnotification.member_canceled(instance, kwargs.get('message'))
-
-
 def on_job_subscribed(sender, **kwargs):
     job = kwargs.get('instance')
     member = kwargs.get('member')

@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from juntagrico.forms.account import CancellationForm
+from juntagrico.util.temporal import next_membership_end_date
 
 
 @login_required
@@ -17,4 +18,5 @@ def cancellation(request):
 
     return render(request, 'juntagrico/my/cancellation.html', {
         'form': form,
+        'next_membership_end_date': next_membership_end_date(),
     })

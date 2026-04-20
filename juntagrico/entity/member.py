@@ -12,7 +12,6 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailFie
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
-from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.util.users import make_username, make_password
 
 
@@ -58,7 +57,7 @@ class Member(JuntagricoBaseModel):
     deactivation_date = models.DateField(
         _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(
-        _('Enddatum'), null=True, blank=True, help_text=_('Gewünschtes Löschdatum. Hat keinen Effekt im System'))
+        _('Enddatum'), null=True, blank=True, help_text=_('Gewünschtes Löschdatum. Hat keinen Effekt im System'))  # TODO: Obsolete
     notes = models.TextField(
         _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
@@ -226,16 +225,8 @@ class Member(JuntagricoBaseModel):
         if subscription == self.subscription_current:
             del self.subscription_current  # clear cache
         if subscription:
-            sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-            changedate = changedate or datetime.date.today()
-            # if subscription will not have been left at change date already
-            if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date > changedate):
-                # if subscription will have been joined at change date
-                if sub_membership.join_date is not None and sub_membership.join_date <= changedate:
-                    sub_membership.leave_date = changedate
-                    sub_membership.save()
-                else:
-                    sub_membership.delete()
+            if sub_membership := self.subscriptionmembership_set.filter(subscription=subscription).first():
+                sub_membership.leave(changedate)
 
     @property
     def in_subscription(self):
@@ -301,21 +292,12 @@ class Member(JuntagricoBaseModel):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
-    def cancel(self, date=None, commit=True):
-        date = date or datetime.date.today()
-        self.cancellation_date = date
-        # if all shares of member are already paid back and has no subscriptions: deactivate automatically
-        # TODO: don't do things automatically.
-        has_sub = self.subscription_current or self.subscription_future
-        if not has_sub and not self.share_set.potentially_pending_payback().exists():
-            self.end_date = date
-            self.deactivation_date = date
-        else:
-            self.end_date = next_membership_end_date(self.cancellation_date)
-        for share in self.share_set.all():
-            share.cancel(date, self.end_date)
-        if commit:
-            self.save()
+    def cancel(self, date=None):
+        today = datetime.date.today()
+        if date is None or date > today:
+            date = today
+        self.cancellation_date = self.cancellation_date or date
+        self.save()
 
     def deactivate(self, date=None):
         date = date or datetime.date.today()
@@ -375,6 +357,17 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def co_members(self):
         return self.subscription.co_members(self.member)
+
+    def leave(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        # if subscription will not have been left at change date already
+        if self.leave_date is None or self.leave_date > on_date:
+            # if subscription will have been joined at change date
+            if self.join_date is not None and self.join_date <= on_date:
+                self.leave_date = on_date
+                self.save()
+            else:
+                self.delete()
 
     class Meta:
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))

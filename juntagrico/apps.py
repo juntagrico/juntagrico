@@ -20,7 +20,6 @@ class JuntagricoAppconfig(AppConfig):
         models.signals.pre_migrate.connect(inject_rename_permissions, sender=self)
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
-        signals.canceled.connect(signals.on_member_canceled, sender=Member)
         signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
         signals.assignment_changed.connect(signals.on_assignment_changed, sender=Member)
         signals.share_canceled.connect(signals.on_share_canceled, sender=Share)

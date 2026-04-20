@@ -18,4 +18,20 @@ $(function () {
         $('#div_id_iban .asteriskField').toggle(iban_required)
         $('.payback-details').toggle(iban_required)
     }).change()
+
+    // toggle co-membership leave date
+    $('input[name^="co_membership_"]').each(function () {
+        const $this = $(this)
+        const name = $this.prop('name')
+        if (name.includes('_date_')) {
+            return
+        }
+        const id = name.substring(name.lastIndexOf('_') + 1)
+        $this.on('change', function() {
+            const keep = this.value === 'True'
+            $('#div_id_co_membership_date_' + id).toggle(!keep)
+            $('#id_co_membership_date_' + id).prop('required', !keep)
+        })
+        $this.filter(':checked').change()
+    });
 })

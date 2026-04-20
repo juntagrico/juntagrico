@@ -1,0 +1,42 @@
+{% load crispy_forms_filters %}
+{% load i18n %}
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="card-title">
+            {{ vocabulary.subscription }} {{ subscription.id }}
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            {% with co_members=subscription.co_members %}
+                {% if co_members %}
+                    {% blocktrans trimmed with cm=co_members|join:", " %}
+                        Geteilt mit {{ cm }}
+                    {% endblocktrans %}
+                {% endif %}
+            {% endwith %}
+        </h6>
+        {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription.parts.waiting_or_active no_actions=True only %}
+
+        <a class="btn btn-outline-secondary" href="{% url 'subscription-single' subscription.id %}">
+            {% blocktrans trimmed %}
+                nur Zusammensetzung ändern &rarr;
+            {% endblocktrans %}
+        </a>
+
+        {# TODO: if no co-member can take subscription, add instructions how to solve it #}
+        <a class="btn btn-outline-secondary" href="{% url 'primary-change' subscription.id %}">
+            {% blocktrans trimmed %}
+                stattdessen transferieren &rarr;
+            {% endblocktrans %}
+        </a>
+    </div>
+    <div class="card-body">
+        {{ form_field|as_crispy_field }}
+        <p>
+            {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc %}
+                Es besteht kein Anspruch auf eine vorzeitige Beendigung.
+                Falls du selbst eine Nachfolge findest, kannst du  {{ v_the_subscription_acc }}
+                stattdessen transferieren.
+            {% endblocktrans %}
+        </p>
+    </div>
+</div>

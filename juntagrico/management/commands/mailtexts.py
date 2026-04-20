@@ -235,7 +235,7 @@ class Command(BaseCommand):
                 adminnotification.membership_created(membership, _('[Nachricht des Mitglieds]'))
 
                 print('*** juntagrico/mails/admin/membership/canceled.txt ***')
-                adminnotification.membership_canceled(membership, _('[Nachricht des Mitglieds]'))
+                adminnotification.membership_canceled(member, _('[Nachricht des Mitglieds]'))
 
                 print('*** juntagrico/mails/member/membership/activated.txt ***')
                 membernotification.membership_activated(membership)

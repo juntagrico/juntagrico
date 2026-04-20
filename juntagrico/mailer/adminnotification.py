@@ -134,7 +134,6 @@ def member_canceled(member, message=''):
         {
             'member': member,
             'message': message,
-            'end_date': member.end_date,  # backwards compatibility
         },
     ).send()
 
@@ -152,14 +151,14 @@ def membership_created(membership, comment=None):
     ).send()
 
 
-def membership_canceled(membership, message=''):
+def membership_canceled(account, message=''):
     EmailBuilder(
         'notified_on_membership_cancellation',
         _('{membership} gekündigt').format(membership=Config.vocabulary('membership')),
         'juntagrico/mails/admin/membership/canceled.txt',
         {
-            'account': membership.account,
-            'member': membership.account,  # compatibility
+            'account': account,
+            'member': account,  # compatibility
             'message': message
         },
     ).send()
