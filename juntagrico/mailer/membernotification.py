@@ -105,7 +105,7 @@ def job_signup(email, job, count):
 
 def job_subscription_changed(email, job, count):
     EmailSender.get_sender(
-        organisation_subject(_('Von Einsatz abgemeldet')),
+        organisation_subject(_('Einsatzanmeldung geändert')),
         get_template('juntagrico/mails/member/job/subscription_changed.txt').render(base_dict(
             dict(job=job, count=count)
         ))
