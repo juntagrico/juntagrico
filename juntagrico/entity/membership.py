@@ -1,4 +1,3 @@
-import datetime
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _, gettext
@@ -31,16 +30,3 @@ class Membership(SimpleStateModel):
 
     def clean(self):
         return check_membership_consistency(self)
-
-    def cancel(self, date=None, commit=True):
-        date = date or datetime.date.today()
-        self.cancellation_date = date
-        # if all shares of member are already paid back and has no subscriptions: deactivate automatically
-        member = self.account
-        has_sub = member.subscription_current or member.subscription_future
-        if not has_sub and not member.share_set.potentially_pending_payback().exists():
-            self.deactivation_date = date
-        for share in member.share_set.all():
-            share.cancel(date)
-        if commit:
-            self.save()

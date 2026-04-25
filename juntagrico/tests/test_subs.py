@@ -135,7 +135,9 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
-        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
+            'leave_date': datetime.date.today(),
+        }, code=302, member=self.member3)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.current_members.count(), 1)
 
@@ -168,7 +170,9 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         }
         self.create_paid_share(self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
-        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
+            'leave_date': datetime.date.today(),
+        }, code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.current_members.count(), 3)
@@ -192,13 +196,17 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
-        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
+        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), data={
+            'cancellation': 'regular',
+        }, code=302)
         self.sub.refresh_from_db()
         self.assertIsNotNone(self.sub.cancellation_date)
 
     def testCancelWaiting(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub2.pk]), 200, member=self.member2)
-        self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), code=302, member=self.member2)
+        self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), data={
+            'cancellation': 'asap',
+        }, code=302, member=self.member2)
         self.sub2.refresh_from_db()
         self.assertIsNotNone(self.sub2.cancellation_date)
 

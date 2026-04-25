@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block page_title %}
+    <h3>{% trans "Kündigung einreichen" %}</h3>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form|as_crispy_errors }}
+
+        {% if form.primary_subscriptions %}
+            <div class="mb-5">
+                <h4>{% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} kündigen{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans trimmed with v_subscription_pl=vocabulary.subscription_pl %}
+                        Du verwaltest folgende {{ v_subscription_pl }}:
+                    {% endblocktrans %}
+                </p>
+
+                {% for subscription, form_field in form.get_primary_subscriptions_and_fields %}
+                    {% include 'juntagrico/my/subscription/snippets/card.html' %}
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+        {% if form.co_memberships %}
+            <div class="mb-5">
+                <h4>{% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} verlassen{% endblocktrans %}</h4>
+                {% for subscription, form_fields in form.get_co_memberships_and_fields %}
+                    {% include 'juntagrico/my/subscription/snippets/co_membership_card.html' %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if form.activity_areas %}
+            <div class="mb-5">
+                <h4>{% blocktrans %}Tätigkeitsbereiche verlassen{% endblocktrans %}</h4>
+                {{ form.activity_areas|as_crispy_field }}
+                <a href="#" id="leave_all_areas" class="btn btn-outline-danger">{% blocktrans %}Alle Tätigkeitsbereiche verlassen{% endblocktrans %}</a>
+            </div>
+        {% endif %}
+        {% if form.membership %}
+            <div class="mb-5">
+                <h4>{% blocktrans with v_membership=vocabulary.membership %}{{ v_membership }} kündigen{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans trimmed with end_date=next_membership_end_date|date:"d.m.Y" %}
+                        Der nächste reguläre Kündigungstermin ist der {{ end_date }}.
+                    {% endblocktrans %}
+                </p>
+                {{ form.membership|as_crispy_field }}
+            </div>
+        {% endif %}
+        {% if form.shares %}
+            <div class="mb-5">
+                <h4>{% blocktrans with v_share_pl=vocabulary.share_pl %}{{ v_share_pl }} kündigen{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans with v_share=vocabulary.share v_share_pl=vocabulary.share_pl count count=form.shares.initial %}
+                        Du hast insgesamt {{ count }} {{ v_share }}.
+                    {% plural %}
+                        Du hast insgesamt {{ count }} {{ v_share_pl }}.
+                    {% endblocktrans %}
+                </p>
+                <div class="mb-3">
+                    <div style="max-width: 25em">{{ form.shares|as_crispy_field }}</div>
+                    <div>
+                        <strong>
+                            {% blocktrans trimmed with x='<span class="remaining-shares"></span>' %}
+                                Du behältst {{ x }}.
+                            {% endblocktrans %}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if form.account %}
+            <div class="mb-5">
+                <h4>{% blocktrans with v_account=vocabulary.member %}{{ v_account }} löschen{% endblocktrans %}</h4>
+                <p>
+                    {% blocktrans %}
+                        Dein Konto bleibt in jedem Fall aktiv, bis alle Kündigungsvorgänge abgeschlossen sind.
+                    {% endblocktrans %}
+                </p>
+                <p>
+                    {% blocktrans %}
+                        Deine personenbezogenen Daten werden gelöscht, sobald wir diese gemäss gesetzlichen Vorgaben
+                        nicht mehr benötigen.
+                    {% endblocktrans %}
+                </p>
+                {{ form.account|as_crispy_field }}
+            </div>
+        {% endif %}
+
+        <div class="mb-5">
+            <h4>{% blocktrans %}Abschluss{% endblocktrans %}</h4>
+            <div class="payback-details">
+                <p>
+                    {% blocktrans %}
+                        Bankkonto für die allfällige Rückzahlungen:
+                    {% endblocktrans %}
+                </p>
+                {{ form.iban|as_crispy_field }}
+                <h5>
+                    {% blocktrans trimmed %}
+                        Begünstigte:r:
+                    {% endblocktrans %}
+                </h5>
+                <p>
+                    <strong>{{ form.instance }}</strong>
+                </p>
+                <div class="row">
+                    <div class="col-md-4">{{ form.addr_street|as_crispy_field }}</div>
+                    <div class="col-md-4">{{ form.addr_zipcode|as_crispy_field }}</div>
+                    <div class="col-md-4">{{ form.addr_location|as_crispy_field }}</div>
+                </div>
+            </div>
+
+            {{ form.comment|as_crispy_field }}
+            <input type="submit" name="submit"
+                       value="{% blocktrans %}Kündigungen einreichen{% endblocktrans %}"
+                       class="btn btn-danger btn-lg">
+        </div>
+        {{ form.media }}
+    </form>
+{% endblock %}

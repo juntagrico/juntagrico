@@ -81,7 +81,7 @@ Recipients: Users with the permission :ref:`juntagrico.notified_on_member_creati
 Member Canceled
 ^^^^^^^^^^^^^^^
 
-Trigger: On signal :ref:`canceled <reference-signals-canceled>` from sender ``Member``
+Trigger: Member requests closure of their account
 
 Template: ``mails/admin/member_canceled.txt``
 

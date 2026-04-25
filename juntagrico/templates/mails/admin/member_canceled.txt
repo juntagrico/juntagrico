@@ -2,8 +2,8 @@
 {% load i18n %}
 
 {% block member_message %}
-{% blocktrans trimmed with end_date=member.end_date %}
-Soeben hat {{ member }} das Konto per {{ end_date }} gekündet.
+{% blocktrans trimmed %}
+Soeben hat {{ member }} die Löschung des Kontos beantragt.
 {% endblocktrans %}
 
 {% if message %}

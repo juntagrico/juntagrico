@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Fieldset, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -89,67 +89,6 @@ class PasswordForm(Form):
         if self.data['password'] != self.data['passwordRepeat']:
             raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
-
-
-class AbstractMemberCancellationForm(ModelForm):
-    message = CharField(label=gettext_lazy('Mitteilung'), widget=Textarea, required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.attrs = {
-            'onSubmit': "return confirm('" + _('Möchtest du deine Mitgliedschaft verbindlich künden?') + "')"}
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-md-3'
-        self.helper.field_class = 'col-md-9'
-        self.helper.layout = Layout(
-            'message',
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-danger'),
-            ),
-        )
-
-    def save(self, commit=True):
-        if (sub := self.instance.subscription_current) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        if (sub := self.instance.subscription_future) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        if membership := self.instance.memberships.active().first():
-            membership.cancel()
-            adminnotification.membership_canceled(membership, self.cleaned_data.get('message'))
-        return super().save(commit)
-
-
-class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = []
-
-
-class CoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
-        labels = {
-            "addr_street": gettext_lazy("Strasse/Nr.")
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout.insert(1, Fieldset(
-            _('Bitte hinterlege oder überprüfe deine Daten, damit deine {shares} ausbezahlt werden können.').format(
-                shares=Config.vocabulary('share_pl')
-            ),
-            'iban', 'addr_street', 'addr_zipcode', 'addr_location')
-        )
-
-    def clean_iban(self):
-        # require IBAN on cancellation
-        if self.data['iban'] == '':
-            raise ValidationError(_('IBAN ist nicht gültig'))
-        return self.data['iban']
 
 
 class MemberProfileForm(ModelForm):
