@@ -1,6 +1,7 @@
 import datetime
 
 from crispy_forms.helper import FormHelper
+from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _, gettext, ngettext
@@ -49,7 +50,7 @@ class CancellationForm(forms.ModelForm):
         initial=False,
         coerce=choice_to_bool,
     )
-    comment = forms.CharField(
+    comment = forms.CharField(  # TODO: make sure comment is sent at least to 1 recipient.
         label=_('Möchtest du noch etwas loswerden?'),
         required=False,
         widget=forms.Textarea,
@@ -63,13 +64,15 @@ class CancellationForm(forms.ModelForm):
 
         self.co_memberships = (
             self.instance.subscriptionmembership_set
-            .filter(leave_date=None)
+            .filter(leave_date=None)  # TODO: future leave date may exist. In that case user may want to leave earlier
             .exclude(subscription__primary_member=self.instance)
             .order_by(F('join_date').asc(nulls_last=True))
         )
         v_this_subscription_acc = Config.vocabulary('this_subscription_acc')
-        for subscription in self.co_memberships:
-            self.fields[f'co_membership_{subscription.id}'] = forms.TypedChoiceField(
+        for subscription_membership in self.co_memberships:
+            if not subscription_membership.can_leave():
+                continue
+            self.fields[f'co_membership_{subscription_membership.id}'] = forms.TypedChoiceField(
                 label='',
                 widget=forms.RadioSelect,
                 choices=[
@@ -79,10 +82,10 @@ class CancellationForm(forms.ModelForm):
                 initial=False,
                 coerce=choice_to_bool,
             )
-            self.fields[f'co_membership_date_{subscription.id}'] = forms.DateField(
+            self.fields[f'co_membership_date_{subscription_membership.id}'] = forms.DateField(
                 label=_('Auf wann möchtest du {this_subscription_acc} verlassen?').format(this_subscription_acc=v_this_subscription_acc),
                 widget=JuntagricoDateWidget,
-                required=not self.data or self.data.get(f'co_membership_{subscription.id}') == 'False',
+                required=not self.data or self.data.get(f'co_membership_{subscription_membership.id}') == 'False',
                 initial=datetime.date.today(),
             )
 
@@ -132,13 +135,26 @@ class CancellationForm(forms.ModelForm):
 
     def get_co_memberships_and_fields(self):
         for subscription_membership in self.co_memberships:
-            yield subscription_membership.subscription, [
-                self[f'co_membership_{subscription_membership.id}'],
-                self[f'co_membership_date_{subscription_membership.id}'],
-            ]
+            if f'co_membership_{subscription_membership.id}' in self.fields:
+                yield subscription_membership.subscription, [
+                    self[f'co_membership_{subscription_membership.id}'],
+                    self[f'co_membership_date_{subscription_membership.id}'],
+                ]
+            else:
+                yield subscription_membership.subscription, None
 
     def clean(self):
         cleaned_data = super().clean()
+
+        changed = (
+            any(cleaned_data.get(f'primary_subscription_{s.id}') is not None for s in self.primary_subscriptions)
+            or any(cleaned_data.get(f'co_membership_{c.id}') is False for c in self.co_memberships)
+            or cleaned_data.get('membership') is False
+            or cleaned_data.get('shares', 0) > 0
+            or cleaned_data.get('account') is False
+        )
+        if not changed:
+            raise ValidationError(_('Wähle aus, was du kündigen möchtest'))
 
         # membership required
         if cleaned_data.get('membership') is False:
@@ -160,24 +176,8 @@ class CancellationForm(forms.ModelForm):
         if Config.enable_shares() and 'shares' in self.fields:
             usable_shares = self.usable_shares.count()
             remaining_shares = usable_shares - cleaned_data.get('shares', 0)
-            if Config.membership('enable') and cleaned_data.get('membership'):
-                required_for_membership = Config.membership('required_shares')
-                if remaining_shares < required_for_membership:
-                    self.add_error(
-                        'shares',
-                        ngettext(
-                            'Es wird noch {num} {share} für {your_membership_acc} benötigt.',
-                            'Es werden noch {num} {shares} für {your_membership_acc} benötigt.',
-                            required_for_membership
-                        ).format(
-                            num=required_for_membership,
-                            your_membership_acc=Config.vocabulary('your_membership_acc'),
-                            share=Config.vocabulary('share'),
-                            shares=Config.vocabulary('share_pl'),
-                        )
-                    )
             if self.primary_subscriptions or self.co_memberships:
-                required_for_subscription = usable_shares - max(
+                required_for_subscription = max(
                     *(
                         s.share_overflow
                         for s in self.primary_subscriptions
@@ -204,6 +204,22 @@ class CancellationForm(forms.ModelForm):
                             shares=Config.vocabulary('share_pl'),
                         )
                     )
+            if Config.membership('enable') and cleaned_data.get('membership'):
+                required_for_membership = Config.membership('required_shares')
+                if remaining_shares < required_for_membership:
+                    self.add_error(
+                        'shares',
+                        ngettext(
+                            'Es wird noch {num} {share} für {your_membership_acc} benötigt.',
+                            'Es werden noch {num} {shares} für {your_membership_acc} benötigt.',
+                            required_for_membership
+                        ).format(
+                            num=required_for_membership,
+                            your_membership_acc=Config.vocabulary('your_membership_acc'),
+                            share=Config.vocabulary('share'),
+                            shares=Config.vocabulary('share_pl'),
+                        )
+                    )
 
         # account required
         if cleaned_data.get('account') is False:
@@ -219,6 +235,7 @@ class CancellationForm(forms.ModelForm):
 
     def save(self, commit=True):
         super().save(commit=commit)
+        summary = {'subscription': [], 'co_membership': []}
         comment = self.cleaned_data.get('comment')
 
         # cancel subscriptions
@@ -226,28 +243,37 @@ class CancellationForm(forms.ModelForm):
             end_date = self.cleaned_data[f'primary_subscription_{subscription.id}']
             if end_date is not None:
                 subscription.cancel(end_date=end_date, message=comment)
+                summary['subscription'].append(subscription)
 
         # leave subscriptions
         for co_membership in self.co_memberships:
-            if self.cleaned_data[f'co_membership_{co_membership.id}'] is False:
+            if self.cleaned_data.get(f'co_membership_{co_membership.id}') is False:
                 co_membership.leave(
                     on_date=self.cleaned_data[f'co_membership_date_{co_membership.id}']
                 )
+                summary['co_membership'].append(co_membership)
 
         # leave activity areas
-        for activity_area in self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas']):
+        leave_areas = self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas'])
+        for activity_area in leave_areas:
             activity_area.leave(self.instance)
+        if leave_areas:
+            summary['activity_area'] = leave_areas
 
         # cancel membership
         if Config.membership('enable') and self.cleaned_data.get('membership') is False:
             for membership in self.memberships:
                 membership.cancel()
             adminnotification.membership_canceled(self.instance, comment)
+            summary['membership'] = True
 
         # cancel shares
         if Config.enable_shares() and 'shares' in self.cleaned_data:
-            for share in self.usable_shares[:self.cleaned_data['shares']]:
+            cancel_shares = self.cleaned_data['shares']
+            for share in self.usable_shares[:cancel_shares]:
                 share.cancel()
+            if cancel_shares > 0:
+                summary['share'] = cancel_shares
 
         # cancel account
         if self.cleaned_data['account'] is False:
@@ -255,3 +281,6 @@ class CancellationForm(forms.ModelForm):
             comment = self.cleaned_data.get('comment')
             adminnotification.member_canceled(self.instance, comment)
             signals.canceled.send(Member, instance=self.instance, message=comment)  # backwards compatibility
+            summary['account'] = True
+
+        return summary

@@ -53,6 +53,8 @@
                     </a>
                 {% endif %}
             </div>
+        {% else %}
+            {% include './banners/cant_leave.html' with level='info' %}
         {% endif %}
     {% endif %}
 {% endif %}

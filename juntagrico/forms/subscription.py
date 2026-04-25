@@ -33,7 +33,7 @@ class PrimaryMemberChangeForm(HorizontalFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         co_members = self.instance.co_members()
-        if Config.membership('enable') and self.instance.requires_membership:
+        if self.instance.requires_membership:
             co_members = co_members.filter(Exists(Membership.objects.filter(account=OuterRef('id')).not_canceled()))
         self.fields['primary_member'].queryset = co_members
         self.fields['primary_member'].required = True

@@ -20,10 +20,22 @@
     {% else %}
         {% vocabulary "co_member_pl" as v_co_member_pl %}
          <div class="alert alert-warning">
-                {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc %}
-                    Leider kann niemand deiner {{ v_co_member_pl }} {{ v_the_subscription_acc }} übernehmen.
-                {% endblocktrans %}
-            <br/>
+            <p>
+                {% if not form.instance.co_members %}
+                    {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc %}
+                        Du hast keine {{ v_co_member_pl }}, die {{ v_the_subscription_acc }} übernehmen könnten.
+                    {% endblocktrans %}
+                    <br/>
+                    <a href="{% url 'add-member' form.instance.id %}">
+                        {% blocktrans %}{{ v_co_member_pl }} einladen &rarr;{% endblocktrans %}
+                    </a>
+                {% else %}
+                    {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc v_membership=vocabulary.membership %}
+                        Leider kann niemand deiner {{ v_co_member_pl }} {{ v_the_subscription_acc }} übernehmen,
+                        da sie keine {{ v_membership }} haben.
+                    {% endblocktrans %}
+                {% endif %}
+            </p>
             <a href="{% url 'subscription-single' form.instance.id %}">
                 {% blocktrans %}Zurück zur Übersicht{% endblocktrans %}
             </a>

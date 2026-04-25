@@ -14,14 +14,17 @@
         {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription.parts.waiting_or_active no_actions=True only %}
     </div>
     <div class="card-body">
-        {# TODO: if can't leave add instructions how to leave it #}
-        <p>
-            {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
-                Das {{ v_subscription }} wird nicht von dir verwaltet. Es bleibt ohne dich bestehen.
-            {% endblocktrans %}
-        </p>
-        {% for form_field in form_fields %}
-            {{ form_field|as_crispy_field }}
-        {% endfor %}
+        {% if form_fields %}
+            <p class="capfirst">
+                {% blocktrans trimmed with v_the_subscription=vocabulary.the_subscription %}
+                    {{ v_the_subscription }} wird nicht von dir verwaltet und bleibt ohne dich bestehen.
+                {% endblocktrans %}
+            </p>
+            {% for form_field in form_fields %}
+                {{ form_field|as_crispy_field }}
+            {% endfor %}
+        {% else %}
+            {% include './banners/cant_leave.html' %}
+        {% endif %}
     </div>
 </div>

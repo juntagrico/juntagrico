@@ -171,7 +171,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def requires_membership(self):
-        return self.parts.not_canceled().filter(type__requires_membership=True).exists()
+        return Config.membership('enable') and self.parts.not_canceled().filter(type__requires_membership=True).exists()
 
     def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
