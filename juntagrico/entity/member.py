@@ -63,7 +63,12 @@ class Member(JuntagricoBaseModel):
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
     signup_comment = models.TextField(
-        _('Kommentar bei Anmeldung'), blank=True, default='', help_text=_('Kommentar, den das Mitglied bei der Anmeldung hinterlassen hat')
+        _('Kommentar bei Anmeldung'), blank=True, default='',
+        help_text=_('Kommentar, den das Mitglied bei der Anmeldung hinterlassen hat')
+    )
+    cancellation_comment = models.TextField(
+        _('Kommentar bei Abmeldung'), blank=True, default='',
+        help_text=_('Kommentar, den das Mitglied bei der Kündigung hinterlassen hat')
     )
 
     subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')

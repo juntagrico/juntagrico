@@ -36,7 +36,7 @@ class MembershipTests(JuntagricoTestCase):
             'shares': 1,
             'membership': False,
             'account': True,
-            'comment': 'my last message',
+            'cancellation_comment': 'my last message',
             'iban': 'CH61 0900 0000 1900 0012 6',
             'addr_street': 'addr_street',
             'addr_zipcode': ' 1234',
@@ -83,7 +83,7 @@ class MembershipTests(JuntagricoTestCase):
         self.assertPost(reverse('cancel'), code=302, member=self.member_with_unpaid_share,
                         data=self.cancellation_data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(self.cancellation_data['comment'] in mail.outbox[0].body,
+        self.assertTrue(self.cancellation_data['cancellation_comment'] in mail.outbox[0].body,
                         f'message not found in: {mail.outbox[0].body}')
         membership = self.member_with_unpaid_share.memberships.first()
         self.assertTrue(membership.canceled)

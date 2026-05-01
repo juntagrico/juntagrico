@@ -30,11 +30,11 @@ class AccountTests(JuntagricoTestCase):
     def testCancelAccountPost(self):
         data = {
             'account': False,
-            'comment': 'a personal message',
+            'cancellation_comment': 'a personal message',
         }
         self.assertPost(reverse('cancel'), code=302, member=self.member_without_shares, data=data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(data['comment'] in mail.outbox[0].body, f'message not found in: {mail.outbox[0].body}')
+        self.assertTrue(data['cancellation_comment'] in mail.outbox[0].body, f'message not found in: {mail.outbox[0].body}')
         self.member_without_shares.refresh_from_db()
         self.assertTrue(self.member_without_shares.canceled)
         self._testDeactivateAccount(self.member_without_shares)

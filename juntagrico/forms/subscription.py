@@ -119,7 +119,7 @@ class LeaveForm(forms.ModelForm):
         initial=datetime.date.today,
     )
     comment = forms.CharField(
-        label=_('Mitteilung an {subscription}-Verwalter:in ').format(subscription=Config.vocabulary('subscription')),
+        label=_('Mitteilung an {subscription}-Verwalter:in').format(subscription=Config.vocabulary('subscription')),
         required=False,
         widget=forms.Textarea,
     )

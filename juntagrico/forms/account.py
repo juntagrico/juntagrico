@@ -13,7 +13,7 @@ from juntagrico.config import Config
 from juntagrico.entity.member import Member
 from juntagrico.forms import JuntagricoDateWidget
 from juntagrico.forms.subscription import CancellationField
-from juntagrico.mailer import adminnotification
+from juntagrico.mailer import adminnotification, membernotification
 
 
 def choice_to_bool(value):
@@ -23,10 +23,15 @@ def choice_to_bool(value):
 class CancellationForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
-        labels = {
-            "addr_street": _("Strasse/Nr.")
+        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location', 'cancellation_comment']
+        widgets = {
+            'cancellation_comment': forms.Textarea({'rows': '3'}),
         }
+        labels = {
+            'addr_street': _('Strasse/Nr.'),
+            'cancellation_comment': _('Möchtest du noch etwas loswerden?')
+        }
+        help_texts = {'cancellation_comment': ''}
 
     class Media:
         js = [
@@ -49,11 +54,6 @@ class CancellationForm(forms.ModelForm):
         ],
         initial=False,
         coerce=choice_to_bool,
-    )
-    comment = forms.CharField(  # TODO: make sure comment is sent at least to 1 recipient.
-        label=_('Möchtest du noch etwas loswerden?'),
-        required=False,
-        widget=forms.Textarea,
     )
 
     def __init__(self, *args, **kwargs):
@@ -87,6 +87,11 @@ class CancellationForm(forms.ModelForm):
                 widget=JuntagricoDateWidget,
                 required=not self.data or self.data.get(f'co_membership_{subscription_membership.id}') == 'False',
                 initial=datetime.date.today(),
+            )
+            self.fields[f'co_membership_comment_{subscription_membership.id}'] = forms.CharField(
+                label=_('Mitteilung an {subscription}-Verwalter:in').format(subscription=Config.vocabulary('subscription')),
+                required=False,
+                widget=forms.Textarea({"rows": "3"}),
             )
 
         if Config.membership('enable'):
@@ -139,6 +144,7 @@ class CancellationForm(forms.ModelForm):
                 yield subscription_membership.subscription, [
                     self[f'co_membership_{subscription_membership.id}'],
                     self[f'co_membership_date_{subscription_membership.id}'],
+                    self[f'co_membership_comment_{subscription_membership.id}'],
                 ]
             else:
                 yield subscription_membership.subscription, None
@@ -236,7 +242,7 @@ class CancellationForm(forms.ModelForm):
     def save(self, commit=True):
         super().save(commit=commit)
         summary = {'subscription': [], 'co_membership': []}
-        comment = self.cleaned_data.get('comment')
+        comment = self.instance.cancellation_comment
 
         # cancel subscriptions
         for subscription in self.primary_subscriptions:
@@ -250,6 +256,11 @@ class CancellationForm(forms.ModelForm):
             if self.cleaned_data.get(f'co_membership_{co_membership.id}') is False:
                 co_membership.leave(
                     on_date=self.cleaned_data[f'co_membership_date_{co_membership.id}']
+                )
+                membernotification.co_member_left_subscription(
+                    co_membership.subscription.primary_member,
+                    co_membership.member,
+                    self.cleaned_data.get(f'co_membership_comment_{co_membership.id}')
                 )
                 summary['co_membership'].append(co_membership)
 
@@ -278,7 +289,6 @@ class CancellationForm(forms.ModelForm):
         # cancel account
         if self.cleaned_data['account'] is False:
             self.instance.cancel()
-            comment = self.cleaned_data.get('comment')
             adminnotification.member_canceled(self.instance, comment)
             signals.canceled.send(Member, instance=self.instance, message=comment)  # backwards compatibility
             summary['account'] = True
