@@ -15,6 +15,7 @@ from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea
 
 class MemberAdminForm(ModelForm):
     delete_signup_comment = BooleanField(required=False)
+    delete_cancellation_comment = BooleanField(required=False)
 
     def clean_delete_signup_comment(self):
         if self.cleaned_data['delete_signup_comment']:

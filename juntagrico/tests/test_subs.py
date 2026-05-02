@@ -18,6 +18,10 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
     def testSub(self):
         self.assertGet(reverse('subscription-landing'), 302)
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]), member=self.member3)
+        self.assertGet(reverse('subscription-single', args=[self.canceled_sub.pk]), member=self.member6)
+        SubscriptionMembership.objects.create(member=self.member, subscription=self.sub2)
+        self.assertGet(reverse('subscription-single', args=[self.sub2.pk]))
 
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
@@ -34,6 +38,14 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary_member': self.member3.pk}, 302)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.primary_member, self.member3)
+
+    def testPrimaryChangeWithoutComemberFails(self):
+        self.assertGet(reverse('primary-change', args=[self.sub2.pk]), member=self.member2)
+        self.assertPost(reverse('primary-change', args=[self.sub2.pk]), {
+            'primary_member': self.member3.pk
+        }, 200, self.member2)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub2.primary_member, self.member2)
 
     def testPrimaryChangeError(self):
         # can't change to non-member as sub-type requires membership
@@ -278,6 +290,9 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
         self.assertIn(data['cancellation_comment'], mail.outbox[0].body)
 
     def testLeave(self):
+        # primary member can't leave
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302)
+        # co-member can leave
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
             'leave_date': datetime.date.today(),
@@ -303,3 +318,18 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
         self.assertEqual(subscription_membership.leave_date, today)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(comment, mail.outbox[0].body)
+
+    @tag('shares')
+    def testUnifiedLeaveWithShares(self):
+        # can't leave if subscription requires the shares
+        self.sub_type.shares = 2
+        self.sub_type.save()
+        self.assertGet(reverse('cancel'), 200, self.member3)
+        subscription_membership = self.member3.subscriptionmembership_set.get(subscription=self.sub)
+        today = datetime.date.today()
+        data = self.cancellation_data | {
+            f'co_membership_{subscription_membership.pk}': False,
+            f'co_membership_date_{subscription_membership.pk}': today,
+        }
+        self.assertPost(reverse('cancel'), data=data, code=200, member=self.member3)
+        self.assertIsNone(subscription_membership.leave_date)

@@ -265,7 +265,7 @@ class JuntagricoTestCase(TestCase):
 
     @staticmethod
     def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3,
-                        price=1000, **kwargs):
+                        price=1000, **kwargs) -> SubscriptionType:
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')

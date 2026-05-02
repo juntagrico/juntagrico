@@ -48,3 +48,34 @@ class AccountTests(JuntagricoTestCase):
         )
         account.refresh_from_db()
         self.assertTrue(account.inactive, f'{account} {account.email}')
+
+
+class AdminTest(JuntagricoTestCase):
+    def testDeleteComments(self):
+        member = self.member
+        member.signup_comment = 'signup comment'
+        member.cancellation_comment = 'cancellation comment'
+        member.save()
+        self.assertGet(reverse('admin:juntagrico_member_change', args=[member.id]), member=self.admin)
+        data = {
+            'addr_location': 'addr_location',
+            'addr_street': 'addr_street',
+            'addr_zipcode': '1234',
+            'email': 'email1@email.org',
+            'first_name': 'first_name1',
+            'last_name': 'last_name1',
+            'mobile_phone': 'phone',
+            'phone': 'phone',
+            'memberships-TOTAL_FORMS': '0',
+            'memberships-INITIAL_FORMS': '0',
+            'subscriptionmembership_set-TOTAL_FORMS': '0',
+            'subscriptionmembership_set-INITIAL_FORMS': '0',
+            'delete_signup_comment': 'on',
+            'delete_cancellation_comment': 'on',
+            '_save': 'save'
+        }
+        self.assertPost(reverse('admin:juntagrico_member_change', args=[member.id]),
+                        data=data, member=self.admin, code=302)
+        member.refresh_from_db()
+        self.assertEqual(member.signup_comment, '')
+        self.assertEqual(member.cancellation_comment, '')
