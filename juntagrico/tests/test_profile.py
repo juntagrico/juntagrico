@@ -29,13 +29,6 @@ class ProfileTests(JuntagricoTestCase):
         cls.admin.user.user_permissions.add(
             Permission.objects.get(codename='notified_on_member_cancellation')
         )
-        cls.cancellation_data = {
-            'message': 'my last message',
-            'iban': 'CH61 0900 0000 1900 0012 6',
-            'addr_street': 'addr_street',
-            'addr_zipcode': ' 1234',
-            'addr_location': 'addr_location'
-        }
 
     @override_settings(MEMBERSHIP={'enable': False})
     def testProfileNoMemberships(self):

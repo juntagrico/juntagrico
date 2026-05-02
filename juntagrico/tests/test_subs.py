@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.test import tag
@@ -133,14 +134,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.cancelPart(part)
         self.assertLess(part.cancellation_date, part.activation_date)
 
-    def testLeave(self):
-        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
-        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
-            'leave_date': datetime.date.today(),
-        }, code=302, member=self.member3)
-        self.sub.refresh_from_db()
-        self.assertEqual(self.sub.current_members.count(), 1)
-
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
         self.assertPost(
@@ -194,22 +187,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         with self.assertRaises(ValidationError):
             self.member4.join_subscription(self.sub)
 
-    def testCancel(self):
-        self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
-        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), data={
-            'cancellation': 'regular',
-        }, code=302)
-        self.sub.refresh_from_db()
-        self.assertIsNotNone(self.sub.cancellation_date)
-
-    def testCancelWaiting(self):
-        self.assertGet(reverse('sub-cancel', args=[self.sub2.pk]), 200, member=self.member2)
-        self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), data={
-            'cancellation': 'asap',
-        }, code=302, member=self.member2)
-        self.sub2.refresh_from_db()
-        self.assertIsNotNone(self.sub2.cancellation_date)
-
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
@@ -243,3 +220,89 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
 
     def testMembers(self):
         self.assertListEqual(list(self.sub.current_members.order_by('id')), [self.member, self.member3])
+
+
+class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.admin.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_cancellation')
+        )
+        cls.cancellation_data = {
+            'activity_areas': [cls.area.id],
+            'shares': 0,
+            'membership': True,
+            'account': True,
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location'
+        }
+
+    def testCancel(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
+        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), data={
+            'cancellation': 'regular',
+        }, code=302)
+        self.sub.refresh_from_db()
+        self.assertIsNotNone(self.sub.cancellation_date)
+
+    def testCancelWaiting(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub2.pk]), 200, member=self.member2)
+        self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), data={
+            'cancellation': 'asap',
+        }, code=302, member=self.member2)
+        self.sub2.refresh_from_db()
+        self.assertIsNotNone(self.sub2.cancellation_date)
+
+    def testUnifiedCancellation(self):
+        self.assertGet(reverse('cancel'), 200)
+        data = self.cancellation_data | {
+            f'primary_subscription_{self.sub.pk}': 'regular',
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302)
+        self.sub.refresh_from_db()
+        self.member.refresh_from_db()
+        self.assertIsNotNone(self.sub.cancellation_date)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def testUnifiedCancellationWithComment(self):
+        self.assertGet(reverse('cancel'), 200)
+        data = self.cancellation_data | {
+            f'primary_subscription_{self.sub.pk}': 'asap',
+            'cancellation_comment': 'my last message',
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302)
+        self.sub.refresh_from_db()
+        self.member.refresh_from_db()
+        self.assertIsNotNone(self.sub.cancellation_date)
+        self.assertEqual(data['cancellation_comment'], self.member.cancellation_comment)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(data['cancellation_comment'], mail.outbox[0].body)
+
+    def testLeave(self):
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
+            'leave_date': datetime.date.today(),
+        }, code=302, member=self.member3)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.current_members.count(), 1)
+
+    def testUnifiedLeave(self):
+        self.assertGet(reverse('cancel'), 200, self.member3)
+        subscription_membership = self.member3.subscriptionmembership_set.get(subscription=self.sub)
+        today = datetime.date.today()
+        comment = 'comment to primary'
+        data = self.cancellation_data | {
+            f'co_membership_{subscription_membership.pk}': False,
+            f'co_membership_date_{subscription_membership.pk}': today,
+            f'co_membership_comment_{subscription_membership.pk}': comment,
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302, member=self.member3)
+        self.sub.refresh_from_db()
+        self.member.refresh_from_db()
+        subscription_membership.refresh_from_db()
+        self.assertIsNone(self.sub.cancellation_date)
+        self.assertEqual(subscription_membership.leave_date, today)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(comment, mail.outbox[0].body)
