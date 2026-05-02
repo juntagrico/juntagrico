@@ -126,7 +126,7 @@ class CancellationForm(forms.ModelForm):
             )
         except ValueError:
             payment_details_required = True
-        for field in CancellationForm.Meta.fields:
+        for field in ('iban', 'addr_street', 'addr_zipcode', 'addr_location'):
             self.fields[field].required = payment_details_required
 
         areas = self.instance.areas.all()
@@ -152,12 +152,22 @@ class CancellationForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        changed = (
+        changed_for_comment = (
             any(cleaned_data.get(f'primary_subscription_{s.id}') is not None for s in self.primary_subscriptions)
-            or any(cleaned_data.get(f'co_membership_{c.id}') is False for c in self.co_memberships)
             or cleaned_data.get('membership') is False
-            or cleaned_data.get('shares', 0) > 0
             or cleaned_data.get('account') is False
+        )
+        if not changed_for_comment and cleaned_data.get('cancellation_comment'):
+            self.add_error(
+                'cancellation_comment',
+                gettext('Kommentar kann nicht gesendet werden, wenn nichts gekündigt wird. '
+                        'Lasse dieses Feld leer, um fortzufahren.')
+            )
+
+        changed = (
+            changed_for_comment
+            or any(cleaned_data.get(f'co_membership_{c.id}') is False for c in self.co_memberships)
+            or cleaned_data.get('shares', 0) > 0
         )
         if not changed:
             raise ValidationError(_('Wähle aus, was du kündigen möchtest'))

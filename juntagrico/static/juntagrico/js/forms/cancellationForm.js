@@ -23,7 +23,7 @@ $(function () {
     $('input[name^="co_membership_"]').each(function () {
         const $this = $(this)
         const name = $this.prop('name')
-        if (name.includes('_date_')) {
+        if (name.includes('_date_') || name.includes('_comment_')) {
             return
         }
         const id = name.substring(name.lastIndexOf('_') + 1)
@@ -31,6 +31,7 @@ $(function () {
             const keep = this.value === 'True'
             $('#div_id_co_membership_date_' + id).toggle(!keep)
             $('#id_co_membership_date_' + id).prop('required', !keep)
+            $('#div_id_co_membership_comment_' + id).toggle(!keep)
         })
         $this.filter(':checked').change()
     });

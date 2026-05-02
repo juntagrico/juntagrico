@@ -9,6 +9,11 @@
 {% block content %}
     <form method="post">
         {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% trans "Kündigung fehlgeschlagen. Überprüfe deine Eingaben unten." %}
+            </div>
+        {% endif %}
         {{ form|as_crispy_errors }}
 
         {% if form.primary_subscriptions %}
