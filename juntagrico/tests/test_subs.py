@@ -21,6 +21,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]), member=self.member3)
         self.assertGet(reverse('subscription-single', args=[self.canceled_sub.pk]), member=self.member6)
         SubscriptionMembership.objects.create(member=self.member, subscription=self.sub2)
+        self.assertGet(reverse('subscription-single', args=[self.sub2.pk]), member=self.member2)
         self.assertGet(reverse('subscription-single', args=[self.sub2.pk]))
 
     def testSubActivation(self):

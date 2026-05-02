@@ -39,6 +39,20 @@ class AccountTests(JuntagricoTestCase):
         self.assertTrue(self.member_without_shares.canceled)
         self._testDeactivateAccount(self.member_without_shares)
 
+    def testCancelAccountFails(self):
+        # can't cancel account until other entities are canceled
+        response = self.assertPost(reverse('cancel'), code=200, data={
+            'membership': True,
+            'shares': 0,
+            'account': False,
+        })
+        self.assertListEqual(
+            ['account'],
+            list(response.context['form'].errors.keys())
+        )
+        self.member.refresh_from_db()
+        self.assertFalse(self.member.canceled)
+
     def _testDeactivateAccount(self, account):
         self.assertPost(
             reverse('manage-member-deactivate'),
