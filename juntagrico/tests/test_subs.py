@@ -21,7 +21,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]), member=self.member3)
         self.assertGet(reverse('subscription-single', args=[self.canceled_sub.pk]), member=self.member6)
         SubscriptionMembership.objects.create(member=self.member, subscription=self.sub2)
-        self.assertGet(reverse('subscription-single', args=[self.sub2.pk]), member=self.member2)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
         self.assertGet(reverse('subscription-single', args=[self.sub2.pk]))
 
     def testSubActivation(self):
@@ -248,6 +248,13 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
             'membership': True,
             'account': True,
         }
+        # create parts in all statuses to test compact part list
+        part_date = cls.sub.activation_date
+        SubscriptionPart.objects.create(subscription=cls.sub, type=cls.trial_type, activation_date=part_date)
+        SubscriptionPart.objects.create(subscription=cls.sub, type=cls.sub_type3, activation_date=part_date,
+                                        cancellation_date=part_date)
+        SubscriptionPart.objects.create(subscription=cls.sub, type=cls.sub_type3, activation_date=part_date,
+                                        cancellation_date=part_date, deactivation_date=part_date)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
