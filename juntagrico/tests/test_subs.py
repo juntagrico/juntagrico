@@ -234,9 +234,6 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
             'shares': 0,
             'membership': True,
             'account': True,
-            'addr_street': 'addr_street',
-            'addr_zipcode': ' 1234',
-            'addr_location': 'addr_location'
         }
 
     def testCancel(self):

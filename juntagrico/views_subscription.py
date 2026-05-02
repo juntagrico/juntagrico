@@ -359,8 +359,6 @@ def cancel_share(request, share_id):
     member = request.user.member
     if member.cancellable_shares_count > 0:
         share = get_object_or_404(Share, id=share_id, member=member)
-        share.cancelled_date = datetime.date.today()
-        share.termination_date = next_membership_end_date()
-        share.save()
+        share.cancel()
         share_canceled.send(sender=Share, instance=share)
     return return_to_previous_location(request)

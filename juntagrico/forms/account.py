@@ -11,9 +11,11 @@ from django import forms
 from juntagrico import signals
 from juntagrico.config import Config
 from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
 from juntagrico.forms import JuntagricoDateWidget
 from juntagrico.forms.subscription import CancellationField
 from juntagrico.mailer import adminnotification, membernotification
+from juntagrico.signals import share_canceled
 
 
 def choice_to_bool(value):
@@ -293,6 +295,7 @@ class CancellationForm(forms.ModelForm):
             cancel_shares = self.cleaned_data['shares']
             for share in self.usable_shares[:cancel_shares]:
                 share.cancel()
+                share_canceled.send(sender=Share, instance=share)
             if cancel_shares > 0:
                 summary['share'] = cancel_shares
 
