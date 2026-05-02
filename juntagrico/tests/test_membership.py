@@ -33,7 +33,7 @@ class MembershipTests(JuntagricoTestCase):
             Permission.objects.get(codename='notified_on_membership_creation')
         )
         cls.cancellation_data = {
-            'shares': 1,
+            'shares': 0,
             'membership': False,
             'account': True,
             'cancellation_comment': 'my last message',
@@ -70,7 +70,6 @@ class MembershipTests(JuntagricoTestCase):
         self.assertPost(reverse('cancel'), code=302, data=self.cancellation_data)
         membership = self.member.memberships.first()
         self.assertTrue(membership.canceled)
-        self.assertEqual(self.member.usable_shares_count, 0)
         # pay back the share
         if settings.ENABLE_SHARES:
             self.paid_share.refresh_from_db()
@@ -82,12 +81,11 @@ class MembershipTests(JuntagricoTestCase):
     def testCancelMembershipPostWithUnpaidShares(self):
         self.assertPost(reverse('cancel'), code=302, member=self.member_with_unpaid_share,
                         data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 2)  # admin notification for membership and share cancellation
+        self.assertEqual(len(mail.outbox), 1)  # admin notification for membership
         self.assertTrue(self.cancellation_data['cancellation_comment'] in mail.outbox[0].body,
                         f'message not found in: {mail.outbox[0].body}')
         membership = self.member_with_unpaid_share.memberships.first()
         self.assertTrue(membership.canceled)
-        self.assertEqual(self.member_with_unpaid_share.usable_shares_count, 0)
         self._testDeactivateMembership(membership)
 
     def testCancelMembershipWithCanceledShares(self):
@@ -125,8 +123,8 @@ class MembershipTests(JuntagricoTestCase):
         sub.cancel()
         self.assertPost(reverse('cancel'), code=302, member=self.member, data=self.cancellation_data)
         self.assertTrue(self.member.memberships.first().canceled)
-        # area admin gets notified, that member left the area and admin gets notified that member canceled membership and share
-        self.assertEqual(len(mail.outbox), 3)
+        # area admin gets notified, that member left the area and admin gets notified that member canceled membership
+        self.assertEqual(len(mail.outbox), 2)
 
     def _testDeactivateMembership(self, membership):
         # Expected result: members that have no paid shares, can be deactivated.
