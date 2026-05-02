@@ -82,7 +82,7 @@ class MembershipTests(JuntagricoTestCase):
     def testCancelMembershipPostWithUnpaidShares(self):
         self.assertPost(reverse('cancel'), code=302, member=self.member_with_unpaid_share,
                         data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
+        self.assertEqual(len(mail.outbox), 2)  # admin notification for membership and share cancellation
         self.assertTrue(self.cancellation_data['cancellation_comment'] in mail.outbox[0].body,
                         f'message not found in: {mail.outbox[0].body}')
         membership = self.member_with_unpaid_share.memberships.first()
@@ -125,8 +125,8 @@ class MembershipTests(JuntagricoTestCase):
         sub.cancel()
         self.assertPost(reverse('cancel'), code=302, member=self.member, data=self.cancellation_data)
         self.assertTrue(self.member.memberships.first().canceled)
-        # area admin gets notified, that member left the area and admin gets notified that member canceled membership
-        self.assertEqual(len(mail.outbox), 2)
+        # area admin gets notified, that member left the area and admin gets notified that member canceled membership and share
+        self.assertEqual(len(mail.outbox), 3)
 
     def _testDeactivateMembership(self, membership):
         # Expected result: members that have no paid shares, can be deactivated.
