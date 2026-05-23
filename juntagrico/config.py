@@ -197,15 +197,22 @@ class Config:
         # normalize
         for file_name, conf in values.items():
             if not isinstance(conf, dict):
-                conf = dict(template=conf)
-            if context is not None:
-                if callable(conf.get('extra_context')):
-                    conf['extra_context'] = conf['extra_context'](context)
-                elif 'extra_context' not in conf:
-                    conf['extra_context'] = {}
-            if 'name' not in conf:
-                conf['name'] = default_names.get(file_name, file_name)
-            yield dict(file_name=file_name, **conf)
+                normal_conf = dict(template=conf, name=default_names.get(file_name, file_name))
+                if context is not None:
+                    normal_conf['extra_context'] = {}
+            else:
+                normal_conf = dict(
+                    template=conf['template'],
+                    name=conf.get('name', default_names.get(file_name, file_name))
+                )
+                if 'name' not in conf:
+                    normal_conf['name'] = default_names.get(file_name, file_name)
+                if context is not None:
+                    if callable(conf.get('extra_context')):
+                        normal_conf['extra_context'] = conf['extra_context'](context)
+                    else:
+                        normal_conf['extra_context'] = conf.get('extra_context', {})
+            yield dict(file_name=file_name, **normal_conf)
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
