@@ -15,10 +15,16 @@ from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea
 
 class MemberAdminForm(ModelForm):
     delete_signup_comment = BooleanField(required=False)
+    delete_cancellation_comment = BooleanField(required=False)
 
     def clean_delete_signup_comment(self):
         if self.cleaned_data['delete_signup_comment']:
             self.instance.signup_comment = ''
+        return None
+
+    def clean_delete_cancellation_comment(self):
+        if self.cleaned_data['delete_cancellation_comment']:
+            self.instance.cancellation_comment = ''
         return None
 
 
@@ -28,7 +34,7 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
     list_filter = ['user__is_superuser', 'user__is_staff', 'user__groups']
     search_fields = ['first_name', 'last_name', 'email', 'phone', 'mobile_phone',
                      'addr_street', 'addr_zipcode', 'addr_location', 'id', 'number']
-    readonly_fields = ['signup_comment', 'signup_comment_action', 'user']
+    readonly_fields = ['signup_comment', 'signup_comment_action', 'cancellation_comment', 'cancellation_comment_action', 'user']
     inlines = [SubscriptionMembershipInline]
     fieldsets = [
         (None, {'fields': ['first_name', 'last_name', 'birthday', 'number']}),
@@ -36,7 +42,11 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
         (_('Adresse'), {'fields': ['addr_street', 'addr_zipcode', 'addr_location']}),
         (_('Bankdaten'), {'fields': ['iban']}),
         (_('Status'), {'fields': ['cancellation_date', 'end_date', 'deactivation_date']}),
-        (_('Administration'), {'fields': [('signup_comment', 'signup_comment_action'), 'notes', 'user']}),
+        (_('Administration'), {'fields': [
+            ('signup_comment', 'signup_comment_action'),
+            ('cancellation_comment', 'cancellation_comment_action'),
+            'notes', 'user']}
+         ),
     ]
     actions = ['impersonate_job']
     resource_classes = [MemberResource, MemberWithAssignmentsAndAreaResource, MemberAssignmentsPerArea]
@@ -53,6 +63,11 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
     def signup_comment_action(self, instance):
         disabled = 'disabled="disabled"' if not instance.signup_comment else ''
         return mark_safe(f'<input type="checkbox" name="delete_signup_comment" id="delete_signup_comment" {disabled} />')
+
+    @admin.display(description=_('Löschen?'))
+    def cancellation_comment_action(self, instance):
+        disabled = 'disabled="disabled"' if not instance.cancellation_comment else ''
+        return mark_safe(f'<input type="checkbox" name="delete_cancellation_comment" id="delete_cancellation_comment" {disabled} />')
 
     @admin.action(description=Config.vocabulary('member') + ' imitieren (impersonate)...')
     @single_element_action('Genau 1 ' + Config.vocabulary('member') + ' auswählen!')

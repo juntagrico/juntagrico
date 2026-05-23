@@ -116,6 +116,7 @@ Only set the terms you want to override, e.g.:
         'the_subscription': 'der Ernteanteil',
         'the_subscription_acc': 'den Ernteanteil',
         'no_subscription_acc': 'keinen Ernteanteil',
+        'this_subscription_acc': 'diesen Ernteanteil',
         'this_subscription_dat': 'diesem Ernteanteil',
         'your_subscription_acc': 'deinen Ernteanteil',
         'with_active_subscription': 'mit aktivem Ernteanteil',

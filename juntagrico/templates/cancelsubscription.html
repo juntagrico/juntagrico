@@ -1,39 +1,24 @@
 {% extends "base.html" %}
+{% load crispy_forms_filters %}
 {% load i18n %}
 {% load juntagrico.config %}
+
 {% block page_title %}
-    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "your_subscription_acc" as v_your_subscription_acc %}
     <h3>
         {% blocktrans %}Künde {{ v_your_subscription_acc }}{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
-    {% vocabulary "subscription" as v_subscription %}
-    <div class="row mb-3">
-        <div class="col-md-12">
-            {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
-                Hier kannst du {{ v_your_subscription_acc }} kündigen.
-                Der nächste reguläre Kündigungstermin ist der <b>{{ ed }}</b>.
-            {% endblocktrans %}
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du {{ v_your_subscription_acc }} verbindlich künden?{% endblocktrans %}')">
-                {% csrf_token %}
-                <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
-                <div class="form-group">
-                    <label for="message">
-                        {% trans "Mitteilung" %}
-                    </label>
-                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    {% vocabulary "your_subscription_acc" as v_your_subscription_acc %}
+    <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du {{ v_your_subscription_acc }} verbindlich künden?{% endblocktrans %}')">
+        {% csrf_token %}
+        {% include 'juntagrico/my/subscription/snippets/card.html' with form_field=form.cancellation subscription=form.instance %}
+
+        {{ form.comment|as_crispy_field }}
+        <input type="submit" name="submit"
+               value="{% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} künden{% endblocktrans %}"
+               class="btn btn-danger btn-lg">
+    </form>
 {% endblock %}

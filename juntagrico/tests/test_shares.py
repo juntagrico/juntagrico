@@ -171,3 +171,45 @@ class ShareCancelTests(ShareTestCase):
         share.refresh_from_db()
         self.assertEqual(share.cancelled_date, None)
         self.assertEqual(share.termination_date, None)
+
+    def testUnifiedCancellation(self):
+        self.assertGet(reverse('cancel'), 200)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 1,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302)
+        self.member.refresh_from_db()
+        self.assertEqual(before - 1, self.member.usable_shares.count())
+        self.assertEqual(len(mail.outbox), 1)  # admin notification
+
+    def testCancelRequiredSharesFails(self):
+        self.assertGet(reverse('cancel'), 200)
+        Membership.objects.create(account=self.member)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 2,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        response = self.assertPost(reverse('cancel'), data=data, code=200)
+        self.assertListEqual(
+            ['shares'],
+            list(response.context['form'].errors.keys())
+        )
+        self.member.refresh_from_db()
+        self.assertEqual(before, self.member.usable_shares.count())

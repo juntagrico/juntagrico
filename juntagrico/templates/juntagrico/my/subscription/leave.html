@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_filters %}
 {% load i18n %}
 {% load juntagrico.config %}
 
@@ -10,37 +11,13 @@
 {% endblock %}
 
 {% block content %}
-    {% vocabulary "subscription" as v_subscription %}
-    <div class="row mb-3">
-        <div class="col-md-12">
-            {% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc %}
-                Hier kannst du {{ v_your_subscription_acc }} verlassen.
-            {% endblocktrans %}
-            {% if request.user.member.membership.not_canceled.exists %}
-                {% vocabulary "member_type" as v_member_type %}
-                {% enriched_organisation "D" as v_d_enriched_organisation %}
-                {% blocktrans trimmed %}
-                    Dabei bleibst du aber {{ v_member_type }} bei {{ v_d_enriched_organisation }}.
-                {% endblocktrans %}
-            {% endif %}
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="message">
-                        {% blocktrans trimmed %}Mitteilung an {{ v_subscription }}-Verwalter:in {% endblocktrans %}
-                    </label>
-                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% include 'juntagrico/my/subscription/snippets/co_membership_card.html' with form_fields=form.get_subscription_fields subscription=form.instance.subscription %}
+
+        {{ form.comment|as_crispy_field }}
+        <input type="submit" name="submit"
+               value="{% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} verlassen{% endblocktrans %}"
+               class="btn btn-danger btn-lg">
+    </form>
 {% endblock %}

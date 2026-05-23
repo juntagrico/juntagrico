@@ -8,7 +8,7 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, membership
+from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, membership, account
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -63,7 +63,6 @@ urlpatterns = [
     # /my/membership
     path('my/profile', juntagrico.profile, name='profile'),
     path('my/membership/create', membership.create, name='membership-create'),
-    path('my/membership/cancel', membership.cancel, name='membership-cancel'),
     # /my/share
     path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),
     path('my/share/certificate', juntagrico_subscription.share_certificate, name='share-certificate'),
@@ -122,6 +121,9 @@ urlpatterns = [
 
     # /deliveries
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),
+
+    # /my/cancel
+    path('my/cancellation', account.cancellation, name='cancel'),
 
     # /contact
     path('my/contact', juntagrico.contact, name='contact'),

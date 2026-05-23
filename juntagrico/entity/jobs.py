@@ -21,7 +21,9 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.mailer import adminnotification
 from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
+from juntagrico.signals import area_left
 from juntagrico.util.ical import generate_ical_for_job
 
 
@@ -46,6 +48,11 @@ class ActivityArea(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s' % self.name
+
+    def leave(self, account):
+        self.members.remove(account)
+        area_left.send(ActivityArea, area=self, member=account)
+        adminnotification.member_left_activityarea(self, account)
 
     @property
     def contacts(self):
