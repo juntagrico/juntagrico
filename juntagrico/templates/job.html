@@ -272,11 +272,7 @@
                 {% endif %}
             </div>
             <div class="col-lg-9">
-                {% if job.occupied_slots == 0 and job.free_slots != 0 %}
-                    {% trans "Noch niemand" %} 🥺
-                {% else %}
-                    {% job_participant_list request.user job %}
-                {% endif %}
+                {% job_participant_list request.user job %}
             </div>
         </div>
     {% endblock %}

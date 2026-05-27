@@ -1,61 +1,83 @@
+{% load crispy_forms_tags %}
 {% load juntagrico.common %}
 {% load i18n %}
-<ul>
-    {% for participant in participants %}
-        <li class="participant">
-            <span class="participant-name">{{ participant }}</span>
-            {% if participant.slots > 1 %}
-                <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
-            {% endif %}
-            {% if participant.is_first_job %}
-                <span class="badge badge-success participant-first-time">
-                    {% blocktrans %}Erster Einsatz{% endblocktrans %}
+
+{# add people to job #}
+{% if add_form %}
+    <div class="mb-2">
+        {% spaceless %}
+            <button type="button" class="btn btn-outline-primary add-assignment">
+                <i class="bi bi-plus-lg"></i>
+                hinzufügen
+            </button>
+        {% endspaceless %}
+    </div>
+
+    {% include "../modals/add_assignment.html" with name='add_assignment' %}
+{% endif %}
+
+{% if not participants %}
+    {% trans "Noch niemand" %} 🥺
+{% else %}
+
+    <ul>
+        {% for participant in participants %}
+            <li class="participant">
+                <span class="participant-name">{{ participant }}</span>
+                {% if participant.slots > 1 %}
+                    <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
+                {% endif %}
+                {% if participant.is_first_job %}
+                    <span class="badge badge-success participant-first-time">
+                        {% blocktrans %}Erster Einsatz{% endblocktrans %}
+                    </span>
+                {% elif participant.is_first_job_in_area %}
+                    <span class="badge badge-success participant-first-time-in-area">
+                        {% blocktrans %}Erster Einsatz im Tätigkeitsbereich{% endblocktrans %}
+                    </span>
+                {% elif participant.is_first_job_of_type %}
+                    <span class="badge badge-success participant-first-time-of-type">
+                        {% blocktrans %}Erster Einsatz dieser Art{% endblocktrans %}
+                    </span>
+                {% endif %}
+                <span class="participant-job-extras">
+                {% for extra in job.all_participant_extras|get_item:participant %}
+                    {{ extra.extra_type.display_full|safe }}
+                {% endfor %}
                 </span>
-            {% elif participant.is_first_job_in_area %}
-                <span class="badge badge-success participant-first-time-in-area">
-                    {% blocktrans %}Erster Einsatz im Tätigkeitsbereich{% endblocktrans %}
-                </span>
-            {% elif participant.is_first_job_of_type %}
-                <span class="badge badge-success participant-first-time-of-type">
-                    {% blocktrans %}Erster Einsatz dieser Art{% endblocktrans %}
-                </span>
-            {% endif %}
-            <span class="participant-job-extras">
-            {% for extra in job.all_participant_extras|get_item:participant %}
-                {{ extra.extra_type.display_full|safe }}
-            {% endfor %}
-            </span>
-            {% if can_edit_assignments %}
-                {% spaceless %}
-                    <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
-                {% endspaceless %}
-            {% endif %}
-            {% if not participant.inactive %}
-                {% if can_contact or participant.reachable_by_email %}
+                {% if can_edit_assignments %}
                     {% spaceless %}
-                        <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
-                            <i class="bi bi-envelope"></i>
+                        <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
+                            <i class="bi bi-pencil-square"></i>
                         </a>
                     {% endspaceless %}
                 {% endif %}
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+                {% if not participant.inactive %}
+                    {% if can_contact or participant.reachable_by_email %}
+                        {% spaceless %}
+                            <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
+                                <i class="bi bi-envelope"></i>
+                            </a>
+                        {% endspaceless %}
+                    {% endif %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 
-{# button to contact all #}
-{% if can_contact %}
-    {% block send_mail %}
-        <a href="{% url 'email-to-job' job.id %}" class="btn btn-secondary">
-            <i class="bi bi-envelope"></i>
-            {% trans "Allen ein E-Mail senden" %}
-        </a>
-    {% endblock %}
-{% endif %}
+    {# button to contact all #}
+    {% if can_contact %}
+        {% block send_mail %}
+            <a href="{% url 'email-to-job' job.id %}" class="btn btn-secondary">
+                <i class="bi bi-envelope"></i>
+                {% trans "Allen ein E-Mail senden" %}
+            </a>
+        {% endblock %}
+    {% endif %}
 
-{# Modal for editing assignment #}
-{% if can_edit_assignments %}
-    {% include "./modal_edit_assignment.html" with name='edit_assignment' %}
+    {# Modal for editing assignment #}
+    {% if can_edit_assignments %}
+        {% include "./modal_edit_assignment.html" with name='edit_assignment' %}
+    {% endif %}
+
 {% endif %}
