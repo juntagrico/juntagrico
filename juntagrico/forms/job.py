@@ -16,10 +16,10 @@ from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
 from django_select2.forms import ModelSelect2Widget
 
-from juntagrico import forms
 from juntagrico.config import Config
 from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType
 from juntagrico.entity.member import Member
+from juntagrico.forms.account import MemberSelect2Widget
 from juntagrico.signals import subscribed, assignment_changed
 
 
@@ -139,7 +139,7 @@ class JobSubscribeForm(Form):
 
     @property
     def can_interact(self):
-        can_subscribe = self.available_slots > 0
+        can_subscribe = self.available_slots is None or self.available_slots > 0
         return self.job.start_time() > timezone.now() and not self.job.canceled and (can_subscribe or self.can_unsubscribe)
 
     def clean(self):
@@ -225,7 +225,7 @@ class EditAssignmentForm(JobSubscribeForm):
 
 
 class AddAssignmentForm(Form):
-    account = ModelChoiceField(None, label=_('Wer?'), widget=forms.account.MemberSelect2Widget)
+    account = ModelChoiceField(None, label=_('Wer?'), widget=MemberSelect2Widget)
     slots = SlotField(label=_('Teilnahme:'))
 
     def __init__(self, job, *args, **kwargs):
