@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import auth
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.entity.depot import Depot
@@ -96,6 +97,14 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertGet(reverse('cs-co-members'))
 
         response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
@@ -147,6 +156,13 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         new_member_data['email'] = 'Test@user.com'
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(BUSINESS_REGULATIONS='')
+    def testSignupWithoutDocuments(self):
+        new_member_data = self.newMemberData()
+        self.assertGet(reverse('signup'))
+        response = self.client.post(reverse('signup'), new_member_data)
+        self.assertRedirects(response, reverse('cs-subscription'))
 
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
@@ -242,24 +258,36 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             response = self.assertGet(reverse('cs-cancel'), 302)
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
 
-    def testExistingCoMember(self):
+    def prepareSession(self, subscription_count=1, **kwargs):
         session = self.client.session
         session['signup'] = {
             'main_member': self.newMemberData('fake@example.com'),
-            'subscriptions': {SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]: 1},
+            'subscriptions': {self.sub_type2.id: subscription_count},
             'depot': Depot.objects.values_list('id', flat=True)[0],
             'start_date': '2026-03-01',
             'shares': {'of_member': 1},
+            **kwargs
         }
         if extras := SubscriptionType.objects.is_extra().visible().values_list('id', flat=True):
             session['signup']['extras'] = {extras[0]: 0}
         session.save()
+
+    def testExistingCoMember(self):
+        self.prepareSession()
         co_member_data = self.newMemberData(self.area_admin.email)
         response = self.client.post(reverse('cs-co-members'), co_member_data)
         self.assertRedirects(response, reverse('cs-co-members'))
         self.assertGet(reverse('cs-co-members'))
         self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
         response = self.client.get(reverse('cs-co-members'))
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
@@ -272,6 +300,26 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             )
         self.assertRedirects(response, reverse('cs-summary'))
         self.client.post(reverse('cs-summary'), {'comment': ''})
+
+    @override_settings(MEMBERSHIP={'required_on_signup': False})
+    def testMembershipRequiredBySubscription(self):
+        if Config.membership('enable'):
+            self.prepareSession(co_members_done=True)
+            self.assertGet(reverse('cs-membership'))
+            self.assertPost(
+                reverse('cs-membership'), {'membership': True}
+            )
+
+    @override_settings(MEMBERSHIP={'required_on_signup': False})
+    def testMembershipOptional(self):
+        if Config.membership('enable'):
+            self.prepareSession(subscription_count=0, co_members_done=True)
+            self.assertGet(reverse('cs-membership'))
+            self.assertPost(
+                reverse('cs-membership'), {'membership': False}
+            )
+            # check editing membership
+            self.assertGet(reverse('cs-membership') + '?mod')
 
     def testExternalSignup(self):
         def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
@@ -291,6 +339,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 'subscription_%s' % sub_id: 1,
                 'depot_id': Depot.objects.values_list('id', flat=True)[0],
                 'start_date': '1900-01-01',
+                'membership': 'True',
                 'shares': shares,
                 'comment': comment,
                 'by_laws_accepted': 'True',
@@ -313,3 +362,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
 
 class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
     with_extra_subs = False
+
+
+@override_settings(MEMBERSHIP={'enable': False})
+class CreateSubscriptionWithoutMembershipsTests(CreateSubscriptionTests):
+    pass

@@ -7,6 +7,7 @@ from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.membership import Membership
 from ..entity.share import Share
 from ..entity.subs import SubscriptionPart
 
@@ -28,6 +29,8 @@ class ShareTestCase(JuntagricoTestCase):
 class ShareTests(ShareTestCase):
     def testMemberShareManage(self):
         self.assertGet(reverse('manage-shares'), 200)
+        Membership.objects.create(account=self.member4)
+        self.assertGet(reverse('manage-shares'), 200, member=self.member4)
         self.assertPost(reverse('manage-shares'), {'shares': 0}, 200, member=self.member2)
         self.member2.refresh_from_db()
         self.assertEqual(self.member2.share_set.count(), 0)
@@ -47,6 +50,7 @@ class ShareTests(ShareTestCase):
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
         unpaid_share = Share.objects.create(member=self.member)
+        Membership.objects.create(account=self.member)  # requested membership that requires a share
         canceled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
         future_terminated_share = Share.objects.create(
             member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
@@ -119,12 +123,15 @@ class ShareTests(ShareTestCase):
         self.assertGet(reverse('manage-share-canceled'), member=self.member2, code=403)
 
     def testManageSharePayoutSingle(self):
+        membership = Membership.objects.create(account=self.member, activation_date='2026-03-13', cancellation_date='2026-03-13')
         share = self.member.share_set.first()
         share.cancelled_date = datetime.date.today()
         share.termination_date = datetime.date.today()
         share.save()
         self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
         self.assertEqual(self.member.active_shares.count(), 0)
+        membership.refresh_from_db()
+        self.assertTrue(membership.inactive)
 
     def testManageSharePayout(self):
         shares = Share.objects.all()
@@ -164,3 +171,45 @@ class ShareCancelTests(ShareTestCase):
         share.refresh_from_db()
         self.assertEqual(share.cancelled_date, None)
         self.assertEqual(share.termination_date, None)
+
+    def testUnifiedCancellation(self):
+        self.assertGet(reverse('cancel'), 200)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 1,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302)
+        self.member.refresh_from_db()
+        self.assertEqual(before - 1, self.member.usable_shares.count())
+        self.assertEqual(len(mail.outbox), 1)  # admin notification
+
+    def testCancelRequiredSharesFails(self):
+        self.assertGet(reverse('cancel'), 200)
+        Membership.objects.create(account=self.member)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 2,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        response = self.assertPost(reverse('cancel'), data=data, code=200)
+        self.assertListEqual(
+            ['shares'],
+            list(response.context['form'].errors.keys())
+        )
+        self.member.refresh_from_db()
+        self.assertEqual(before, self.member.usable_shares.count())

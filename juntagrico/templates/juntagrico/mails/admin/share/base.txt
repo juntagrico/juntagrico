@@ -1,0 +1,9 @@
+{% extends "../base.txt" %}
+
+{% block message %}
+{% block share_message %}{% endblock %}
+
+{% include "./details.txt" %}
+
+{% block outro %}{% endblock %}
+{% endblock %}

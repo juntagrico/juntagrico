@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.2.0.db',
+        'NAME': 'dev.2.1.db',
     }
 }
 

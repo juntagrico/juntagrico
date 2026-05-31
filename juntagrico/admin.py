@@ -13,6 +13,7 @@ from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
 from juntagrico.admins.location_admin import LocationAdmin
 from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
+from juntagrico.admins.membership_admin import MembershipAdmin
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
@@ -29,6 +30,7 @@ from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraT
 from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member, SubscriptionMembership
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionProduct, SubscriptionCategory
@@ -60,6 +62,8 @@ admin.site.register(ListMessage, ListMessageAdmin)
 admin.site.register(BillingPeriod, BillingPeriodAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)
+if Config.membership('enable'):
+    admin.site.register(Membership, MembershipAdmin)
 
 # override auth user admin
 admin.site.unregister(User)

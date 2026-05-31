@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Fieldset, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -40,9 +40,9 @@ class JuntagricoDateWidget(DateInput):
     input_type = 'date'
 
     def format_value(self, value):
-        if isinstance(value, str):
-            return value
-        return value.strftime('%Y-%m-%d')
+        if isinstance(value, datetime.date):
+            return value.strftime('%Y-%m-%d')
+        return value
 
 
 class LinkButton(HTML):
@@ -72,6 +72,13 @@ class ExtendableFormMixin(metaclass=ExtendableFormMetaclass):
         return super().clean()
 
 
+class HorizontalFormMixin:
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-3'
+    helper.field_class = 'col-md-9'
+
+
 class PasswordForm(Form):
     password = CharField(label=gettext_lazy('Passwort'), min_length=4,
                          widget=PasswordInput())
@@ -82,65 +89,6 @@ class PasswordForm(Form):
         if self.data['password'] != self.data['passwordRepeat']:
             raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
-
-
-class AbstractMemberCancellationForm(ModelForm):
-    message = CharField(label=gettext_lazy('Mitteilung'), widget=Textarea, required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.attrs = {
-            'onSubmit': "return confirm('" + _('Möchtest du deine Mitgliedschaft verbindlich künden?') + "')"}
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-md-3'
-        self.helper.field_class = 'col-md-9'
-        self.helper.layout = Layout(
-            'message',
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-danger'),
-            ),
-        )
-
-    def save(self, commit=True):
-        if (sub := self.instance.subscription_current) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        if (sub := self.instance.subscription_future) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        self.instance.cancel()
-        return super().save(commit)
-
-
-class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = []
-
-
-class CoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
-        labels = {
-            "addr_street": gettext_lazy("Strasse/Nr.")
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout.insert(1, Fieldset(
-            _('Bitte hinterlege oder überprüfe deine Daten, damit deine {shares} ausbezahlt werden können.').format(
-                shares=Config.vocabulary('share_pl')
-            ),
-            'iban', 'addr_street', 'addr_zipcode', 'addr_location')
-        )
-
-    def clean_iban(self):
-        # require IBAN on cancellation
-        if self.data['iban'] == '':
-            raise ValidationError(_('IBAN ist nicht gültig'))
-        return self.data['iban']
 
 
 class MemberProfileForm(ModelForm):
@@ -237,29 +185,22 @@ class RegisterMemberForm(MemberBaseForm):
     comment = CharField(required=False, max_length=4000, label=gettext_lazy('Kommentar'), widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
-    documents = [
-        (gettext_lazy('die Statuten'), Config.bylaws),
-        (gettext_lazy('das Betriebsreglement'), Config.business_regulations),
-        (gettext_lazy('die DSGVO Infos'), Config.gdpr_info),
-    ]
     text = {
-        'accept_with_docs': gettext_lazy(
-            'Ich habe {documents} gelesen und erkläre meinen Willen, "{organization}" beizutreten. '
-            'Hiermit beantrage ich meine Aufnahme.'
-        ),
-        'accept_wo_docs': gettext_lazy(
-            'Ich erkläre meinen Willen, "{organization}" beizutreten. Hiermit beantrage ich meine Aufnahme.'
-        ),
+        'confirm_read': gettext_lazy('Ich habe {documents} gelesen.'),
         'and': gettext_lazy('und')
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['agb'].label = self.agb_label()
+        fields = ['comment']
+        if len(self.get_documents()) > 0:
+            self.fields['agb'].label = self.agb_label()
+            fields.append('agb')
+        else:
+            del self.fields['agb']
         self.helper.layout = Layout(
             *self.base_layout,
-            'comment',
-            'agb',
+            *fields,
             FormActions(
                 Submit('submit', _('Anmelden'), css_class='btn-success'),
             )
@@ -267,18 +208,19 @@ class RegisterMemberForm(MemberBaseForm):
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
     @classmethod
+    def get_documents(cls):
+        return Config.documents('account-signup-accept', True)
+
+    @classmethod
     def agb_label(cls):
         documents_html = format_html_join(
             ' ' + cls.text['and'] + ' ',
-            '<a target="_blank" href="{}">{}</a>',
-            ((link(), text) for text, link in cls.documents if link().strip())
+            '<a target="_blank" href="{1}">{0}</a>',
+            cls.get_documents()
         )
-        if documents_html:
-            return format_html(
-                cls.text['accept_with_docs'], documents=documents_html, organization=Config.organisation_long_name()
-            )
-        else:
-            return cls.text['accept_wo_docs'].format(organization=Config.organisation_long_name())
+        return format_html(
+            str(cls.text['confirm_read']), documents=documents_html, organization=Config.organisation_long_name()
+        )
 
 
 class RegisterSummaryForm(Form):
@@ -563,7 +505,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             FormActions(
                 Submit(
                     'submit',
-                    _('{subscription}-Bestandteile bestellen').format(subscription=Config.vocabulary('subscription')),
+                    _('bestellen'),
                     css_class='btn-success'
                 )
             )
@@ -574,7 +516,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
         # check that subscription is not canceled:
         if self.subscription.cancellation_date:
             raise ValidationError(
-                _('Für gekündigte {subscriptions} können keine Bestandteile oder Zusatzabos bestellt werden').
+                _('Für gekündigte {subscriptions} können keine Bestellungen getätigt werden').
                 format(subscriptions=Config.vocabulary('subscription_pl')), code='no_order_if_canceled'
             )
         # check if members in subscription have sufficient shares
@@ -584,7 +526,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
                 share_error_message = mark_safe(
-                    _('Es sind zu wenig {shares} vorhanden für diese Bestandteile!').format(
+                    _('Es werden mehr {shares} benötigt.').format(
                         shares=Config.vocabulary('share_pl')
                     ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                         reverse('manage-shares'),
@@ -654,7 +596,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
                     share_error_message = mark_safe(
-                        _('Es sind zu wenig {shares} vorhanden für diesen Bestandteil!').format(
+                        _('Es werden mehr {shares} benötigt.').format(
                             shares=Config.vocabulary('share_pl'),
                         ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                             reverse('manage-shares'),
@@ -776,10 +718,8 @@ class TrialCloseoutForm(Form):
 class ShareOrderForm(Form):
     field_template = 'juntagrico/share/form/field.html'
     text = dict(
-        member_info=ngettext_lazy(
-            'Du brauchst als HauptbezieherIn mindestens {num} {share}.',
-            'Du brauchst als HauptbezieherIn mindestens {num} {shares}.',
-            'num'
+        member_info=gettext_lazy(
+            'Für dich',
         ),
         member_existing=ngettext_lazy(
             'Du hast bereits {num} {share}.', 'Du hast bereits {num} {shares}.', 'num',
@@ -788,8 +728,8 @@ class ShareOrderForm(Form):
             'Besitzt bereits {num} {share}.', 'Besitzt bereits {num} {shares}.', 'num'
         ),
         form_error=ngettext_lazy(
-            'Du brauchst insgesamt {num} {share} für die von dir gewählten {subscription}-Bestandteile',
-            'Du brauchst insgesamt {num} {shares} für die von dir gewählten {subscription}-Bestandteile',
+            'Du brauchst insgesamt mindestens {num} {share}',
+            'Du brauchst insgesamt mindestens {num} {shares}',
             'num',
         )
     )
@@ -801,29 +741,36 @@ class ShareOrderForm(Form):
 
     def __init__(self, required, existing=0, co_members=None, *args, **kwargs):
         """
-        :param required: number of shares that are required (for the subscriptions)
+        :param required: number of total required shares or dict with 2 entries
+            'total' = number of total required shares,
+            'for_primary' = number of shares required by primary member
         :param existing: number of shares that the member already has
         :param co_members: an iterable of (name, existing_share_count) of co-members
         """
         super().__init__(*args, **kwargs)
-        self.required = required
+        if isinstance(required, dict):
+            self.required = required
+        else:
+            self.required = {'total': required, 'for_primary': existing}
         self.existing = existing
         self.co_members = co_members or []
-        required_shares = Config.required_shares()
-        self.remaining = max(required_shares - existing, 0)
 
         # build share field for member
+        label = Config.vocabulary('share_pl')
+        help_text = ''
         if existing:
+            label = _('Neue {shares}').format(shares=Config.vocabulary('share_pl'))
             help_text = self.text['member_existing'].format(
                 num=existing, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
             )
-        else:
-            help_text = self.text['member_info'].format(
-                num=required_shares, share=Config.vocabulary('share'), shares=Config.vocabulary('share_pl')
-            )
+        elif co_members:
+            help_text = self.text['member_info']
+        initial = self.required['for_primary'] - existing
         self.fields['of_member'] = IntegerField(
-            label=_('Neue {shares}').format(shares=Config.vocabulary('share_pl')), required=False,
-            initial=self.remaining, min_value=self.remaining,
+            label=label,
+            required=False,
+            initial=initial,
+            min_value=initial,
             help_text=help_text
         )
 
@@ -851,19 +798,17 @@ class ShareOrderForm(Form):
         )
 
     def clean(self):
-        total_required = max(self.required, Config.required_shares())
+        # count existing and new shares
         total_existing = max(0, self.existing + sum(dict(self.co_members).values()))
-        remaining_required = max(0, total_required - total_existing)
-        # count new shares
         of_member = self.cleaned_data.get('of_member', 0)
-        of_co_member = sum([self.cleaned_data.get(f'of_co_member[{i}]', 0) for i in range(len(self.co_members))])
+        of_co_member = sum(self.cleaned_data.get(f'of_co_member[{i}]', 0) for i in range(len(self.co_members)))
+        total_shares = total_existing + of_member + of_co_member
         # evaluate
-        if of_member + of_co_member < remaining_required:
+        if total_shares < self.required['total']:
             raise ValidationError(self.text['form_error'].format(
-                    num=total_required,
+                    num=self.required['total'],
                     share=Config.vocabulary('share'),
                     shares=Config.vocabulary('share_pl'),
-                    subscription=Config.vocabulary('subscription')
                 )
             )
 

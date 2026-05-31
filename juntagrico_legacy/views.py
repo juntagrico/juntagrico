@@ -252,7 +252,7 @@ def subscription(request, subscription_id=None):
         asc = member.usable_shares_count
         share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
-        can_leave = member.is_cooperation_member and not share_error and not primary
+        can_leave = member.active_shares_count > 0 and not share_error and not primary
         renderdict.update({
             'subscription': subscription,
             'co_members': subscription.co_members(member),

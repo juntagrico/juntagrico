@@ -4,6 +4,7 @@ from itertools import zip_longest
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.mail import EmailAttachment
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Max, F
@@ -20,7 +21,10 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.mailer import adminnotification
 from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
+from juntagrico.signals import area_left
+from juntagrico.util.ical import generate_ical_for_job
 
 
 @absolute_url(name='area')
@@ -44,6 +48,11 @@ class ActivityArea(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s' % self.name
+
+    def leave(self, account):
+        self.members.remove(account)
+        area_left.send(ActivityArea, area=self, member=account)
+        adminnotification.member_left_activityarea(self, account)
 
     @property
     def contacts(self):
@@ -258,6 +267,8 @@ class Job(JuntagricoBasePoly):
     @property
     @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
+        if self.canceled:
+            return 0
         if self.infinite_slots:
             return -1
         if self.slots is not None:
@@ -384,6 +395,10 @@ class Job(JuntagricoBasePoly):
         :return: list job coordinator(s)
         """
         raise NotImplementedError
+
+    def to_email_attachment(self):
+        ics = generate_ical_for_job(self)
+        return EmailAttachment(ics.name, ics.content, 'text/calendar')
 
     def clean(self):
         check_job_consistency(self)

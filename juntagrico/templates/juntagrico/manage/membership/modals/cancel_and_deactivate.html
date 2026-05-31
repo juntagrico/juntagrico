@@ -1,0 +1,18 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans %}Kündigen und Deaktivieren{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <form action="{% url 'manage-membership-cancel-deactivate' %}" method="post" class="modal-form" id="{{ name }}_form">
+        {% crispy form %}
+    </form>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="submit" form="{{ name }}_form" class="btn btn-primary"
+           value="{% trans "Anwenden" %}">
+{% endblock %}

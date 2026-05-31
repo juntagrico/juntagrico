@@ -10,9 +10,8 @@
         <div class="col-md-9">
             {% if subscription %}
                 <div class="mb-3">
-                    {% vocabulary "subscription" as v_subscription %}
-                    {% blocktrans trimmed with rs=subscription.required_shares %}
-                        Benötigt für diese/n/s {{ v_subscription }}: {{ rs }}
+                    {% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc rs=subscription.required_shares %}
+                        Benötigt für {{ v_your_subscription_acc }}: {{ rs }}
                     {% endblocktrans %}
                 </div>
             {% endif %}

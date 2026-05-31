@@ -178,7 +178,26 @@ Search Hints:
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets :ref:`notified <reference-notifications-member-canceled>` when any member cancels their membership.
+Person gets :ref:`notified <reference-notifications-member-canceled>` when any member closes their account.
+
+Search Hints:
+    * German: Kündigung informiert
+
+
+.. _reference-permissions-notified_on_membership_creation:
+
+juntagrico.notified_on_membership_creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets :ref:`notified <reference-notifications-membership-created>` when a new membership is requested.
+
+Search Hints:
+    * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_membership_cancellation:
+
+juntagrico.notified_on_membership_cancellation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets :ref:`notified <reference-notifications-membership-canceled>` when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert

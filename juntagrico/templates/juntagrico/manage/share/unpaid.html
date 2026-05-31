@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block list %}
+    {% config 'enable_membership' as c_enable_membership %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
             <tr>
@@ -28,9 +29,14 @@
                 <th class="filter">
                     {% trans "Kontakt" %}
                 </th>
+                {% if c_enable_membership %}
+                    <th class="filter">
+                        {% blocktrans with v_membership=vocabulary.membership %}Benötigt für {{ v_membership }}{% endblocktrans %}
+                    </th>
+                {% endif %}
                 <th class="filter">
                     {% vocabulary "subscription" as v_subscription %}
-                    {% blocktrans %}Benötigt für ein/e/n {{ v_subscription }}{% endblocktrans %}
+                    {% blocktrans %}Benötigt für {{ v_subscription }}{% endblocktrans %}
                 </th>
             </tr>
         </thead>
@@ -50,6 +56,11 @@
                         <td>
                             {% include 'juntagrico/manage/member/snippets/display_linked.html' %}
                         </td>
+                        {% if c_enable_membership %}
+                            <td>
+                                {{ share|required_for_membership:forloop.counter }}
+                            </td>
+                        {% endif %}
                         <td>
                             {% required_for_subscription share forloop.counter %}
                         </td>

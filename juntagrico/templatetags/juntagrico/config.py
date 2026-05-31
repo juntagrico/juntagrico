@@ -25,6 +25,16 @@ def vocabulary(key):
     return Config.vocabulary(key)
 
 
+@register.filter
+def notified(key):
+    return Config.notifications(key)
+
+
+@register.simple_tag
+def documents(tag):
+    return Config.documents(tag)
+
+
 @register.simple_tag
 def enriched_organisation(case):
     return eo(case)

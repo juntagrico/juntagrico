@@ -8,9 +8,8 @@
     </div>
     <div class="col-md-9">
         <div class="mb-3">
-            {% vocabulary "subscription" as v_subscription %}
-            {% blocktrans trimmed with ra=subscription.required_assignments|floatformat:-1 %}
-                Benötigt für diese/n/s {{ v_subscription }}: {{ ra }}{{ unit }}
+            {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc ra=subscription.required_assignments|floatformat:-1 %}
+                Benötigt für {{ v_the_subscription_acc }}: {{ ra }}{{ unit }}
             {% endblocktrans %}
             {% if subscription.required_core_assignments %}
                 {% blocktrans trimmed with rca=subscription.required_core_assignments|floatformat:-1 %}
@@ -42,10 +41,10 @@
         {% endif %}
         <div class="mb-3">
             <a href="{% url 'jobs' %}" class="btn btn-primary">
-                {% blocktrans %}Für {{ v_assignment_pl }} einschreiben{% endblocktrans %}
+                {% blocktrans %}für {{ v_assignment_pl }} einschreiben{% endblocktrans %}
             </a>
             <a href="{% url 'memberjobs' %}" class="btn btn-outline-primary">
-                {% blocktrans %}Deine {{ v_assignment_pl }} ansehen{% endblocktrans %}
+                {% blocktrans %}deine {{ v_assignment_pl }} ansehen{% endblocktrans %}
             </a>
         </div>
     </div>
