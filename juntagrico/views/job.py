@@ -317,7 +317,7 @@ def add_assignment(request, job_id, form_class=AddAssignmentForm):
         raise PermissionDenied
 
     if request.method == 'POST':
-        form = form_class(job, request.POST)
+        form = form_class(job, request.POST, editor=request.user.member)
         if form.is_valid():
             form.save()
             messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +

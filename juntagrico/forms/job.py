@@ -225,24 +225,38 @@ class EditAssignmentForm(JobSubscribeForm):
 
 
 class AddAssignmentForm(Form):
-    account = ModelChoiceField(None, label=_('Wer?'), widget=MemberSelect2Widget)
+    account = ModelChoiceField(
+        None, label=_('Wer?'), widget=MemberSelect2Widget,
+        help_text=_('Wird automatisch informiert.')
+    )
     slots = SlotField(label=_('Teilnahme:'))
 
-    def __init__(self, job, *args, **kwargs):
+    def __init__(self, job, *args, editor=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.prefix = 'add'
         self.job = job
+        self.editor = editor
         self.fields['account'].queryset = Member.objects.active()
         self.fields['slots'].set_choices(1)
 
     def save(self):
+        account = self.cleaned_data['account']
+        slots = self.cleaned_data['slots']
         assignment = Assignment(
-            member=self.cleaned_data['account'],
+            member=account,
             job=self.job,
             amount=self.job.get_multiplier(),
             core_cache=self.job.type.activityarea.core
         )
-        Assignment.objects.bulk_create([assignment] * self.cleaned_data['slots'])
+        Assignment.objects.bulk_create([assignment] * slots)
+        self.send_signals(account, slots)
+
+    def send_signals(self, account, slots):
+        initial_count = self.job.assignment_set.filter(member=account).count() - slots
+        assignment_changed.send(
+            Member, instance=account, job=self.job, editor=self.editor,
+            count=slots, initial_count=initial_count
+        )
 
 
 class ConvertToRecurringJobForm(Form):
