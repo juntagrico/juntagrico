@@ -14,7 +14,12 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob, JobType
 from juntagrico.entity.member import Member
 from juntagrico.forms import BusinessYearForm
-from juntagrico.forms.job import JobSubscribeForm, EditAssignmentForm, ConvertToRecurringJobForm
+from juntagrico.forms.job import (
+    JobSubscribeForm,
+    EditAssignmentForm,
+    ConvertToRecurringJobForm,
+    AddAssignmentForm,
+)
 from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
@@ -300,3 +305,23 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
         'form': form,
         'success': success,
     })
+
+
+@login_required
+def add_assignment(request, job_id, form_class=AddAssignmentForm):
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    is_assignment_coordinator = job.check_if(request.user).is_assignment_coordinator
+    if not (is_assignment_coordinator
+            or request.user.has_perm('juntagrico.add_assignment')):
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        form = form_class(job, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
+                                                    _("Erfolgreich hinzugefügt")))
+        else:
+            messages.error(request, _('Hinzufügen fehlgeschlagen.'))
+    return redirect('job', job_id=job_id)

@@ -108,6 +108,7 @@ urlpatterns = [
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
+    path('assignment/<int:job_id>/add', job.add_assignment, name='assignment-add'),
 
     # /area
     path('my/areas', juntagrico.areas, name='areas'),

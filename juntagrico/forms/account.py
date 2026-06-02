@@ -2,7 +2,8 @@ import datetime
 
 from crispy_forms.helper import FormHelper
 from django.core.exceptions import ValidationError
-from django.db.models import F
+from django.db.models import F, Exists, OuterRef
+from django.utils.formats import date_format
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _, gettext, ngettext
 
@@ -12,7 +13,11 @@ from juntagrico import signals
 from juntagrico.config import Config
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.forms import JuntagricoDateWidget
+from juntagrico.forms import (
+    JuntagricoDateWidget,
+    InternalModelSelect2MultipleWidget,
+    InternalModelSelect2Widget,
+)
 from juntagrico.forms.subscription import CancellationField
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.signals import share_canceled
@@ -307,3 +312,37 @@ class CancellationForm(forms.ModelForm):
             summary['account'] = True
 
         return summary
+
+
+class MemberSelect2Mixin:
+    model = Member
+    search_fields = [
+        'first_name__icontains',
+        'last_name__icontains',
+        'email__icontains',
+    ]
+
+    def get_queryset(self):
+        # annotate if another member with the exact same name exists
+        return super().get_queryset().annotate(
+            duplicate=Exists(
+                Member.objects.exclude(pk=OuterRef('pk')).filter(
+                    first_name=OuterRef('first_name'),
+                    last_name=OuterRef('last_name')
+                )
+            )
+        )
+
+    def label_from_instance(self, obj):
+        label = super().label_from_instance(obj)
+        if getattr(obj, 'duplicate', False):
+            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
+        return label
+
+
+class MemberSelect2Widget(MemberSelect2Mixin, InternalModelSelect2Widget):
+    pass
+
+
+class MemberSelect2MultipleWidget(MemberSelect2Mixin, InternalModelSelect2MultipleWidget):
+    pass

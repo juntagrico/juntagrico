@@ -138,19 +138,11 @@
                         {% trans "abgesagt" %}
                     </div>
                 {% else %}
-                    {% with slots_taken=job.occupied_slots %}
-                        <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
-                            {% spaceless %}
-                                {% for _ in ''|ljust:job.slots %}
-                                    {% if forloop.counter <= slots_taken %}
-                                        <img src="{% images "single_full" %}" alt="{% trans "Belegter Platz" %}"/>
-                                    {% else %}
-                                        <img src="{% images "single_empty" %}" alt="{% trans "Freier Platz" %}"/>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endspaceless %}
-                        </div>
-                    {% endwith %}
+                    <div class="col-lg-9" title="{% blocktrans with taken=job.occupied_slots total=job.slots%}{{ taken }} von {{ total }} gebucht{% endblocktrans %}">
+                        {% block job_status %}
+                            {{ job.occupied_slots }} / {{ job.slots }}
+                        {% endblock %}
+                    </div>
                 {% endif %}
             </div>
         {% endblock %}
@@ -272,11 +264,7 @@
                 {% endif %}
             </div>
             <div class="col-lg-9">
-                {% if job.occupied_slots == 0 and job.free_slots != 0 %}
-                    {% trans "Noch niemand" %} 🥺
-                {% else %}
-                    {% job_participant_list request.user job %}
-                {% endif %}
+                {% job_participant_list request.user job %}
             </div>
         </div>
     {% endblock %}

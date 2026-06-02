@@ -3,7 +3,14 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div, HTML
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.forms import Form, ChoiceField, CharField, Textarea, BooleanField, ModelChoiceField
+from django.forms import (
+    Form,
+    TypedChoiceField,
+    CharField,
+    Textarea,
+    BooleanField,
+    ModelChoiceField,
+)
 from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
@@ -12,25 +19,50 @@ from django_select2.forms import ModelSelect2Widget
 from juntagrico.config import Config
 from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType
 from juntagrico.entity.member import Member
+from juntagrico.forms.account import MemberSelect2Widget
 from juntagrico.signals import subscribed, assignment_changed
 
 
-class JobSubscribeForm(Form):
+class SlotField(TypedChoiceField):
     MAX_VALUE = 15
+
+    labels = dict(
+        option_0=gettext_lazy('Abmelden'),
+        option_1=gettext_lazy('Alleine'),
+        option_2=gettext_lazy('Zu Zweit'),
+        option_3=gettext_lazy('Zu Dritt'),
+        option_4=gettext_lazy('Zu Viert'),
+        option_x=lambda x: _('{0} Personen').format(x),
+    )
+
+    def set_choices(self, min_slots, max_slots=MAX_VALUE, option_labels=None):
+        max_slots = min(max_slots or self.MAX_VALUE, self.MAX_VALUE)
+        choices = []
+        for i in range(min_slots, max_slots + 1):
+            label = self.get_option_text(i, option_labels)
+            choices.append((i, label))
+        self.choices = choices
+
+    def get_option_text(self, index, option_labels=None):
+        option_labels = self.labels | (option_labels or {})
+        return option_labels.get(f'option_{index}') or option_labels['option_x'](index)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.coerce = lambda x: int(x)
+
+
+class JobSubscribeForm(Form):
     UNSUBSCRIBE = 'unsubscribe'
 
-    slots = ChoiceField(label=_('Ich trage mich ein:'))
+    slots = SlotField(label=_('Ich trage mich ein:'))
     message = CharField(label=_('Mitteilung:'), widget=Textarea(attrs={"rows": 3}), required=False,
                         help_text=_('Diese Mitteilung wird an die Einsatz-Koordination gesendet'))
 
     text = {
         'options': {
-            0: _('Abmelden'),
-            1: _('Unbegleitet'),
-            2: _('Zu Zweit'),
-            3: _('Zu Dritt'),
-            4: _('Zu Viert'),
-            None: lambda x: _('{0} weitere Personen und ich').format(x - 1)
+            'option_1': _('Unbegleitet'),
+            'option_x': lambda x: _('{0} weitere Personen und ich').format(x - 1)
         },
     }
     message_wrapper_class = 'd-none'  # let js display the field if needed
@@ -41,7 +73,7 @@ class JobSubscribeForm(Form):
         self.job = job
         self.current_assignments = job.assignment_set.filter(member=member)
         self.current_slots = self.current_assignments.count()
-        self.available_slots = self.MAX_VALUE if self.job.infinite_slots else self.job.free_slots + self.current_slots
+        self.available_slots = None if self.job.infinite_slots else self.job.free_slots + self.current_slots
         # form layout
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
@@ -63,7 +95,11 @@ class JobSubscribeForm(Form):
             extras.append(field_name)
         for selected_extra in selected_extras:
             self.initial[f'extra{selected_extra.extra_type.id}'] = True
-        self.fields['slots'].choices = self.get_choices
+        self.fields["slots"].set_choices(
+            min_slots=0 if self.can_unsubscribe else max(1, self.current_slots),
+            max_slots=self.available_slots,
+            option_labels=self.text['options']
+        )
         self.initial['slots'] = self.current_slots
 
         # show buttons depending on status
@@ -97,23 +133,13 @@ class JobSubscribeForm(Form):
                 css_class='offset-md-3 col-md-6 mb-3 d-none'
             ))
 
-    def get_option_text(self, index):
-        return self.text['options'].get(index, self.text['options'][None](index))
-
-    def get_choices(self):
-        max_slots = min(self.available_slots, self.MAX_VALUE)
-        min_slots = 0 if self.can_unsubscribe else max(1, self.current_slots)
-        for i in range(min_slots, max_slots + 1):
-            label = self.get_option_text(i)
-            yield i, label
-
     @property
     def can_unsubscribe(self):
         return self.current_slots > 0 and Config.allow_job_unsubscribe()
 
     @property
     def can_interact(self):
-        can_subscribe = self.available_slots > 0
+        can_subscribe = self.available_slots is None or self.available_slots > 0
         return self.job.start_time() > timezone.now() and not self.job.canceled and (can_subscribe or self.can_unsubscribe)
 
     def clean(self):
@@ -128,7 +154,7 @@ class JobSubscribeForm(Form):
         return cleaned_data
 
     def save(self):
-        slots = int(self.cleaned_data['slots'])
+        slots = self.cleaned_data['slots']
 
         # handle unsubscribe action
         if self.cleaned_data[self.UNSUBSCRIBE] or slots == 0:
@@ -142,7 +168,7 @@ class JobSubscribeForm(Form):
                 assignment = Assignment(
                     member=self.member,
                     job=self.job,
-                    amount=self.get_multiplier(),
+                    amount=self.job.get_multiplier(),
                     core_cache=self.job.type.activityarea.core
                 )
                 Assignment.objects.bulk_create([assignment] * slots)
@@ -154,14 +180,6 @@ class JobSubscribeForm(Form):
                         assignment.job_extras.add(extra)
                 assignment.save()
         self.send_signals(slots, self.cleaned_data['message'])
-
-    def get_multiplier(self):
-        unit = Config.assignment_unit()
-        if unit == 'ENTITY':
-            return self.job.multiplier
-        elif unit == 'HOURS':
-            return self.job.multiplier * self.job.duration
-        return 1
 
     def send_signals(self, slots, message=''):
         # send signals
@@ -175,23 +193,20 @@ class EditAssignmentForm(JobSubscribeForm):
     text = dict(
         message_to_member=gettext_lazy('Mitteilung an das Mitglied'),
         slots_label=gettext_lazy('Teilnahme'),
-        option_1=gettext_lazy('Alleine'),
-        option_x=gettext_lazy('{0} Personen'),
         **JobSubscribeForm.text,
     )
 
     def __init__(self, editor, can_delete, *args, **kwargs):
+        self.can_delete = can_delete
         super().__init__(*args, **kwargs)
         self.editor = editor
-        self.can_delete = can_delete
         self.helper.form_id = 'assignment-edit-form'
         self.fields['message'].help_text = self.text['message_to_member']
         self.fields['slots'].label = self.text['slots_label']
-
-    def get_option_text(self, index):
-        if index == 1:
-            return self.text['option_1']
-        return self.text['options'].get(index, self.text['option_x'].format(index))
+        self.fields["slots"].set_choices(
+            min_slots=0 if can_delete else max(1, self.current_slots),
+            max_slots=self.available_slots,
+        )
 
     @property
     def can_unsubscribe(self):
@@ -207,6 +222,27 @@ class EditAssignmentForm(JobSubscribeForm):
             count=slots, initial_count=self.current_slots,
             message=message
         )
+
+
+class AddAssignmentForm(Form):
+    account = ModelChoiceField(None, label=_('Wer?'), widget=MemberSelect2Widget)
+    slots = SlotField(label=_('Teilnahme:'))
+
+    def __init__(self, job, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.prefix = 'add'
+        self.job = job
+        self.fields['account'].queryset = Member.objects.active()
+        self.fields['slots'].set_choices(1)
+
+    def save(self):
+        assignment = Assignment(
+            member=self.cleaned_data['account'],
+            job=self.job,
+            amount=self.job.get_multiplier(),
+            core_cache=self.job.type.activityarea.core
+        )
+        Assignment.objects.bulk_create([assignment] * self.cleaned_data['slots'])
 
 
 class ConvertToRecurringJobForm(Form):

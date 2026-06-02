@@ -1,0 +1,22 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans trimmed %}
+        Teilnehmende hinzufügen
+    {% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <div id="{{ name }}_content">
+        <form action="{% url 'assignment-add' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
+            {% crispy add_form %}
+        </form>
+    </div>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="add_assignment_form" class="btn btn-primary"
+           value="{% trans "Speichern" %}">
+{% endblock %}
