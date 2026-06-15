@@ -6,8 +6,9 @@ from import_export.admin import ExportMixin
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.admin_edit_share_dates import EditShareDatesForm
+from juntagrico.admins.forms.import_export_form import TranslatedSelectableFieldsExportForm
 from juntagrico.config import Config
-from juntagrico.resources.share import ShareResource
+from juntagrico.resources.share import ShareResource, TranslatedShareResource
 
 
 class ShareAdmin(ExportMixin, BaseAdmin):
@@ -20,7 +21,8 @@ class ShareAdmin(ExportMixin, BaseAdmin):
                      'issue_date', 'booking_date', 'cancelled_date', 'termination_date', 'payback_date']
     raw_id_fields = ['member']
     actions = ['mass_edit_share_dates']
-    resource_classes = [ShareResource]
+    resource_classes = [ShareResource, TranslatedShareResource]
+    export_form_class = TranslatedSelectableFieldsExportForm
 
     @admin.action(description=_('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl')))
     def mass_edit_share_dates(self, request, queryset):

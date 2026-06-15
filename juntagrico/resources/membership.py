@@ -1,11 +1,11 @@
+from import_export import resources
 from import_export.fields import Field
 
-from . import ModQuerysetModelResource
 from ..config import Config
 from ..entity.membership import Membership
 
 
-class MembershipResource(ModQuerysetModelResource):
+class MembershipResource(resources.ModelResource):
     account_first_name = Field('account__first_name')
     account_last_name = Field('account__last_name')
     account_email = Field('account__email')

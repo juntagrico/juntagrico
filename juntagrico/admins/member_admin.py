@@ -10,7 +10,13 @@ from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInline
 from juntagrico.config import Config
 from juntagrico.entity.membership import Membership
-from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea, MemberWithAssignmentsAndAreaResource
+from juntagrico.resources.member import (
+    MemberResource,
+    MemberAssignmentsPerArea,
+    MemberWithAssignmentsAndAreaResource,
+    TranslatedMemberResource,
+    TranslatedMemberWithAssignmentsAndAreaResource,
+)
 
 
 class MemberAdminForm(ModelForm):
@@ -49,7 +55,13 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
          ),
     ]
     actions = ['impersonate_job']
-    resource_classes = [MemberResource, MemberWithAssignmentsAndAreaResource, MemberAssignmentsPerArea]
+    resource_classes = [
+        MemberResource,
+        TranslatedMemberResource,
+        MemberWithAssignmentsAndAreaResource,
+        TranslatedMemberWithAssignmentsAndAreaResource,
+        MemberAssignmentsPerArea,
+    ]
 
     @admin.display(
         boolean=True,
