@@ -173,7 +173,7 @@ def create_external(request):
                    'agb': post_data['by_laws_accepted'],
                    'mobile_phone': '',
                    'birthday': '',
-                   'submit': 'Anmelden',
+                   'submit': 'Weiter zur Aboauswahl',
                    'comment': post_data['comment'] + '[External signup API]'
                    }
     signup_manager.set('main_member', main_member)
