@@ -1,20 +1,3 @@
-from import_export import resources
-
-
-class ModQuerysetModelResource(resources.ModelResource):
-    """
-    ModelResource with modifiable queryset
-    """
-    def update_queryset(self, queryset):
-        return queryset
-
-    def get_queryset(self):
-        return self.update_queryset(super().get_queryset())
-
-    def export(self, queryset=None, *args, **kwargs):
-        if queryset is not None:
-            queryset = self.update_queryset(queryset)
-        return super().export(queryset, *args, **kwargs)
 
 
 class DateRangeResourceMixin:
