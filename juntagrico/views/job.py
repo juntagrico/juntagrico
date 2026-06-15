@@ -307,6 +307,7 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     })
 
 
+@require_POST
 @login_required
 def add_assignment(request, job_id, form_class=AddAssignmentForm):
     job = get_object_or_404(Job, id=int(job_id))
@@ -316,12 +317,11 @@ def add_assignment(request, job_id, form_class=AddAssignmentForm):
             or request.user.has_perm('juntagrico.add_assignment')):
         raise PermissionDenied
 
-    if request.method == 'POST':
-        form = form_class(job, request.POST, editor=request.user.member)
-        if form.is_valid():
-            form.save()
-            messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
-                                                    _("Erfolgreich hinzugefügt")))
-        else:
-            messages.error(request, _('Hinzufügen fehlgeschlagen.'))
+    form = form_class(job, request.POST, editor=request.user.member)
+    if form.is_valid():
+        form.save()
+        messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
+                                                _("Erfolgreich hinzugefügt")))
+    else:
+        messages.error(request, _('Hinzufügen fehlgeschlagen.'))
     return redirect('job', job_id=job_id)
