@@ -62,6 +62,9 @@ version = {attr = "juntagrico.__version__"}
 select = ["E", "F", "B"]
 ignore = ["E501"]
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.coverage.run]
 plugins = ["django_coverage_plugin"]
 include = ["juntagrico/*", "juntagrico_legacy/*"]

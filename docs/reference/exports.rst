@@ -5,6 +5,18 @@ Exports
 
 Juntagrico uses `django_import_export <https://django-import-export.readthedocs.io/en/stable/>`_ to provide customizable data exports.
 
+Export Formats
+--------------
+
+All formats supported by `tablib <https://tablib.readthedocs.io/en/stable/formats.html>`_ can be used for export.
+Some formats have additional dependencies. Add these to you ``requirements.txt`` if you want to export in these formats:
+
+- xlsx: ``openpyxl>=2.6.0``
+- xls: ``xlwt``
+- ods: ``odfpy``
+- yaml: ``pyyaml``
+
+
 Add Export
 ----------
 

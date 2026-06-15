@@ -1,11 +1,11 @@
+from import_export import resources
 from import_export.fields import Field
 
-from . import ModQuerysetModelResource
 from ..config import Config
 from ..entity.share import Share
 
 
-class ShareResource(ModQuerysetModelResource):
+class ShareResource(resources.ModelResource):
     member_first_name = Field('member__first_name')
     member_last_name = Field('member__last_name')
     member_email = Field('member__email')
