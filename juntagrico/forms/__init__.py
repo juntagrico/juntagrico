@@ -188,7 +188,8 @@ class RegisterMemberForm(MemberBaseForm):
 
     text = {
         'confirm_read': gettext_lazy('Ich habe {documents} gelesen.'),
-        'and': gettext_lazy('und')
+        'and': gettext_lazy('und'),
+        'submit': gettext_lazy('Weiter'),
     }
 
     def __init__(self, *args, **kwargs):
@@ -203,7 +204,7 @@ class RegisterMemberForm(MemberBaseForm):
             *self.base_layout,
             *fields,
             FormActions(
-                Submit('submit', _('Anmelden'), css_class='btn-success'),
+                Submit('submit', self.text['submit'], css_class='btn-success'),
             )
         )
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
