@@ -257,6 +257,10 @@ def _template_assignment_changed(job, subject, template_name, **kwargs):
         ).send()
 
 
+def assignment_added(job, **kwargs):
+    _template_assignment_changed(job, _('Einsatzanmeldung'), 'added', **kwargs)
+
+
 def assignment_changed(job, **kwargs):
     _template_assignment_changed(job, _('Änderung der Einsatzanmeldung'), 'changed', **kwargs)
 

@@ -5,14 +5,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, Fieldset, HTML
 from django import forms
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import OuterRef, Exists
 from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
-from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django_select2.forms import ModelSelect2MultipleWidget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
@@ -20,6 +17,8 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
+from juntagrico.forms import InternalModelSelect2MultipleWidget
+from juntagrico.forms.account import MemberSelect2MultipleWidget
 from juntagrico.util.html import EmailHtmlParser
 
 
@@ -41,46 +40,14 @@ class MultipleFileInput(forms.FileInput):
         return super().media + Media(js=['juntagrico/js/forms/attachmentAppender.js'])
 
 
-class InternalModelSelect2MultipleWidget(ModelSelect2MultipleWidget):
-    def __init__(self, *args, **kwargs):
-        kwargs['data_view'] = 'internal-select2-view'
-        super().__init__(*args, **kwargs)
-
-
 class JobSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
     def label_from_instance(self, obj):
         return obj.get_label()
 
 
-class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
-    model = Member
-    search_fields = [
-        'first_name__icontains',
-        'last_name__icontains',
-        'email__icontains',
-    ]
-
-    def get_queryset(self):
-        # annotate if another member with the exact same name exists
-        return super().get_queryset().annotate(
-            duplicate=Exists(
-                Member.objects.exclude(pk=OuterRef('pk')).filter(
-                    first_name=OuterRef('first_name'),
-                    last_name=OuterRef('last_name')
-                )
-            )
-        )
-
-    def label_from_instance(self, obj):
-        label = super().label_from_instance(obj)
-        if getattr(obj, 'duplicate', False):
-            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
-        return label
-
-
 class BaseRecipientsForm(forms.Form):
     to_members = forms.ModelMultipleChoiceField(
-        Member.objects.active(), label=_('An diese Personen'), required=False, widget=MemberSelect2MultipleWidget
+        None, label=_('An diese Personen'), required=False, widget=MemberSelect2MultipleWidget
     )
     # TODO: the copy to self would ideally list the recipients
     #  and contain a link to open the form again with the same recipients.
@@ -100,6 +67,9 @@ class BaseRecipientsForm(forms.Form):
                     members |= Member.objects.filter(areas__in=areas)
                     members |= Member.objects.filter(assignment__job__in=Job.objects.in_areas(areas))
                 self.fields['to_members'].queryset = members.active().distinct()
+            else:
+                # must be defined here because "today" is evaluated dynamically in "active()"
+                self.fields['to_members'].queryset = Member.objects.active()
 
     def get_form_layout(self):
         return Fieldset(
@@ -142,7 +112,7 @@ class RecipientsForm(BaseRecipientsForm):
         )
     )
     to_jobs = forms.ModelMultipleChoiceField(
-        Job.objects.order_by_recent(), label=_('An alle in diesen Einsätzen'), required=False,
+        None, label=_('An alle in diesen Einsätzen'), required=False,
         widget=JobSelect2MultipleWidget(
             model=Job,
             search_fields=[
@@ -185,6 +155,9 @@ class RecipientsForm(BaseRecipientsForm):
                 self._set_field_queryset('to_areas', areas.order_by('name'))
             if 'to_jobs' in self.fields:
                 self._set_field_queryset('to_jobs', Job.objects.in_areas(areas).order_by_recent())
+        elif 'to_jobs' in self.fields:
+            # default qs: evaluate dynamically because today is used in order_by_recent
+            self._set_field_queryset('to_jobs', Job.objects.order_by_recent())
         if 'to_depots' in self.fields and depots is not None:
             self._set_field_queryset('to_depots', depots.order_by('id'))
 

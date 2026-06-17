@@ -184,11 +184,17 @@ class Command(BaseCommand):
                     count=1,
                     message='[Nachricht an Mitglied]'
                 )
+                print("*** member/assignment/added ***")
+                membernotification.assignment_added(member, **assignment_context)
+
                 print('*** member/assignment/changed ***')
                 membernotification.assignment_changed(member, **assignment_context)
 
                 print('*** member/assignment/removed ***')
                 membernotification.assignment_removed(member, **assignment_context)
+
+                print("*** admin/assignment/added ***")
+                adminnotification.assignment_added(**assignment_context)
 
                 print('*** admin/assignment/changed ***')
                 adminnotification.assignment_changed(**assignment_context)

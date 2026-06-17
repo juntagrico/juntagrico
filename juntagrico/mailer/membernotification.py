@@ -167,6 +167,16 @@ def job_unsubscribed(participant, job, count):
     ).continue_thread(job).send()
 
 
+def assignment_added(participant, **kwargs):
+    EmailBuilder(
+        participant,
+        _('Für Einsatz angemeldet'),
+        'juntagrico/mails/member/assignment/added.txt',
+        kwargs,
+        reply_to=[kwargs.get('editor').email]
+    ).start_thread(kwargs['job']).send()
+
+
 def assignment_changed(participant, **kwargs):
     EmailBuilder(
         participant,

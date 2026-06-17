@@ -5,6 +5,7 @@ from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
 from juntagrico.entity.jobs import Job, RecuringJob
+from juntagrico.forms.job import AddAssignmentForm
 
 register = template.Library()
 
@@ -34,6 +35,8 @@ def job_participant_list(user, job):
         'participants': participants,
         'can_contact': permissions.can_contact_member(),
         'can_edit_assignments': permissions.can_modify_assignments(),
+        'add_form': AddAssignmentForm(job) if permissions.can_add_assignments() else None,
+        'other_job_contacts': job.get_emails(get_member=True, exclude=[user.member.email]),
     }
 
 

@@ -2,6 +2,24 @@ from django.utils.translation import gettext_lazy as _
 from import_export import resources
 
 
+class ModQuerysetModelResource(resources.ModelResource):
+    """
+    ModelResource with modifiable queryset
+    DEPRECATED since juntagrico 2.0
+    """
+    def update_queryset(self, queryset):
+        return queryset
+
+    def get_queryset(self):
+        print('ModQuerysetModelResource is deprecated: Use normal resources.ModelResource and define filter_queryset instead.')
+        return self.update_queryset(super().get_queryset())
+
+    def export(self, queryset=None, *args, **kwargs):
+        if queryset is not None:
+            queryset = self.update_queryset(queryset)
+        return super().export(queryset, *args, **kwargs)
+
+
 class DateRangeResourceMixin:
     """
     Use in combination with DateRangeExportMixin on admin.
