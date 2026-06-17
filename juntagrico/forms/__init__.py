@@ -17,6 +17,7 @@ from django.utils.html import escape, format_html_join, format_html, strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _, gettext_lazy, ngettext_lazy
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
@@ -945,3 +946,17 @@ class BusinessYearForm(Form):
 
     def date_range(self):
         return get_business_date_range(int(self.cleaned_data.get('year')))
+
+
+class InternalModelSelect2Mixin:
+    def __init__(self, *args, **kwargs):
+        kwargs['data_view'] = 'internal-select2-view'
+        super().__init__(*args, **kwargs)
+
+
+class InternalModelSelect2Widget(InternalModelSelect2Mixin, ModelSelect2Widget):
+    pass
+
+
+class InternalModelSelect2MultipleWidget(InternalModelSelect2Mixin, ModelSelect2MultipleWidget):
+    pass

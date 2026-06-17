@@ -272,7 +272,7 @@ class Job(JuntagricoBasePoly):
         if self.infinite_slots:
             return -1
         if self.slots is not None:
-            return self.slots - self.occupied_slots
+            return max(0, self.slots - self.occupied_slots)
         return 0
 
     @admin.display(description=_('Plätze'), ordering='slots')
@@ -290,6 +290,14 @@ class Job(JuntagricoBasePoly):
     @property
     def occupied_slots(self):
         return self.assignment_set.count()
+
+    def get_multiplier(self):
+        unit = Config.assignment_unit()
+        if unit == 'ENTITY':
+            return self.multiplier
+        elif unit == 'HOURS':
+            return self.multiplier * self.duration
+        return 1
 
     @property
     def duration(self):
@@ -437,6 +445,9 @@ class CheckJobCapabilities:
 
     def can_modify_assignments(self):
         return self.user.has_perm('juntagrico.change_assignment') or self.is_assignment_coordinator
+
+    def can_add_assignments(self):
+        return self.user.has_perm('juntagrico.add_assignment') or self.is_assignment_coordinator
 
     def can_contact_member(self):
         return self.user.has_perm('juntagrico.can_send_mails') or self.access and self.access.can_contact_member
