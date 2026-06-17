@@ -261,7 +261,7 @@ class RegisterMemberForm(MemberBaseForm):
             'comment',
             'agb',
             FormActions(
-                Submit('submit', _('Anmelden'), css_class='btn-success'),
+                Submit('submit', _('Weiter'), css_class='btn-success'),
             )
         )
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
