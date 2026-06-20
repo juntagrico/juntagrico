@@ -130,8 +130,12 @@ class SignupManager(SessionManager):
 
     def required_shares(self):
         required = self.required_shares_details()
+        if Config.cumulative_shares_for_membership():
+            total = max(required['for_membership'] + required['for_subscription'], required['for_signup'])
+        else:
+            total = max(required.values())
         return {
-            'total': max(required.values()),
+            'total': total,
             'for_primary': max(required['for_membership'], required['for_signup']),
         }
 

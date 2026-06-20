@@ -142,6 +142,7 @@ class Config:
         {
             'enable': True,
             'required_shares': 1,
+            'cumulative_shares': False,
             'required_on_signup': True,
             'fee': 0,
         }
@@ -150,6 +151,10 @@ class Config:
     @classmethod
     def enable_membership(cls):
         return cls.membership('enable')
+
+    @classmethod
+    def cumulative_shares_for_membership(cls):
+        return cls.membership('enable') and cls.membership('cumulative_shares') and cls.membership('required_shares') > 0
 
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)

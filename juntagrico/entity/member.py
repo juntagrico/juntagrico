@@ -9,6 +9,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
+from juntagrico.entity.share import Share
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
@@ -117,6 +118,8 @@ class Member(JuntagricoBaseModel):
     @property
     def shares(self):
         """ forward compatibility """
+        if not self.pk:
+            Share.objects.none()
         return self.share_set
 
     @property
@@ -168,9 +171,24 @@ class Member(JuntagricoBaseModel):
         return self.usable_shares.count()
 
     @property
+    def usable_shares_for_sub_count(self):
+        usable = self.shares.usable().count()
+        if Config.cumulative_shares_for_membership() and self.memberships.not_canceled().exists():
+            usable -= Config.membership('required_shares')
+        return usable
+
+    @property
+    def usable_shares_for_membership_count(self):
+        usable = self.shares.usable().count()
+        if Config.cumulative_shares_for_membership():
+            usable -= self.required_shares_count()
+        return usable
+
+    @property
     def required_shares_count(self):
+        """ shares required for subscription"""
         # calculate required shares backwards to account for shared subscriptions
-        not_canceled_share_count = self.usable_shares_count
+        not_canceled_share_count = self.usable_shares_for_sub_count
         overflow_list = [not_canceled_share_count]
         if self.subscription_future is not None:
             overflow_list.append(self.subscription_future.share_overflow)
@@ -181,10 +199,14 @@ class Member(JuntagricoBaseModel):
     @property
     def cancellable_shares_count(self):
         is_member = Config.membership('enable') and self.memberships.not_canceled().exists()
-        required_shares = max(
+        if Config.cumulative_shares_for_membership():
+            aggregate = sum
+        else:
+            aggregate = max
+        required_shares = aggregate((
             self.required_shares_count,
             Config.membership('required_shares') if is_member else 0,
-        )
+        ))
         return self.shares.usable().count() - required_shares
 
     @property
@@ -226,6 +248,7 @@ class Member(JuntagricoBaseModel):
             subscription.save()
 
     def leave_subscription(self, subscription=None, changedate=None):
+        print('Member.leave_subscription is deprecated: Use SubscriptionMembership.leave instead')
         subscription = subscription or self.subscription_current
         if subscription == self.subscription_current:
             del self.subscription_current  # clear cache

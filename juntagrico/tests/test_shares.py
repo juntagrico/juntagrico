@@ -3,7 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
 from django.core import mail
-from django.test import tag
+from django.test import tag, override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -213,3 +213,13 @@ class ShareCancelTests(ShareTestCase):
         )
         self.member.refresh_from_db()
         self.assertEqual(before, self.member.usable_shares.count())
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CumulativeShareTests(ShareTests):
+    pass
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CumulativeShareCancelTests(ShareCancelTests):
+    pass

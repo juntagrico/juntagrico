@@ -440,6 +440,7 @@ MEMBERSHIP
   The setting takes a dictionary of key-value pairs:
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
+    - [New since version 2.1] ``'cumulative_shares'``: If true shares count either for membership or for subscription, not both (Bool)
     - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
     - ``'fee'``: yearly membership fee (Float, Integer or String)
 
@@ -450,6 +451,7 @@ MEMBERSHIP
         {
             'enable': True,
             'required_shares': 1,
+            'cumulative_shares': False,
             'required_on_signup': True,
             'fee': 0,
         }

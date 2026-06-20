@@ -523,7 +523,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             )
         # check if members in subscription have sufficient shares
         if Config.enable_shares():
-            available_shares = self.subscription.all_shares
+            available_shares = self.subscription.available_shares
             new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
@@ -594,7 +594,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             sub_type = SubscriptionType.objects.get(id=selected)
             # check if members in subscription have sufficient shares
             if Config.enable_shares():
-                additional_available_shares = self.part.subscription.all_shares - self.part.subscription.required_shares
+                additional_available_shares = self.part.subscription.available_shares - self.part.subscription.required_shares
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
                     share_error_message = mark_safe(

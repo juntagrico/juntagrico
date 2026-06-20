@@ -264,7 +264,11 @@ def cancel_subscription(request, subscription_id, form_class=CancellationForm):
 def leave_subscription(request, subscription_id, form_class=LeaveForm):
     member = request.user.member
     subscription_membership = member.subscriptionmembership_set.get(subscription_id=subscription_id)
-    share_error = Config.enable_shares() and subscription_membership.subscription.share_overflow - member.usable_shares_count < 0
+    share_error = Config.enable_shares() and (
+        subscription_membership.subscription.share_overflow
+        - member.usable_shares_for_sub_count
+        < 0
+    )
     is_primary = subscription_membership.subscription.primary_member.id == member.id
     if share_error or is_primary:
         return redirect('subscription-single', subscription_id=subscription_id)
