@@ -181,7 +181,7 @@ class Member(JuntagricoBaseModel):
     def usable_shares_for_membership_count(self):
         usable = self.shares.usable().count()
         if Config.cumulative_shares_for_membership():
-            usable -= self.required_shares_count()
+            usable -= self.required_shares_count
         return usable
 
     @property
