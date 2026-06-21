@@ -1,6 +1,8 @@
+from django.core import mail
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.subs import SubscriptionPart
 
 
 class ManageSubPendingListTests(JuntagricoTestCase):
@@ -26,6 +28,7 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.assertTrue(part.active)
         # check that members of sub2 where added to area
         self.assertQuerySetEqual(self.area.members.filter(pk__in=self.sub2.current_members), self.sub2.current_members)
+        self.assertEqual(len(mail.outbox), 1)
 
     def testSubscriptionDeactivate(self):
         self.assertGet(reverse('parts-apply'), code=302)
@@ -36,6 +39,23 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         # check that part is deactivated
         part.refresh_from_db()
         self.assertFalse(part.active)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def testSubscriptionChange(self):
+        self.assertGet(reverse('parts-apply'), code=302)
+        deactivate_part = self.sub.parts.first()
+        activate_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        deactivate_part.cancel()
+        self.assertTrue(deactivate_part.active)
+        self.assertFalse(activate_part.active)
+        # test change
+        self.assertPost(reverse('parts-apply'), {'parts[]': [deactivate_part.id, activate_part.id]}, code=302)
+        # check that part is deactivated
+        deactivate_part.refresh_from_db()
+        activate_part.refresh_from_db()
+        self.assertFalse(deactivate_part.active)
+        self.assertTrue(activate_part.active)
+        self.assertEqual(len(mail.outbox), 1)  # 1 combined notification email
 
 
 class ManageSubRecentListTests(JuntagricoTestCase):
