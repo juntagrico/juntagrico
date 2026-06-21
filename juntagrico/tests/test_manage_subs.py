@@ -1,4 +1,5 @@
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -6,6 +7,9 @@ from ..entity.subs import SubscriptionPart
 
 
 class ManageSubPendingListTests(JuntagricoTestCase):
+    activation_notifications = 1
+    deactivation_notifications = 1
+
     def testSubscriptionPendingList(self):
         response = self.assertGet(reverse('manage-sub-pending'))
         # check that list is correct
@@ -28,7 +32,7 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.assertTrue(part.active)
         # check that members of sub2 where added to area
         self.assertQuerySetEqual(self.area.members.filter(pk__in=self.sub2.current_members), self.sub2.current_members)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), self.activation_notifications)
 
     def testSubscriptionDeactivate(self):
         self.assertGet(reverse('parts-apply'), code=302)
@@ -39,7 +43,7 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         # check that part is deactivated
         part.refresh_from_db()
         self.assertFalse(part.active)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), self.deactivation_notifications)
 
     def testSubscriptionChange(self):
         self.assertGet(reverse('parts-apply'), code=302)
@@ -56,6 +60,24 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.assertFalse(deactivate_part.active)
         self.assertTrue(activate_part.active)
         self.assertEqual(len(mail.outbox), 1)  # 1 combined notification email
+
+
+class ManageSubPendingListChangeDateTests(ManageSubPendingListTests):
+    def setUp(self):
+        super().setUp()
+        session = self.client.session
+        session['changedate'] = '2026-06-21'
+        session.save()
+
+
+@override_settings(DISABLE_NOTIFICATIONS=['subscription_activated'])
+class ManageSubPendingListNoActivationNotificationTests(ManageSubPendingListTests):
+    activation_notifications = 0
+
+
+@override_settings(DISABLE_NOTIFICATIONS=['subscription_deactivated'])
+class ManageSubPendingListNoDeactivationNotificationTests(ManageSubPendingListTests):
+    deactivation_notifications = 0
 
 
 class ManageSubRecentListTests(JuntagricoTestCase):
