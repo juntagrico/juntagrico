@@ -27,8 +27,9 @@ class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
 
 
 @requires_permission_to_contact
+@csrf_exempt
 def count_recipients(request, form=None):
-    form = form or RecipientsForm(request.user.member, data=request.GET)
+    form = form or RecipientsForm(request.user.member, data=request.GET or request.POST)
     if form.is_valid():
         if count := form.count_recipients():
             return HttpResponse(ngettext(
@@ -40,20 +41,23 @@ def count_recipients(request, form=None):
 
 
 @requires_permission_to_contact
+@csrf_exempt
 def count_depot_recipients(request, depot_id):
-    form = DepotRecipientsForm(request.user.member, depot_id, data=request.GET)
+    form = DepotRecipientsForm(request.user.member, depot_id, data=request.GET or request.POST)
     return count_recipients(request, form)
 
 
 @requires_permission_to_contact
+@csrf_exempt
 def count_area_recipients(request, area_id):
-    form = AreaRecipientsForm(request.user.member, area_id, data=request.GET)
+    form = AreaRecipientsForm(request.user.member, area_id, data=request.GET or request.POST)
     return count_recipients(request, form)
 
 
 @requires_permission_to_contact
+@csrf_exempt
 def count_job_recipients(request, job_id):
-    form = JobRecipientsForm(request.user.member, job_id, data=request.GET)
+    form = JobRecipientsForm(request.user.member, job_id, data=request.GET or request.POST)
     return count_recipients(request, form)
 
 

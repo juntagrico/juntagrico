@@ -4,11 +4,13 @@ from import_export import resources
 class ModQuerysetModelResource(resources.ModelResource):
     """
     ModelResource with modifiable queryset
+    DEPRECATED since juntagrico 2.0
     """
     def update_queryset(self, queryset):
         return queryset
 
     def get_queryset(self):
+        print('ModQuerysetModelResource is deprecated: Use normal resources.ModelResource and define filter_queryset instead.')
         return self.update_queryset(super().get_queryset())
 
     def export(self, queryset=None, *args, **kwargs):

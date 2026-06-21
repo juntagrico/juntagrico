@@ -39,6 +39,10 @@ class AreaMailerTests(JuntagricoTestCaseWithShares):
             'to_area': 'on'
         })
         self.assertEqual(b'An 4 Personen senden', response.content)
+        response = self.assertPost(reverse('email-count-area-recipients', args=[self.area.id]), data={
+            'to_members': [self.member.id, self.member3.id]
+        })
+        self.assertEqual(b'An 2 Personen senden', response.content)
 
 
 class AreaCoordinatorMailerTests(AreaMailerTests):
@@ -72,6 +76,10 @@ class JobMailerTests(JuntagricoTestCaseWithShares):
     def testRecipientCounter(self):
         response = self.assertGet(reverse('email-count-job-recipients', args=[self.job2.id]), data={
             'to_job': 'on'
+        })
+        self.assertEqual(b'An 1 Person senden', response.content)
+        response = self.assertPost(reverse('email-count-job-recipients', args=[self.job2.id]), data={
+            'to_members': [self.member.id]
         })
         self.assertEqual(b'An 1 Person senden', response.content)
 
@@ -109,6 +117,10 @@ class DepotMailerTests(JuntagricoTestCaseWithShares):
             'to_depot': 'on'
         })
         self.assertEqual(b'An 4 Personen senden', response.content)
+        response = self.assertPost(reverse('email-count-depot-recipients', args=[self.depot.id]), data={
+            'to_members': [self.member.id, self.member3.id]
+        })
+        self.assertEqual(b'An 2 Personen senden', response.content)
 
 
 class DepotCoordinatorMailerTests(DepotMailerTests):
@@ -162,6 +174,16 @@ class MemberMailerTests(JuntagricoTestCaseWithShares):
         self.assertFalse(self.area_admin_contact.can_contact(self.member2))
         # depot admin can't contact members outside of depot
         self.assertFalse(self.depot_coordinator.can_contact(self.member2))
+
+    def testRecipientCounter(self):
+        response = self.assertGet(reverse('email-count-recipients'), data={
+            'to_members': [self.member.id, self.member3.id]
+        })
+        self.assertEqual(b'An 2 Personen senden', response.content)
+        response = self.assertPost(reverse('email-count-recipients'), data={
+            'to_members': [self.member2.id, self.member4.id, self.member5.id]
+        })
+        self.assertEqual(b'An 3 Personen senden', response.content)
 
 
 class MailerTests(JuntagricoTestCaseWithShares):

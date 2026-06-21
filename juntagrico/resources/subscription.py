@@ -1,12 +1,13 @@
+from import_export import resources
 from import_export.fields import Field
 from import_export.widgets import DecimalWidget, IntegerWidget
 
-from . import ModQuerysetModelResource, DateRangeResourceMixin
+from . import DateRangeResourceMixin
 from ..config import Config
 from ..entity.subs import Subscription, SubscriptionPart
 
 
-class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
+class SubscriptionResource(DateRangeResourceMixin, resources.ModelResource):
     content = Field('size')
 
     status = Field('state_text')
@@ -28,7 +29,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
     core_assignments_progress = Field('core_assignments_progress', widget=DecimalWidget(coerce_to_string=False))
     price = Field('price', widget=DecimalWidget())
 
-    def update_queryset(self, queryset):
+    def filter_export(self, queryset, **kwargs):
         return queryset.annotate_assignments_progress(self.start_date, self.end_date)
 
     def dehydrate_co_members(self, subscription):
@@ -48,12 +49,12 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
         name = Config.vocabulary('subscription_pl')
 
 
-class SubscriptionPartResource(ModQuerysetModelResource):
+class SubscriptionPartResource(resources.ModelResource):
     type_name = Field('type__name')
     subscription_id = Field('subscription__pk', widget=IntegerWidget(coerce_to_string=False))
     is_extra = Field('type__is_extra')
 
-    def update_queryset(self, queryset):
+    def filter_export(self, queryset, **kwargs):
         return SubscriptionPart.objects.filter(subscription__in=queryset)
 
     class Meta:
