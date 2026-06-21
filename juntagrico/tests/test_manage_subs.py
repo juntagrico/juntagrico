@@ -15,13 +15,14 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         # check that list is correct
         objects = response.context['object_list']
         self.assertEqual(set(objects.order_by('id')), {self.canceled_sub, self.sub2})
+
+    def testSubscriptionActivateNoAccess(self):
         # member2 has no access
         self.assertGet(reverse('manage-sub-pending'), member=self.member2, code=403)
+        self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
 
     def testSubscriptionActivate(self):
         self.assertGet(reverse('parts-apply'), code=302)
-        # member2 has no access
-        self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
         self.assertFalse(self.sub2.parts.first().active)
         # test activation
         self.assertFalse(self.area.members.filter(pk__in=self.sub2.current_members).exists())
