@@ -190,8 +190,9 @@ class Member(JuntagricoBaseModel):
         # calculate required shares backwards to account for shared subscriptions
         not_canceled_share_count = self.usable_shares_for_sub_count
         overflow_list = [not_canceled_share_count]
-        if self.subscription_future is not None:
-            overflow_list.append(self.subscription_future.share_overflow)
+        future_subscription = self.subscription_future
+        if future_subscription is not None and future_subscription.waiting:
+            overflow_list.append(future_subscription.share_overflow)
         if self.subscription_current is not None:
             overflow_list.append(self.subscription_current.share_overflow)
         return not_canceled_share_count - min(overflow_list)

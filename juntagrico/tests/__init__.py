@@ -77,14 +77,15 @@ class JuntagricoTestCase(TestCase):
         member_data.update(kwargs)
         member = Member.objects.create(**member_data)
         if with_membership:
-            membership_data = {
-                'activation_date': '2026-03-12',
-                'number': 1
-            }
-            if isinstance(with_membership, dict):
-                membership_data |= with_membership
-            Membership.objects.create(account=member, **membership_data)
+            args = with_membership if isinstance(with_membership, dict) else {}
+            JuntagricoTestCase.create_membership(member, **args)
         return member
+
+    @staticmethod
+    def create_membership(account, **kwargs):
+        membership_data = {'activation_date': '2026-03-12', 'number': 1}
+        membership_data |= kwargs
+        return Membership.objects.create(account=account, **membership_data)
 
     @staticmethod
     def create_paid_share(member, **kwargs):
