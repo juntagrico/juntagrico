@@ -244,6 +244,14 @@ class Subscription(Billable, SimpleStateModel):
             self.save()
             depot_change_confirmed.send(Subscription, instance=self)
 
+    def deactivate(self, date=None):
+        if self.primary_member:
+            # can't deactivate sub before current primary member joined it.
+            join_date = self.subscriptionmembership_set.get(member=self.primary_member).join_date
+            if join_date and (not date or date < join_date):
+                date = join_date
+        super().deactivate(date)
+
     def cancel(self, date=None, end_date=None, message=None):
         self.end_date = end_date
         super().cancel(date)

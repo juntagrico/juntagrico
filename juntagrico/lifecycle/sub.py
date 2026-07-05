@@ -63,6 +63,9 @@ def handle_sub_deactivated(sender, instance, **kwargs):
         for part in instance.parts.all():
             part.deactivate(change_date)
         for sub_membership in instance.subscriptionmembership_set.all():
+            if sub_membership.member == instance.primary_member:
+                # don't delete current primary member
+                sub_membership.leave(max(change_date, sub_membership.join_date))
             sub_membership.leave(change_date)
 
 

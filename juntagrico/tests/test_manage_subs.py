@@ -48,9 +48,8 @@ class ManageSubPendingListTests(JuntagricoTestCase):
 
     def testSubscriptionChange(self):
         self.assertGet(reverse('parts-apply'), code=302)
-        deactivate_part = self.sub.parts.first()
-        activate_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
-        deactivate_part.cancel()
+        deactivate_part = self.canceled_sub.parts.first()
+        activate_part = SubscriptionPart.objects.create(subscription=self.canceled_sub, type=self.sub_type)
         self.assertTrue(deactivate_part.active)
         self.assertFalse(activate_part.active)
         # test change
