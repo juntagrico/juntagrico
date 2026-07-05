@@ -86,6 +86,7 @@ class Config:
             'this_subscription_acc': v_format(_('dieses {subscription}'), 'subscription'),
             'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
             'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
+            'your_subscription_dat': v_format(_('deinem {subscription}'), 'subscription'),
             'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
 
         }
@@ -334,6 +335,8 @@ class Config:
             'job_unsubscribed',
             'membership_activated',
             'membership_deactivated',
+            'subscription_activated',
+            'subscription_deactivated',
         ] + [
             # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
             FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
