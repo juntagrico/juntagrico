@@ -199,6 +199,8 @@ class CancellationForm(forms.ModelForm):
         if Config.enable_shares() and 'shares' in self.fields:
             usable_shares = self.usable_shares.count()
             remaining_shares = usable_shares - cleaned_data.get('shares', 0)
+
+            required_for_subscription = 0
             if self.primary_subscriptions or self.co_memberships:
                 required_for_subscription = max(
                     *(
@@ -213,6 +215,29 @@ class CancellationForm(forms.ModelForm):
                     ),
                     0, 0
                 )
+
+            required_for_membership = 0
+            if Config.membership('enable') and cleaned_data.get('membership'):
+                required_for_membership = Config.membership('required_shares')
+            
+            if Config.cumulative_shares_for_membership():
+                total_required = required_for_subscription + required_for_membership
+                if remaining_shares < total_required:
+                    self.add_error(
+                        'shares',
+                        ngettext(
+                            'Es wird noch {num} {share} für {your_subscription_acc} und {your_membership_acc} benötigt.',
+                            'Es werden noch {num} {shares} für {your_subscription_acc} und {your_membership_acc} benötigt.',
+                            total_required
+                        ).format(
+                            num=total_required,
+                            your_subscription_acc=Config.vocabulary('your_subscription_acc'),
+                            your_membership_acc=Config.vocabulary('your_membership_acc'),
+                            share=Config.vocabulary('share'),
+                            shares=Config.vocabulary('share_pl'),
+                        )
+                    )
+            else:
                 if remaining_shares < required_for_subscription:
                     self.add_error(
                         'shares',
@@ -227,8 +252,6 @@ class CancellationForm(forms.ModelForm):
                             shares=Config.vocabulary('share_pl'),
                         )
                     )
-            if Config.membership('enable') and cleaned_data.get('membership'):
-                required_for_membership = Config.membership('required_shares')
                 if remaining_shares < required_for_membership:
                     self.add_error(
                         'shares',

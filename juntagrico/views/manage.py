@@ -347,19 +347,37 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
 @using_change_date
 def parts_apply(request, change_date):
     parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    activated = []
+    deactivated = []
     with transaction.atomic():
+        possibly_empty_subs = set()
         for part in parts:
             if part.activation_date is None and part.deactivation_date is None:
+                activation_date = change_date
                 if part.subscription.activation_date is None:
                     # automatically activate subscription, but don't activate all parts
                     part.subscription.__skip_part_activation__ = True
                     part.subscription.activate(change_date)
-                part.activate(change_date)
+                elif activation_date is None or activation_date < part.subscription.activation_date:
+                    # activate part, but not earlier than subscription was activated
+                    activation_date = part.subscription.activation_date
+                part.activate(activation_date)
+                activated.append(part)
             if part.cancellation_date is not None:
                 part.deactivate(change_date)
-                # deactivate entire subscription, if this was the last part
-                if not part.subscription.parts.waiting_or_active(change_date).exists():
-                    part.subscription.deactivate(change_date)
+                deactivated.append(part)
+                possibly_empty_subs.add(part.subscription)
+        # deactivate entire subscription, if the last part was deactivated
+        for subscription in possibly_empty_subs:
+            if not subscription.parts.waiting_or_active(change_date).exists():
+                subscription.deactivate(change_date)
+    # send notifications
+    if activated and deactivated:
+        membernotification.subscription_changed(activated, deactivated, change_date)
+    elif activated:
+        membernotification.subscription_activated(activated, change_date)
+    elif deactivated:
+        membernotification.subscription_deactivated(deactivated, change_date)
     return return_to_previous_location(request)
 
 

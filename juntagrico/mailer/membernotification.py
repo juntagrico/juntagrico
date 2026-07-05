@@ -77,6 +77,52 @@ def membership_deactivated(membership):
         ).send()
 
 
+def subscription_changed(activated_parts, deactivated_parts, change_date=None):
+    if Config.notifications('subscription_activated') or Config.notifications('subscription_deactivated'):
+        recipient = activated_parts[0].subscription.primary_member
+        EmailBuilder(
+            recipient,
+            _('{subscription} geändert').format(subscription=Config.vocabulary('subscription')),
+            'juntagrico/mails/member/subscription/changed.txt',
+            {
+                'activated_parts': activated_parts,
+                'deactivated_parts': deactivated_parts,
+                'change_date': change_date,
+            },
+            from_email='for_subscriptions',
+        ).send()
+
+
+def subscription_activated(activated_parts, change_date=None):
+    if Config.notifications('subscription_activated'):
+        recipient = activated_parts[0].subscription.primary_member
+        EmailBuilder(
+            recipient,
+            _('{subscription} aktiviert').format(subscription=Config.vocabulary('subscription')),
+            'juntagrico/mails/member/subscription/activated.txt',
+            {
+                'activated_parts': activated_parts,
+                'change_date': change_date,
+            },
+            from_email='for_subscriptions',
+        ).send()
+
+
+def subscription_deactivated(deactivated_parts, change_date=None):
+    if Config.notifications('subscription_deactivated'):
+        recipient = deactivated_parts[0].subscription.primary_member
+        EmailBuilder(
+            recipient,
+            _('{subscription} deaktiviert').format(subscription=Config.vocabulary('subscription')),
+            'juntagrico/mails/member/subscription/deactivated.txt',
+            {
+                'deactivated_parts': deactivated_parts,
+                'change_date': change_date,
+            },
+            from_email='for_subscriptions',
+        ).send()
+
+
 def depot_changed(subscription):
     EmailBuilder(
         subscription.current_members,

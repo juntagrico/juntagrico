@@ -158,6 +158,11 @@ class MembershipTests(JuntagricoTestCase):
             self.assertEqual(member.inactive, result, f'{member} {member.email}')
 
 
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class MembershipWithCumulativeSharesTest(MembershipTests):
+    pass
+
+
 class MembershipAdminTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):

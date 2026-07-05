@@ -73,6 +73,8 @@ class SimpleStateModel(models.Model):
         self.activation_date = self.activation_date or date  # allows immediate deactivation
         if not self.cancellation_date:
             self.cancellation_date = today  # cancel immediately
+        if date < self.activation_date:  # can't deactivate before activations
+            date = self.activation_date
         self.deactivation_date = self.deactivation_date or date
         self.save()
 

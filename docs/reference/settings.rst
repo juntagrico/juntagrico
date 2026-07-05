@@ -440,6 +440,7 @@ MEMBERSHIP
   The setting takes a dictionary of key-value pairs:
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
+    - [New since version 2.1] ``'cumulative_shares'``: If true shares count either for membership or for subscription, not both (Bool)
     - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
     - ``'fee'``: yearly membership fee (Float, Integer or String)
 
@@ -450,6 +451,7 @@ MEMBERSHIP
         {
             'enable': True,
             'required_shares': 1,
+            'cumulative_shares': False,
             'required_on_signup': True,
             'fee': 0,
         }
@@ -758,6 +760,7 @@ VOCABULARY
         'this_subscription_acc': 'dieses Abo',  # für ...
         'this_subscription_dat': 'diesem Abo',  # von ...
         'your_subscription_acc': 'dein Abo',  # für ...
+        'your_subscription_dat': 'deinem Abo',  # von ...
         'with_active_subscription': 'mit aktivem Abo',
         # co-member
         'co_member' : 'Mitabonnent',
@@ -1012,9 +1015,11 @@ DISABLE_NOTIFICATIONS
   - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
   - `'membership_activated'`: Don't notify new members when their membership is activated.
   - `'membership_deactivated'`: Don't notify leaving members when their membership is deactivated.
+  - `'subscription_activated'`: Don't notify members when their subscription (parts) are activated.
+  - `'subscription_deactivated'`: Don't notify members when their subscription (parts) are deactivated.
 
   .. note::
-    Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
+    Notifications on job subscription are always sent, when the member leaves a message, because the message is not stored outside of the email.
 
   default value:
 

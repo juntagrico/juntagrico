@@ -108,6 +108,15 @@ class Command(BaseCommand):
                 print('*** mails/member/co_member_left_subscription.txt (m_left_subscription) ***')
                 membernotification.co_member_left_subscription(member, co_member, _('[Nachricht des Mitglieds]'))
 
+                print('*** mails/member/subscription/activated.txt ***')
+                membernotification.subscription_activated(future_parts)
+
+                print('*** mails/member/subscription/deactivated.txt ***')
+                membernotification.subscription_deactivated([canceled_part])
+
+                print('*** mails/member/subscription/changed.txt ***')
+                membernotification.subscription_changed(future_parts, [canceled_part])
+
             if 'share' in selected and Config.enable_shares():
                 print('*** s_created ***')
                 membernotification.shares_created(member, shares)

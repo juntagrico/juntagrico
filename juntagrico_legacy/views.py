@@ -249,7 +249,7 @@ def subscription(request, subscription_id=None):
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= temporal.next_cancelation_date():
             end_date = temporal.end_of_business_year()
-        asc = member.usable_shares_count
+        asc = member.usable_shares_for_sub_count
         share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
         can_leave = member.active_shares_count > 0 and not share_error and not primary

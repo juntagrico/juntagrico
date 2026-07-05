@@ -12,6 +12,8 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.membership import Membership
+from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import adminnotification
@@ -152,7 +154,20 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def all_shares(self):
+        print('Subscription.all_shares is deprecated: Use available_shares instead')
         return ShareDao.all_shares_subscription(self).count()
+
+    @property
+    def available_shares(self):
+        """amount of shares dedicated to subscription"""
+        current_members = self.current_members
+        share_count = Share.objects.filter(member__in=current_members).usable().count()
+        if Config.cumulative_shares_for_membership():
+            # if cumulative, subtract shares that are needed for membership
+            share_count -= Membership.objects.filter(
+                account__in=current_members
+            ).not_canceled().count() * Config.membership('required_shares')
+        return share_count
 
     @property
     def paid_shares(self):
@@ -160,7 +175,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def share_overflow(self):
-        return self.all_shares - self.required_shares
+        return self.available_shares - self.required_shares
 
     @property
     def required_shares(self):
@@ -228,6 +243,14 @@ class Subscription(Billable, SimpleStateModel):
             self.future_depot = None
             self.save()
             depot_change_confirmed.send(Subscription, instance=self)
+
+    def deactivate(self, date=None):
+        if self.primary_member:
+            # can't deactivate sub before current primary member joined it.
+            join_date = self.subscriptionmembership_set.get(member=self.primary_member).join_date
+            if join_date and (not date or date < join_date):
+                date = join_date
+        super().deactivate(date)
 
     def cancel(self, date=None, end_date=None, message=None):
         self.end_date = end_date
