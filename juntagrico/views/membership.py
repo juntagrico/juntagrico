@@ -12,7 +12,7 @@ def create(request):
     if Config.enable_shares():
         form_class = CreateMembershipWithSharesForm.create(
             Config.membership('required_shares'),
-            account.usable_shares.count()
+            account.usable_shares_for_membership_count
         )
     else:
         form_class = CreateMembershipForm

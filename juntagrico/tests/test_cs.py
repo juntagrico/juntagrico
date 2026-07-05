@@ -12,6 +12,8 @@ from ..config import Config
 
 
 class CreateSubscriptionTests(JuntagricoTestCase):
+    share_order_count = 1
+    
     @staticmethod
     def newMemberData(email='test@user.com'):
         return {
@@ -111,7 +113,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             response = self.client.post(
                 reverse('cs-shares'),
                 {
-                    'of_member': 1,
+                    'of_member': self.share_order_count,
                     'of_co_member[0]': 0,
                 }
             )
@@ -126,7 +128,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=member_email).count(), 1)
         if settings.ENABLE_SHARES:
-            self.assertEqual(Share.objects.filter(member__email=member_email).count(), initial_share_count + 1)
+            self.assertEqual(
+                Share.objects.filter(member__email=member_email).count(),
+                initial_share_count + self.share_order_count,
+            )
         subscription = Subscription.objects.filter(primary_member__email=member_email).first()
         self.assertNotEqual(subscription, None)
         # look for comment in admin notification
@@ -148,7 +153,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         if with_co_member:
             mail_count += 2  # Welcome to co-member & admin notification
         if settings.ENABLE_SHARES:
-            mail_count += 2  # share email & admin notification
+            mail_count += 1 + self.share_order_count  # share email & admin notification(s)
             # no shares are ordered for co-member, thus no more emails
         self.assertEqual(len(mail.outbox), mail_count)
 
@@ -198,17 +203,27 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, True, 'test comment', 3 if settings.ENABLE_SHARES else 1)
+        self.commonAddSub(
+            self.member4.email,
+            True,
+            'test comment',
+            (2 + self.share_order_count) if settings.ENABLE_SHARES else 1,
+        )
         # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
-        self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
+        self.assertEqual(len(mail.outbox), (4 + self.share_order_count) if settings.ENABLE_SHARES else 3)
 
     def testAddSubWithoutComember(self):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, False, 'test comment', 2 if settings.ENABLE_SHARES else 0)
+        self.commonAddSub(
+            self.member4.email,
+            False,
+            'test comment',
+            (1 + self.share_order_count) if settings.ENABLE_SHARES else 0,
+        )
         # share mails (if enabled) for member & admin + 1 admin notification on new subscription
-        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 1)
+        self.assertEqual(len(mail.outbox), (2 + self.share_order_count) if settings.ENABLE_SHARES else 1)
 
     def testSignupWithComment(self):
         self.commonSignupTest(False, True)
@@ -294,7 +309,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             response = self.client.post(
                 reverse('cs-shares'),
                 {
-                    'of_member': 1,
+                    'of_member': self.share_order_count,
                     'of_co_member[0]': 1,
                 }
             )
@@ -367,3 +382,8 @@ class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
 @override_settings(MEMBERSHIP={'enable': False})
 class CreateSubscriptionWithoutMembershipsTests(CreateSubscriptionTests):
     pass
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CreateSubscriptionWithCumulativeSharesTests(CreateSubscriptionTests):
+    share_order_count = 2
