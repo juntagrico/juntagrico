@@ -264,7 +264,11 @@ def cancel_subscription(request, subscription_id, form_class=CancellationForm):
 def leave_subscription(request, subscription_id, form_class=LeaveForm):
     member = request.user.member
     subscription_membership = member.subscriptionmembership_set.get(subscription_id=subscription_id)
-    share_error = Config.enable_shares() and subscription_membership.subscription.share_overflow - member.usable_shares_count < 0
+    share_error = Config.enable_shares() and (
+        subscription_membership.subscription.share_overflow
+        - member.usable_shares_for_sub_count
+        < 0
+    )
     is_primary = subscription_membership.subscription.primary_member.id == member.id
     if share_error or is_primary:
         return redirect('subscription-single', subscription_id=subscription_id)
@@ -320,11 +324,16 @@ def manage_shares(request):
     current_year = datetime.date.today().year
     if active_share_years and current_year in active_share_years:
         active_share_years.remove(current_year)
+
+    total_required = member.required_shares_count
+    required_for_membership = Config.membership('required_shares') if is_member else 0
+    if Config.cumulative_shares_for_membership():
+        total_required += required_for_membership
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required_for_membership': Config.membership('required_shares') if is_member else 0,
-        'required_for_subscription': member.required_shares_count,
+        'required_for_membership': required_for_membership,
+        'required_for_subscription': total_required,
         'ibanempty': not member.iban,
         'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
