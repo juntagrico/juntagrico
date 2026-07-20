@@ -89,6 +89,13 @@ $(function () {
         return false
     })
 
+    // open modal to write comment
+    $('.add-comment').on('click', function (event) {
+        let modal = $('#add_comment_modal')
+        modal.modal('show')
+        return false
+    })
+
     // apply suggested job types on click
     $('.suggested-job-type').on('click', function (event) {
         let suggestion = $(this)

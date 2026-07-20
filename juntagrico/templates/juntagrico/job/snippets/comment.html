@@ -1,0 +1,54 @@
+{% load i18n %}
+
+{% if comments.exists %}
+    <hr class="mt-5"/>
+    <div class="row pb-4">
+        <div class="col-lg-3">
+            <div>{% trans "Mitteilungen:" %}</div>
+            <div class="text-muted">
+                {% blocktrans %}Mitteilungen werden nach dem Einsatz automatisch gelöscht.{% endblocktrans %}
+            </div>
+        </div>
+        <div class="col-lg-9">
+            {% for comment in comments %}
+                <div class="card mb-2{% if comment.account == member %} border-primary{% endif %}">
+                    <div class="card-body">
+                        <div>
+                            <span class="card-title font-weight-bold">{{ comment.account }}</span>
+                            {% if not comment.account.inactive %}
+                                {% if can_contact or comment.account.reachable_by_email %}
+                                    {% spaceless %}
+                                        <a class="contact-member" href="{% url 'email-to-member' comment.account.id %}">
+                                            <i class="bi bi-envelope"></i>
+                                        </a>
+                                    {% endspaceless %}
+                                {% endif %}
+                            {% endif %}
+                            <span class="float-right">
+                                <span class="card-subtitle ml-2 text-muted">{{ comment.created_at|date }}</span>
+                                {% if can_manage_comments or comment.account == member %}
+                                    <a href="#" data-toggle="modal" data-target="#remove_comment_{{ comment.id }}_modal"
+                                       title="{% trans 'Löschen' %}">
+                                        <i class="bi bi-trash" aria-label="{% trans 'Löschen' %}"></i>
+                                    </a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="card-text">{{ comment.comment }}</p>
+                    </div>
+                </div>
+                {% include "juntagrico/job/modals/remove_comment.html" with name='remove_comment' %}
+            {% endfor %}
+            {% if comment_form %}
+                <button class="btn btn-secondary add-comment">
+                    <i class="bi bi-plus-square"></i>
+                    {% trans 'Mitteilung verfassen' %}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if comment_form %}
+        {% include "juntagrico/job/modals/add_comment.html" with name='add_comment' %}
+    {% endif %}
+{% endif %}

@@ -1,11 +1,12 @@
 import datetime
 
 from django import template
+from django.db.models import Q
 from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
 from juntagrico.entity.jobs import Job, RecuringJob
-from juntagrico.forms.job import AddAssignmentForm
+from juntagrico.forms.job import AddAssignmentForm, AddJobCommentForm
 
 register = template.Library()
 
@@ -37,6 +38,28 @@ def job_participant_list(user, job):
         'can_edit_assignments': permissions.can_modify_assignments(),
         'add_form': AddAssignmentForm(job) if permissions.can_add_assignments() else None,
         'other_job_contacts': job.get_emails(get_member=True, exclude=[user.member.email]),
+    }
+
+
+@register.inclusion_tag('juntagrico/job/snippets/comment.html')
+def job_comment(user, job):
+    permissions = job.check_if(user)
+    member = user.member
+    can_manage_comments = permissions.can_manage_comments()
+    if can_manage_comments:
+        comments = job.comments.all()
+    else:
+        comments = job.comments.filter(Q(is_public=True) | Q(account=member))
+    comment_form = AddJobCommentForm() if member in job.participants else None
+
+    return {
+        'job': job,
+        'member': member,
+        'comment_form': comment_form,
+        'can_manage_comments': can_manage_comments,
+        'can_contact': permissions.can_contact_member(),
+        'comments': comments.order_by('created_at'),
+        'other_job_contacts': job.get_emails(get_member=True, exclude=[member.email]),
     }
 
 

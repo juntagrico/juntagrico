@@ -9,7 +9,7 @@ from django.forms import (
     CharField,
     Textarea,
     BooleanField,
-    ModelChoiceField,
+    ModelChoiceField, ModelForm,
 )
 from django.template.loader import get_template
 from django.utils import timezone
@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 from django_select2.forms import ModelSelect2Widget
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType
+from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType, JobComment
 from juntagrico.entity.member import Member
 from juntagrico.forms.account import MemberSelect2Widget
 from juntagrico.signals import subscribed, assignment_changed
@@ -179,7 +179,16 @@ class JobSubscribeForm(Form):
                     if self.cleaned_data['extra' + str(extra.extra_type.id)]:
                         assignment.job_extras.add(extra)
                 assignment.save()
-        self.send_signals(slots, self.cleaned_data['message'])
+        
+        # store comment
+        message = self.cleaned_data['message']
+        if message:
+            JobComment.objects.create(
+                job=self.job,
+                account=self.member,
+                comment=message,
+            )
+        self.send_signals(slots, message)
 
     def send_signals(self, slots, message=''):
         # send signals
@@ -284,3 +293,9 @@ class ConvertToRecurringJobForm(Form):
 
     def save(self, one_time_job):
         return one_time_job.convert(self.cleaned_data['job_type'])
+
+
+class AddJobCommentForm(ModelForm):
+    class Meta:
+        model = JobComment
+        fields = ['comment']

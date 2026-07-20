@@ -22,7 +22,7 @@ from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.mailer import adminnotification
-from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
+from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet, JobCommentQuerySet
 from juntagrico.signals import area_left
 from juntagrico.util.ical import generate_ical_for_job
 
@@ -417,7 +417,10 @@ class Job(JuntagricoBasePoly):
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
-        permissions = (('can_edit_past_jobs', _('kann vergangene Jobs editieren')),)
+        permissions = (
+            ('can_edit_past_jobs', _('kann vergangene Jobs editieren')),
+            ('can_manage_job_comments', _('kann alle Einsatzkommentare sehen und verwalten'))
+        )
 
 
 class CheckJobCapabilities:
@@ -470,6 +473,9 @@ class CheckJobCapabilities:
     def can_cancel(self):
         can_change = self.user.has_perm(f'{self.job_app_label}.change_{self.job_model_name}') or self.is_coordinator
         return not (self.job.canceled or self.job.has_started()) and can_change
+
+    def can_manage_comments(self):
+        return self.access is not None or self.user.has_perm(f'{self.job_app_label}.can_manage_job_comments')
 
 
 class RecuringJob(Job):
@@ -659,3 +665,21 @@ class Assignment(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('assignment')
         verbose_name_plural = Config.vocabulary('assignment_pl')
+
+
+class JobComment(JuntagricoBaseModel):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='comments')
+    account = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_public = models.BooleanField(
+        _('Sichtbar für alle'),
+        default=False,
+        help_text=_('Sichtbar für alle {members}').format(members=Config.vocabulary('member_pl')),
+    )
+    comment = models.TextField(_('Kommentar'))
+
+    objects = JobCommentQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _('Einsatzkommentar')
+        verbose_name_plural = _('Einsatzkommentare')
