@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import JuntagricoTestCase, JuntagricoJobTestCase
-from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob
+from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob, JobComment
 from ..entity.member import Member
 from ..signals import subscribed, assignment_changed
 
@@ -512,3 +512,55 @@ class JobValidationTests(JuntagricoTestCase):
         self.assertEqual(job.slots, 0)
         self.assertTrue(job.infinite_slots)
 
+
+class JobCommentTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.job_comment = JobComment.objects.create(
+            job=cls.job2,
+            account=cls.member,
+            comment='Test comment',
+        )
+        JobComment.objects.create(
+            job=cls.past_job,
+            account=cls.member2,
+            comment='old comment',
+        )
+
+    def testJobComment(self):
+        job2_url = reverse('job', args=[self.job2.pk])
+        self.assertGet(job2_url)
+        self.assertGet(job2_url, member=self.area_admin)
+        self.assertGet(job2_url, member=self.admin)
+
+    def testAddJobComment(self):
+        data = {
+            'comment': 'new comment',
+        }
+        # non-participant can't comment
+        self.assertPost(
+            reverse('job-comment-add', args=[self.job2.pk]), data, 403, member=self.member2
+        )
+        # participant can comment
+        self.assertPost(reverse('job-comment-add', args=[self.job2.pk]), data, 302, member=self.member)
+        self.assertEqual(self.job2.comments.count(), 2)
+
+    def testDeleteJobComment(self):
+        # can't delete others comments
+        self.assertPost(reverse('job-comment-remove', args=[self.job_comment.pk]), code=302, member=self.member2)
+        self.assertEqual(self.job2.comments.count(), 1)
+        # can delete own comments
+        self.assertPost(reverse('job-comment-remove', args=[self.job_comment.pk]), code=302, member=self.member)
+        self.assertEqual(self.job2.comments.count(), 0)
+
+    def testAdminDeleteJobComment(self):
+        # area admin can delete comments
+        self.assertPost(reverse('job-comment-remove', args=[self.job_comment.pk]), code=302, member=self.area_admin)
+        self.assertEqual(self.job2.comments.count(), 0)
+
+    def testJobCommentPurge(self):
+        JobComment.KEEP_HOURS = 1
+        self.assertEqual(self.past_job.comments.count(), 1)
+        self.assertGet(reverse('job', args=[self.past_job.pk]), member=self.area_admin)
+        self.assertEqual(self.past_job.comments.count(), 0)
