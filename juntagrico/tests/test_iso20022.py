@@ -18,5 +18,14 @@ class ISO2002Tests(JuntagricoTestCase):
     def testSharePAIN001(self):
         self.assertPost(reverse('share-pain001'), data={'share_ids': str(self.member.share_set.first().pk)})
 
+    def testSharePAIN001302(self):
+        # member2 has no access
+        self.assertPost(
+            reverse('share-pain001'),
+            data={'share_ids': str(self.member.share_set.first().pk)},
+            code=302,
+            member=self.member2,
+        )
+
     def testSharePAIN001404(self):
         self.assertGet(reverse('share-pain001'), code=404)

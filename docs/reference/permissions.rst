@@ -428,7 +428,6 @@ juntagrico.is_operations_group
 .. warning::
     Deprecated. This permission will be replaced by more granular permissions in the next releases.
 
-- Download payment file for shares
 - (De)activate subscriptions
 
 Search Hints:
