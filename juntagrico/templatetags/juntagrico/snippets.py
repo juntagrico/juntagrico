@@ -2,10 +2,11 @@ import datetime
 
 from django import template
 from django.db.models import Q
+from django.utils import timezone
 from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import Job, RecuringJob
+from juntagrico.entity.jobs import Job, RecuringJob, JobComment
 from juntagrico.forms.job import AddAssignmentForm, AddJobCommentForm
 
 register = template.Library()
@@ -50,11 +51,22 @@ def job_comment(user, job):
         comments = job.comments.all()
     else:
         comments = job.comments.filter(Q(is_public=True) | Q(account=member))
-    comment_form = AddJobCommentForm() if member in job.participants else None
+
+    show_comments = comments.exists()
+    if show_comments and job.time + datetime.timedelta(hours=JobComment.KEEP_HOURS) < timezone.now():
+        # delete old comments just in time
+        JobComment.purge()
+        show_comments = comments.exists()
+
+    comment_form = None
+    if member in job.participants and not job.has_ended():
+        comment_form = AddJobCommentForm()
+        show_comments = True
 
     return {
         'job': job,
         'member': member,
+        'show_comments': show_comments,
         'comment_form': comment_form,
         'can_manage_comments': can_manage_comments,
         'can_contact': permissions.can_contact_member(),

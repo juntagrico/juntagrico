@@ -1,3 +1,4 @@
+import datetime
 from functools import cached_property
 from itertools import zip_longest
 
@@ -668,6 +669,8 @@ class Assignment(JuntagricoBaseModel):
 
 
 class JobComment(JuntagricoBaseModel):
+    KEEP_HOURS = 48
+
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='comments')
     account = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
     created_at = models.DateTimeField(auto_now_add=True)
@@ -679,6 +682,13 @@ class JobComment(JuntagricoBaseModel):
     comment = models.TextField(_('Kommentar'))
 
     objects = JobCommentQuerySet.as_manager()
+
+    @classmethod
+    def purge(cls):
+        # using the job start time as it is much easier to check and sufficient for this purpose
+        return cls.objects.filter(
+            job__time__lt=timezone.now() - datetime.timedelta(hours=cls.KEEP_HOURS),
+        ).delete()
 
     class Meta:
         verbose_name = _('Einsatzkommentar')
