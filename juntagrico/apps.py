@@ -26,6 +26,9 @@ class JuntagricoAppconfig(AppConfig):
         models.signals.post_save.connect(add_subscription_member_to_activity_area, sender=SubscriptionMembership)
         signals.called.connect(signals.on_depot_list_generated, sender=generate_depot_list.Command)
         models.signals.pre_save.connect(lifecycle.membership.pre_save, sender=entity.membership.Membership)
+        # auto activate/deactivate membership based on shares
+        models.signals.post_save.connect(lifecycle.membership.sync, sender=Share)
+        models.signals.post_delete.connect(lifecycle.membership.sync, sender=Share)
 
         # See models.py for older signal connections
 
