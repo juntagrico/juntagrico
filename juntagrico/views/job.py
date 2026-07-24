@@ -131,16 +131,19 @@ def memberjobs(request):
 
     # get date range in which this member was doing assignments
     date_range = Assignment.objects.filter(member=member).aggregate(
-        min_date=Min('job__time__date'), max_date=Max('job__time__date')
+        min_date=Min('count_on'), max_date=Max('count_on')
     )
-    year_selection_form = BusinessYearForm(date_range['min_date'], date_range['max_date'], request.GET)
+    year_selection_form = BusinessYearForm(
+        date_range['min_date'], date_range['max_date'], [('-', _('Nicht definiert'))], request.GET
+    )
 
     # get assignments of member in selected business year
     if year_selection_form.is_valid():
-        assignments = Assignment.objects.filter(
-            member=member,
-            job__time__date__range=year_selection_form.date_range()
-        )
+        assignments = Assignment.objects.filter(member=member)
+        if date_range := year_selection_form.date_range():
+            assignments = assignments.filter(count_on__range=date_range)
+        else:
+            assignments = assignments.filter(count_on=None)
     else:
         assignments = Assignment.objects.none()
 
