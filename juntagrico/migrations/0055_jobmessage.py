@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='job',
-            options={'permissions': (('can_edit_past_jobs', 'kann vergangene Jobs editieren'), ('manage_job_messages', 'kann alle Einsatzkommentare sehen und verwalten')), 'verbose_name': 'AbstractJob', 'verbose_name_plural': 'AbstractJobs'},
+            options={'permissions': (('can_edit_past_jobs', 'kann vergangene Jobs editieren'), ('manage_job_messages', 'kann alle Mitteilungen zu Einsätzen sehen und verwalten')), 'verbose_name': 'AbstractJob', 'verbose_name_plural': 'AbstractJobs'},
         ),
         migrations.CreateModel(
             name='JobMessage',
@@ -27,8 +27,8 @@ class Migration(migrations.Migration):
                 ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='juntagrico.job')),
             ],
             options={
-                'verbose_name': 'Einsatzkommentar',
-                'verbose_name_plural': 'Einsatzkommentare',
+                'verbose_name': 'Einsatzmitteilung',
+                'verbose_name_plural': 'Einsatzmitteilungen',
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),

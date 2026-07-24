@@ -420,7 +420,7 @@ class Job(JuntagricoBasePoly):
         verbose_name_plural = _('AbstractJobs')
         permissions = (
             ('can_edit_past_jobs', _('kann vergangene Jobs editieren')),
-            ('manage_job_messages', _('kann alle Einsatzkommentare sehen und verwalten'))
+            ('manage_job_messages', _('kann alle Mitteilungen zu Einsätzen sehen und verwalten'))
         )
 
 
@@ -696,5 +696,5 @@ class JobMessage(JuntagricoBaseModel):
         ).delete()
 
     class Meta:
-        verbose_name = _('Einsatzkommentar')
-        verbose_name_plural = _('Einsatzkommentare')
+        verbose_name = _('Einsatzmitteilung')
+        verbose_name_plural = _('Einsatzmitteilungen')
