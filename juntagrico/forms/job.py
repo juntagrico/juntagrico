@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 from django_select2.forms import ModelSelect2Widget
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType, JobComment
+from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType, JobMessage
 from juntagrico.entity.member import Member
 from juntagrico.forms.account import MemberSelect2Widget
 from juntagrico.signals import subscribed, assignment_changed
@@ -180,13 +180,13 @@ class JobSubscribeForm(Form):
                         assignment.job_extras.add(extra)
                 assignment.save()
         
-        # store comment
+        # store message
         message = self.cleaned_data['message']
         if message:
-            JobComment.objects.create(
+            JobMessage.objects.create(
                 job=self.job,
                 account=self.member,
-                comment=message,
+                message=message,
             )
         self.send_signals(slots, message)
 
@@ -295,7 +295,7 @@ class ConvertToRecurringJobForm(Form):
         return one_time_job.convert(self.cleaned_data['job_type'])
 
 
-class AddJobCommentForm(ModelForm):
+class AddJobMessageForm(ModelForm):
     class Meta:
-        model = JobComment
-        fields = ['comment']
+        model = JobMessage
+        fields = ['message']

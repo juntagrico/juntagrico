@@ -10,8 +10,8 @@
 
 {% block body %}
     <div id="{{ name }}_content">
-        <form action="{% url 'job-comment-add' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
-            {% crispy comment_form %}
+        <form action="{% url 'job-message-add' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
+            {% crispy message_form %}
         </form>
     </div>
 
@@ -31,6 +31,6 @@
 {% endblock %}
 
 {% block buttons %}
-    <input type="submit" id="{{ name }}_submit" form="add_comment_form" class="btn btn-primary"
+    <input type="submit" id="{{ name }}_submit" form="add_message_form" class="btn btn-primary"
            value="{% trans "Senden" %}">
 {% endblock %}

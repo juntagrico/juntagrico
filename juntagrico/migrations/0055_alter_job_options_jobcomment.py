@@ -14,17 +14,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='job',
-            options={'permissions': (('can_edit_past_jobs', 'kann vergangene Jobs editieren'), ('can_manage_job_comments', 'kann alle Einsatzkommentare sehen und verwalten')), 'verbose_name': 'AbstractJob', 'verbose_name_plural': 'AbstractJobs'},
+            options={'permissions': (('can_edit_past_jobs', 'kann vergangene Jobs editieren'), ('manage_job_messages', 'kann alle Einsatzkommentare sehen und verwalten')), 'verbose_name': 'AbstractJob', 'verbose_name_plural': 'AbstractJobs'},
         ),
         migrations.CreateModel(
-            name='JobComment',
+            name='JobMessage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('is_public', models.BooleanField(default=False, help_text='Sichtbar für alle Konten', verbose_name='Sichtbar für alle')),
-                ('comment', models.TextField(verbose_name='Kommentar')),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='juntagrico.member', verbose_name='Konto')),
-                ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='juntagrico.job')),
+                ('message', models.TextField(verbose_name='Mitteilung')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='job_messages', to='juntagrico.member', verbose_name='Konto')),
+                ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='juntagrico.job')),
             ],
             options={
                 'verbose_name': 'Einsatzkommentar',

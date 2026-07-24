@@ -67,7 +67,7 @@ class BaseRecipientsForm(forms.Form):
                     jobs_in_area = Job.objects.in_areas(areas)
                     members |= Member.objects.filter(areas__in=areas)
                     members |= Member.objects.filter(assignment__job__in=jobs_in_area)
-                    members |= Member.objects.filter(jobcomment__job__in=jobs_in_area)
+                    members |= Member.objects.filter(job_messages__job__in=jobs_in_area)
                 self.fields['to_members'].queryset = members.active().distinct()
             else:
                 # must be defined here because "today" is evaluated dynamically in "active()"

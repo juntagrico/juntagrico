@@ -6,8 +6,8 @@ from django.utils import timezone
 from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import Job, RecuringJob, JobComment
-from juntagrico.forms.job import AddAssignmentForm, AddJobCommentForm
+from juntagrico.entity.jobs import Job, RecuringJob, JobMessage
+from juntagrico.forms.job import AddAssignmentForm, AddJobMessageForm
 
 register = template.Library()
 
@@ -42,35 +42,35 @@ def job_participant_list(user, job):
     }
 
 
-@register.inclusion_tag('juntagrico/job/snippets/comment.html')
-def job_comment(user, job):
+@register.inclusion_tag('juntagrico/job/snippets/messages.html')
+def job_messages(user, job):
     permissions = job.check_if(user)
     member = user.member
-    can_manage_comments = permissions.can_manage_comments()
-    if can_manage_comments:
-        comments = job.comments.all()
+    can_manage_messages = permissions.can_manage_messages()
+    if can_manage_messages:
+        messages = job.messages.all()
     else:
-        comments = job.comments.filter(Q(is_public=True) | Q(account=member))
+        messages = job.messages.filter(Q(is_public=True) | Q(account=member))
 
-    show_comments = comments.exists()
-    if show_comments and job.time + datetime.timedelta(hours=JobComment.KEEP_HOURS) < timezone.now():
-        # delete old comments just in time
-        JobComment.purge()
-        show_comments = comments.exists()
+    show_messages = messages.exists()
+    if show_messages and job.time + datetime.timedelta(hours=JobMessage.KEEP_HOURS) < timezone.now():
+        # delete old messages just in time
+        JobMessage.purge()
+        show_messages = messages.exists()
 
-    comment_form = None
+    message_form = None
     if member in job.participants and not job.has_ended():
-        comment_form = AddJobCommentForm()
-        show_comments = True
+        message_form = AddJobMessageForm()
+        show_messages = True
 
     return {
         'job': job,
         'member': member,
-        'show_comments': show_comments,
-        'comment_form': comment_form,
-        'can_manage_comments': can_manage_comments,
+        'show_messages': show_messages,
+        'message_form': message_form,
+        'can_manage_messages': can_manage_messages,
         'can_contact': permissions.can_contact_member(),
-        'comments': comments.order_by('created_at'),
+        'messages': messages.order_by('created_at'),
         'other_job_contacts': job.get_emails(get_member=True, exclude=[member.email]),
     }
 

@@ -89,9 +89,9 @@ $(function () {
         return false
     })
 
-    // open modal to write comment
-    $('.add-comment').on('click', function (event) {
-        let modal = $('#add_comment_modal')
+    // open modal to write message
+    $('.add-message').on('click', function (event) {
+        let modal = $('#add_message_modal')
         modal.modal('show')
         return false
     })

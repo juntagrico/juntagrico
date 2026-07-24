@@ -19,7 +19,7 @@ from juntagrico.entity.jobs import (
     OneTimeJob,
     RecuringJob,
     JobType,
-    JobComment,
+    JobMessage,
 )
 from juntagrico.entity.member import Member
 from juntagrico.forms import BusinessYearForm
@@ -28,7 +28,7 @@ from juntagrico.forms.job import (
     EditAssignmentForm,
     ConvertToRecurringJobForm,
     AddAssignmentForm,
-    AddJobCommentForm,
+    AddJobMessageForm,
 )
 from juntagrico.mailer import adminnotification
 from juntagrico.util import return_to_previous_location
@@ -340,7 +340,7 @@ def add_assignment(request, job_id, form_class=AddAssignmentForm):
 
 @require_POST
 @login_required
-def add_comment(request, job_id, form_class=AddJobCommentForm):
+def add_message(request, job_id, form_class=AddJobMessageForm):
     job = get_object_or_404(Job, id=job_id)
     member = request.user.member
     # check permission
@@ -352,7 +352,7 @@ def add_comment(request, job_id, form_class=AddJobCommentForm):
     form.instance.job = job
     if form.is_valid():
         form.save()
-        adminnotification.job_message(job, member, form.instance.comment)
+        adminnotification.job_message(job, member, form.instance.message)
         messages.success(
             request,
             mark_safe(
@@ -366,11 +366,11 @@ def add_comment(request, job_id, form_class=AddJobCommentForm):
 
 @require_POST
 @login_required
-def remove_comment(request, comment_id):
+def remove_message(request, message_id):
     member = request.user.member
-    comment = get_object_or_404(JobComment, id=comment_id)
-    if comment.account == member or comment.job.check_if(request.user).can_manage_comments():
-        comment.delete()
+    message = get_object_or_404(JobMessage, id=message_id)
+    if message.account == member or message.job.check_if(request.user).can_manage_messages():
+        message.delete()
         messages.success(
             request,
             mark_safe('<i class="bi bi-check2-circle"></i> ' + _('Mitteilung gelöscht')),
@@ -380,4 +380,4 @@ def remove_comment(request, comment_id):
             request,
             mark_safe('<i class="bi bi-exclamation-octagon"></i> ' + _('Keine Berechtigung')),
         )
-    return redirect('job', job_id=comment.job.id)
+    return redirect('job', job_id=message.job.id)

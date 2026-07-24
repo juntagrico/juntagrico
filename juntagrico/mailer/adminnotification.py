@@ -248,7 +248,7 @@ def job_message(job, member, message):
     _template_member_in_job(
         job,
         _('Mitteilung zum Einsatz'),
-        'comment',
+        'message',
         member=member,
         message=message,
     )
