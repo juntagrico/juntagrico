@@ -1,7 +1,7 @@
 from io import StringIO
 
 from django.core import mail
-from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.template.loader import get_template
 from django.test import override_settings
 from django.urls import reverse
@@ -13,11 +13,20 @@ from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
 
 
-@override_settings(STORAGES={
-    'default': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
-    'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-})
-class DepotlistGenerationTests(JuntagricoTestCase):
+@override_settings(
+    STORAGES={
+        'internal': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
+        'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    }
+)
+class DepotlistTestCase(JuntagricoTestCase):
+    def setUp(self):
+        super().setUp()
+        from ..util.pdf import internal_storage
+        self.internal_storage = internal_storage
+
+
+class DepotlistGenerationTests(DepotlistTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -27,15 +36,16 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         cls.sub4 = cls.create_sub_now(cls.depot, future_depot=cls.depot2)
         cls.member4.join_subscription(cls.sub4, True)
 
-    def tearDown(self):
-        default_storage.delete('depotlist.pdf')
-        default_storage.delete('depot_overview.pdf')
-        default_storage.delete('amount_overview.pdf')
+    def setUp(self):
+        super().setUp()
+        self.internal_storage.delete('depotlist.pdf')
+        self.internal_storage.delete('depot_overview.pdf')
+        self.internal_storage.delete('amount_overview.pdf')
 
     def assertListsCreated(self):
-        self.assertTrue(default_storage.exists('depotlist.pdf'))
-        self.assertTrue(default_storage.exists('depot_overview.pdf'))
-        self.assertTrue(default_storage.exists('amount_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('depotlist.pdf'))
+        self.assertTrue(self.internal_storage.exists('depot_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('amount_overview.pdf'))
         self.assertEqual(mail.outbox[0].subject, 'Juntagrico - Neue Depot-Liste generiert')  # admin notification email
 
     def testDepotListData(self):
@@ -107,7 +117,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         # member has no access
         self.assertGet(url, 200)  # can see lists only
         self.assertPost(url, data, 200)
-        self.assertFalse(default_storage.exists('depotlist.pdf'))
+        self.assertFalse(self.internal_storage.exists('depotlist.pdf'))
         # admin has access
         self.assertGet(url, 200, self.admin)
         self.assertPost(url, data, 302, self.admin)
@@ -156,12 +166,8 @@ class DepotListConfigTest(JuntagricoTestCase):
 
 @override_settings(
     DEPOT_LISTS={'amount_overview': 'exports/amount_overview.html'},
-    STORAGES={
-        'default': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
-        'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    }
 )
-class AmountOverviewWithMultipleTourDaysTests(JuntagricoTestCase):
+class AmountOverviewWithMultipleTourDaysTests(DepotlistTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -171,10 +177,22 @@ class AmountOverviewWithMultipleTourDaysTests(JuntagricoTestCase):
 
     def testMultipleTourDays(self):
         default_depot_list_generation(depot_list_data())
-        self.assertTrue(default_storage.exists('amount_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('amount_overview.pdf'))
 
 
-class DepotListTests(JuntagricoTestCase):
+class DepotListTests(DepotlistTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.load_members()
+        cls.default_member = cls.member
+
+    def setUp(self):
+        super().setUp()
+        file = ContentFile('test')
+        self.internal_storage.save('depotlist.pdf', file)
+        self.internal_storage.save('depot_overview.pdf', file)
+        self.internal_storage.save('amount_overview.pdf', file)
+
     def testViewDepotList(self):
         url = reverse('lists')
         self.assertGet(url)
