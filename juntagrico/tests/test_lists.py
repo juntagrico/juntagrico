@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.core.management import call_command
 
+from ..config import Config
 from ..entity.depot import Tour
 from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
@@ -132,6 +133,25 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         call_command('generate_depot_list', '--force', '--no-future', stdout=out)
         self.assertEqual(out.getvalue(), '')
         self.assertListsCreated()
+
+
+def mock_context(context):
+    return {'test_response': context['test_input']}
+
+
+@override_settings(
+    DEPOT_LISTS={
+        'depot_list': {
+            'template': 'mock_template.html',
+            'extra_context': mock_context
+        }
+    },
+)
+class DepotListConfigTest(JuntagricoTestCase):
+    def testExtraContext(self):
+        self.assertEqual(list(Config.depot_lists(context={'test_input': 1}))[0]['extra_context']['test_response'], 1)
+        # confirm that setting re-evaluates context function every time
+        self.assertEqual(list(Config.depot_lists(context={'test_input': 2}))[0]['extra_context']['test_response'], 2)
 
 
 @override_settings(

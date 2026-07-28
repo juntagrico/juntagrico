@@ -15,6 +15,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.depot import Depot
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
 from juntagrico.forms.membership import MembershipForm
@@ -130,12 +131,28 @@ def create_external(request):
     if not Config.enable_external_signup():
         raise Http404
     if request.method == "GET":
-        depots = list(DepotDao.all_visible_depots().values('id', 'name'))
-        subs = list(SubscriptionType.objects.visible()
-                    .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
-                            'price', 'trial', 'description', 'is_extra'))
-        external_details = {'depots': depots,
-                    'subscriptions': subs}
+        depots = Depot.objects.all().select_related('location')
+        depot_list = []
+        for depot in depots:
+            depot_list.append({
+                'id': depot.id,
+                'name': depot.name,
+                'visible': depot.visible,
+                'weekday': depot.weekday,
+                'description': depot.description,
+                'location': depot.location.map_info,
+            })
+        subs = list(
+            SubscriptionType.objects.visible()
+            .values('id', 'name', 'shares', 'required_assignments', 'required_core_assignments',
+                    'price', 'trial_days', 'description', 'is_extra')
+        )
+        for sub in subs:
+            sub['trial'] = sub['trial_days'] > 0
+        external_details = {
+            'depots': depot_list,
+            'subscriptions': subs,
+        }
         return JsonResponse(external_details, safe=False)
     if not request.method == 'POST':
         raise BadRequest("POST request method expected")

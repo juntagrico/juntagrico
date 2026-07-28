@@ -2,6 +2,9 @@
 {% load juntagrico.config %}
 {% vocabulary "subscription" as v_subscription %}
 <div>
+    <a href="{% url 'cancel' %}" class="btn btn-danger mt-3">
+        {% blocktrans %}Austritt vervollständigen{% endblocktrans %}
+    </a>
     <a href="{% url 'cs-subscription' %}" class="btn btn-primary mt-3">
         {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
     </a>

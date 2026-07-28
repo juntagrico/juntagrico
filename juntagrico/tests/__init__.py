@@ -77,14 +77,15 @@ class JuntagricoTestCase(TestCase):
         member_data.update(kwargs)
         member = Member.objects.create(**member_data)
         if with_membership:
-            membership_data = {
-                'activation_date': '2026-03-12',
-                'number': 1
-            }
-            if isinstance(with_membership, dict):
-                membership_data |= with_membership
-            Membership.objects.create(account=member, **membership_data)
+            args = with_membership if isinstance(with_membership, dict) else {}
+            JuntagricoTestCase.create_membership(member, **args)
         return member
+
+    @staticmethod
+    def create_membership(account, **kwargs):
+        membership_data = {'activation_date': '2026-03-12', 'number': 1}
+        membership_data |= kwargs
+        return Membership.objects.create(account=account, **membership_data)
 
     @staticmethod
     def create_paid_share(member, **kwargs):
@@ -165,6 +166,7 @@ class JuntagricoTestCase(TestCase):
         cls.job4 = RecuringJob.objects.create(**job_data2)
         cls.job5 = RecuringJob.objects.create(**job_data)
         cls.job6 = RecuringJob.objects.create(**job_data3)
+        cls.canceled_job = RecuringJob.objects.create(**job_data, canceled=True)
         cls.past_job = RecuringJob.objects.create(
             slots=2,
             time=timezone.now() - timezone.timedelta(hours=2),
@@ -264,7 +266,7 @@ class JuntagricoTestCase(TestCase):
 
     @staticmethod
     def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3,
-                        price=1000, **kwargs):
+                        price=1000, **kwargs) -> SubscriptionType:
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')

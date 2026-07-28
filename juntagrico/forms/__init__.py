@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Fieldset, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -17,6 +17,7 @@ from django.utils.html import escape, format_html_join, format_html, strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _, gettext_lazy, ngettext_lazy
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
@@ -88,67 +89,6 @@ class PasswordForm(Form):
         if self.data['password'] != self.data['passwordRepeat']:
             raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
-
-
-class AbstractMemberCancellationForm(ModelForm):
-    message = CharField(label=gettext_lazy('Mitteilung'), widget=Textarea, required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.attrs = {
-            'onSubmit': "return confirm('" + _('Möchtest du deine Mitgliedschaft verbindlich künden?') + "')"}
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-md-3'
-        self.helper.field_class = 'col-md-9'
-        self.helper.layout = Layout(
-            'message',
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-danger'),
-            ),
-        )
-
-    def save(self, commit=True):
-        if (sub := self.instance.subscription_current) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        if (sub := self.instance.subscription_future) is not None:
-            if sub.primary_member != self.instance:
-                self.instance.leave_subscription(sub)
-        if membership := self.instance.memberships.active().first():
-            membership.cancel()
-            adminnotification.membership_canceled(membership, self.cleaned_data.get('message'))
-        return super().save(commit)
-
-
-class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = []
-
-
-class CoopMemberCancellationForm(AbstractMemberCancellationForm):
-    class Meta:
-        model = Member
-        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
-        labels = {
-            "addr_street": gettext_lazy("Strasse/Nr.")
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout.insert(1, Fieldset(
-            _('Bitte hinterlege oder überprüfe deine Daten, damit deine {shares} ausbezahlt werden können.').format(
-                shares=Config.vocabulary('share_pl')
-            ),
-            'iban', 'addr_street', 'addr_zipcode', 'addr_location')
-        )
-
-    def clean_iban(self):
-        # require IBAN on cancellation
-        if self.data['iban'] == '':
-            raise ValidationError(_('IBAN ist nicht gültig'))
-        return self.data['iban']
 
 
 class MemberProfileForm(ModelForm):
@@ -246,7 +186,8 @@ class RegisterMemberForm(MemberBaseForm):
 
     text = {
         'confirm_read': gettext_lazy('Ich habe {documents} gelesen.'),
-        'and': gettext_lazy('und')
+        'and': gettext_lazy('und'),
+        'submit': gettext_lazy('Weiter'),
     }
 
     def __init__(self, *args, **kwargs):
@@ -261,7 +202,7 @@ class RegisterMemberForm(MemberBaseForm):
             *self.base_layout,
             *fields,
             FormActions(
-                Submit('submit', _('Anmelden'), css_class='btn-success'),
+                Submit('submit', self.text['submit'], css_class='btn-success'),
             )
         )
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
@@ -551,7 +492,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             FormActions(
                 Submit(
                     'submit',
-                    _('{subscription}-Bestandteile bestellen').format(subscription=Config.vocabulary('subscription')),
+                    _('bestellen'),
                     css_class='btn-success'
                 )
             )
@@ -562,17 +503,17 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
         # check that subscription is not canceled:
         if self.subscription.cancellation_date:
             raise ValidationError(
-                _('Für gekündigte {subscriptions} können keine Bestandteile oder Zusatzabos bestellt werden').
+                _('Für gekündigte {subscriptions} können keine Bestellungen getätigt werden').
                 format(subscriptions=Config.vocabulary('subscription_pl')), code='no_order_if_canceled'
             )
         # check if members in subscription have sufficient shares
         if Config.enable_shares():
-            available_shares = self.subscription.all_shares
+            available_shares = self.subscription.available_shares
             new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
                 share_error_message = mark_safe(
-                    _('Es sind zu wenig {shares} vorhanden für diese Bestandteile!').format(
+                    _('Es werden mehr {shares} benötigt.').format(
                         shares=Config.vocabulary('share_pl')
                     ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                         reverse('manage-shares'),
@@ -638,11 +579,11 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             sub_type = SubscriptionType.objects.get(id=selected)
             # check if members in subscription have sufficient shares
             if Config.enable_shares():
-                additional_available_shares = self.part.subscription.all_shares - self.part.subscription.required_shares
+                additional_available_shares = self.part.subscription.available_shares - self.part.subscription.required_shares
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
                     share_error_message = mark_safe(
-                        _('Es sind zu wenig {shares} vorhanden für diesen Bestandteil!').format(
+                        _('Es werden mehr {shares} benötigt.').format(
                             shares=Config.vocabulary('share_pl'),
                         ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
                             reverse('manage-shares'),
@@ -991,3 +932,17 @@ class BusinessYearForm(Form):
 
     def date_range(self):
         return get_business_date_range(int(self.cleaned_data.get('year')))
+
+
+class InternalModelSelect2Mixin:
+    def __init__(self, *args, **kwargs):
+        kwargs['data_view'] = 'internal-select2-view'
+        super().__init__(*args, **kwargs)
+
+
+class InternalModelSelect2Widget(InternalModelSelect2Mixin, ModelSelect2Widget):
+    pass
+
+
+class InternalModelSelect2MultipleWidget(InternalModelSelect2Mixin, ModelSelect2MultipleWidget):
+    pass

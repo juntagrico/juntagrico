@@ -1,8 +1,7 @@
 {% load juntagrico.config %}
 {% load i18n %}
-{% vocabulary "subscription" as v_subscription %}
 <div class="alert alert-danger">
-    {% blocktrans trimmed with ld=subscription_membership.leave_date %}
-        Du bist am {{ ld }} aus diesem/r {{ v_subscription }} ausgetreten.
+    {% blocktrans trimmed with v_this_subscription_dat=vocabulary.this_subscription_dat ld=subscription_membership.leave_date %}
+        Du bist am {{ ld }} aus {{ v_this_subscription_dat }} ausgetreten.
     {% endblocktrans %}
 </div>

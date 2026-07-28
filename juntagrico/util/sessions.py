@@ -126,8 +126,12 @@ class SignupManager(SessionManager):
 
     def required_shares(self):
         required = self.required_shares_details()
+        if Config.cumulative_shares_for_membership():
+            total = max(required['for_membership'] + required['for_subscription'], required['for_signup'])
+        else:
+            total = max(required.values())
         return {
-            'total': max(required.values()),
+            'total': total,
             'for_primary': max(required['for_membership'], required['for_signup']),
         }
 
@@ -166,19 +170,20 @@ class SignupManager(SessionManager):
         return 'cs-summary'
 
     def apply_member(self):
+        comment = self.get('comment', '')
         if self.request.user.is_authenticated:
             member = self.request.user.member
-            member.signup_comment = self.get('comment', '')  # save new comment
+            member.signup_comment = comment  # save new comment
             member.save()
             password = None
         else:
             member_form = self._main_member_form()
-            member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
+            member_form.instance.signup_comment = comment  # inject comment to be available in admin notification
             member = member_form.save()
             password = member.set_password()
         if self.get('membership'):
             membership_form = self._membership_form()
-            membership_form.save(member)
+            membership_form.save(member, comment)
         return MemberDetails(member, password)
 
     def apply_co_member(self, subscription):

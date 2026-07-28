@@ -12,13 +12,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterModelOptions(
+            name='subscriptionsize',
+            options={'verbose_name': 'Abo-Paket', 'verbose_name_plural': 'Abo-Pakete'},
+        ),
         migrations.RenameModel(
             old_name='SubscriptionSize',
             new_name='SubscriptionBundle',
-        ),
-        migrations.AlterModelOptions(
-            name='subscriptionbundle',
-            options={'verbose_name': 'Abo-Paket', 'verbose_name_plural': 'Abo-Pakete'},
         ),
         migrations.CreateModel(
             name='SubscriptionCategory',

@@ -79,6 +79,16 @@ $(function () {
         return false
     })
 
+    // open modal to add assignment
+    $('.add-assignment').on('click', function (event) {
+        let modal = $('#add_assignment_modal')
+        modal.modal('show')
+        modal.find('.django-select2').not('[name*=__prefix__]').djangoSelect2({
+            dropdownParent: modal
+        })
+        return false
+    })
+
     // apply suggested job types on click
     $('.suggested-job-type').on('click', function (event) {
         let suggestion = $(this)

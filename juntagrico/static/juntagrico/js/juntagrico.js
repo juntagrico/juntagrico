@@ -64,14 +64,19 @@ function email_button(action, default_email_all) {
         },
         action: function (e, dt, node, config) {
             let email_ids = get_email_ids(get_selected_or_all(dt))
+            let method = 'GET'
             let data = null
             // shortcut if all or no rows are selected, send no data, if form defaults to all recipients
             if (!(default_email_all && email_ids.size === get_email_ids(dt.rows().nodes()).size)) {
                 data = {
-                    members: Array.from(email_ids).join("-"),
+                    members: compressIntArray(Array.from(email_ids)),
+                }
+                if (action.length + 9 + data.members.length > 4000) {
+                    // prevent 414 error
+                    method = 'POST'
                 }
             }
-            send_form(action, '', data, 'GET')
+            send_form(action, '', data, method)
         }
     }
 }
@@ -307,4 +312,41 @@ function init_depot_map(map, markers) {
     }
     // initialize
     toggle_depot_description(depot_selector)
+}
+
+function sliceCommon(base, value) {
+    // compute longest common prefix of strings and return only reminder
+    let p = 0;
+    const Ls = base.length, Le = value.length;
+    while (p < Ls && p < Le && base[p] === value[p]) p++;
+    return value.slice(p) || '0';
+}
+
+function compressIntArray(input) {
+    /* convert array of integers into compact string representation:
+    E.g. [1,2,3,13,15]  -> '1-3_13_5'
+    */
+    if (!input || input.length === 0) return '';
+    // sort and convert to bigint
+    const values = input.map(x => BigInt(x)).sort((x, y) => (x < y ? -1 : x > y ? 1 : 0));
+    const out = [];
+    let last = ''
+    let i = 0;
+    while (i < values.length) {
+        // build compact string
+        let k = i;
+        while (k + 1 < values.length && values[k + 1] === values[k] + 1n) k++;
+        if (k === i ) {
+            const value = values[i].toString()
+            out.push(sliceCommon(last, value));
+            last = value
+        } else {
+            const start = values[i].toString();
+            const end = values[k].toString();
+            out.push(sliceCommon(last, start) + '-' + sliceCommon(start, end));
+            last = end
+        }
+        i = k + 1;
+    }
+    return out.join('_')
 }

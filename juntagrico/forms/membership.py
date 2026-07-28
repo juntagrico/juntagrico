@@ -61,7 +61,7 @@ class MembershipForm(HorizontalFormMixin, forms.Form):
         else:
             return cls.text['accept_wo_docs'].format(organization=Config.organisation_long_name())
 
-    def save(self, account):
+    def save(self, account, comment=None):
         # if there is a membership that has not been deactivated yet, keep that one
         if membership := account.memberships.active_or_requested().first():
             membership.deactivation_date = None
@@ -69,7 +69,7 @@ class MembershipForm(HorizontalFormMixin, forms.Form):
             membership.save()
         else:
             membership = Membership.objects.create(account=account)
-        adminnotification.membership_created(membership)
+        adminnotification.membership_created(membership, comment)
 
 
 class CreateMembershipForm(MembershipForm):

@@ -3,6 +3,7 @@ import datetime
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
+from ..entity.subs import Subscription
 
 
 class SubAdminTests(JuntagricoTestCaseWithShares):
@@ -139,30 +140,23 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'parts-INITIAL_FORMS': '0',
             'parts-0-id': '',
             'parts-0-subscription': '',
-            'parts-0-activation_date': '',
-            'parts-0-cancellation_date': '',
-            'parts-0-deactivation_date': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '01.01.2018',
+            'parts-0-deactivation_date': '01.01.2018',
             'parts-0-type': str(self.sub_type.id),
             'extra_subscription_set-TOTAL_FORMS': '0',
             'extra_subscription_set-INITIAL_FORMS': '0',
         }
-        # fails, because join date and activation date on part are not set
+        # fails, because join date is not set
         response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
         self.assertListEqual(
-            ['missing_join_date', 'missing_activation_date'],
+            ['missing_join_date'],
             [e.data[0].code for e in response.context_data["errors"].data],
         )
-        # fails because cancellation date on part is not set
+        # succeeds and keeps the subscription deactivated
         data['subscriptionmembership_set-0-join_date'] = '01.01.2017'
-        data['parts-0-activation_date'] = '01.01.2017'
-        response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
-        self.assertListEqual(
-            ['missing_cancellation_date'],
-            [e.data[0].code for e in response.context_data["errors"].data],
-        )
-        # succeeds
-        data['parts-0-cancellation_date'] = '01.01.2018'
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
+        self.assertTrue(Subscription.objects.last().inactive)
 
     def testErrors(self):
         # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails
@@ -257,3 +251,118 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
     def testFutureDeactivation(self):
         future_date = datetime.date.today() + datetime.timedelta(days=2)
         self.testDeactivation(future_date.strftime('%d.%m.%Y'))
+
+    def testSubReactivationFails(self):
+        sub = self.deactivated_sub
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'deactivation_date': '',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '1',
+            'subscriptionmembership_set-0-id': str(sub.subscriptionmembership_set.first().id),
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member7.id),
+            'subscriptionmembership_set-0-join_date': '01.01.2017',
+            'subscriptionmembership_set-0-leave_date': str(sub.deactivation_date),
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '1',
+            'parts-0-id': str(sub.parts.first().id),
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '01.01.2018',
+            'parts-0-deactivation_date': str(sub.deactivation_date),
+            'parts-0-type': str(sub.parts.first().type.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # direct reactivation fails with error message explaining how to reactivate the sub
+        response = self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
+                                   data=data, member=self.admin)
+        self.assertListEqual(
+            ['reactivation'],
+            [e.data[0].code for e in response.context_data["errors"].data],
+        )
+
+    def testControlledSubReactivation(self):
+        sub = self.deactivated_sub
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'deactivation_date': str(sub.deactivation_date),
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '1',
+            'subscriptionmembership_set-0-id': str(sub.subscriptionmembership_set.first().id),
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member7.id),
+            'subscriptionmembership_set-0-join_date': '01.01.2017',
+            'subscriptionmembership_set-0-leave_date': str(sub.deactivation_date),
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '1',
+            'parts-0-id': str(sub.parts.first().id),
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '01.01.2018',
+            'parts-0-deactivation_date': '',  # undeactivate a part
+            'parts-0-type': str(sub.parts.first().type.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # direct reactivation fails with error message explaining how to reactivate the sub
+        self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
+                        data=data, member=self.admin, code=302)
+        sub.refresh_from_db()
+        self.assertTrue(sub.active)
+        # confirm sub is consistent
+        sub.save()
+
+    def testControlledSubReactivationByNewPart(self):
+        sub = self.deactivated_sub
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'deactivation_date': str(sub.deactivation_date),
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '1',
+            'subscriptionmembership_set-0-id': str(sub.subscriptionmembership_set.first().id),
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member7.id),
+            'subscriptionmembership_set-0-join_date': '01.01.2017',
+            'subscriptionmembership_set-0-leave_date': str(sub.deactivation_date),
+            'parts-TOTAL_FORMS': '2',
+            'parts-INITIAL_FORMS': '1',
+            'parts-0-id': str(sub.parts.first().id),
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '01.01.2018',
+            'parts-0-deactivation_date': str(sub.deactivation_date),
+            'parts-0-type': str(sub.parts.first().type.id),
+            # new active part
+            'parts-1-id': '',
+            'parts-1-subscription': '',
+            'parts-1-activation_date': '04.04.2026',
+            'parts-1-cancellation_date': '',
+            'parts-1-deactivation_date': '',
+            'parts-1-type': str(self.sub_type3.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # direct reactivation fails with error message explaining how to reactivate the sub
+        self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
+                        data=data, member=self.admin, code=302)
+        sub.refresh_from_db()
+        self.assertTrue(sub.active)
+        # confirm sub is consistent
+        sub.save()

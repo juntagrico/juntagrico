@@ -1,11 +1,13 @@
+from django.utils.translation import gettext as _
+from import_export import resources
 from import_export.fields import Field
 
-from . import ModQuerysetModelResource
+from . import TranslatedModelResource
 from ..config import Config
 from ..entity.share import Share
 
 
-class ShareResource(ModQuerysetModelResource):
+class ShareResource(resources.ModelResource):
     member_first_name = Field('member__first_name')
     member_last_name = Field('member__last_name')
     member_email = Field('member__email')
@@ -27,3 +29,12 @@ class ShareResource(ModQuerysetModelResource):
         }
         export_order = ('id', 'number')
         name = Config.vocabulary('share_pl')
+
+
+class TranslatedShareResource(TranslatedModelResource, ShareResource):
+    class Meta:
+        verbose_names = {
+            'member_first_name': _('Vorname'),
+            'member_last_name': _('Nachname'),
+            'member_email': _('E-Mail'),
+        }

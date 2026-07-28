@@ -278,6 +278,9 @@ Default receivers: None
 canceled
 ^^^^^^^^
 
+.. warning::
+    Deprecated since version 2.1.0.
+
 Sender: Member
 
 Trigger: Member closes their account
@@ -287,10 +290,8 @@ Arguments:
 * instance: The member instance of the member that canceled
 * message (optional): The message the member left on cancellation
 
-Default receivers:
+Default receivers: None
 
-* on_member_canceled: :ref:`Notify <reference-notifications-member-canceled>` users with
-  permission :ref:`notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>` via email.
 
 member_deactivated
 ^^^^^^^^^^^^^^^^^^
@@ -324,6 +325,23 @@ Arguments:
 Default receivers:
 
 * on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
+
+
+Email signals
+-------------
+
+pre_render
+^^^^^^^^^^
+
+Sender: mailer.EmailBuilder
+
+Trigger: Before email is rendered. This includes all notification emails and emails sent via the contact form.
+
+Arguments:
+
+* recipient: The member instance who will receive the email. Is None for recipients that aren't members.
+
+Default receivers: None
 
 
 Management Command signals

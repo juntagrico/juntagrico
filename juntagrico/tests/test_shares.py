@@ -3,10 +3,11 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
 from django.core import mail
-from django.test import tag
+from django.test import tag, override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.member import SubscriptionMembership
 from ..entity.membership import Membership
 from ..entity.share import Share
 from ..entity.subs import SubscriptionPart
@@ -171,3 +172,106 @@ class ShareCancelTests(ShareTestCase):
         share.refresh_from_db()
         self.assertEqual(share.cancelled_date, None)
         self.assertEqual(share.termination_date, None)
+
+    def testUnifiedCancellation(self):
+        self.assertGet(reverse('cancel'), 200)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 1,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        self.assertPost(reverse('cancel'), data=data, code=302)
+        self.member.refresh_from_db()
+        self.assertEqual(before - 1, self.member.usable_shares.count())
+        self.assertEqual(len(mail.outbox), 1)  # admin notification
+
+    def testCancelRequiredSharesFails(self):
+        self.assertGet(reverse('cancel'), 200)
+        Membership.objects.create(account=self.member)
+        before = self.member.usable_shares.count()
+        data = {
+            'activity_areas': [self.area.id],
+            'shares': 2,
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location',
+            f'primary_subscription_{self.sub.pk}': 'keep',
+            'membership': True,
+            'account': True,
+        }
+        response = self.assertPost(reverse('cancel'), data=data, code=200)
+        self.assertListEqual(
+            ['shares'],
+            list(response.context['form'].errors.keys())
+        )
+        self.member.refresh_from_db()
+        self.assertEqual(before, self.member.usable_shares.count())
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CumulativeShareTests(ShareTests):
+    pass
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CumulativeShareCancelTests(ShareCancelTests):
+    pass
+
+
+class ShareCountTests(ShareTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        Share.objects.create(member=cls.member)
+        Share.objects.create(member=cls.member2)
+        Share.objects.create(member=cls.member3)
+        Share.objects.create(member=cls.member4)
+        for _ in range(3):
+            Share.objects.create(member=cls.member5)
+        SubscriptionMembership.objects.create(
+            member=cls.member5, subscription=cls.sub
+        )
+        cls.sub_type3.shares = 3
+        cls.sub_type3.save()
+        cls.create_membership(cls.member)
+        cls.create_membership(cls.member2)
+        cls.create_membership(cls.member4)
+
+    def testMemberRequiredSharesForSubscription(self):
+        # in shared active sub
+        self.assertEqual(self.member.required_shares_count, 0)
+        # in waiting sub
+        self.assertEqual(self.member2.required_shares_count, 2)
+        # in inactive sub and new shared sub
+        self.assertEqual(self.member3.required_shares_count, 0)
+        # without sub
+        self.assertEqual(self.member4.required_shares_count, 0)
+        # not yet joined future sub
+        self.assertEqual(self.member5.required_shares_count, 0)
+        
+    def testSubscriptionRequiredShares(self):
+        self.assertEqual(self.sub.required_shares, 1)
+        self.assertEqual(self.sub2.required_shares, 2)
+        # inactive parts don't required shares
+        self.assertEqual(self.sub3.required_shares, 0)
+
+    def testSubscriptionShareOverflow(self):
+        self.assertEqual(self.sub.share_overflow, 2)
+        self.assertEqual(self.sub2.share_overflow, -1)
+        self.assertEqual(self.sub3.share_overflow, 1)
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CumulativeShareCountTests(ShareCountTests):
+    def testSubscriptionShareOverflow(self):
+        self.assertEqual(self.sub.share_overflow, 1)
+        self.assertEqual(self.sub2.share_overflow, -2)
+        self.assertEqual(self.sub3.share_overflow, 1)

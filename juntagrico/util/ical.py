@@ -36,4 +36,4 @@ def generate_ical_for_job(job):
         e.add(name='STATUS', value='CANCELLED')
     c.add_component(e)
     content = c.to_ical()
-    return ical("{}.ics".format(_('Einsatz')), content)
+    return ical(f"{_('Einsatz')}.ics", content)

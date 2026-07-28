@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0053_data_580'),
+        ('juntagrico', '0054_member_cancellation_comment_and_more'),
     ]
 
     operations = [

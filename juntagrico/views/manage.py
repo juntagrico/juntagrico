@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
 from django.db.models import Q, Count, Exists, OuterRef
@@ -190,7 +190,7 @@ class MembershipArchiveView(MembershipView):
     title = _('Ehemalige {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
-class AreaMemberView(MemberView):
+class AreaMemberView(LoginRequiredMixin, MemberView):
     permission_required = []  # checked in get_queryset
     template_name = 'juntagrico/manage/member/show_for_area.html'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
@@ -347,19 +347,37 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
 @using_change_date
 def parts_apply(request, change_date):
     parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    activated = []
+    deactivated = []
     with transaction.atomic():
+        possibly_empty_subs = set()
         for part in parts:
             if part.activation_date is None and part.deactivation_date is None:
+                activation_date = change_date
                 if part.subscription.activation_date is None:
                     # automatically activate subscription, but don't activate all parts
                     part.subscription.__skip_part_activation__ = True
                     part.subscription.activate(change_date)
-                part.activate(change_date)
+                elif activation_date is None or activation_date < part.subscription.activation_date:
+                    # activate part, but not earlier than subscription was activated
+                    activation_date = part.subscription.activation_date
+                part.activate(activation_date)
+                activated.append(part)
             if part.cancellation_date is not None:
                 part.deactivate(change_date)
-                # deactivate entire subscription, if this was the last part
-                if not part.subscription.parts.waiting_or_active(change_date).exists():
-                    part.subscription.deactivate(change_date)
+                deactivated.append(part)
+                possibly_empty_subs.add(part.subscription)
+        # deactivate entire subscription, if the last part was deactivated
+        for subscription in possibly_empty_subs:
+            if not subscription.parts.waiting_or_active(change_date).exists():
+                subscription.deactivate(change_date)
+    # send notifications
+    if activated and deactivated:
+        membernotification.subscription_changed(activated, deactivated, change_date)
+    elif activated:
+        membernotification.subscription_activated(activated, change_date)
+    elif deactivated:
+        membernotification.subscription_deactivated(deactivated, change_date)
     return return_to_previous_location(request)
 
 
@@ -462,7 +480,7 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
     })
 
 
-class DepotSubscriptionView(SubscriptionView):
+class DepotSubscriptionView(LoginRequiredMixin, SubscriptionView):
     permission_required = []
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
@@ -515,7 +533,7 @@ def subscription_inconsistencies(request):
         except Exception as e:
             management_list.append({'subscription': sub, 'error': e})
         if sub.primary_member is None:
-            management_list.append({'subscription': sub, 'error': _('HauptbezieherIn ist nicht gesetzt')})
+            management_list.append({'subscription': sub, 'error': _('Verwalter:in ist nicht gesetzt')})
     render_dict = {
         'object_list': management_list,
     }

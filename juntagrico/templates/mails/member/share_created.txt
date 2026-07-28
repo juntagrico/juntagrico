@@ -1,7 +1,8 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/member/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
+
+{% block message %}
 {% config "organisation_address" as c_addr %}
 {% config "organisation_bank_connection" as c_bank %}
 {% config "share_price_display" as c_share_price %}
@@ -9,7 +10,6 @@
 {% enriched_organisation "D" as v_d_enriched_organisation %}
 {% vocabulary "share" as v_share %}
 {% vocabulary "share_pl" as v_share_pl %}
-{% trans "Hallo" %}
 
 {% blocktrans with sc=shares|length%}Du hast bei {{ v_d_enriched_organisation }} {{sc}} {{ v_share_pl }} bestellt{% endblocktrans %}:
 {% for share in shares %}{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
@@ -27,8 +27,4 @@
 {% blocktrans %}Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur 1 {{ v_share }} auf einmal.
 Gib im Betreff die Systemnummer an und die Emailadresse der Halterin oder des Halters des/r {{ v_share }} an
 (dies ist vor allem wichtig wenn du diese/n/s {{ v_share }} für jemand anderen bezahlst){% endblocktrans %}
-
-{% blocktrans trimmed %}
-Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
-{% endblocktrans %}
 {% endblock %}

@@ -4,6 +4,7 @@ from itertools import zip_longest
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.mail import EmailAttachment
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Max, F
@@ -20,7 +21,10 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.mailer import adminnotification
 from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
+from juntagrico.signals import area_left
+from juntagrico.util.ical import generate_ical_for_job
 
 
 @absolute_url(name='area')
@@ -44,6 +48,11 @@ class ActivityArea(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s' % self.name
+
+    def leave(self, account):
+        self.members.remove(account)
+        area_left.send(ActivityArea, area=self, member=account)
+        adminnotification.member_left_activityarea(self, account)
 
     @property
     def contacts(self):
@@ -258,10 +267,12 @@ class Job(JuntagricoBasePoly):
     @property
     @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
+        if self.canceled:
+            return 0
         if self.infinite_slots:
             return -1
         if self.slots is not None:
-            return self.slots - self.occupied_slots
+            return max(0, self.slots - self.occupied_slots)
         return 0
 
     @admin.display(description=_('Plätze'), ordering='slots')
@@ -279,6 +290,14 @@ class Job(JuntagricoBasePoly):
     @property
     def occupied_slots(self):
         return self.assignment_set.count()
+
+    def get_multiplier(self):
+        unit = Config.assignment_unit()
+        if unit == 'ENTITY':
+            return self.multiplier
+        elif unit == 'HOURS':
+            return self.multiplier * self.duration
+        return 1
 
     @property
     def duration(self):
@@ -385,6 +404,10 @@ class Job(JuntagricoBasePoly):
         """
         raise NotImplementedError
 
+    def to_email_attachment(self):
+        ics = generate_ical_for_job(self)
+        return EmailAttachment(ics.name, ics.content, 'text/calendar')
+
     def clean(self):
         check_job_consistency(self)
 
@@ -422,6 +445,9 @@ class CheckJobCapabilities:
 
     def can_modify_assignments(self):
         return self.user.has_perm('juntagrico.change_assignment') or self.is_assignment_coordinator
+
+    def can_add_assignments(self):
+        return self.user.has_perm('juntagrico.add_assignment') or self.is_assignment_coordinator
 
     def can_contact_member(self):
         return self.user.has_perm('juntagrico.can_send_mails') or self.access and self.access.can_contact_member

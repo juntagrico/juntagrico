@@ -27,8 +27,8 @@
                         {% if not membership %}
                             <div class="alert alert-warning">
                                 {% block info_inactive %}
-                                    {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
-                                        Du bist kein {{ v_member_type }}.
+                                    {% blocktrans trimmed with v_not_a_member_type=vocabulary.not_a_member_type %}
+                                        Du bist {{ v_not_a_member_type }}.
                                     {% endblocktrans %}
                                 {% endblock %}
                             </div>
@@ -83,7 +83,7 @@
 
                             {% if not membership.canceled %}
                                 {% block button_cancel_membership %}
-                                    <a href="{% url 'membership-cancel' %}" class="btn btn-outline-danger">
+                                    <a href="{% url 'cancel' %}" class="btn btn-outline-danger">
                                         {% blocktrans trimmed with v_membership=vocabulary.membership %}
                                             {{ v_membership }} künden
                                         {% endblocktrans %}

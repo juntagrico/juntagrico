@@ -1,0 +1,7 @@
+{% load i18n %}
+{% trans "Details:" %}
+{% trans "Job:             " %}{{ job.type.description|striptags }}
+{% trans "Zeit:            " %}{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Ort:             " %}{{ job.type.location }}
+{% trans "Kontakt:         " %}{% for contact in job.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
+{% trans "Einsatz ansehen: " %}{{ server_url }}{% url 'job' job.id %}

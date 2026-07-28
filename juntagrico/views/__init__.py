@@ -15,7 +15,7 @@ from juntagrico.forms import MemberProfileForm, PasswordForm, AreaDescriptionFor
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left
+from juntagrico.signals import area_joined, area_left as area_left
 from juntagrico.view_decorators import highlighted_menu
 from juntagrico.config import Config
 
@@ -138,10 +138,7 @@ def area_join(request, area_id):
 def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
-    old_area.members.remove(member)
-    area_left.send(ActivityArea, area=old_area, member=member)
-    adminnotification.member_left_activityarea(old_area, member)
-    old_area.save()
+    old_area.leave(member)
     return HttpResponse()
 
 

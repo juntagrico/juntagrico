@@ -1,12 +1,14 @@
+from django.utils.translation import gettext as _
+from import_export import resources
 from import_export.fields import Field
 from import_export.widgets import DecimalWidget, IntegerWidget
 
-from . import ModQuerysetModelResource, DateRangeResourceMixin
+from . import DateRangeResourceMixin, TranslatedModelResource
 from ..config import Config
 from ..entity.subs import Subscription, SubscriptionPart
 
 
-class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
+class SubscriptionResource(DateRangeResourceMixin, resources.ModelResource):
     content = Field('size')
 
     status = Field('state_text')
@@ -28,7 +30,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
     core_assignments_progress = Field('core_assignments_progress', widget=DecimalWidget(coerce_to_string=False))
     price = Field('price', widget=DecimalWidget())
 
-    def update_queryset(self, queryset):
+    def filter_export(self, queryset, **kwargs):
         return queryset.annotate_assignments_progress(self.start_date, self.end_date)
 
     def dehydrate_co_members(self, subscription):
@@ -48,12 +50,37 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
         name = Config.vocabulary('subscription_pl')
 
 
-class SubscriptionPartResource(ModQuerysetModelResource):
+class TranslatedSubscriptionResource(SubscriptionResource, TranslatedModelResource):
+    class Meta:
+        verbose_names = {
+            'content': _('Inhalt'),
+            'status': _('Status'),
+            'types': _('Typen'),
+            'depot': Config.vocabulary('depot'),
+            'primary_member_name': _('Name HauptbezieherIn'),
+            'primary_member_email': _('E-Mail HauptbezieherIn'),
+            'primary_member_phone': _('Telefon HauptbezieherIn'),
+            'primary_member_mobile': _('Mobil HauptbezieherIn'),
+            'primary_member_street': _('Strasse HauptbezieherIn'),
+            'primary_member_zipcode': _('PLZ HauptbezieherIn'),
+            'primary_member_location': _('Ort HauptbezieherIn'),
+            'co_members': Config.vocabulary('co_member_pl'),
+            'assignment_count': _('Arbeitseinsätze'),
+            'required_assignments': _('benötigte Arbeitseinsätze'),
+            'assignments_progress': _('Arbeitseinsätze Status'),
+            'core_assignment_count': _('Kern-Arbeitseinsätze'),
+            'required_core_assignments': _('Benötigte Kern-Arbeitseinsätze'),
+            'core_assignments_progress': _('Kern-Arbeitseinsätze Status'),
+            'price': _('Preis'),
+        }
+
+
+class SubscriptionPartResource(resources.ModelResource):
     type_name = Field('type__name')
     subscription_id = Field('subscription__pk', widget=IntegerWidget(coerce_to_string=False))
     is_extra = Field('type__is_extra')
 
-    def update_queryset(self, queryset):
+    def filter_export(self, queryset, **kwargs):
         return SubscriptionPart.objects.filter(subscription__in=queryset)
 
     class Meta:
@@ -68,3 +95,12 @@ class SubscriptionPartResource(ModQuerysetModelResource):
         }
         export_order = ('id', 'subscription_id')
         name = Config.vocabulary('subscription') + '-Bestandteile'
+
+
+class TranslatedSubscriptionPartResource(SubscriptionPartResource, TranslatedModelResource):
+    class Meta:
+        verbose_names = {
+            'subscription_id': Config.vocabulary('subscription') + ' ID',
+            'type_name': _('Typ-Name'),
+            'is_extra': _('Ist Zusatzabo'),
+        }

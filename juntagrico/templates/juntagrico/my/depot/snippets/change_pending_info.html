@@ -1,6 +1,8 @@
 {% load i18n %}
-{% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name sfe=subscription.future_depot.name%}
-<strong>Achtung:</strong> Deine Änderung zur/m {{ v_depot }} "{{ sfe }}" wurde beantragt.
-    Wir informieren dich per E-Mail an {{ spe }} sobald die Änderung aktiv wird.
-    Bis dahin ist dein/e {{ v_depot }} weiterhin <strong>"{{ sde }}"</strong>.
+{% blocktrans trimmed with v_to_the_depot=vocabulary.to_the_depot email=subscription.primary_member.email depot=subscription.future_depot.name%}
+    <strong>Achtung:</strong> Dein Wechsel {{ v_to_the_depot }} "{{ depot }}" wurde beantragt.
+    Wir informieren dich per E-Mail an {{ email }} sobald die Änderung aktiv wird.
+{% endblocktrans %}
+{% blocktrans trimmed with v_your_depot=vocabulary.v_your_depot depot=subscription.depot.name %}
+    Bis dahin ist {{ v_your_depot }} weiterhin <strong>"{{ depot }}"</strong>.
 {% endblocktrans %}

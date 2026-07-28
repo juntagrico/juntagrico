@@ -1,16 +1,14 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/member/base.txt" %}
 {% load i18n %}
-{% block content %}
-{% trans "Hallo" %}
 
-{% blocktrans %}Soeben hat {{ account }} die Mitgliedschaft gekündet.{% endblocktrans %}
-{% trans "E-Mail:" %} {{ account.email }}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' account.id %}
+{% block member_message %}
+{% blocktrans trimmed with v_membership=vocabulary.membership %}
+Soeben hat {{ account }} der/die/das {{ v_membership }} gekündet.
+{% endblocktrans %}
 
-{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
-{{ message }}
-
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% if message %}
+{% blocktrans trimmed %}
+Kommentar: {{ message }}
+{% endblocktrans %}
+{% endif %}
 {% endblock %}

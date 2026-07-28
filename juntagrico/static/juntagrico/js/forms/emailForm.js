@@ -7,10 +7,12 @@ $(function () {
     // update the number of recipients in the submit button
     $('#fieldset_to').on('change', function () {
         let submit_button = $('#submit-id-submit')
+        const url = submit_button.data('countUrl')
+        const data = $('#fieldset_to').serialize()
         $.ajax({
-            type: 'GET',
-            url: submit_button.data('countUrl'),
-            data: $('#fieldset_to').serialize(),
+            type: url.length + data.length < 4000 ? 'GET' : 'POST',
+            url: url,
+            data: data,
             success: function (text) {
                 $('#submit-id-submit').val(text)
             },

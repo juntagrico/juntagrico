@@ -62,6 +62,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         """
         return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
 
+    def not_terminated(self):
+        """
+        subscriptions that have no foreseeable end
+        """
+        return self.exclude(cancellation_date__isnull=False).exclude(subscriptionmembership__leave_date__isnull=False)
+
     def activate_future_depots(self):
         for subscription in self.exclude(future_depot__isnull=True):
             subscription.activate_future_depot()

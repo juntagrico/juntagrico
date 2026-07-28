@@ -21,10 +21,10 @@ def _get_setting(setting_key, default: Any = ''):
 
 
 def _get_setting_with_key(setting_key, default):
-    def inner(key):
+    def inner(key, fallback=None):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
-        d = default[key]
+        d = default.get(key, fallback)
         return d() if callable(d) else d
 
     return inner
@@ -37,13 +37,17 @@ def fallback_static(path):
         return path
 
 
+def v_format(text, key):
+    return lambda: text.format(**{key: Config.vocabulary(key)})
+
+
 class Config:
     # organisation settings
     vocabulary = _get_setting_with_key(
         'VOCABULARY',
         {
-            'member': _('Konto'),
-            'member_pl': _('Konten'),
+            'account': _('Konto'),
+            'account_pl': _('Konten'),
             'assignment': _('Arbeitseinsatz'),
             'assignment_pl': _('Arbeitseinsätze'),
             'share': _('Anteilschein'),
@@ -61,6 +65,30 @@ class Config:
             'depot_pl': _('Depots'),
             'package': _('Tasche'),
             'from': _('{} von {}'),
+            # backward compatibility
+            'member': lambda: Config.vocabulary('account'),
+            'member_pl': lambda: Config.vocabulary('account_pl'),
+            # additional vocabulary to adjust for gender and cases
+            'this_account': v_format(_('dieses {account}'), 'account'),
+            'the_assignment_acc': v_format(_('den {assignment}'), 'assignment'),
+            'not_a_member_type': v_format(_('kein {member_type}'), 'member_type'),
+            'your_membership_acc': v_format(_('deine {membership}'), 'membership'),
+            'this_share': v_format(_('dieser {share}'), 'share'),
+            'this_share_acc': v_format(_('diesen {share}'), 'share'),
+            'no_share': v_format(_('kein {share}'), 'share'),
+            'the_depot_acc': v_format(_('das {depot}'), 'depot'),
+            'the_depot_dat': v_format(_('dem {depot}'), 'depot'),
+            'to_the_depot': v_format(_('zum {depot}'), 'depot'),
+            'your_depot': v_format(_('dein {depot}'), 'depot'),
+            'the_subscription': v_format(_('das {subscription}'), 'subscription'),
+            'the_subscription_acc': lambda: Config.vocabulary('the_subscription'),
+            'no_subscription_acc': v_format(_('kein {subscription}'), 'subscription'),
+            'this_subscription_acc': v_format(_('dieses {subscription}'), 'subscription'),
+            'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
+            'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
+            'your_subscription_dat': v_format(_('deinem {subscription}'), 'subscription'),
+            'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
+
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -115,6 +143,7 @@ class Config:
         {
             'enable': True,
             'required_shares': 1,
+            'cumulative_shares': False,
             'required_on_signup': True,
             'fee': 0,
         }
@@ -123,6 +152,10 @@ class Config:
     @classmethod
     def enable_membership(cls):
         return cls.membership('enable')
+
+    @classmethod
+    def cumulative_shares_for_membership(cls):
+        return cls.membership('enable') and cls.membership('cumulative_shares') and cls.membership('required_shares') > 0
 
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
@@ -170,15 +203,22 @@ class Config:
         # normalize
         for file_name, conf in values.items():
             if not isinstance(conf, dict):
-                conf = dict(template=conf)
-            if context is not None:
-                if callable(conf.get('extra_context')):
-                    conf['extra_context'] = conf['extra_context'](context)
-                elif 'extra_context' not in conf:
-                    conf['extra_context'] = {}
-            if 'name' not in conf:
-                conf['name'] = default_names.get(file_name, file_name)
-            yield dict(file_name=file_name, **conf)
+                normal_conf = dict(template=conf, name=default_names.get(file_name, file_name))
+                if context is not None:
+                    normal_conf['extra_context'] = {}
+            else:
+                normal_conf = dict(
+                    template=conf['template'],
+                    name=conf.get('name', default_names.get(file_name, file_name))
+                )
+                if 'name' not in conf:
+                    normal_conf['name'] = default_names.get(file_name, file_name)
+                if context is not None:
+                    if callable(conf.get('extra_context')):
+                        normal_conf['extra_context'] = conf['extra_context'](context)
+                    else:
+                        normal_conf['extra_context'] = conf.get('extra_context', {})
+            yield dict(file_name=file_name, **normal_conf)
 
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
@@ -295,6 +335,8 @@ class Config:
             'job_unsubscribed',
             'membership_activated',
             'membership_deactivated',
+            'subscription_activated',
+            'subscription_deactivated',
         ] + [
             # notify by default on first jobs as they are shown by FIRST_JOB_INFO setting
             FIRST_JOB_NOTIFICATION_MAP[first_job_info] for first_job_info in cls.first_job_info()
