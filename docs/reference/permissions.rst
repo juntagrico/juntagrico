@@ -134,6 +134,9 @@ There you can add a coordinator and distribute the following permissions.
 - Can manage jobs: Coordinator can create and modify all jobs of this area
 - Can manage assignments: Coordinator can change and remove assignments of jobs in this area
 
+All area coordinators can view and delete the messages left on jobs in their area.
+The permission `juntagrico.manage_job_messages` grants access to view and delete messages on all jobs.
+
 
 .. _reference-permission-notifications:
 

@@ -274,6 +274,10 @@
             {% crispy form %}
         {% endif %}
     {% endblock %}
+
+    {% block job_messages %}
+        {% job_messages request.user job %}
+    {% endblock %}
 {% endblock %}
 
 {% block styles %}
