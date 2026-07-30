@@ -4,11 +4,11 @@
 {% load i18n %}
 
 {% if parts.exists %}
-    <ul>
+    <ul class="{{ list_class }}">
         {% for part in parts.sorted %}
             {% with remaining=part.remaining_trial_days status=part.state %}
-                <li>
-                    {{ part }}
+                <li class="text-nowrap">
+                    <span class="mr-2">{{ part }}</span>
                     {% if part.is_trial %}
                         <span class="badge badge-info">{% trans "Probe" %}</span>
                     {% endif %}

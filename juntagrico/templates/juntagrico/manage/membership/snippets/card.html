@@ -1,0 +1,66 @@
+{% load i18n %}
+{% load juntagrico.config %}
+<div class="card shadow-sm mt-4">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="my-1"><i class="bi bi-person mr-2"></i>{% vocabulary 'membership' %}</h5>
+        <div>
+            {% with membership=memberships.first %}
+                {% if not membership %}
+                    <span class="badge badge-danger mt-1">
+                        {{ vocabulary.not_a_member_type }}
+                    </span>
+                {% elif not membership.active %}
+                    {% if membership.deactivation_date %}
+                        <span class="badge badge-secondary my-0">
+                            {% trans "ehemals" %}
+                        </span>
+                    {% elif membership.activation_date %}
+                        <span class="badge badge-warning mt-1">
+                            {% trans "bevorstehend" %}
+                        </span>
+                    {% else %}
+                        <span class="badge badge-warning mt-1">
+                            {% trans "beantragt" %}
+                        </span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge badge-success mt-1">
+                        {% trans "aktiv" %}
+                    </span>
+                    {% if membership.canceled %}
+                        <span class="badge badge-danger mt-1">
+                            {% trans "gekündigt" %}
+                        </span>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% for membership in memberships %}
+            <div>
+                {% if membership.deactivation_date %}
+                    {{ membership.activation_date|date:"SHORT_DATE_FORMAT" }} -
+                    {{ membership.deactivation_date|date:"SHORT_DATE_FORMAT" }}
+                {% elif membership.activation_date %}
+                    {% if membership.active %}
+                        {% blocktrans with ad=membership.activation_date %}Seit {{ ad }}{% endblocktrans %}
+                    {% else %}
+                        {% blocktrans with ad=membership.activation_date %}Ab {{ ad }}{% endblocktrans %}
+                    {% endif %}
+                {% else %}
+                    <div>
+                        {% blocktrans with cd=membership.creation_date %}Beantragt am {{ cd }}{% endblocktrans %}
+                    </div>
+                {% endif %}
+            </div>
+            {% if not forloop.last %}
+                {% if membership.deactivation_date %}
+                    {% trans 'und' %}
+                {% else %}
+                    {% trans 'und ehemals:' %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

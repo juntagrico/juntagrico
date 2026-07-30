@@ -107,6 +107,7 @@ urlpatterns = [
     path('job/cancel', job.cancel, name='job-cancel'),
     path('job/<int:job_id>/message/add', job.add_message, name='job-message-add'),
     path('job/message/<int:message_id>/remove', job.remove_message, name='job-message-remove'),
+    path('job/account/<int:account_id>', job.by_account, name='job-by-account'),
 
 
     # /assignment
@@ -192,6 +193,10 @@ urlpatterns = [
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
+
+    # /manage/account
+    path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
+
 
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),

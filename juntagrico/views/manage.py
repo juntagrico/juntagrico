@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, Exists, OuterRef
+from django.db.models import Q, Count, Exists, OuterRef, F
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -99,6 +99,26 @@ class MemberActiveView(MemberView):
 class MemberArchiveView(MemberView):
     queryset = Member.objects.inactive
     title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
+
+
+@permission_required('juntagrico.view_member')
+def account_single(request, account_id):
+    account = get_object_or_404(Member, pk=account_id)
+
+    relevant_subs = account.subscriptionmembership_set.order_by(F('join_date').desc(nulls_first=True))
+    memberships = account.memberships.order_by(F('activation_date').desc(nulls_first=True))
+    start_of_business_year = temporal.start_of_business_year()
+    assignments = account.assignment_set.filter(job__time__gte=start_of_business_year).order_by('-job__time')
+    has_previous_assignments = account.assignment_set.filter(job__time__lt=start_of_business_year).exists()
+
+    return render(request, 'juntagrico/manage/member/single.html', {
+        'account': account,
+        'subscription_memberships': relevant_subs,
+        'memberships': memberships,
+        'assignments': assignments,
+        'has_previous_assignments': has_previous_assignments,
+        'can_contact': request.user.member.can_contact(account),
+    })
 
 
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
