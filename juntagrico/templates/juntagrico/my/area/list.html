@@ -23,50 +23,52 @@
             <div class="col-md-12 activity-area-list">
                 {% with own_areas=request.user.member.areas.all %}
                     {% regroup areas by core as area_by_core %}
-                    {% for core in area_by_core %}
-                        <div class="mb-4">
-                            {% block section_head %}
-                                <h4>
-                                    {% if core.grouper %}
-                                        {% trans "Kernbereiche" %}
-                                        <img alt="{% trans "Kernbereich" %}" title="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
-                                    {% elif not forloop.first %}
-                                        {% trans "Weitere Bereiche" %}
-                                    {% else %}
-                                        {% trans "Tätigkeitsbereiche" %}
-                                    {% endif %}
-                                </h4>
-                            {% endblock %}
+                    <div class="row mb-4">
+                        {% for core in area_by_core %}
+                            <div class="col-xl-6 mb-2">
+                                {% block section_head %}
+                                    <h4>
+                                        {% if core.grouper %}
+                                            {% trans "Kernbereiche" %}
+                                            <img alt="{% trans "Kernbereich" %}" title="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
+                                        {% elif not forloop.first %}
+                                            {% trans "Weitere Bereiche" %}
+                                        {% else %}
+                                            {% trans "Tätigkeitsbereiche" %}
+                                        {% endif %}
+                                    </h4>
+                                {% endblock %}
 
-                            {% block area_list %}
-                                <ul class="list-group">
-                                    {% for area in core.list %}
-                                        {% block area %}
-                                            <li class="list-group-item activity-area-list-element">
-                                                <div class="d-flex flex-wrap flex-column flex-sm-row">
-                                                    <div class="switch switch-sm align-self-sm-center mt-2 mb-3 mr-3">
-                                                        <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area in own_areas %} checked="checked"{% endif %}/>
-                                                        <label for="area{{ area.id }}">
-                                                        </label>
-                                                    </div>
-                                                    <div>
-                                                        <p class="h4 mb-2">
-                                                            <a href="{% url 'area' area.id %}">{{ area.name }}</a>
-                                                        </p>
-                                                        <div class="mb-1">
-                                                            {% for contact in area.contacts %}
-                                                                {{ contact.to_html }}
-                                                            {% endfor %}
+                                {% block area_list %}
+                                    <ul class="list-group">
+                                        {% for area in core.list %}
+                                            {% block area %}
+                                                <li class="list-group-item activity-area-list-element">
+                                                    <div class="d-flex flex-wrap flex-column flex-sm-row">
+                                                        <div class="switch switch-sm align-self-sm-center mt-2 mb-3 mr-3">
+                                                            <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area in own_areas %} checked="checked"{% endif %}/>
+                                                            <label for="area{{ area.id }}">
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <p class="h4 mb-2">
+                                                                <a href="{% url 'area' area.id %}">{{ area.name }}</a>
+                                                            </p>
+                                                            <div class="mb-1">
+                                                                {% for contact in area.contacts %}
+                                                                    {{ contact.to_html }}
+                                                                {% endfor %}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </li>
-                                        {% endblock %}
-                                    {% endfor %}
-                                </ul>
-                            {% endblock %}
-                        </div>
-                    {% endfor %}
+                                                </li>
+                                            {% endblock %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endblock %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% endwith %}
             </div>
         </div>
