@@ -545,7 +545,7 @@ Jobs
 
 ASSIGNMENT_UNIT
 ^^^^^^^^^^^^^^^
-  The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
+  The mode how assignments are counted: Valid values are ENTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
 
   Type: String
 
