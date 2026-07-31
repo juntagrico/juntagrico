@@ -196,6 +196,7 @@ urlpatterns = [
 
     # /manage/account
     path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
+    path('manage/account/<int:account_id>/notes/edit', manage.account_notes_edit, name='manage-account-notes-edit'),
 
 
     # /manage/assignments

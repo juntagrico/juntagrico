@@ -46,6 +46,8 @@ $(function () {
             }
         });
     }
+
+    $('.swapper').Swap()
 });
 
 function email_button(action, default_email_all) {
@@ -234,6 +236,15 @@ $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') 
         } else {
             $.get(disable_url.replace(placeholder, slider.val()));
         }
+    })
+}
+
+
+$.fn.Swap = function (target) {
+    $(this).on("click", function (e) {
+        $(target || $(this).data('swap')).toggleClass("d-none");
+        e.preventDefault();
+        return false;
     })
 }
 

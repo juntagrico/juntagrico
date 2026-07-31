@@ -25,6 +25,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
+from juntagrico.forms.account import NotesForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
@@ -110,6 +111,9 @@ def account_single(request, account_id):
     start_of_business_year = temporal.start_of_business_year()
     assignments = account.assignment_set.filter(job__time__gte=start_of_business_year).order_by('-job__time')
     has_previous_assignments = account.assignment_set.filter(job__time__lt=start_of_business_year).exists()
+    notes_form = None
+    if request.user.has_perm('juntagrico.change_member'):
+        notes_form = NotesForm(instance=account)
 
     return render(request, 'juntagrico/manage/member/single.html', {
         'account': account,
@@ -118,7 +122,21 @@ def account_single(request, account_id):
         'assignments': assignments,
         'has_previous_assignments': has_previous_assignments,
         'can_contact': request.user.member.can_contact(account),
+        'notes_form': notes_form,
     })
+
+
+@require_POST
+@permission_required('juntagrico.change_member')
+def account_notes_edit(request, account_id):
+    account = get_object_or_404(Member, pk=account_id)
+    notes_form = NotesForm(request.POST, instance=account)
+    if notes_form.is_valid():
+        notes_form.save()
+        messages.success(request, _('Notiz gespeichert'))
+    else:
+        messages.success(request, _('Notiz konnte nicht gespeichert werden.'))
+    return redirect('manage-account-single', account_id=account_id)
 
 
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
