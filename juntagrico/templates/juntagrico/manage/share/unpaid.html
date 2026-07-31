@@ -40,7 +40,7 @@
                 {% for share in shares %}
                     <tr>
                         <td class="share_id">
-                            <a href="{% url 'admin:juntagrico_share_change' share.id %}">
+                            <a href="{% url 'admin:juntagrico_share_change' share.id %}?next={{ request.path|urlencode }}">
                                 {{ share }}
                             </a>
                         </td>
