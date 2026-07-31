@@ -119,6 +119,11 @@ class JobCopy(admin.ModelAdmin):
             return [ContactInlineForJob]
         return super().get_inlines(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        # don't save original object on mass copy
+        if not self.is_mass_copy_view(request):
+            super().save_model(request, obj, form, change)
+
     def save_related(self, request, form, formsets, change):
         if self.is_mass_copy_view(request):
             form.save_related(formsets)
