@@ -26,6 +26,7 @@ from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.mailer import membernotification
+from juntagrico.queryset.subscription import SubscriptionQuerySet
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.management_list import get_changedate
@@ -518,6 +519,22 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     subs = Subscription.objects.filter(id__in=ids)
     subs.activate_future_depots()
     return return_to_previous_location(request)
+
+
+class SubscriptionSharesView(SubscriptionView):
+    permission_required = [
+        ['juntagrico.view_subscription', 'juntagrico.change_subscription', 'juntagrico.can_filter_subscriptions'],
+        ['juntagrico.view_share', 'juntagrico.change_share',]
+    ]
+    template_name = 'juntagrico/manage/subscription/shares.html'
+    title = _('{subscriptions} und {shares}').format(
+        subscriptions=Config.vocabulary('subscription_pl'),
+        shares=Config.vocabulary('share_pl')
+    )
+
+    def get_queryset(self) -> SubscriptionQuerySet:
+        # in method to evaluate today lazy
+        return Subscription.objects.waiting_or_active()
 
 
 @permission_required('juntagrico.change_subscription')
