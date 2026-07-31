@@ -244,6 +244,13 @@ class ShareCountTests(ShareTestCase):
         cls.create_membership(cls.member)
         cls.create_membership(cls.member2)
         cls.create_membership(cls.member4)
+        # sub with negative share requirement
+        cls.sub_type_with_negative_shares = cls.create_sub_type(cls.bundle, shares=-3)
+        cls.sub_with_negative_shares = cls.create_sub_now(
+            cls.depot, [cls.sub_type_with_negative_shares, cls.sub_type]
+        )
+        cls.member8 = cls.create_member('member8@example.com')
+        cls.member8.join_subscription(cls.sub_with_negative_shares, True)
 
     def testMemberRequiredSharesForSubscription(self):
         # in shared active sub
@@ -256,12 +263,16 @@ class ShareCountTests(ShareTestCase):
         self.assertEqual(self.member4.required_shares_count, 0)
         # not yet joined future sub
         self.assertEqual(self.member5.required_shares_count, 0)
-        
+        # including parts with negative required shares -> required_shares_count is always >= 0
+        self.assertEqual(self.member8.required_shares_count, 0)
+
     def testSubscriptionRequiredShares(self):
         self.assertEqual(self.sub.required_shares, 1)
         self.assertEqual(self.sub2.required_shares, 2)
         # inactive parts don't required shares
         self.assertEqual(self.sub3.required_shares, 0)
+        # subscription requiring negative subs
+        self.assertEqual(self.sub_with_negative_shares.required_shares, -2)
 
     def testSubscriptionShareOverflow(self):
         self.assertEqual(self.sub.share_overflow, 2)
