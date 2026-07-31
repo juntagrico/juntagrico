@@ -141,7 +141,7 @@ class JobCopy(admin.ModelAdmin):
 
     def response_change(self, request, obj):
         if self.is_mass_copy_view(request):
-            # show one of the new jobs on page
+            # show the original job page
             return HttpResponseRedirect(reverse('job', args=[obj.id]))
         return super().response_change(request, obj)
 
