@@ -52,7 +52,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertRedirects(response, reverse(redirect), fetch_redirect_response=False)
 
     def addSubToSummary(self, with_co_member=False):
-        sub_types_id = SubscriptionType.objects.values_list('id', flat=True)
+        sub_types_id = SubscriptionType.objects.normal().visible().values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-subscription'),
             {
@@ -63,7 +63,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         if self.with_extra_subs:
             self.assertRedirects(response, reverse('cs-extras'))
             self.assertGet(reverse('cs-extras'))
-            sub_types_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)
+            sub_types_id = SubscriptionType.objects.is_extra().visible().values_list('id', flat=True)
             response = self.client.post(
                 reverse('cs-extras'),
                 {
@@ -339,9 +339,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
     def testExternalSignup(self):
         def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
             if extra_only:
-                sub_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]
+                sub_id = SubscriptionType.objects.is_extra().visible().values_list('id', flat=True)[0]
             else:
-                sub_id = SubscriptionType.objects.values_list('id', flat=True)[0]
+                sub_id = SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]
             return {
                 'first_name': 'First Name',
                 'family_name': 'Last Name',
