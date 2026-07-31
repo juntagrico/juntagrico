@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import JuntagricoTestCase, JuntagricoJobTestCase
-from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob
+from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob, JobMessage
 from ..entity.member import Member
 from ..signals import subscribed, assignment_changed
 
@@ -512,3 +512,55 @@ class JobValidationTests(JuntagricoTestCase):
         self.assertEqual(job.slots, 0)
         self.assertTrue(job.infinite_slots)
 
+
+class JobMessageTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.job_message = JobMessage.objects.create(
+            job=cls.job2,
+            account=cls.member,
+            message='Test message',
+        )
+        JobMessage.objects.create(
+            job=cls.past_job,
+            account=cls.member2,
+            message='old message',
+        )
+
+    def testJobMessage(self):
+        job2_url = reverse('job', args=[self.job2.pk])
+        self.assertGet(job2_url)
+        self.assertGet(job2_url, member=self.area_admin)
+        self.assertGet(job2_url, member=self.admin)
+
+    def testAddJobMessage(self):
+        data = {
+            'message': 'new message',
+        }
+        # non-participant can't message
+        self.assertPost(
+            reverse('job-message-add', args=[self.job2.pk]), data, 403, member=self.member2
+        )
+        # participant can message
+        self.assertPost(reverse('job-message-add', args=[self.job2.pk]), data, 302, member=self.member)
+        self.assertEqual(self.job2.messages.count(), 2)
+
+    def testDeleteJobMessage(self):
+        # can't delete others messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.member2)
+        self.assertEqual(self.job2.messages.count(), 1)
+        # can delete own messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.member)
+        self.assertEqual(self.job2.messages.count(), 0)
+
+    def testAdminDeleteJobMessage(self):
+        # area admin can delete messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.area_admin)
+        self.assertEqual(self.job2.messages.count(), 0)
+
+    def testJobMessagesPurge(self):
+        JobMessage.KEEP_HOURS = 1
+        self.assertEqual(self.past_job.messages.count(), 1)
+        self.assertGet(reverse('job', args=[self.past_job.pk]), member=self.area_admin)
+        self.assertEqual(self.past_job.messages.count(), 0)

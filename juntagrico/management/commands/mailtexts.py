@@ -184,6 +184,11 @@ class Command(BaseCommand):
                     job, member=member, initial_count=1, message=_('[Nachricht des Mitglieds]')
                 )
 
+                print('*** admin/job/message ***')
+                adminnotification.job_message(
+                    job, member=member, message=_('[Nachricht des Mitglieds]')
+                )
+
                 assignment_context = dict(
                     job=job,
                     instance=member,

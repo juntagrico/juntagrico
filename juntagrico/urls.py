@@ -105,6 +105,9 @@ urlpatterns = [
     path('job/<int:job_id>/convert/preview', job.convert_to_recurring_preview, name='job-conversion-preview'),
     path('job/convert/onetime', job.convert_to_one_time, name='job-convert-to-one-time'),
     path('job/cancel', job.cancel, name='job-cancel'),
+    path('job/<int:job_id>/message/add', job.add_message, name='job-message-add'),
+    path('job/message/<int:message_id>/remove', job.remove_message, name='job-message-remove'),
+
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
