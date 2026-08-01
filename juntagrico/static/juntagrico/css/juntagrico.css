@@ -105,7 +105,7 @@ a:hover.delete {
     position: relative;
     padding: 0 40px 0 40px;
     width: 100%;
-    max-width: 1500px;
+    max-width: 1400px;
 }
 
 /* layouts */
@@ -118,7 +118,7 @@ body.wide-layout > .page-container {
 }
 
 @media (min-width: 768px) {
-    .page-title {
+    .page-title.offset-md-3 {
         /* match sidebar */
         margin-left: min(25%, 14em);
     }
