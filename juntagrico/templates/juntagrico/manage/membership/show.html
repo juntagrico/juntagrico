@@ -182,7 +182,7 @@
             // enable/disable deactivation_date
             $('#id_deactivate').change(function() {
                 $('#id_deactivation_date').prop('disabled', !this.checked);
-                $('#div_id_deactivation_date').toggle(this.checked)
+                $('#div_id_deactivation_date, .deactivation-notification-info').toggle(this.checked)
             }).trigger('change')
         </script>
     {% endif %}

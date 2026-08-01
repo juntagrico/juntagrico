@@ -13,6 +13,7 @@ from django.forms import (
 )
 from django.template.loader import get_template
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _, gettext_lazy
 from django_select2.forms import ModelSelect2Widget
 
@@ -236,7 +237,6 @@ class EditAssignmentForm(JobSubscribeForm):
 class AddAssignmentForm(Form):
     account = ModelChoiceField(
         None, label=_('Wer?'), widget=MemberSelect2Widget,
-        help_text=_('Wird automatisch informiert.')
     )
     slots = SlotField(label=_('Teilnahme:'))
 
@@ -246,6 +246,7 @@ class AddAssignmentForm(Form):
         self.job = job
         self.editor = editor
         self.fields['account'].queryset = Member.objects.active()
+        self.fields['account'].help_text = mark_safe('<i class="bi bi-envelope mr-1"></i>' + _('Wird automatisch informiert.'))
         self.fields['slots'].set_choices(1)
 
     def save(self):

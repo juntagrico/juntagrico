@@ -15,19 +15,18 @@
         </form>
     </div>
 
-    <p>
-        <strong>
-            {% if other_job_contacts %}
-                {% blocktrans trimmed %}
-                     Kontaktpersonen werden ebenfalls automatisch informiert:
-                {% endblocktrans %}
-                <br>
-                {% for email, coordinator in other_job_contacts %}
-                    {{ coordinator|default:email }}<br>
-                {% endfor %}
-            {% endif %}
-        </strong>
-    </p>
+    {% if other_job_contacts %}
+        <div class="alert alert-secondary">
+            <i class="bi bi-envelope"></i>
+            {% blocktrans trimmed %}
+                Kontaktpersonen werden ebenfalls automatisch informiert:
+            {% endblocktrans %}
+            <br>
+            {% for email, coordinator in other_job_contacts %}
+                {{ coordinator|default:email }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block buttons %}
