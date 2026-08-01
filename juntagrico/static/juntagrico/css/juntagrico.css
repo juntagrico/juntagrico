@@ -104,34 +104,32 @@ a:hover.delete {
     min-height: 100%;
     position: relative;
     padding: 0 40px 0 40px;
-}
-
-@media (min-width: 768px) {
-    .page-container {
-        width: 750px
-    }
-}
-
-@media (min-width: 992px) {
-    .page-container {
-        width: 970px
-    }
-}
-
-@media (min-width: 1200px) {
-    .page-container {
-        width: 1170px
-    }
+    width: 100%;
+    max-width: 1400px;
 }
 
 /* layouts */
 body.wide-layout > .page-container {
-    width: 95%;
-    max-width: 95%;
+    max-width: 100%;
 }
 
 .full-width {
     width: 100%;
+}
+
+@media (min-width: 768px) {
+    .page-title.offset-md-3 {
+        /* match sidebar */
+        margin-left: min(25%, 14em);
+    }
+}
+
+.sidebar-large {
+    flex-basis: 14em;
+}
+
+.content-container {
+    max-width: 100%;
 }
 
 /* row size stuff checked */
