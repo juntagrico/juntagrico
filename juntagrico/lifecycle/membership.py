@@ -5,6 +5,7 @@ from django.db.models import Q, Max, Min
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.entity.member import Member
 from juntagrico.lifecycle import parse_date
 
 
@@ -43,13 +44,25 @@ def check_membership_consistency(instance):
 
 
 def sync(sender, instance, **kwargs):
-    if not Config.membership('sync_shares') or Config.membership('required_shares') <= 0:
+    if not (
+        Config.enable_shares()
+        and Config.enable_membership()
+        and Config.membership('sync_shares')
+        and Config.membership('required_shares') > 0
+    ):
         return
 
-    account = instance.member
+    if isinstance(instance, Member):
+        account = instance
+    else:
+        account = instance.member
     today = datetime.date.today()
     active_shares = account.shares.exclude(payback_date__lte=today)
     current_membership = account.memberships.active_or_requested().first()
+    # clear duplicate memberships
+    for duplicate in account.memberships.active_or_requested()[1:]:
+        duplicate.delete()
+    
     active_share_count = active_shares.count()
     if Config.cumulative_shares_for_membership():
         active_share_count -= account.required_shares_count
@@ -77,7 +90,7 @@ def sync(sender, instance, **kwargs):
                 )
 
     elif current_membership is not None:
-        # there are no active shares -> deactivate current membership
+        # there are not enough active shares -> deactivate current membership
         dates = account.shares.aggregate(
             cancellation_date=Max('cancelled_date'),
             deactivation_date=Max('payback_date'),
