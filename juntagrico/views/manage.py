@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, gettext
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
@@ -267,8 +267,36 @@ def member_deactivate(request, change_date, member_id=None):
     return return_to_previous_location(request)
 
 
-class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
+class ShareView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
+    template_name = 'juntagrico/manage/share/show.html'
+    queryset = Share.objects.active
+
+
+@require_POST
+@permission_required('juntagrico.change_share')
+@using_change_date
+def share_cancel(request, change_date, share_id=None):
+    if share_id:
+        shares = [get_object_or_404(Share, id=share_id)]
+    else:
+        shares = Share.objects.filter(id__in=request.POST.get('share_id').split('_'))
+    if change_date:
+        change_date = min(change_date, datetime.date.today())
+    for share in shares:
+        try:
+            share.cancel(change_date)
+            messages.success(request, gettext('{share} {id} von {account} gekündigt').format(
+                share=Config.vocabulary('share'),
+                id=share.identifier,
+                account=share.member,
+            ))
+        except ValidationError as e:
+            messages.error(request, f'{share}: {e.message}')
+    return return_to_previous_location(request)
+
+
+class ShareCanceledView(ShareView):
     template_name = 'juntagrico/manage/share/canceled.html'
     queryset = Share.objects.canceled().annotate_backpayable
 
@@ -288,8 +316,7 @@ def share_payout(request, change_date, share_id=None):
     return return_to_previous_location(request)
 
 
-class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
-    permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
+class ShareUnpaidView(ShareView):
     template_name = 'juntagrico/manage/share/unpaid.html'
 
     def get_queryset(self):
@@ -298,6 +325,13 @@ class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
             .exclude(termination_date__lt=datetime.date.today())
             .order_by('member')
         )
+
+
+class ShareArchiveView(ShareView):
+    template_name = 'juntagrico/manage/share/archive.html'
+
+    def get_queryset(self):
+        return Share.objects.filter(payback_date__isnull=False)
 
 
 class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):

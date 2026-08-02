@@ -1,0 +1,7 @@
+<a href="{% url 'admin:juntagrico_share_change' share.id %}">
+    {% if share.number %}
+        {{ share.numer }}
+    {% else %}
+        [{{ share.pk }}]
+    {% endif %}
+</a>
