@@ -30,8 +30,6 @@ class ShareTestCase(JuntagricoTestCase):
 class ShareTests(ShareTestCase):
     def testMemberShareManage(self):
         self.assertGet(reverse('manage-shares'), 200)
-        if self.member4.memberships.active_or_requested().first() is None:
-            Membership.objects.create(account=self.member4)
         self.assertGet(reverse('manage-shares'), 200, member=self.member4)
         self.assertPost(reverse('manage-shares'), {'shares': 0}, 200, member=self.member2)
         self.member2.refresh_from_db()
@@ -52,8 +50,6 @@ class ShareTests(ShareTestCase):
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
         unpaid_share = Share.objects.create(member=self.member)
-        if self.member.memberships.active_or_requested().first() is None:
-            Membership.objects.create(account=self.member)  # requested membership that requires a share
         canceled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
         future_terminated_share = Share.objects.create(
             member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
