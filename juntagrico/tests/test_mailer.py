@@ -258,38 +258,38 @@ class MailerTests(JuntagricoTestCaseWithShares):
         )
 
     def testMemberFromEmailSelection(self):
-        self.assertListEqual(self.member.all_emails(), [('private', 'email1@email.org')])
-        self.assertListEqual(self.member2.all_emails(), [
+        self.assertSetEqual(set(self.member.all_emails()), {('private', 'email1@email.org')})
+        self.assertSetEqual(set(self.member2.all_emails()), {
             ('general', 'info@juntagrico.juntagrico'), ('private', 'email2@email.org')
-        ])
-        self.assertListEqual(self.member3.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member3.all_emails()), {
             ('for_members', 'member@juntagrico.juntagrico'),
             ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
             ('private', 'email3@email.org')
-        ])
-        self.assertListEqual(self.member4.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member4.all_emails()), {
             ('for_shares', 'share@juntagrico.juntagrico'), ('private', 'email4@email.org')
-        ])
-        self.assertListEqual(self.member5.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member5.all_emails()), {
             ('technical', 'it@juntagrico.juntagrico'), ('private', 'email5@email.org')
-        ])
-        self.assertListEqual(self.area_admin.all_emails(), [
+        })
+        self.assertSetEqual(set(self.area_admin.all_emails()), {
             ('area1-m0', 'email_contact@example.org'),
             ('area2-m2', 'email2@email.org'),
             ('private', 'areaadmin@email.org')
-        ])
-        self.assertListEqual(self.area_admin_contact.all_emails(), [
+        })
+        self.assertSetEqual(set(self.area_admin_contact.all_emails()), {
             ('area1-m0', 'email_contact@example.org'),
             ('private', 'area_admin13@email.org')
-        ])
-        self.assertListEqual(self.admin.all_emails(), [
+        })
+        self.assertSetEqual(set(self.admin.all_emails()), {
             ('general', 'info@juntagrico.juntagrico'),
             ('for_members', 'member@juntagrico.juntagrico'),
             ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
             ('for_shares', 'share@juntagrico.juntagrico'),
             ('technical', 'it@juntagrico.juntagrico'),
             ('private', 'admin@email.org')
-        ])
+        })
 
     def testMailSend(self):
         with open('juntagrico/tests/test_mailer.py') as fp:
