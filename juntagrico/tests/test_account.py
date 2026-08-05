@@ -63,6 +63,26 @@ class AccountTests(JuntagricoTestCase):
         account.refresh_from_db()
         self.assertTrue(account.inactive, f'{account} {account.email}')
 
+    def testAccountOveriew(self):
+        self.assertGet(reverse('manage-account-single', args=[self.member.id]), code=302)
+        self.assertGet(reverse('manage-account-single', args=[self.member.id]), member=self.admin)
+    
+    def testAccountNoteEdit(self):
+        data = {'notes': 'New note'}
+        self.assertPost(
+            reverse('manage-account-notes-edit', args=[self.member.id]), data=data, code=302
+        )
+        self.member.refresh_from_db()
+        self.assertNotEqual(self.member.notes, 'New note')
+        self.assertPost(
+            reverse('manage-account-notes-edit', args=[self.member.id]),
+            data=data,
+            code=302,
+            member=self.admin,
+        )
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.notes, 'New note')
+
 
 class AdminTest(JuntagricoTestCase):
     def testDeleteComments(self):
