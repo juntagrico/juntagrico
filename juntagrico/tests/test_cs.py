@@ -13,7 +13,7 @@ from ..config import Config
 
 class CreateSubscriptionTests(JuntagricoTestCase):
     share_order_count = 1
-    
+
     @staticmethod
     def newMemberData(email='test@user.com'):
         return {
@@ -151,7 +151,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.commonAddSub(new_member_data['email'], with_co_member, 'new test comment' if with_comment else '')
         mail_count = 3  # welcome email & 2 admin notifications for new member and new subscription
         if with_co_member:
-            mail_count += 2  # Welcome to co-member & admin notification
+            mail_count += 1  # Invite to co-member
         if settings.ENABLE_SHARES:
             mail_count += 1 + self.share_order_count  # share email & admin notification(s)
             # no shares are ordered for co-member, thus no more emails
@@ -207,10 +207,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.member4.email,
             True,
             'test comment',
-            (2 + self.share_order_count) if settings.ENABLE_SHARES else 1,
+            (1 + self.share_order_count) if settings.ENABLE_SHARES else 0,
         )
         # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
-        self.assertEqual(len(mail.outbox), (4 + self.share_order_count) if settings.ENABLE_SHARES else 3)
+        self.assertEqual(len(mail.outbox), (3 + self.share_order_count) if settings.ENABLE_SHARES else 2)
 
     def testAddSubWithoutComember(self):
         """ test order of new sub by existing member without sub
