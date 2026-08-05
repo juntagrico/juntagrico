@@ -4,7 +4,7 @@
     <div class="card-body text-center">
         <div class="position-absolute p-3" style="top: 0; right: 0;">
             {% impersonate_start request account %}
-            <a href="{% url 'admin:juntagrico_member_change' account.id %}" target="_blank"
+            <a href="{% url 'admin:juntagrico_member_change' account.id %}{% querystring next=request.path %}"
                title="{% trans 'Datenverwaltung öffnen' %}">
                 <i class="bi bi-wrench mr-2"></i>
             </a>

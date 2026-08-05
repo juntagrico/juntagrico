@@ -76,9 +76,17 @@
                         {% endif %}
                         <h5 class="my-1"><i class="bi bi-sticky mr-2"></i>{% trans 'Notizen' %}</h5>
                     </div>
-                    <div class="card-body notes-swap">
-                        {{ account.notes|default:'-'|linebreaksbr }}
-                    </div>
+
+                    {% if account.notes %}
+                        <div class="card-body notes-swap">
+                            {{ account.notes|linebreaksbr }}
+                        </div>
+                    {% else %}
+                        <div class="card-body notes-swap text-center">
+                            <p class="text-muted py-2">{% trans 'keine' %}</p>
+                        </div>
+                    {% endif %}
+
                     {% if notes_form %}
                         <div class="card-body notes-swap d-none">
                             {% crispy notes_form %}
