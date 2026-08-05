@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
@@ -5,7 +7,7 @@ from django.urls import reverse
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from . import JuntagricoTestCase
+from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
 
 
 class AccountTests(JuntagricoTestCase):
@@ -63,14 +65,33 @@ class AccountTests(JuntagricoTestCase):
         account.refresh_from_db()
         self.assertTrue(account.inactive, f'{account} {account.email}')
 
-    def testAccountOveriew(self):
+
+class AccountOverviewTests(JuntagricoTestCaseWithShares):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.create_membership(cls.member)
+        cls.create_membership(cls.member2, activation_date=datetime.date.today() + datetime.timedelta(days=2))
+        cls.create_membership(cls.member3, cancellation_date='2026-04-12')
+        cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
+        cls.create_membership(cls.member5, activation_date=None)
+
+    def testAccountOverview(self):
         self.assertGet(reverse('manage-account-single', args=[self.member.id]), code=302)
         self.assertGet(reverse('manage-account-single', args=[self.member.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member2.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member3.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member4.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member5.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.inactive_member.id]), member=self.admin)
     
     def testAccountNoteEdit(self):
         data = {'notes': 'New note'}
         self.assertPost(
-            reverse('manage-account-notes-edit', args=[self.member.id]), data=data, code=302
+            reverse('manage-account-notes-edit', args=[self.member.id]),
+            data=data,
+            code=302,
+            member=self.member2,
         )
         self.member.refresh_from_db()
         self.assertNotEqual(self.member.notes, 'New note')
