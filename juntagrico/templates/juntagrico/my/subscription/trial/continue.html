@@ -8,3 +8,13 @@
         {% blocktrans %}{{ v_subscription }} verlängern{% endblocktrans %}
     </h3>
 {% endblock %}
+
+{% block content %}
+    <div class="alert alert-secondary">
+        <i class="bi bi-envelope"></i>
+        {% blocktrans trimmed with owner=form.part.subscription.primary_member %}
+            {{ owner }} wird bei Bestellung automatisch per E-Mail benachrichtigt.
+        {% endblocktrans %}
+    </div>
+    {{ block.super }}
+{% endblock %}
