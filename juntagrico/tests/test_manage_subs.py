@@ -1,8 +1,8 @@
 from django.core import mail
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
 from ..entity.subs import SubscriptionPart
 
 
@@ -107,3 +107,12 @@ class ManageSubRecentListTests(JuntagricoTestCase):
         })
         # member2 has no access
         self.assertGet(reverse('manage-sub-recent'), member=self.member2, code=403)
+
+
+@tag('shares')
+class ManageSubSharesTests(JuntagricoTestCaseWithShares):
+    def testSubscriptionSharesList(self):
+        self.assertGet(reverse('manage-sub-shares'))
+        self.assertGet(reverse('manage-sub-shares'), member=self.admin)
+        # member 2 has no access
+        self.assertGet(reverse('manage-sub-pending'), member=self.member2, code=403)
