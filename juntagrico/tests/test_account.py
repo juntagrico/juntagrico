@@ -76,10 +76,11 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         cls.member.confirmed = True
         cls.member.save()
         cls.create_membership(cls.member, notes='notes on membership')
-        Share.objects.create(
-            member=cls.member,
-            notes='notes on share'
-        )
+        if settings.ENABLE_SHARES:
+            Share.objects.create(
+                member=cls.member,
+                notes='notes on share'
+            )
         cls.sub.future_depot = cls.depot2
         cls.sub.save()
         cls.old_job = RecuringJob.objects.create(
