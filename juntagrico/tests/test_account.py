@@ -8,6 +8,7 @@ from django.urls import reverse
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
+from ..entity.jobs import RecuringJob, Assignment
 
 
 class AccountTests(JuntagricoTestCase):
@@ -70,9 +71,29 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.create_membership(cls.member)
+        cls.member.notes = 'notes on member'
+        cls.member.confirmed = True
+        cls.member.save()
+        cls.create_membership(cls.member, notes='notes on membership')
+        Share.objects.create(
+            member=cls.member,
+            notes='notes on share'
+        )
+        cls.sub.future_depot = cls.depot2
+        cls.sub.save()
+        cls.old_job = RecuringJob.objects.create(
+            slots=2,
+            time='2025-06-06',
+            type=cls.job_type
+        )
+        Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
         cls.create_membership(cls.member2, activation_date=datetime.date.today() + datetime.timedelta(days=2))
+        cls.member2.cancellation_date = '2026-04-12'
+        cls.member2.save()
         cls.create_membership(cls.member3, cancellation_date='2026-04-12')
+        cls.member3.cancellation_date = '2026-04-12'
+        cls.member3.deactivation_date = '2026-04-12'
+        cls.member3.save()
         cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
         cls.create_membership(cls.member5, activation_date=None)
 

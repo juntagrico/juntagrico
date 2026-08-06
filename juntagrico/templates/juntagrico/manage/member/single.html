@@ -41,7 +41,7 @@
                     <div class="card-header">
                         <h5 class="my-1"><i class="bi bi-ui-checks-grid mr-2"></i>{% trans 'Tätigkeitsbereiche' %}</h5>
                     </div>
-                    {% if account.areas.exits %}
+                    {% if account.areas.exists %}
                         <div class="card-body">
                             <ul class="list-unstyled my-0">
                                 {% with coordinated_areas=account.coordinated_areas.all %}
