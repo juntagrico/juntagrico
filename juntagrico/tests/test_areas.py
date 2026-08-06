@@ -10,7 +10,9 @@ class AreaTests(JuntagricoTestCase):
         self.assertGet(reverse('areas'))
 
     def testArea(self):
-        self.assertGet(reverse('area', args=[self.area.pk]))
+        url = reverse('area', args=[self.area.pk])
+        self.assertGet(url)
+        self.assertGet(url, member=self.area_admin)
 
     def testAreaJoinAndLeave(self):
         self.assertGet(reverse('area-join', args=[self.area2.pk]))

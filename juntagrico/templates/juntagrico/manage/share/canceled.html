@@ -50,7 +50,7 @@
             {% for share in object_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'admin:juntagrico_share_change' share.id %}">
+                        <a href="{% url 'admin:juntagrico_share_change' share.id %}?next={{ request.path|urlencode }}">
                             {{ share }}
                         </a>
                         <div class="d-none share_id{% if share.backpayable %} backpayable{% endif %}">
