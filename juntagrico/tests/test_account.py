@@ -71,6 +71,7 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
+        day_after_tomorrow = datetime.date.today() + datetime.timedelta(days=2)
         cls.member.notes = 'notes on member'
         cls.member.confirmed = True
         cls.member.save()
@@ -87,15 +88,17 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
             type=cls.job_type
         )
         Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
-        cls.create_membership(cls.member2, activation_date=datetime.date.today() + datetime.timedelta(days=2))
+        cls.create_membership(cls.member2, activation_date=day_after_tomorrow)
         cls.member2.cancellation_date = '2026-04-12'
         cls.member2.save()
         cls.create_membership(cls.member3, cancellation_date='2026-04-12')
-        cls.member3.cancellation_date = '2026-04-12'
-        cls.member3.deactivation_date = '2026-04-12'
-        cls.member3.save()
         cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
         cls.create_membership(cls.member5, activation_date=None)
+        cls.future_inactive_member = cls.create_member(
+            email='future_inactive@example.com',
+            cancellation_date=day_after_tomorrow,
+            deactivation_date=day_after_tomorrow,
+        )
 
     def testAccountOverview(self):
         self.assertGet(reverse('manage-account-single', args=[self.member.id]), code=302)
@@ -105,7 +108,8 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('manage-account-single', args=[self.member4.id]), member=self.admin)
         self.assertGet(reverse('manage-account-single', args=[self.member5.id]), member=self.admin)
         self.assertGet(reverse('manage-account-single', args=[self.inactive_member.id]), member=self.admin)
-    
+        self.assertGet(reverse('manage-account-single', args=[self.future_inactive_member.id]), member=self.admin)
+
     def testAccountNoteEdit(self):
         data = {'notes': 'New note'}
         self.assertPost(
