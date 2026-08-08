@@ -77,10 +77,11 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         cls.member.save()
         cls.create_membership(cls.member, notes='notes on membership')
         if settings.ENABLE_SHARES:
-            Share.objects.create(
-                member=cls.member,
-                notes='notes on share'
-            )
+            for _ in range(3):
+                Share.objects.create(
+                    member=cls.member,
+                    notes='notes on share'
+                )
         cls.sub.future_depot = cls.depot2
         cls.sub.save()
         cls.old_job = RecuringJob.objects.create(
@@ -89,12 +90,14 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
             type=cls.job_type
         )
         Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
+        Assignment.objects.create(job=cls.job1, member=cls.member, amount=1)
         cls.create_membership(cls.member2, activation_date=day_after_tomorrow)
         cls.member2.cancellation_date = '2026-04-12'
         cls.member2.save()
         cls.create_membership(cls.member3, cancellation_date='2026-04-12')
         cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
         cls.create_membership(cls.member5, activation_date=None)
+        cls.create_membership(cls.area_admin, activation_date=day_after_tomorrow)
         cls.future_inactive_member = cls.create_member(
             email='future_inactive@example.com',
             cancellation_date=day_after_tomorrow,
@@ -110,6 +113,7 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('manage-account-single', args=[self.member5.id]), member=self.admin)
         self.assertGet(reverse('manage-account-single', args=[self.inactive_member.id]), member=self.admin)
         self.assertGet(reverse('manage-account-single', args=[self.future_inactive_member.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.area_admin.id]), member=self.admin)
 
     def testAccountNoteEdit(self):
         data = {'notes': 'New note'}
