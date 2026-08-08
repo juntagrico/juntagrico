@@ -3,6 +3,7 @@ from django.test import override_settings, tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
+from ..entity.share import Share
 from ..entity.subs import SubscriptionPart
 
 
@@ -111,6 +112,11 @@ class ManageSubRecentListTests(JuntagricoTestCase):
 
 @tag('shares')
 class ManageSubSharesTests(JuntagricoTestCaseWithShares):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        Share.objects.create(member=cls.member2)  # add unpaid share
+
     def testSubscriptionSharesList(self):
         self.assertGet(reverse('manage-sub-shares'))
         self.assertGet(reverse('manage-sub-shares'), member=self.admin)

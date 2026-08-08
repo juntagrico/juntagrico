@@ -81,25 +81,23 @@
             <td>
                 {{ subscription.required_shares }}
             </td>
-            {% with paid=subscription.paid_shares %}
+            {% with counted=subscription.shares.count_dedicated %}
                 <td>
-                    <span class="badge {% if paid >= required %}badge-success{% else %}badge-danger{% endif %}"
+                    <span class="badge {% if counted.paid >= required %}badge-success{% else %}badge-danger{% endif %}"
                           title="{% trans 'Bezahlte Anteilscheine' %}">
-                        {{ paid }}
+                        {{ counted.paid }}
                     </span>
-                    {% with all=subscription.all_shares %}
-                        {% if all > paid %}
-                            (
-                            <span class="badge {% if all >= required %}badge-success{% else %}badge-danger{% endif %}"
-                                  title="{% trans 'Alle Anteilscheine' %}">
-                                {{ all }}
-                            </span>
-                            )
-                        {% endif %}
-                    {% endwith %}
+                    {% if counted.total > counted.paid %}
+                        (
+                        <span class="badge {% if counted.total >= required %}badge-success{% else %}badge-danger{% endif %}"
+                              title="{% trans 'Alle Anteilscheine' %}">
+                            {{ counted.total }}
+                        </span>
+                        )
+                    {% endif %}
                 </td>
                 <td>
-                    {% if paid >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
+                    {% if counted.paid >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
                 </td>
             {% endwith %}
         {% endwith %}
