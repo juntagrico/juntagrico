@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
+from django.utils import timezone
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -85,18 +86,20 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         cls.sub.future_depot = cls.depot2
         cls.sub.save()
         cls.old_job = RecuringJob.objects.create(
-            slots=2,
-            time='2025-06-06',
-            type=cls.job_type
+            slots=2, time='2025-06-06', type=cls.job_type
         )
         Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
-        Assignment.objects.create(job=cls.job1, member=cls.member, amount=1)
+        cls.future_job = RecuringJob.objects.create(
+            slots=2, time=timezone.now() + datetime.timedelta(days=2), type=cls.job_type
+        )
+        Assignment.objects.create(job=cls.future_job, member=cls.member, amount=1)
         cls.create_membership(cls.member2, activation_date=day_after_tomorrow)
         cls.member2.cancellation_date = '2026-04-12'
         cls.member2.save()
         cls.create_membership(cls.member3, cancellation_date='2026-04-12')
         cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
         cls.create_membership(cls.member5, activation_date=None)
+        cls.area.add(cls.area_admin)
         cls.create_membership(cls.area_admin, activation_date=day_after_tomorrow)
         cls.future_inactive_member = cls.create_member(
             email='future_inactive@example.com',

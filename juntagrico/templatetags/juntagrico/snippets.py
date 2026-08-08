@@ -146,7 +146,7 @@ def sequence(array, attribute=None, prefix='', postfix='', sep=', ', range_sep='
         j = i
         while j + 1 < array_len and array[j] + 1 == array[j + 1]:
             j += 1
-        if j - i > 2:
+        if j - i > 1:
             result.append(f'{prefix}{array[i]}{postfix}{range_sep}{prefix}{array[j]}{postfix}')
         else:
             result += [f'{prefix}{item}{postfix}' for item in array[i:j + 1]]
