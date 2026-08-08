@@ -22,11 +22,7 @@ class ShareQueryset(PolymorphicQuerySet):
         return self.filter(cancelled_date__isnull=True)
 
     def canceled(self):
-        return self.filter(
-            paid_date__isnull=False,
-            cancelled_date__isnull=False,
-            payback_date__isnull=True
-        )
+        return self.active().filter(cancelled_date__isnull=False)
 
     def potentially_pending_payback(self):
         return self.filter(payback_date__isnull=True)

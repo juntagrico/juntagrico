@@ -88,7 +88,7 @@
                 {% with canceled_parts=subscription.parts.canceled ordered_parts=subscription.parts.ordered %}
                     <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
-                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}?next={{ request.path|urlencode }}">
+                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}{% querystring next=request.path %}">
                                 {{ subscription.id }}
                             </a>
                         </td>
