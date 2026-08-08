@@ -147,6 +147,7 @@ urlpatterns = [
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
+    path('manage/subscription/shares', manage.SubscriptionSharesView.as_view(), name='manage-sub-shares'),
     path('my/future', juntagrico_admin.future, name='future'),
     path('manage/subscription/inconsistencies', manage.subscription_inconsistencies,
          name='manage-subscription-inconsistencies'),

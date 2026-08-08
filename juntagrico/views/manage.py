@@ -520,6 +520,19 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     return return_to_previous_location(request)
 
 
+class SubscriptionSharesView(SubscriptionView):
+    permission_required = [
+        ['juntagrico.view_subscription', 'juntagrico.change_subscription', 'juntagrico.can_filter_subscriptions'],
+        ['juntagrico.view_share', 'juntagrico.change_share',]
+    ]
+    queryset = Subscription.objects.waiting_or_active
+    template_name = 'juntagrico/manage/subscription/shares.html'
+    title = _('{subscriptions} und {shares}').format(
+        subscriptions=Config.vocabulary('subscription_pl'),
+        shares=Config.vocabulary('share_pl')
+    )
+
+
 @permission_required('juntagrico.change_subscription')
 def subscription_inconsistencies(request):
     management_list = []
