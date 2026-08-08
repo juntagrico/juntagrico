@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load juntagrico.config %}
+{% load juntagrico.common %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -78,7 +79,6 @@
     {% vocabulary "member" as v_member %}
     {% vocabulary "subscription" as v_subscription %}
     {% config "organisation_address" as organisation_address %}
-    {% config "currency" as currency %}
 <p class="org_address">
 {{ organisation_address.name }}<br>
 {% if organisation_address.extra %}
@@ -115,8 +115,8 @@
       <tr>
         <td>{{ shares_date|date:"SHORT_DATE_FORMAT" }}</td>
         <td>{{ share.count|floatformat }}</td>
-        <td>{{ share.value|floatformat:2 }} {{ currency }}</td>
-        <td class="text-right">{{ share.total|floatformat:2 }} {{ currency }}</td>
+        <td>{{ share.value|price }}</td>
+        <td class="text-right">{{ share.total|price }}</td>
       </tr>
     {% endfor %}
     <tr></tr>
@@ -124,7 +124,7 @@
         <td></td>
         <td></td>
         <td class="text-right"><b>Total:</b></td>
-        <td class="text-right">{{ shares_total|floatformat:2 }} {{ currency }}</td>
+        <td class="text-right">{{ shares_total|price }}</td>
       </tr>
 </table>
 <p>

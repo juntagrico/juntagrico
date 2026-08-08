@@ -1,0 +1,17 @@
+{% load i18n %}
+{% if membership.deactivation_date %}
+    <span>
+        {% blocktrans trimmed with deactivation_date=membership.deactivation_date|date:"Y-m-d" %}
+            Wird am {{ deactivation_date }} deaktiviert
+        {% endblocktrans %}
+    </span>
+{% elif perms.juntagrico.change_membership %}
+    <span class="membership_id d-none">{{ membership.id }} {# space is required #}</span>
+    <form action="{% url 'manage-membership-deactivate' %}" method="POST"
+          onsubmit="return confirm('{% trans "Bist du sicher?" %}')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" name="membership_ids" value="{{ membership.id }}">
+            {% trans "deaktivieren" %}
+        </button>
+    </form>
+{% endif %}

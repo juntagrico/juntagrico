@@ -18,7 +18,7 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
                 required_shares += form.instance.type.shares
                 future_parts_count += 1 if form.instance.cancellation_date is None else 0
         if Config.enable_shares():
-            available_shares = sum([member.usable_shares_count for member in self.instance.future_members])
+            available_shares = sum([member.usable_shares_for_sub_count for member in self.instance.future_members])
             if required_shares > available_shares:
                 raise ValidationError(
                     _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),
@@ -27,7 +27,7 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
                     code='missing_shares')
         if future_parts_count == 0 and self.instance.cancellation_date is None:
             raise ValidationError(
-                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden Bestandteil.'
                   ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
                     Config.vocabulary('subscription')),
                 code='missing_part'

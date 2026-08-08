@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.models import Permission
 from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
 from django.utils.decorators import method_decorator
 from django.utils.itercompat import is_iterable
@@ -36,6 +37,10 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def active(self, on_date=None):
         on_date = on_date or datetime.date.today()
         return self.exclude(deactivation_date__lte=on_date)
+
+    def inactive(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(deactivation_date__lte=on_date)
 
     def canceled(self):
         return self.filter(
@@ -127,3 +132,7 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
 
     def as_email_recipients(self):
         return [f'{m} <{m.email}>' for m in self]
+
+    def by_permission(self, permission_codename):
+        perm = Permission.objects.get(codename=permission_codename)
+        return self.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()

@@ -10,6 +10,11 @@
         "groups": [],
         "user_permissions": [
             [
+                "add_assignment",
+                "juntagrico",
+                "assignment"
+            ],
+            [
                 "change_assignment",
                 "juntagrico",
                 "assignment"

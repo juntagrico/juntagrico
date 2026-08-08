@@ -28,7 +28,7 @@ class ExportTests(JuntagricoTestCase):
         # admin can access
         response = self.assertGet(export_url, member=self.admin)
         fields = response.context_data['form'].resource_fields['MemberWithAssignmentsAndAreaResource']
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data(1, selected=fields))
+        response = self.assertPost(export_url, member=self.admin, data=self.get_data(2, selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMembersExport(self):
@@ -42,7 +42,7 @@ class ExportTests(JuntagricoTestCase):
         export_url = reverse('admin:juntagrico_member_export')
         response = self.assertGet(export_url, member=self.admin)
         fields = response.context_data['form'].resource_fields['MemberAssignmentsPerArea']
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data(2, selected=fields))
+        response = self.assertPost(export_url, member=self.admin, data=self.get_data(4, selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     @tag('shares')
@@ -64,7 +64,7 @@ class ExportTests(JuntagricoTestCase):
                                    data=self.get_data(selected=fields['SubscriptionResource']))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
         response = self.assertPost(export_url, member=self.admin,
-                                   data=self.get_data(1, selected=fields['SubscriptionPartResource']))
+                                   data=self.get_data(2, selected=fields['SubscriptionPartResource']))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
 

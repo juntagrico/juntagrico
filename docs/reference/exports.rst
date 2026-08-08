@@ -42,7 +42,6 @@ Example Resources
             name = 'My Share Resource'
 
 
-
 Integrating your Resources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -76,3 +75,31 @@ Otherwise you will have to modify the existing admin with the ``ExportMixin`` cl
         # replace previously registered admin
         admin.site.unregister(Depot)
         admin.site.register(Depot, ExportableDepotAdmin)
+
+
+Translated Export Headers
+-------------------------
+
+The default exports are available as "native" or "translated".
+The first is the better choice if you want to process the export with another tool or script as the headers will be
+consistent, regardless of your language setting in Juntagrico.
+The latter will have headers translated to your juntagrico language, which makes it easier to process manually.
+
+To create translated versions of your own exports use ``TranslatedModelResource``. Usually you want to create
+an additional resource that extends your untranslated resource.
+
+``TranslatedModelResource`` will try to use the verbose names of your model fields.
+For certain fields this won't work automatically.
+Provide a dictionary ``verbose_names`` to translate those field names manually:
+
+.. code-block:: python
+
+    from import_export import resources
+    from django.utils.translation import gettext_lazy as _
+
+
+    class MyTranslatedDepotResource(TranslatedModelResource, MyDepotResource):
+        class Meta:
+            verbose_names = {
+                'location': _('Ort'),
+            }

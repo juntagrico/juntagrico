@@ -9,7 +9,42 @@ from juntagrico.config import Config
 from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionBundleProductSize, SubscriptionType
 
 
-class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
+class SubscriptionTypeMixin:
+    fieldsets = [
+        (
+            None,
+            {
+                'fields': [
+                    ('name', 'long_name'),
+                    'description',
+                    ('price', 'required_assignments', 'required_core_assignments'),
+                    ('visible', 'is_extra', 'trial_days'),
+                    ('interval', 'offset')
+                ],
+            },
+        ),
+    ]
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        conditional = []
+        if Config.enable_shares():
+            conditional.append('shares')
+        if Config.membership('enable'):
+            conditional.append('requires_membership')
+        fieldsets[0][1]['fields'][2] = ('price', *conditional, 'required_assignments', 'required_core_assignments')
+        return fieldsets
+
+    def get_exclude(self, request, obj=None):
+        exclude = super().get_exclude(request, obj) or []
+        if not Config.enable_shares():
+            exclude.append('shares')
+        if not Config.membership('enable'):
+            exclude.append('requires_membership')
+        return exclude
+
+
+class SubscriptionTypeAdmin(SortableAdminMixin, SubscriptionTypeMixin, RichTextAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
                     'required_core_assignments', 'visible', 'is_extra']
     exclude = ['trial']
@@ -19,12 +54,6 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     list_filter = ['visible',
                    ('bundle', admin.RelatedOnlyFieldListFilter),
                    ('bundle__category', admin.RelatedOnlyFieldListFilter)]
-
-    def get_exclude(self, request, obj=None):
-        exclude = super().get_exclude(request, obj)
-        if not Config.enable_shares():
-            exclude.append('shares')
-        return exclude
 
 
 if Config.enable_shares():
@@ -52,35 +81,9 @@ class ProductSizeInline(admin.TabularInline):
     extra = 1
 
 
-class SubscriptionTypeInline(SortableStackedInline):
+class SubscriptionTypeInline(SubscriptionTypeMixin, SortableStackedInline):
     model = SubscriptionType
     extra = 0
-    fieldsets = [
-        (
-            None,
-            {
-                'fields': [
-                    ('name', 'long_name'),
-                    'description',
-                    ('price', 'shares', 'required_assignments', 'required_core_assignments'),
-                    ('visible', 'is_extra', 'trial_days'),
-                    ('interval', 'offset')
-                ],
-            },
-        ),
-    ]
-
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super().get_fieldsets(request, obj)
-        if not Config.enable_shares():
-            fieldsets[0][1]['fields'][2] = ('price', 'required_assignments', 'required_core_assignments')
-        return fieldsets
-
-    def get_exclude(self, request, obj=None):
-        exclude = super().get_exclude(request, obj) or []
-        if not Config.enable_shares():
-            exclude.append('shares')
-        return exclude
 
 
 class SubscriptionBundleAdmin(SortableAdminMixin, RichTextAdmin):

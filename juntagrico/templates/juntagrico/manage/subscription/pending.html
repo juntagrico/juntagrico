@@ -12,6 +12,28 @@
 {% endblock %}
 
 {% block content %}
+    {% if perms.juntagrico.change_subscription %}
+        {% if 'subscription_activated'|notified or 'subscription_deactivated'|notified %}
+            <div class="alert alert-secondary">
+                <i class="bi bi-envelope"></i>
+                {% vocabulary 'member_type_pl' as v_member_type_pl %}
+                {% if 'subscription_activated'|notified and 'subscription_deactivated'|notified %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Aktivierung und Deaktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% elif 'subscription_activated'|notified %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Aktivierung, aber NICHT bei Deaktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Deaktivierung, aber NICHT bei Aktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+
     {% action_date request %}
     {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
     {% has_extra_subscriptions as b_has_extra_subscriptions %}

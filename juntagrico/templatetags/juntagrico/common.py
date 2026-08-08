@@ -108,7 +108,7 @@ def price(value):
     formats the number as a price.
     """
     value = floatformat(value, '-2u')
-    return value + ' ' + Config.currency()
+    return Config.currency_format().format(value)
 
 
 @register.filter

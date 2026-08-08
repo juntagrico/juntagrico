@@ -1,14 +1,9 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
+
+{% block message %}
 {% vocabulary "depot" as v_depot %}
-{% trans "Hallo" %}
-
-{% blocktrans %}Soeben wurden neue {{ v_depot }}-Listen generiert{% endblocktrans %}:
-{{ serverurl }}{% url 'lists' %}
-
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% blocktrans %}Soeben wurden neue {{ v_depot }}-Listen generiert:{% endblocktrans %}
+{{ server_url }}{% url 'lists' %}
 {% endblock %}

@@ -9,8 +9,8 @@
 {% block intro %}
     {% if not mod %}
         <p>
-            {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
-            Teilst du dein/e/n {{ v_subscription }}? Füge weitere BezieherInnen hinzu.
+            {% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc %}
+            Teilst du {{ v_your_subscription_acc }}? Füge weitere BezieherInnen hinzu.
             {% endblocktrans %}
         </p>
         {% if co_members|length == 0 %}

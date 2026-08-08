@@ -56,11 +56,26 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         on_date = on_date or datetime.date.today()
         return self.in_date_range(on_date, on_date).exclude(activation_date=None)
 
+    def waiting_or_active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions waiting or active on the given date.
+        """
+        on_date = on_date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=on_date)
+
     def in_date_range(self, start, end):
         """
         subscriptions that were active in the given period
         """
         return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
+    def not_terminated(self):
+        """
+        subscriptions that have no foreseeable end
+        """
+        return self.exclude(cancellation_date__isnull=False).exclude(subscriptionmembership__leave_date__isnull=False)
 
     def activate_future_depots(self):
         for subscription in self.exclude(future_depot__isnull=True):

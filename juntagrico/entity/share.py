@@ -87,7 +87,8 @@ class Share(Billable):
         date = date or datetime.date.today()
         self.payback_date = date
         self.save()
-        self.member.deactivate(date)
+        if membership := self.member.memberships.canceled().first():
+            membership.deactivate(date)
 
     @notifiable
     class Meta:

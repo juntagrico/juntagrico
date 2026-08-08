@@ -43,10 +43,18 @@
         </div>
         {% if subscription_membership.can_leave %}
             <div class="mb-3">
-                <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
-                    {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
-                </a>
+                {% if member.subscriptions.not_terminated.count > 1 %}
+                    <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'cancel' %}" class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                    </a>
+                {% endif %}
             </div>
+        {% else %}
+            {% include './banners/cant_leave.html' with level='info' %}
         {% endif %}
     {% endif %}
 {% endif %}

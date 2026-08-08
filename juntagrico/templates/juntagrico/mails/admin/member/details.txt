@@ -1,0 +1,3 @@
+{% load i18n %}
+{% blocktrans with email=member.email %}E-Mail: {{ email }}{% endblocktrans %}
+{{ server_url }}{% url 'admin:juntagrico_member_change' member.id %}

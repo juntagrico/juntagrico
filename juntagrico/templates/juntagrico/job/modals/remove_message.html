@@ -1,0 +1,27 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block id %}{{ name }}_{{ message.id }}_modal{% endblock %}
+
+{% block title %}
+    {% blocktrans trimmed %}
+        Mitteilung löschen
+    {% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <p>
+        {% blocktrans trimmed %}
+            Möchtest du diese Mitteilung wirklich löschen?
+        {% endblocktrans %}
+    </p>
+{% endblock %}
+
+{% block buttons %}
+    <form action="{% url 'job-message-remove' message.id %}" method="post" class="modal-form" id="{{ name }}_{{ message.id }}_form">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger"
+           value="{% trans "Löschen" %}">
+    </form>
+{% endblock %}

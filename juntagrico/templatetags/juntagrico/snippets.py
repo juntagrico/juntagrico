@@ -1,10 +1,13 @@
 import datetime
 
 from django import template
+from django.db.models import Q
+from django.utils import timezone
 from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import Job, RecuringJob
+from juntagrico.entity.jobs import Job, RecuringJob, JobMessage
+from juntagrico.forms.job import AddAssignmentForm, AddJobMessageForm
 
 register = template.Library()
 
@@ -34,6 +37,41 @@ def job_participant_list(user, job):
         'participants': participants,
         'can_contact': permissions.can_contact_member(),
         'can_edit_assignments': permissions.can_modify_assignments(),
+        'add_form': AddAssignmentForm(job) if permissions.can_add_assignments() else None,
+        'other_job_contacts': job.get_emails(get_member=True, exclude=[user.member.email]),
+    }
+
+
+@register.inclusion_tag('juntagrico/job/snippets/messages.html')
+def job_messages(user, job):
+    permissions = job.check_if(user)
+    member = user.member
+    can_manage_messages = permissions.can_manage_messages()
+    if can_manage_messages:
+        messages = job.messages.all()
+    else:
+        messages = job.messages.filter(Q(is_public=True) | Q(account=member))
+
+    show_messages = messages.exists()
+    if show_messages and job.time + datetime.timedelta(hours=JobMessage.KEEP_HOURS) < timezone.now():
+        # delete old messages just in time
+        JobMessage.purge()
+        show_messages = messages.exists()
+
+    message_form = None
+    if member in job.participants and not job.has_ended():
+        message_form = AddJobMessageForm()
+        show_messages = True
+
+    return {
+        'job': job,
+        'member': member,
+        'show_messages': show_messages,
+        'message_form': message_form,
+        'can_manage_messages': can_manage_messages,
+        'can_contact': permissions.can_contact_member(),
+        'messages': messages.order_by('created_at'),
+        'other_job_contacts': job.get_emails(get_member=True, exclude=[member.email]),
     }
 
 
@@ -75,3 +113,8 @@ def alert(message):
     else:
         alert_lvl = message.level_tag
     return {'message': message, 'alert_level': 'alert-' + alert_lvl}
+
+
+@register.inclusion_tag('juntagrico/snippets/external_link.html')
+def ext_link(text, link):
+    return {'text': text, 'link': link}
