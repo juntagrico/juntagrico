@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load juntagrico.config %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="my-1"><i class="bi bi-bookmark-star mr-2"></i>{% vocabulary 'assignment_pl' %}</h5>
+    </div>
+    {% if assignments %}
+        <ul class="list-group list-group-flush">
+            {% for assignment in assignments %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="mr-2">
+                            {{ assignment.time|date:'D d.m.Y' }}
+                        </span>
+                        <a href="{% url 'job' assignment.job.id %}" class="mr-2">
+                            {{ assignment.name }}
+                        </a>
+                        {% if assignment.core_cache %}
+                            <span>
+                                <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
+                            </span>
+                        {% endif %}
+                    </div>
+                    <span><i class="bi bi-x"></i>{{ assignment.amount|floatformat:-2 }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="card-body text-center">
+            <p class="text-muted py-3">{% trans 'noch keine diese Saison' %}</p>
+        </div>
+    {% endif %}
+    {% if has_previous_assignments %}
+        <div class="card-body">
+            <a href="{% url 'job-by-account' account.id %}" class="btn btn-secondary">
+                <i class="bi bi-clock-history mr-2"></i><span>
+                    {% blocktrans with v_assignments=vocabulary.assignment_pl %}alle {{ v_assignments }} ansehen{% endblocktrans %}
+                </span>
+            </a>
+        </div>
+    {% endif %}
+</div>

@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.db.models import Max, Min
 from django.forms import SelectDateWidget
@@ -37,7 +39,11 @@ class ExportAssignmentDateRangeForm(TranslatedSelectableFieldsExportForm):
         super().__init__(formats, *args, **kwargs)
         # offer meaningful year range
         jobs = Job.objects.aggregate(oldest_year=Min('time__year'), newest_year=Max('time__year'))
+        this_year = datetime.date.today().year
         # extend range to year before and after to be able to always select entire business year.
-        years = range(jobs['oldest_year'] - 1, jobs['newest_year'] + 2)
+        years = range(
+            (jobs['oldest_year'] or this_year) - 1,
+            (jobs['newest_year'] or this_year) + 2,
+        )
         self.fields['export_start_date'].widget.years = years
         self.fields['export_end_date'].widget.years = years

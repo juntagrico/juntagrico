@@ -1,0 +1,16 @@
+{% load i18n %}
+{% with jd=subscription_membership.join_date ld=subscription_membership.leave_date %}
+    {% if jd %}
+        {% if subscription_membership.waiting %}
+            {% blocktrans %}Ab {{ jd }}{% endblocktrans %}
+        {% else %}
+            {% if ld %}
+                {% blocktrans %}{{ jd }} - {{ ld }}{% endblocktrans %}
+            {% else %}
+                {% blocktrans %}Seit {{ jd }}{% endblocktrans %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% trans "Start ausstehend" %}
+    {% endif %}
+{% endwith %}

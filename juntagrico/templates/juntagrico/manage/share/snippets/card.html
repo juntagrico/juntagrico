@@ -1,0 +1,12 @@
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header">
+        <h5 class="my-1"><i class="bi bi-file-earmark-text mr-2"></i>{% vocabulary 'share_pl' %}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% share_summary account %}
+    </div>
+</div>

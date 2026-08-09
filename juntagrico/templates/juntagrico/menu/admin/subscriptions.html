@@ -49,6 +49,14 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% config "enable_shares" as c_enable_shares %}
+                    {% if c_enable_shares and perms.juntagrico.view_subscription and perms.juntagrico.view_share %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-sub-shares' %}">
+                                {% vocabulary 'share_pl' %}
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'future' %}">

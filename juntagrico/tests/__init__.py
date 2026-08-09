@@ -83,6 +83,7 @@ class JuntagricoTestCase(TestCase):
 
     @staticmethod
     def create_membership(account, **kwargs):
+        account.memberships.all().delete()
         membership_data = {'activation_date': '2026-03-12', 'number': 1}
         membership_data |= kwargs
         return Membership.objects.create(account=account, **membership_data)

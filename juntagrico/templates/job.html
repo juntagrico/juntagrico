@@ -36,7 +36,7 @@
             <div class="row pb-4">
                 <div class="col-12">
                     {% if edit_url.strip %}
-                        <a href="{{ edit_url }}" class="btn btn-primary">
+                        <a href="{{ edit_url }}{% querystring next=request.path %}" class="btn btn-primary">
                             <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Einsatz bearbeiten" %}
                         </a>

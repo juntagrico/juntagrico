@@ -39,6 +39,7 @@ def job_participant_list(user, job):
         'can_edit_assignments': permissions.can_modify_assignments(),
         'add_form': AddAssignmentForm(job) if permissions.can_add_assignments() else None,
         'other_job_contacts': job.get_emails(get_member=True, exclude=[user.member.email]),
+        'can_view_members': user.has_perm('juntagrico.view_member') or user.has_perm('juntagrico.change_member')
     }
 
 
@@ -118,3 +119,37 @@ def alert(message):
 @register.inclusion_tag('juntagrico/snippets/external_link.html')
 def ext_link(text, link):
     return {'text': text, 'link': link}
+
+
+@register.inclusion_tag('juntagrico/manage/share/snippets/summary.html')
+def share_summary(account):
+    ordered_shares = account.shares.unpaid().usable()
+    active_shares = account.shares.active()
+    canceled_shares = account.shares.canceled()
+    return {
+        'ordered_shares': ordered_shares,
+        'active_shares': active_shares,
+        'canceled_shares': canceled_shares,
+    }
+
+
+@register.simple_tag
+def sequence(array, attribute=None, prefix='', postfix='', sep=', ', range_sep='-'):
+    if attribute is not None:
+        array = [getattr(item, attribute) for item in array]
+    array = sorted(array)
+
+    array_len = len(array)
+    result = []
+    i = 0
+    while i < array_len:
+        j = i
+        while j + 1 < array_len and array[j] + 1 == array[j + 1]:
+            j += 1
+        if j - i > 1:
+            result.append(f'{prefix}{array[i]}{postfix}{range_sep}{prefix}{array[j]}{postfix}')
+        else:
+            result += [f'{prefix}{item}{postfix}' for item in array[i:j + 1]]
+        i = j + 1
+
+    return sep.join(result)
