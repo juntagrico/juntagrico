@@ -36,7 +36,7 @@
             <div class="row pb-4">
                 <div class="col-12">
                     {% if edit_url.strip %}
-                        <a href="{{ edit_url }}{% querystring next=request.path %}" class="btn btn-primary">
+                        <a href="{{ edit_url }}{% querystring next=request.path %}" class="btn btn-primary mb-1">
                             <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Einsatz bearbeiten" %}
                         </a>
@@ -44,7 +44,7 @@
 
                     {% if can_copy %}
                         {% if is_recurring %}
-                            <div class="btn-group">
+                            <div class="btn-group mb-1">
                                 <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
                                     <i class="bi bi-copy"></i>
                                     {% trans "Einsatz kopieren" %}
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                         {% else %}
-                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
+                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary mb-1">
                                 <i class="bi bi-copy"></i>
                                 {% trans "Einsatz kopieren" %}
                             </a>
@@ -72,14 +72,14 @@
                             <form action="{% url 'job-convert-to-one-time' %}" method="POST" class="d-inline"
                                   onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz in einen einmaligen Einsatz umwandeln möchtest?" %}')">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
+                                <button type="submit" class="btn btn-outline-primary mb-1" name="job_id" value="{{ job.id }}"
                                         title="{% trans "in einmaligen Einsatz umwandeln" %}">
                                     <i class="bi bi-arrow-repeat"></i>
                                     {% trans "Umwandeln" %}
                                 </button>
                             </form>
                         {% else %}
-                            <a class="convert-to-recurring-job btn btn-outline-primary"
+                            <a class="convert-to-recurring-job btn btn-outline-primary mb-1"
                                title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
                                data-url="{% url 'job-convert-to-recurring' job.id %}">
                                 <i class="bi bi-arrow-repeat"></i>
@@ -92,7 +92,7 @@
                         <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
                               onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %} {% trans "Teilnehmende werden automatisch per E-Mail benachrichtigt" %}')">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger" name="job_id" value="{{ job.id }}">
+                            <button type="submit" class="btn btn-outline-danger mb-1" name="job_id" value="{{ job.id }}">
                                 <i class="bi bi-ban mr-1"></i>
                                 {% trans "Einsatz absagen" %}
                             </button>
