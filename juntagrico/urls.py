@@ -206,6 +206,7 @@ urlpatterns = [
     # /manage/share
     path('manage/share/unpaid', manage.ShareUnpaidView.as_view(), name='manage-share-unpaid'),
     path('manage/share', manage.ShareView.as_view(), name='manage-share'),
+    path('manage/share/account/<int:account_id>', manage.ShareByAccountView.as_view(), name='manage-share-by-account'),
     path('manage/share/cancel', manage.share_cancel, name='manage-share-cancel'),
     path('manage/share/canceled', manage.ShareCanceledView.as_view(), name='manage-share-canceled'),
     path('manage/share/payout', manage.share_payout, name='manage-share-payout'),

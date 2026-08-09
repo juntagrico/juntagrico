@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load juntagrico.config %}
 {% load juntagrico.snippets %}
 
@@ -9,4 +10,13 @@
     <div class="card-body">
         {% share_summary account %}
     </div>
+    {% if account.shares.exists %}
+        <div class="card-body">
+            <a href="{% url 'manage-share-by-account' account.id %}" class="btn btn-secondary">
+                <span>
+                    {% blocktrans with v_share_pl=vocabulary.share_pl %}{{ v_share_pl }} ansehen{% endblocktrans %}
+                </span>
+            </a>
+        </div>
+    {% endif %}
 </div>

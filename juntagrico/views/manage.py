@@ -1,4 +1,5 @@
 import datetime
+from functools import cached_property
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
@@ -309,6 +310,21 @@ class ShareView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
     template_name = 'juntagrico/manage/share/show.html'
     queryset = Share.objects.active
+
+
+class ShareByAccountView(ShareView):
+    template_name = 'juntagrico/manage/share/by_account.html'
+
+    @cached_property
+    def account(self):
+        return Member.objects.filter(id=self.kwargs['account_id']).first() or self.request.user.member
+
+    def get_queryset(self):
+        return Share.objects.filter(member=self.account).annotate_backpayable()
+
+    def get_context_data(self, **kwargs):
+        kwargs['account'] = self.account
+        return super().get_context_data(**kwargs)
 
 
 @require_POST
