@@ -12,7 +12,16 @@
 
 {% block content %}
     {% block head %}
-        {% action_date request %}
+        {% if perms.juntagrico.change_share %}
+            <div class="alert alert-secondary">
+                <i class="bi bi-envelope"></i>
+                {% blocktrans trimmed with v_member_pl=vocabulary.member_pl %}
+                    {{ v_member_pl }} werden bei Kündigung automatisch per E-Mail benachrichtigt.
+                {% endblocktrans %}
+            </div>
+
+            {% action_date request %}
+        {% endif %}
     {% endblock %}
     {% include '../member/snippets/toggle_buttons.html' %}
     {{ block.super }}
@@ -111,9 +120,12 @@
                                     <span class="badge badge-danger">{% trans "gekündigt" %}</span>
                                 {% elif perms.juntagrico.change_share %}
                                     <form action="{% url 'manage-share-cancel' %}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('{% trans "Bist du sicher?" %}')">
+                                          id="cancel_{{ share.id }}_form">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger" name="share_id" value="{{ share.id }}"
+                                        <input type="hidden" name="share_id" value="{{ share.id }}">
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-toggle="modal" data-target="#cancel_modal"
+                                                data-person="{{ share.member }}"
                                                 title="{% trans "kündigen" %}">
                                             <i class="bi bi-ban"></i>
                                             {% trans "kündigen" %}
@@ -130,6 +142,11 @@
             {% endblock %}
         </tbody>
     </table>
+
+    {# Modal for cancellation #}
+    {% if perms.juntagrico.change_share %}
+        {% include "./modals/cancel.html" with name='cancel' %}
+    {% endif %}
 {% endblock %}
 
 {% block datatable_constructor %}
@@ -152,4 +169,19 @@
             )
         {% endif %}
     {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function(){
+            // apply submit url to modal button
+            $('#cancel_modal').on('show.bs.modal', function (event) {
+                let modal = $(this)
+                let button = $(event.relatedTarget)
+                modal.find('.modal-submit').attr('form', button.parent().attr('id'))
+                modal.find('.modal-person').text(button.data('person'))
+            })
+        })
+    </script>
 {% endblock %}

@@ -321,6 +321,8 @@ def share_cancel(request, change_date, share_id=None):
         shares = Share.objects.filter(id__in=request.POST.get('share_id').split('_'))
     if change_date:
         change_date = min(change_date, datetime.date.today())
+
+    canceled_shares = {}
     for share in shares:
         try:
             share.cancel(change_date)
@@ -329,8 +331,15 @@ def share_cancel(request, change_date, share_id=None):
                 id=share.identifier,
                 account=share.member,
             ))
+            if share.member in canceled_shares:
+                canceled_shares[share.member].append(share)
+            else:
+                canceled_shares[share.member] = [share]
         except ValidationError as e:
             messages.error(request, f'{share}: {e.message}')
+
+    for account, shares in canceled_shares.items():
+        membernotification.shares_canceled_for_you(account, shares)
     return return_to_previous_location(request)
 
 
