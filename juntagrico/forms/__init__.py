@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div, Button
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -862,6 +862,7 @@ class AreaDescriptionForm(ModelForm):
             'description',
             FormActions(
                 Submit('submit', _('Speichern')),
+                Button('cancel', _('Abbrechen'), css_class='swapper', data_swap='.description-swap'),
             ),
         )
 

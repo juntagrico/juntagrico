@@ -138,24 +138,37 @@ def memberjobs(request):
     """
     Assignments of current user
     """
-    member = request.user.member
+    return by_account(request, request.user.member.id, 'memberjobs.html')
 
-    # get date range in which this member was doing assignments
-    date_range = Assignment.objects.filter(member=member).aggregate(
+
+@login_required
+def by_account(request, account_id, template_name='juntagrico/job/list/by_account.html'):
+    viewer = request.user.member
+    account = get_object_or_404(Member, pk=account_id)
+
+    if account != viewer and not (
+        request.user.has_perm('juntagrico.view_assignment')
+        or request.user.has_perm('juntagrico.change_assignment')
+    ):
+        raise PermissionDenied
+
+    # get date range in which this account has any assignments
+    date_range = Assignment.objects.filter(member=account).aggregate(
         min_date=Min('job__time__date'), max_date=Max('job__time__date')
     )
     year_selection_form = BusinessYearForm(date_range['min_date'], date_range['max_date'], request.GET)
 
-    # get assignments of member in selected business year
+    # get assignments of account in selected business year
     if year_selection_form.is_valid():
         assignments = Assignment.objects.filter(
-            member=member,
+            member=account,
             job__time__date__range=year_selection_form.date_range()
         )
     else:
         assignments = Assignment.objects.none()
 
-    return render(request, 'memberjobs.html', {
+    return render(request, template_name, {
+        'account': account,
         'year_selection_form': year_selection_form,
         'assignments': assignments,
     })

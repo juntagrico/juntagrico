@@ -1,9 +1,13 @@
 {% load juntagrico.snippets %}
 {% impersonate_start request member %}
 {% if perms.juntagrico.view_member or perms.juntagrico.change_member %}
-    <a href="{% url 'admin:juntagrico_member_change' member.id %}?next={{ request.path|urlencode }}"
-       {% if css_class %}class="{{ css_class }}"{% endif %}>
-        {{ member }}
+    <a href="{% url 'admin:juntagrico_member_change' member.id %}{% querystring next=request.path %}" class="float-right" target="_blank">
+        <i class="bi bi-wrench mr-2"></i>
+    </a>
+    <a href="{% url 'manage-account-single' member.id %}">
+        <span {% if css_class %}class="{{ css_class }}"{% endif %}>
+            {{ member }}
+        </span>
     </a>
 {% else %}
     <span {% if css_class %}class="{{ css_class }}"{% endif %}>

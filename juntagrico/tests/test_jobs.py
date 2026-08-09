@@ -112,6 +112,12 @@ class JobTests(JuntagricoTestCase):
         self.job2.save()
         self.assertEqual(len(mail.outbox), 1)  # member notification
 
+    def testJobByAccount(self):
+        self.assertGet(reverse('job-by-account', args=[self.member.id]))
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.member2, code=403)
+        self.assertGet(reverse('job-by-account', args=[self.member2.id]), member=self.member2)
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.admin)
+
 
 class JobSignupAndNotificationTests(JuntagricoTestCase):
     def testJobSignup(self):

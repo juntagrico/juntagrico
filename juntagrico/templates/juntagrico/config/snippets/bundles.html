@@ -12,12 +12,12 @@
                 <div class="card-header">
                     <strong>{{ bundle }}</strong>
                     {% if perms.juntagrico.change_subscriptionbundle %}
-                        <a href="{% url 'admin:juntagrico_subscriptionbundle_change' bundle.id %}?next={{ request.path|urlencode }}">
+                        <a href="{% url 'admin:juntagrico_subscriptionbundle_change' bundle.id %}{% querystring next=request.path %}">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                     {% endif %}
                     {% if perms.juntagrico.delete_subscriptionbundle %}
-                        <a href="{% url 'admin:juntagrico_subscriptionbundle_delete' bundle.id %}?next={{ request.path|urlencode }}">
+                        <a href="{% url 'admin:juntagrico_subscriptionbundle_delete' bundle.id %}{% querystring next=request.path %}">
                             <i class="bi bi-trash"></i>
                         </a>
                     {% endif %}
@@ -57,7 +57,7 @@
             </div>
         {% endfor %}
         {% if perms.juntagrico.add_subscriptionproduct %}
-            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionbundle_add' %}?next={{ request.path|urlencode }}">
+            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionbundle_add' %}{% querystring next=request.path %}">
                 <i class="bi bi-plus mr-1"></i>
                 Pakete & Typen hinzufügen
             </a>
