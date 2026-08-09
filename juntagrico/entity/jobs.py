@@ -17,7 +17,6 @@ from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
@@ -318,11 +317,14 @@ class Job(JuntagricoBasePoly):
         time = time or timezone.now()
         return self.start_time() < time
 
+    def date(self):
+        # return job date in actual timezone
+        return self.time.astimezone(timezone.get_current_timezone()).date()
+
     def status_percentage(self):
-        assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
             return 100
-        return assignments.count() * 100 / self.slots
+        return self.assignment_set.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core
@@ -637,8 +639,11 @@ class Assignment(JuntagricoBaseModel):
     '''
     Single assignment (work unit).
     '''
-    job = models.ForeignKey(Job, on_delete=models.PROTECT)
+    job = models.ForeignKey(Job, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(_('Bezeichnung'), max_length=100, blank=True)
     member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
+    created_at = models.DateTimeField(_('Erstellt am'), auto_now_add=True, null=True, blank=True)
+    count_on = models.DateField(_('Zählt am'), null=True, blank=True, default=None)
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))
@@ -648,20 +653,17 @@ class Assignment(JuntagricoBaseModel):
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
-    @admin.display(ordering='job__time')
-    def time(self):
-        return self.job.time
-
-    def is_core(self):
-        return self.job.type.activityarea.core
-
     @classmethod
     def pre_save(cls, sender, instance, **kwargs):
-        if not kwargs.get('raw', False):
-            instance.core_cache = instance.is_core()
+        if not kwargs.get('raw', False) and instance.job is not None:
+            # Initialized when the assignment is created.
+            # Making an area core would not update the assignments automatically
+            # TODO: Make this a real cache? -> Must update when core flag is changed on area,
+            #  or when area change on job_type or job_type on recurring_job, etc.
+            instance.core_cache = instance.job.type.activityarea.core
 
     def can_modify(self, request):
-        return self.job.get_real_instance().check_if(request.user).can_modify()
+        return self.job is None or self.job.get_real_instance().check_if(request.user).can_modify()
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')

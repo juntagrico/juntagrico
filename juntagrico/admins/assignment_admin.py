@@ -8,14 +8,16 @@ def get_allowed_jobs(member):
 
 
 class AssignmentAdmin(AreaCoordinatorMixin, BaseAdmin):
-    list_display = ['__str__', 'member', 'time', 'amount', 'job']
+    list_display = ['__str__', 'member', 'created_at', 'count_on', 'amount', 'core_cache', 'job']
     search_fields = ['member__first_name', 'member__last_name']
-    date_hierarchy = 'job__time'
+    date_hierarchy = 'count_on'
+    list_filter = ['created_at', 'amount', 'core_cache']
+    filter_horizontal = ['job_extras']
     raw_id_fields = ['member', 'job']
     coordinator_access = 'can_modify_assignments'
 
     def get_area(self, obj):
-        return obj.job.get_real_instance().type.activityarea
+        return obj.job.get_real_instance().type.activityarea if obj.job else None
 
     def has_change_permission(self, request, obj=None):
         return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)

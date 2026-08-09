@@ -112,7 +112,7 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
                 Case(
                     When(
                         **extra_filters,
-                        assignment__job__time__date__range=(start, end),
+                        assignment__count_on__range=(start, end),
                         then='assignment__amount'
                     ),
                     default=0.0

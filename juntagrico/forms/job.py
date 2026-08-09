@@ -67,7 +67,7 @@ class JobSubscribeForm(Form):
     }
     message_wrapper_class = 'd-none'  # let js display the field if needed
 
-    def __init__(self, member, job, *args, **kwargs):
+    def __init__(self, member, job: Job, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.member = member
         self.job = job
@@ -164,17 +164,25 @@ class JobSubscribeForm(Form):
         else:
             with transaction.atomic():
                 # clear current slots of member and fill new
-                self.current_assignments.delete()
-                assignment = Assignment(
-                    member=self.member,
-                    job=self.job,
-                    amount=self.job.get_multiplier(),
-                    core_cache=self.job.type.activityarea.core
-                )
-                Assignment.objects.bulk_create([assignment] * slots)
+                old_slots = self.current_assignments.count()
+                if old_slots > slots:
+                    # reduce
+                    Assignment.objects.filter(pk__in=self.current_assignments[: old_slots - slots]).delete()
+                elif slots > old_slots:
+                    # fill up
+                    print(self.job.time)
+                    assignment = Assignment(
+                        member=self.member,
+                        job=self.job,
+                        amount=self.job.get_multiplier(),
+                        core_cache=self.job.type.activityarea.core,
+                        count_on=self.job.date(),
+                    )
+                    Assignment.objects.bulk_create([assignment] * (slots - old_slots))
 
-                # apply job extras
-                assignment = Assignment.objects.filter(member=self.member, job=self.job).last()
+                # clear and re-apply job extras
+                Assignment.job_extras.through.objects.filter(assignment__in=self.current_assignments).delete()
+                assignment = self.current_assignments.last()
                 for extra in self.job.type.job_extras_set.all():
                     if self.cleaned_data['extra' + str(extra.extra_type.id)]:
                         assignment.job_extras.add(extra)
@@ -192,8 +200,14 @@ class JobSubscribeForm(Form):
 
     def send_signals(self, slots, message=''):
         # send signals
-        subscribed.send(Job, instance=self.job, member=self.member, count=slots, initial_count=self.current_slots,
-                        message=message)
+        subscribed.send(
+            Job,
+            instance=self.job,
+            member=self.member,
+            count=slots,
+            initial_count=self.current_slots,
+            message=message,
+        )
 
 
 class EditAssignmentForm(JobSubscribeForm):
@@ -255,7 +269,8 @@ class AddAssignmentForm(Form):
             member=account,
             job=self.job,
             amount=self.job.get_multiplier(),
-            core_cache=self.job.type.activityarea.core
+            core_cache=self.job.type.activityarea.core,
+            count_on=self.job.date(),
         )
         Assignment.objects.bulk_create([assignment] * slots)
         self.send_signals(account, slots)

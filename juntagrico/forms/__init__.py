@@ -905,9 +905,10 @@ class DateRangeForm(Form):
 class BusinessYearForm(Form):
     year = ChoiceField(label=gettext_lazy('Saison'), required=False)
 
-    def __init__(self, min_date, max_date, *args, **kwargs):
+    def __init__(self, min_date, max_date, extra_choices=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['year'].choices = self.get_choices(min_date, max_date)
+        extra_choices = extra_choices or []
+        self.fields['year'].choices = self.get_choices(min_date, max_date) + extra_choices
         # default to current business year
         if not self.data.get('year'):
             self.data = {'year': get_business_year()}
@@ -946,7 +947,10 @@ class BusinessYearForm(Form):
         return choices
 
     def date_range(self):
-        return get_business_date_range(int(self.cleaned_data.get('year')))
+        try:
+            return get_business_date_range(int(self.cleaned_data.get('year')))
+        except ValueError:
+            return None
 
 
 class InternalModelSelect2Mixin:
