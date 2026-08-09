@@ -9,9 +9,17 @@
     {% regroup ordered_shares by creation_date as ordered_shares_by_date %}
     {% for shares in ordered_shares_by_date %}
         <div class="d-flex justify-content-between text-muted">
-            <span>{% sequence shares.list attribute='identifier' prefix='#' %}</span>
+            <span>{{shares.list|length }} ({% sequence shares.list attribute='identifier' prefix='#' %})</span>
             <span class="pre date" title="{{ grouper_title }}">{{ shares.grouper|date:"SHORT_DATE_FORMAT" }}</span>
         </div>
+    {% endfor %}
+    {% for share in ordered_shares %}
+        {% if share.notes %}
+            <div class="alert alert-light">
+                <i class="bi bi-sticky mr-2"></i><strong>#{{ share.identifier }}</strong>
+                <span>{{ share.notes|linebreaksbr }}</span>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 
@@ -23,9 +31,18 @@
     {% regroup active_shares by paid_date as active_shares_by_date %}
     {% for shares in active_shares_by_date %}
         <div class="d-flex justify-content-between text-muted">
-            <span>{% sequence shares.list attribute='identifier' prefix='#' %}</span>
+            <span>{{shares.list|length }} ({% sequence shares.list attribute='identifier' prefix='#' %})</span>
             <span class="pre date" title="{{ grouper_title }}">{{ shares.grouper|date:"SHORT_DATE_FORMAT" }}</span>
         </div>
+    {% endfor %}
+    {% for share in active_shares %}
+        {% if share.notes %}
+            <div class="alert alert-light">
+                <i class="bi bi-sticky mr-2"></i>
+                <strong>#{{ share.identifier }}</strong>
+                <span>{{ share.notes|linebreaksbr }}</span>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 

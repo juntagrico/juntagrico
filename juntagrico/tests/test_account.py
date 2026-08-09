@@ -78,28 +78,34 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         cls.member.save()
         cls.create_membership(cls.member, notes='notes on membership')
         if settings.ENABLE_SHARES:
+            # add 3 shares in sequence to fully test sequence template tag
             for _ in range(3):
                 Share.objects.create(
                     member=cls.member,
-                    notes='notes on share'
+                    notes='notes on ordered share'
                 )
+            cls.create_paid_share(cls.member, notes='notes on paid share')
         cls.sub.future_depot = cls.depot2
         cls.sub.save()
+        # add job from last season to display link to all jobs of member
         cls.old_job = RecuringJob.objects.create(
             slots=2, time='2025-06-06', type=cls.job_type
         )
         Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
+        # add job after today to show progress bar with future jobs
         cls.future_job = RecuringJob.objects.create(
             slots=2, time=timezone.now() + datetime.timedelta(days=2), type=cls.job_type
         )
         Assignment.objects.create(job=cls.future_job, member=cls.member, amount=1)
+        Assignment.objects.create(job=cls.future_job, member=cls.member3, amount=1)
+        # create all membership states
         cls.create_membership(cls.member2, activation_date=day_after_tomorrow)
         cls.member2.cancellation_date = '2026-04-12'
         cls.member2.save()
         cls.create_membership(cls.member3, cancellation_date='2026-04-12')
         cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
         cls.create_membership(cls.member5, activation_date=None)
-        cls.area.add(cls.area_admin)
+        cls.area.members.add(cls.area_admin)
         cls.create_membership(cls.area_admin, activation_date=day_after_tomorrow)
         cls.future_inactive_member = cls.create_member(
             email='future_inactive@example.com',
