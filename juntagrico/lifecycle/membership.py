@@ -1,10 +1,11 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, Max, Min
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.entity.member import Member
 from juntagrico.lifecycle import parse_date
 
 
@@ -40,3 +41,60 @@ def check_membership_consistency(instance):
                 ),
                 code='overlap'
             )
+
+
+def sync(sender, instance, **kwargs):
+    if not (
+        Config.enable_shares()
+        and Config.enable_membership()
+        and Config.membership('sync_shares')
+        and Config.membership('required_shares') > 0
+    ):
+        return
+
+    if isinstance(instance, Member):
+        account = instance
+    else:
+        account = instance.member
+    today = datetime.date.today()
+    active_shares = account.shares.exclude(payback_date__lte=today)
+    current_membership = account.memberships.active_or_requested().first()
+    # clear duplicate memberships
+    for duplicate in account.memberships.active_or_requested()[1:]:
+        duplicate.delete()
+    
+    active_share_count = active_shares.count()
+    if Config.cumulative_shares_for_membership():
+        active_share_count -= account.required_shares_count
+
+    if active_share_count >= Config.membership('required_shares'):
+        # account with active share should have an active membership
+        activation_date = active_shares.aggregate(
+            paid_date=Min('paid_date'),
+        )['paid_date']
+        if current_membership is not None:
+            # update existing membership
+            current_membership.activation_date = activation_date
+            current_membership.save()
+        else:
+            # check if old membership exists that should be extended
+            if old_membership := account.memberships.filter(deactivation_date__isnull=False).order_by('-deactivation_date').first():
+                old_membership.deactivation_date = None
+                old_membership.save()
+            else:
+                # create new membership
+                from juntagrico.entity.membership import Membership
+                Membership.objects.create(
+                    account=account,
+                    activation_date=activation_date
+                )
+
+    elif current_membership is not None:
+        # there are not enough active shares -> deactivate current membership
+        dates = account.shares.aggregate(
+            cancellation_date=Max('cancelled_date'),
+            deactivation_date=Max('payback_date'),
+        )
+        current_membership.cancellation_date = current_membership.cancellation_date or dates['cancellation_date']
+        current_membership.deactivation_date = dates['deactivation_date']
+        current_membership.save()

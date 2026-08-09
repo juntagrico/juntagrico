@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin.options import BaseModelAdmin, InlineModelAdmin
 from django.db.models import TextField
+from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
+from django.urls import resolve, Resolver404
 from djrichtextfield.widgets import RichTextWidget
 from import_export.admin import ExportMixin
 
@@ -15,6 +17,35 @@ class BaseAdmin(admin.ModelAdmin):
         self.inlines = self.inlines or []
         self.inlines.extend(addons.config.get_model_inlines(model))
         super().__init__(model, admin_site)
+
+    def _response_post_save(self, request, obj):
+        # redirect to previous page if defined
+        if next_page := request.GET.get('next'):
+            try:
+                resolve(next_page)
+                return HttpResponseRedirect(next_page)
+            except Resolver404:
+                pass
+        return super()._response_post_save(request, obj)
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        # hide delete button in change view if we want to redirect to previous page as it would not carry the information.
+        if 'next' in request.GET:
+            context.update({
+                'show_delete': False,
+            })
+        return super().render_change_form(request, context, add, change, form_url, obj)
+
+    def response_delete(self, request: HttpRequest, obj_display: str, obj_id: int) -> HttpResponse:
+        # redirect to previous page if defined
+        response = super().response_delete(request, obj_display, obj_id)
+        if next_page := request.GET.get('next'):
+            try:
+                resolve(next_page)
+                return HttpResponseRedirect(next_page)
+            except Resolver404:
+                pass
+        return response
 
 
 class RichTextAdmin(BaseAdmin):

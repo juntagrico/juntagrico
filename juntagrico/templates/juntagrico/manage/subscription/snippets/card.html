@@ -1,0 +1,145 @@
+{% load juntagrico.widgets %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="my-1"><i class="bi bi-basket mr-2"></i>{% vocabulary 'subscription_pl' %}</h5>
+    </div>
+    <div class="card-body">
+        {% if subscription_memberships %}
+            <div class="row">
+                {% for submem in subscription_memberships %}
+                    {% with subscription=submem.subscription %}
+                        <div class="col-12 mb-3">
+                            <div class="card border-left-primary">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong class="card-title my-1">
+                                                {% include 'juntagrico/snippets/subscription/membership_dates.html' with subscription_membership=submem %}
+                                            </strong>
+                                            <p class="text-muted mb-2">
+                                                #{{ subscription.id }}
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            {% if subscription.primary_member == submem.member %}
+                                                <span class="badge badge-dark">
+                                                    {% blocktrans with v_subscription=vocabulary.subscription %} {{ v_subscription }}-Verwalter:in{% endblocktrans %}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-light">
+                                                    {% blocktrans %}Mitbezüger:in{% endblocktrans %}
+                                                </span>
+                                            {% endif %}
+                                            {% if submem.left %}
+                                                <span class="badge badge-secondary">{% trans 'früher' %}</span>
+                                            {% elif submem.active %}
+                                                <span class="badge badge-success">{% trans 'aktuell' %}</span>
+                                            {% else %}
+                                                <span class="badge badge-warning">{% trans 'künftig' %}</span>
+                                            {% endif %}
+                                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}{% querystring next=request.path %}" class="ml-2"
+                                               title="{% trans 'Datenverwaltung öffnen' %}">
+                                                <i class="bi bi-wrench"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {% with co_members=submem.co_members %}
+                                        {% if co_members %}
+                                            <div class="mt-3">
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-people mr-2"></i>{% trans 'Geteilt mit' %}
+                                                </small>
+                                                {% for co_member in co_members %}
+                                                    <span>
+                                                        <a href="{% url 'manage-account-single' co_member.id %}">{{ co_member }}</a><!--
+                                                        {% if subscription.primary_member == co_member %}
+                                                            --><span class="badge badge-secondary ml-1">
+                                                                {% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }}-Verwalter:in{% endblocktrans %}
+                                                            </span><!--
+                                                        {% endif %}
+                                                    --></span>{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-collection mr-2"></i>{% trans 'Inhalt' %}
+                                        </small>
+                                        {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription.parts.waiting_or_active list_class='list-unstyled' no_actions=True only %}
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-shop-window mr-2"></i>{% trans 'Depot' %}
+                                        </small>
+                                        <span>
+                                            <a href="{% url 'depot' subscription.depot.id %}">
+                                                {{ subscription.depot }}
+                                            </a>
+                                        </span>
+                                        {% if subscription.future_depot %}
+                                            <div class="alert alert-warning">
+                                                {% blocktrans trimmed with future_depot=subscription.future_depot %}
+                                                    Ausstehender Wechsel zu: {{ future_depot }}
+                                                {% endblocktrans %}
+                                                {% if perms.juntagrico.change_subscription %}
+                                                    <a href="{% url 'manage-sub-depot-changes' %}" class="btn btn-secondary">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                        {% trans 'Wechsel verwalten' %}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if c_enable_shares %}
+                                        {% if perms.juntagrico.view_share or perms.juntagrico.change_share %}
+                                            <div class="mt-3">
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-file-earmark-text mr-2"></i>{% vocabulary 'share_pl' %}
+                                                </small>
+                                                {% with available=subscription.available_shares required=subscription.required_shares %}
+                                                    {% if available >= required %}
+                                                        <i class="bi bi-check-square mr-2"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-exclamation-square text-danger mr-2"></i>
+                                                    {% endif %}
+                                                    <span>{{ available }} / {{ required }}</span>
+                                                {% endwith %}
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-bookmark-star mr-2"></i>{% vocabulary 'assignment_pl' %}
+                                        </small>
+                                        {% assignment_progress account subscription=subscription future=True as assignments %}
+                                        {% include "juntagrico/widgets/assignment_progress/bars.html" with show_complete=True %}
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <small class="text-muted d-block">
+                                            <i class="bi bi-sticky mr-2"></i>{% trans 'Notizen' %}
+                                        </small>
+                                        <span>{{ subscription.notes|default:"-" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-3">
+                <p class="text-muted mb-0">{% trans 'Keine' %}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>

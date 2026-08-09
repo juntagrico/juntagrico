@@ -1,7 +1,8 @@
-from datetime import timedelta, datetime, date
+import datetime
 
+from django.template.defaultfilters import date
 from django.urls import path, reverse
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.safestring import mark_safe
@@ -118,9 +119,22 @@ class JobCopy(admin.ModelAdmin):
             return [ContactInlineForJob]
         return super().get_inlines(request, obj)
 
+    def save_model(self, request, obj, form, change):
+        # don't save original object on mass copy
+        if not self.is_mass_copy_view(request):
+            super().save_model(request, obj, form, change)
+
     def save_related(self, request, form, formsets, change):
         if self.is_mass_copy_view(request):
             form.save_related(formsets)
+            for job in form.new_jobs:
+                job_url = reverse('job', args=[job.pk])
+                messages.success(request, mark_safe(
+                    _('Einsatz erstellt: {job} am {time}').format(
+                        job=f'<a href="{job_url}">{job.type.get_name}</a>',
+                        time=date(job.time, 'SHORT_DATETIME_FORMAT'),
+                    )
+                ))
         else:
             super().save_related(request, form, formsets, change)
 
@@ -129,6 +143,12 @@ class JobCopy(admin.ModelAdmin):
             # show new job on page
             return HttpResponseRedirect(reverse('job', args=[obj.id]))
         return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        if self.is_mass_copy_view(request):
+            # show the original job page
+            return HttpResponseRedirect(reverse('job', args=[obj.id]))
+        return super().response_change(request, obj)
 
 
 class JobAdmin(PolymorphicInlineSupportMixin, JobCopy, OnlyFutureJobMixin, AreaCoordinatorMixin, RichTextAdmin):
@@ -172,7 +192,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, JobCopy, OnlyFutureJobMixin, AreaC
             time = instance.time
             if not request.user.has_perm('juntagrico.can_edit_past_jobs') and time <= timezone.now():
                 # create copy in future if job is in past and member can't edit past jobs
-                time = datetime.combine(date.today() + timedelta(7), time.time())
+                time = datetime.datetime.combine(datetime.date.today() + datetime.timedelta(7), time.time())
             new_job = RecuringJob(type=instance.type, slots=instance.slots, time=time)
             new_job.save()
 

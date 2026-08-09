@@ -366,8 +366,8 @@ def share_certificate(request):
 @login_required
 def cancel_share(request, share_id):
     member = request.user.member
+    share = get_object_or_404(Share, id=share_id, member=member)
     if member.cancellable_shares_count > 0:
-        share = get_object_or_404(Share, id=share_id, member=member)
         share.cancel()
         share_canceled.send(sender=Share, instance=share)
     return return_to_previous_location(request)
