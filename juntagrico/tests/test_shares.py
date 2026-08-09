@@ -117,43 +117,6 @@ class ShareTests(ShareTestCase):
         share.refresh_from_db()
         self.assertIsNone(share.cancelled_date)
 
-    def testManageShareCanceledList(self):
-        self.assertGet(reverse('manage-share-canceled'))
-        self.assertGet(reverse('manage-share-canceled'), member=self.member2, code=403)
-
-    def testManageSharePayoutSingle(self):
-        membership = (
-            self.member.memberships.active_or_requested().first()
-            or Membership.objects.create(
-                account=self.member,
-                activation_date='2026-03-13',
-                cancellation_date='2026-03-13',
-            )
-        )
-        share = self.member.share_set.first()
-        share.cancelled_date = datetime.date.today()
-        share.termination_date = datetime.date.today()
-        share.save()
-        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
-        self.assertEqual(self.member.active_shares.count(), 0)
-        membership.refresh_from_db()
-        self.assertTrue(membership.inactive)
-
-    def testManageSharePayout(self):
-        shares = Share.objects.all()
-        for share in shares:
-            share.cancelled_date = datetime.date.today()
-            share.termination_date = datetime.date.today()
-            share.save()
-        self.assertPost(
-            reverse('manage-share-payout'),
-            {'share_ids': '_'.join(map(str, shares.values_list('pk', flat=True)))},
-            302
-        )
-        self.assertEqual(self.member.active_shares.count(), 0)
-        self.assertEqual(self.member4.active_shares.count(), 0)
-        self.assertEqual(self.member5.active_shares.count(), 0)
-
 
 class ShareCancelTests(ShareTestCase):
     @classmethod
@@ -293,3 +256,68 @@ class CumulativeShareCountTests(ShareCountTests):
         self.assertEqual(self.sub.share_overflow, 1)
         self.assertEqual(self.sub2.share_overflow, -2)
         self.assertEqual(self.sub3.share_overflow, 1)
+
+
+class ShareManageTests(ShareTestCase):
+    def testManageShares(self):
+        self.assertGet(reverse('manage-share'), 200)
+        self.assertGet(reverse('manage-share'), 200, member=self.admin)
+        self.assertGet(reverse('manage-share'), 403, member=self.member2)
+
+    def testCancelShareForMember(self):
+        # member2 can't cancel shares
+        self.assertPost(
+            reverse('manage-share-cancel'), {'share_id': self.share1.id}, 302, self.member2
+        )
+        self.assertEqual(len(mail.outbox), 0)  # no member notification
+        self.share1.refresh_from_db()
+        self.assertIsNone(self.share1.cancelled_date)
+        # member1 can cancel shares
+        self.assertPost(reverse('manage-share-cancel'), {
+            'share_id': self.share1.id
+        }, 302)
+        self.assertEqual(len(mail.outbox), 1)  # member notification
+        self.share1.refresh_from_db()
+        self.assertIsNotNone(self.share1.cancelled_date)
+
+    def testManageShareCanceledList(self):
+        self.assertGet(reverse('manage-share-canceled'))
+        self.assertGet(reverse('manage-share-canceled'), member=self.member2, code=403)
+
+    def testManageSharePayoutSingle(self):
+        membership = (
+            self.member.memberships.active_or_requested().first()
+            or Membership.objects.create(
+                account=self.member,
+                activation_date='2026-03-13',
+                cancellation_date='2026-03-13',
+            )
+        )
+        share = self.member.share_set.first()
+        share.cancelled_date = datetime.date.today()
+        share.termination_date = datetime.date.today()
+        share.save()
+        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
+        self.assertEqual(self.member.active_shares.count(), 0)
+        membership.refresh_from_db()
+        self.assertTrue(membership.inactive)
+
+    def testManageSharePayout(self):
+        shares = Share.objects.all()
+        for share in shares:
+            share.cancelled_date = datetime.date.today()
+            share.termination_date = datetime.date.today()
+            share.save()
+        self.assertPost(
+            reverse('manage-share-payout'),
+            {'share_ids': '_'.join(map(str, shares.values_list('pk', flat=True)))},
+            302
+        )
+        self.assertEqual(self.member.active_shares.count(), 0)
+        self.assertEqual(self.member4.active_shares.count(), 0)
+        self.assertEqual(self.member5.active_shares.count(), 0)
+
+    def testManageArchivedShares(self):
+        self.assertGet(reverse('manage-share-archive'), 200)
+        self.assertGet(reverse('manage-share-archive'), 200, member=self.admin)
+        self.assertGet(reverse('manage-share-archive'), 403, member=self.member2)
