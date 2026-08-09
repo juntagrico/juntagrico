@@ -152,11 +152,6 @@ div.all-page-title.row {
     margin-bottom: 50px;
 }
 
-/* messages stuff checked */
-.messages {
-    margin-bottom: 2em;
-}
-
 /* menu stuff checked */
 .main-menu {
     font-size: 19px;
@@ -470,7 +465,6 @@ a.phone-number {
 /* impersonate link */
 
 .impersonate-action {
-    color: #606560;
     float: right;
     display: inline-block;
 }

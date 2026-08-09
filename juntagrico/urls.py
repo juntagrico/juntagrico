@@ -107,6 +107,7 @@ urlpatterns = [
     path('job/cancel', job.cancel, name='job-cancel'),
     path('job/<int:job_id>/message/add', job.add_message, name='job-message-add'),
     path('job/message/<int:message_id>/remove', job.remove_message, name='job-message-remove'),
+    path('job/account/<int:account_id>', job.by_account, name='job-by-account'),
 
 
     # /assignment
@@ -147,6 +148,7 @@ urlpatterns = [
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
+    path('manage/subscription/shares', manage.SubscriptionSharesView.as_view(), name='manage-sub-shares'),
     path('my/future', juntagrico_admin.future, name='future'),
     path('manage/subscription/inconsistencies', manage.subscription_inconsistencies,
          name='manage-subscription-inconsistencies'),
@@ -192,6 +194,11 @@ urlpatterns = [
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
+
+    # /manage/account
+    path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
+    path('manage/account/<int:account_id>/notes/edit', manage.account_notes_edit, name='manage-account-notes-edit'),
+
 
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),

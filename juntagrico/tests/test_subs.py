@@ -99,7 +99,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.sub.refresh_from_db()
         # check: type and amount unchanged
         self.assertEqual(self.sub.future_parts.count(), initial_count)
-        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+        self.assertTrue(self.sub.future_parts.filter(type=self.sub_type).exists())
 
     def testTypeChange(self):
         # add a shares for type2

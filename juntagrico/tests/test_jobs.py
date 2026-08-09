@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from . import JuntagricoTestCase, JuntagricoJobTestCase
+from ..entity.contact import MemberContact
 from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob, JobMessage
 from ..entity.member import Member
 from ..signals import subscribed, assignment_changed
@@ -111,6 +112,12 @@ class JobTests(JuntagricoTestCase):
         self.job2.time = timezone.now()
         self.job2.save()
         self.assertEqual(len(mail.outbox), 1)  # member notification
+
+    def testJobByAccount(self):
+        self.assertGet(reverse('job-by-account', args=[self.member.id]))
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.member2, code=403)
+        self.assertGet(reverse('job-by-account', args=[self.member2.id]), member=self.member2)
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.admin)
 
 
 class JobSignupAndNotificationTests(JuntagricoTestCase):
@@ -380,7 +387,7 @@ class AssignmentTests(JuntagricoTestCase):
     def testAssignmentAddByAssignmentModifier(self):
         self.testAssignmentAdd(self.area_admin_assignment_modifier)
 
-    def testAssignmentEdit(self, admin=None):
+    def testAssignmentEdit(self, admin=None, admin_notification=True):
         admin = admin or self.member  # has general permission to change assignments
         self.signal_called = False
 
@@ -397,12 +404,14 @@ class AssignmentTests(JuntagricoTestCase):
                         {'edit-slots': 2}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
-        self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification
+        # (member notification +) admin notification
+        self.assertEqual(len(mail.outbox), admin_notification + (admin != self.member))
         if admin != self.member:
             # if member edits their own assignment, no notification is sent to them
             self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
-        self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
-        self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
+        if admin_notification:
+            self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+            self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
         mail.outbox.clear()
         self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
 
@@ -413,14 +422,15 @@ class AssignmentTests(JuntagricoTestCase):
         # test that slots are unchanged
         self.assertEqual(self.job2.occupied_slots, 1)
 
-    def testAssignmentDelete(self, admin=None):
+    def testAssignmentDelete(self, admin=None, admin_notification=True):
         admin = admin or self.admin
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
                         {'edit-slots': 0}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 0)
-        self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
+        self.assertEqual(len(mail.outbox), 1 + admin_notification)  # member notification and coordinator notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
-        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        if admin_notification:
+            self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
         mail.outbox.clear()
 
     def testAssignmentEditByCoordinator(self):
@@ -428,6 +438,12 @@ class AssignmentTests(JuntagricoTestCase):
         self.testAssignmentDelete(self.area_admin)
         self.testAssignmentEdit(self.area_admin_assignment_modifier)
         self.testAssignmentDelete(self.area_admin_assignment_modifier)
+
+    def testAssignmentEditBySoleCoordinator(self):
+        self.job2.contact_set.add(MemberContact(member=self.area_admin), bulk=False)
+        # only member is notified as editor is sole coordinator
+        self.testAssignmentEdit(self.area_admin, False)
+        self.testAssignmentDelete(self.area_admin, False)
 
 
 class JobValidationTests(JuntagricoTestCase):

@@ -146,6 +146,7 @@ class Config:
             'cumulative_shares': False,
             'required_on_signup': True,
             'fee': 0,
+            'sync_shares': True,
         }
     )
 

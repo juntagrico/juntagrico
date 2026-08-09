@@ -240,14 +240,21 @@ class JobType(AbstractJobType):
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
-    time = models.DateTimeField(_('Zeitpunkt'))
+    time = models.DateTimeField(
+        _('Zeitpunkt'),
+        help_text=_('Teilnehmende werden bei Änderung automatisch per E-mail benachrichtigt'),
+    )
     multiplier = models.FloatField(
         _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1.0,
         validators=[MinValueValidator(0)])
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
-    canceled = models.BooleanField(_('abgesagt'), default=False)
+    canceled = models.BooleanField(
+        _('abgesagt'),
+        default=False,
+        help_text=_('Teilnehmende werden bei Absage automatisch per E-mail benachrichtigt'),
+    )
 
     members = models.ManyToManyField('Member', through='Assignment', related_name='jobs')
 
@@ -647,6 +654,9 @@ class Assignment(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
+
+    def name(self):
+        return self.job.type.get_name
 
     @admin.display(ordering='job__time')
     def time(self):

@@ -12,7 +12,6 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
@@ -158,16 +157,17 @@ class Subscription(Billable, SimpleStateModel):
         return ShareDao.all_shares_subscription(self).count()
 
     @property
+    def shares(self):
+        """all shares of members currently in this subscription"""
+        current_members = self.current_members
+        shares = Share.objects.filter(member__in=current_members)
+        shares._bound_members = current_members
+        return shares
+
+    @property
     def available_shares(self):
         """amount of shares dedicated to subscription"""
-        current_members = self.current_members
-        share_count = Share.objects.filter(member__in=current_members).usable().count()
-        if Config.cumulative_shares_for_membership():
-            # if cumulative, subtract shares that are needed for membership
-            share_count -= Membership.objects.filter(
-                account__in=current_members
-            ).not_canceled().count() * Config.membership('required_shares')
-        return share_count
+        return self.shares.count_dedicated(only_total=True)
 
     @property
     def paid_shares(self):

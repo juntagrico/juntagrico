@@ -36,7 +36,7 @@
             <div class="row pb-4">
                 <div class="col-12">
                     {% if edit_url.strip %}
-                        <a href="{{ edit_url }}" class="btn btn-primary mb-1">
+                        <a href="{{ edit_url }}{% querystring next=request.path %}" class="btn btn-primary mb-1">
                             <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Einsatz bearbeiten" %}
                         </a>
@@ -90,7 +90,7 @@
 
                     {% if can_cancel %}
                         <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
-                              onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
+                              onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %} {% trans "Teilnehmende werden automatisch per E-Mail benachrichtigt" %}')">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger mb-1" name="job_id" value="{{ job.id }}">
                                 <i class="bi bi-ban mr-1"></i>
