@@ -14,6 +14,7 @@
 {% endblock %}
 
 {% block inner_list_head %}
+    {% config "enable_membership" as c_enable_membership %}
     <th class="filter">
         {% trans "Bestellt am" %}
     </th>
@@ -29,6 +30,7 @@
 {% endblock %}
 
 {% block inner_list_foot %}
+    {% config "enable_membership" as c_enable_membership %}
     <th>
         {% trans "Bestellt am" %}
     </th>
@@ -44,6 +46,7 @@
 {% endblock %}
 
 {% block entries %}
+    {% config "enable_membership" as c_enable_membership %}
     {% regroup object_list by member as shares_list %}
     {% for member, shares in shares_list %}
         {% for share in shares %}

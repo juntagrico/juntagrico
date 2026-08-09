@@ -314,16 +314,23 @@ class ShareView(MultiplePermissionsRequiredMixin, ListView):
 @require_POST
 @permission_required('juntagrico.change_share')
 @using_change_date
-def share_cancel(request, change_date, share_id=None):
-    if share_id:
-        shares = [get_object_or_404(Share, id=share_id)]
-    else:
-        shares = Share.objects.filter(id__in=request.POST.get('share_id').split('_'))
+def share_cancel(request, change_date):
+    shares = Share.objects.filter(id__in=request.POST['share_id'].split('_'))
     if change_date:
-        change_date = min(change_date, datetime.date.today())
+        change_date = max(change_date, datetime.date.today())
 
     canceled_shares = {}
     for share in shares:
+        if share.cancelled_date:
+            messages.warning(
+                request,
+                gettext('{share} {id} von {account} war bereits gekündigt').format(
+                    share=Config.vocabulary('share'),
+                    id=share.identifier,
+                    account=share.member,
+                ),
+            )
+            continue
         try:
             share.cancel(change_date)
             messages.success(request, gettext('{share} {id} von {account} gekündigt').format(
