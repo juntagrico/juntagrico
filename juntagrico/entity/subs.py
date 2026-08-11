@@ -90,6 +90,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
+        # DEPRECATED: use parts.active() instead
         return self.parts.filter(q_isactive())
 
     @property

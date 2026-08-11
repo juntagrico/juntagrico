@@ -128,8 +128,10 @@ body.wide-layout > .page-container {
     flex-basis: 14em;
 }
 
-.content-container {
-    max-width: 100%;
+@media (min-width: 768px) {
+    .content-container {
+        max-width: calc(100% - min(25%, 14em));
+    }
 }
 
 /* row size stuff checked */
@@ -527,4 +529,8 @@ a.phone-number {
     /* handles large multi selection fields like in the email form */
     max-height: 15em;
     overflow: scroll;
+}
+
+.share-overview {
+    max-width: 60em;
 }

@@ -235,22 +235,33 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         date = date or datetime.date.today()
         return self.exclude(activation_date__lte=date)
 
+    def active(self, date=None):
+        return super().active_on(date)
+
+    def waiting_or_active(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=date)
+
     def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
 
     def not_canceled(self):
         return self.filter(cancellation_date=None)
 
-    def waiting_or_active(self, date=None):
-        date = date or datetime.date.today()
-        return self.exclude(deactivation_date__lte=date)
-
     def active_on(self, date=None):
         date = date or datetime.date.today()
         current_week_number = date.isocalendar()[1] - 1
-        return (super().active_on(date)
-                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
-                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
+        return (
+            super()
+            .active_on(date)
+            .annotate(
+                week_mod=ExpressionWrapper(
+                    (current_week_number + F('type__offset')) % (F('type__interval')),
+                    output_field=PositiveIntegerField(),
+                )
+            )
+            .filter(week_mod=0)
+        )
 
     def sorted(self):
         return self.order_by('type__is_extra', 'type__bundle__category',

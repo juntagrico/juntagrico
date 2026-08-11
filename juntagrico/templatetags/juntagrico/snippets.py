@@ -1,12 +1,15 @@
 import datetime
 
 from django import template
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils import timezone
 from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
+from juntagrico.context_processors import Vocabulary
 from juntagrico.entity.jobs import Job, RecuringJob, JobMessage
+from juntagrico.entity.membership import Membership
+from juntagrico.entity.share import Share
 from juntagrico.forms.job import AddAssignmentForm, AddJobMessageForm
 
 register = template.Library()
@@ -119,6 +122,88 @@ def alert(message):
 @register.inclusion_tag('juntagrico/snippets/external_link.html')
 def ext_link(text, link):
     return {'text': text, 'link': link}
+
+
+@register.inclusion_tag('juntagrico/manage/share/snippets/overview.html')
+def share_overview(account):
+    # current shares & subscription
+    cumulative = Config.cumulative_shares_for_membership()
+
+    current = {
+        'available': account.shares.active().count(),
+        'for_membership': account.memberships.active().required_share_count(),
+        'subscription': account.subscription_current,
+    }
+    if account.subscription_current:
+        current['for_subscription'] = max(
+            0,
+            account.subscription_current.parts.active().aggregate(
+                total=Sum('type__shares')
+            )['total'] or 0,
+        )
+        current_co_members = account.subscription_current.members.joined().active().exclude(pk=account.pk)
+        current['of_co_members'] = Share.objects.filter(member__in=current_co_members).active().count()
+        if cumulative:
+            current['of_co_members'] -= (
+                Membership.objects.filter(account__in=current_co_members)
+                .active()
+                .required_share_count()
+            )
+            required = current['for_membership'] + current['for_subscription'] - current['of_co_members']
+        else:
+            required = max(current['for_membership'], current['for_subscription'] - current['of_co_members'])
+    else:
+        required = current['for_membership']
+    current['total'] = current['available'] - required
+
+    # future shares & subscription
+    future_subscription = account.subscription_future or account.subscription_current
+    future = {
+        'available': account.shares.usable().count(),
+        'for_membership': account.memberships.not_canceled().required_share_count(),
+        'subscription': future_subscription,
+    }
+    if future_subscription:
+        future['for_subscription'] = max(
+            0,
+            future_subscription.parts.not_canceled().aggregate(
+                total=Sum('type__shares')
+            )['total'] or 0,
+        )
+        future_co_members = (
+            future_subscription.members.joining().active().exclude(pk=account.pk)
+        )
+        future['of_co_members'] = (
+            Share.objects.filter(member__in=future_co_members).usable().count()
+        )
+        if cumulative:
+            future['of_co_members'] -= (
+                Membership.objects.filter(account__in=future_co_members)
+                .not_canceled()
+                .required_share_count()
+            )
+            required = (
+                future['for_membership']
+                + future['for_subscription']
+                - future['of_co_members']
+            )
+        else:
+            required = max(
+                future['for_membership'],
+                future['for_subscription'] - future['of_co_members'],
+            )
+    else:
+        required = future['for_membership']
+    future['total'] = future['available'] - required
+
+    return {
+        'account': account,
+        'current': current,
+        'future': future,
+        'cumulative': cumulative,
+        'membership_enabled': Config.membership('enable'),
+        'vocabulary': Vocabulary,
+    }
 
 
 @register.inclusion_tag('juntagrico/manage/share/snippets/summary.html')
