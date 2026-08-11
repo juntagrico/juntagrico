@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
@@ -22,7 +23,7 @@ class Location(JuntagricoBaseModel):
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), default='', blank=True)
     visible = models.BooleanField(_('Sichtbar'), default=True,
-                                  help_text=_('Ort steht bei Einsatz und {} zur Auswahl').format(
+                                  help_text=format_lazy(_('Ort steht bei Einsatz und {} zur Auswahl'), 
                                       Config.vocabulary('depot')))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 

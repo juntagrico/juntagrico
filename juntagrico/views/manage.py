@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
@@ -82,7 +83,7 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
                             'juntagrico.can_filter_members']]
     template_name = 'juntagrico/manage/member/show.html'
     queryset = Member.objects.all
-    title = _('Alle {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Alle {members}'), members=Config.vocabulary('member_pl'))
 
     def get_queryset(self):
         return super().get_queryset()().prefetch_for_list
@@ -90,13 +91,13 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
-    title = _('Alle aktiven {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Alle aktiven {members}'), members=Config.vocabulary('member_pl'))
 
 
 class AreaMemberView(LoginRequiredMixin, MemberView):
     permission_required = []  # checked in get_queryset
     template_name = 'juntagrico/manage/member/show_for_area.html'
-    title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
+    title = format_lazy(_('Alle aktiven {member} im Tätigkeitsbereich {area_name}'), 
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
 
@@ -194,7 +195,7 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
                             'juntagrico.can_filter_subscriptions']]
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
-    title = _('Alle aktiven {subscriptions} im Überblick').format(subscriptions=Config.vocabulary('subscription_pl'))
+    title = format_lazy(_('Alle aktiven {subscriptions} im Überblick'), subscriptions=Config.vocabulary('subscription_pl'))
 
 
 class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, TemplateView):
@@ -353,7 +354,7 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
 
 class DepotSubscriptionView(LoginRequiredMixin, SubscriptionView):
     permission_required = []
-    title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
+    title = format_lazy(_('Alle aktiven {subs} im {depot} {depot_name}'), 
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
     )
 

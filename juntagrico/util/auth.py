@@ -5,7 +5,8 @@ from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
-from django.utils.translation import gettext as _
+from django.utils.text import format_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 
 from juntagrico.config import Config
 from juntagrico.mailer import EmailSender, membernotification
@@ -32,12 +33,14 @@ class AuthenticateWithEmail(object):
 
 class JuntagricoAuthenticationForm(AuthenticationForm):
     error_messages = {
-        'invalid_login': _('Sorry, das ist kein gültiges Login'),
-        'inactive': _('Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
+        'invalid_login': gettext_lazy('Sorry, das ist kein gültiges Login'),
+        'inactive': format_lazy(
+            _('Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}'),
             '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members'))
         ),
-        'mail_unconfirmed': _('Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '
-                              'der E-Mail, die wir gerade verschickt haben (schaue auch im Spam-Ordner nach).'
+        'mail_unconfirmed': gettext_lazy(
+            'Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '
+            'der E-Mail, die wir gerade verschickt haben (schaue auch im Spam-Ordner nach).'
         ),
     }
 
