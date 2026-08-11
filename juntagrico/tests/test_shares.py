@@ -351,3 +351,18 @@ class ShareManageTests(ShareTestCase):
         self.assertGet(reverse('manage-share-archive'), 200)
         self.assertGet(reverse('manage-share-archive'), 200, member=self.admin)
         self.assertGet(reverse('manage-share-archive'), 403, member=self.member2)
+
+    def testManageSharesByAccount(self):
+        self.assertGet(reverse('manage-share-by-account', args=[self.member.id]), 200)
+        self.assertGet(reverse('manage-share-by-account', args=[self.member.id]), 200, member=self.admin)
+        self.assertGet(reverse('manage-share-by-account', args=[self.member.id]), 403, member=self.member2)
+        self.assertGet(reverse('manage-share-by-account', args=[self.member2.id]), 200)
+        self.assertGet(reverse('manage-share-by-account', args=[self.member3.id]), 200)
+
+    @override_settings(MEMBERSHIP={'cumulative_shares': True})
+    def testManageSharesByAccountWithCumulativeShares(self):
+        self.testManageSharesByAccount()
+
+    @override_settings(MEMBERSHIP={'enable': False})
+    def testManageSharesByAccountWithoutMemberships(self):
+        self.testManageSharesByAccount()
