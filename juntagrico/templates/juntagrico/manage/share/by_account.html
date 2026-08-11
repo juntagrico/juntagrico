@@ -152,30 +152,26 @@
                             </td>
                             <td data-order="{{ share.cancelled_date|date:"Y-m-d" }}">
                                 {{ share.cancelled_date|date:"Y-m-d" }}
-                                {% if not share.cancelled_date %}
+                                {% if not share.cancelled_date and perms.juntagrico.change_share %}
                                     <div class="d-none share_id{% if not share.cancelled_date %} cancellable{% endif %}">
                                         {{ share.id }}{# spaces are required here #}
                                     </div>
-                                    {% if share.cancelled_date %}
-                                        <span class="badge badge-danger">{% trans "gekündigt" %}</span>
-                                    {% elif perms.juntagrico.change_share %}
-                                        <form action="{% url 'manage-share-cancel' %}" method="POST" class="d-inline"
-                                              id="cancel_{{ share.id }}_form">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="share_id" value="{{ share.id }}">
-                                            <button type="button" class="btn btn-outline-danger"
-                                                    data-toggle="modal" data-target="#cancel_modal"
-                                                    data-person="{{ account }}">
-                                                {% if share.paid_date %}
-                                                    <i class="bi bi-ban"></i>
-                                                    {% trans "kündigen" %}
-                                                {% else %}
-                                                    <i class="bi bi-x-circle"></i>
-                                                    {% trans "stornieren" %}
-                                                {% endif %}
-                                            </button>
-                                        </form>
-                                    {% endif %}
+                                    <form action="{% url 'manage-share-cancel' %}" method="POST" class="d-inline"
+                                          id="cancel_{{ share.id }}_form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="share_id" value="{{ share.id }}">
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-toggle="modal" data-target="#cancel_modal"
+                                                data-person="{{ account }}">
+                                            {% if share.paid_date %}
+                                                <i class="bi bi-ban"></i>
+                                                {% trans "kündigen" %}
+                                            {% else %}
+                                                <i class="bi bi-x-circle"></i>
+                                                {% trans "stornieren" %}
+                                            {% endif %}
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </td>
                             <td>

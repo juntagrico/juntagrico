@@ -259,6 +259,18 @@ class CumulativeShareCountTests(ShareCountTests):
 
 
 class ShareManageTests(ShareTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # add all states of shares
+        Share.objects.create(member=cls.member2)
+        Share.objects.create(member=cls.member2, cancelled_date='2025-08-10', termination_date='2025-12-31')
+        cls.create_paid_share(cls.member2, cancelled_date='2025-08-10', termination_date='2025-12-31')
+        cls.create_paid_share(
+            cls.member2, cancelled_date='2025-08-10', termination_date='2025-12-31', payback_date='2025-12-31'
+        )
+        mail.outbox.clear()
+    
     def testManageShares(self):
         self.assertGet(reverse('manage-share'), 200)
         self.assertGet(reverse('manage-share'), 200, member=self.admin)
@@ -358,6 +370,7 @@ class ShareManageTests(ShareTestCase):
         self.assertGet(reverse('manage-share-by-account', args=[self.member.id]), 403, member=self.member2)
         self.assertGet(reverse('manage-share-by-account', args=[self.member2.id]), 200)
         self.assertGet(reverse('manage-share-by-account', args=[self.member3.id]), 200)
+        self.assertGet(reverse('manage-share-by-account', args=[self.inactive_member.id]), 200)
 
     @override_settings(MEMBERSHIP={'cumulative_shares': True})
     def testManageSharesByAccountWithCumulativeShares(self):
