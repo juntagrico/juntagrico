@@ -29,7 +29,7 @@ class MembershipQueryset(QuerySet):
         on_date = on_date or datetime.date.today()
         return self.filter(deactivation_date__lte=on_date)
 
-    def required_share_count(self):
+    def required_shares_count(self):
         if Config.membership('enable'):
             return self.count() * Config.membership('required_shares')
         return 0

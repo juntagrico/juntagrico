@@ -131,7 +131,7 @@ def share_overview(account):
 
     current = {
         'available': account.shares.active().count(),
-        'for_membership': account.memberships.active().required_share_count(),
+        'for_membership': account.memberships.active().required_shares_count(),
         'subscription': account.subscription_current,
     }
     if account.subscription_current:
@@ -147,7 +147,7 @@ def share_overview(account):
             current['of_co_members'] -= (
                 Membership.objects.filter(account__in=current_co_members)
                 .active()
-                .required_share_count()
+                .required_shares_count()
             )
             required = current['for_membership'] + current['for_subscription'] - current['of_co_members']
         else:
@@ -160,7 +160,7 @@ def share_overview(account):
     future_subscription = account.subscription_future or account.subscription_current
     future = {
         'available': account.shares.usable().count(),
-        'for_membership': account.memberships.not_canceled().required_share_count(),
+        'for_membership': account.memberships.not_canceled().required_shares_count(),
         'subscription': future_subscription,
     }
     if future_subscription:
@@ -180,7 +180,7 @@ def share_overview(account):
             future['of_co_members'] -= (
                 Membership.objects.filter(account__in=future_co_members)
                 .not_canceled()
-                .required_share_count()
+                .required_shares_count()
             )
             required = (
                 future['for_membership']
