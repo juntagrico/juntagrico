@@ -2,8 +2,7 @@ import datetime
 from datetime import date
 
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum, F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -29,8 +28,7 @@ from juntagrico.util import return_to_previous_location
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import next_membership_end_date
-from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
-    using_change_date
+from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part
 
 
 @primary_member_of_subscription
@@ -213,28 +211,6 @@ class AddCoMemberView(FormView, ModelFormMixin):
 def error_page(request, error_message):
     renderdict = {'error_message': error_message}
     return render(request, 'error.html', renderdict)
-
-
-@permission_required('juntagrico.is_operations_group')
-@using_change_date
-def activate_subscription(request, change_date, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    try:
-        subscription.activate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.is_operations_group')
-@using_change_date
-def deactivate_subscription(request, change_date, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    try:
-        subscription.deactivate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription_of_part

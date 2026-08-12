@@ -29,8 +29,7 @@ class SpecialRoles(models.Model):
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (('is_operations_group', _('Ist in der BG')),
-                       ('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
+        permissions = (('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
                        ('can_send_mails', _('Kann E-Mails versenden')),
                        ('can_email_attachments', _('Kann Anhänge per E-Mail senden')),
                        ('can_use_general_email', _('Kann allgemeine E-Mail-Adresse verwenden')),
