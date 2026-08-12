@@ -1,0 +1,30 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans %}Einsatz für alle absagen{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <div class="alert alert-secondary">
+        <i class="bi bi-envelope"></i>
+        {% blocktrans trimmed %}
+            Teilnehmende werden automatisch per E-Mail benachrichtigt.
+        {% endblocktrans %}
+    </div>
+    <p>
+        {% trans "Bist du sicher, dass du diesen Einsatz für alle absagen möchtest?" %}
+    </p>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" form="job_cancel_form" id="confirm_job_cancel" class="custom-control-input" required="required">
+        <label class="custom-control-label form-inline" for="confirm_job_cancel">
+            {% blocktrans %}Ich habe verstanden, dass diese Aktion nicht rückgängig gemacht werden kann.{% endblocktrans %}
+        </label>
+    </div>
+{% endblock %}
+
+{% block buttons %}
+    <button type="submit" form="job_cancel_form" class="modal-submit btn btn-danger mb-1">
+        {% trans "Einsatz für alle absagen" %}
+    </button>
+{% endblock %}
