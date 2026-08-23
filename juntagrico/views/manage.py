@@ -412,7 +412,10 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     title = _('Alle aktiven {subscriptions} im Überblick').format(subscriptions=Config.vocabulary('subscription_pl'))
 
     def get_context_data(self, **kwargs):
-        kwargs['show_identifier'] = self.get_queryset()().filter(identifier__isnull=False).exists()
+        queryset = self.get_queryset()
+        if callable(queryset):
+            queryset = queryset()
+        kwargs['show_identifier'] = queryset.filter(identifier__isnull=False).exists()
         return super().get_context_data(**kwargs)
 
 
