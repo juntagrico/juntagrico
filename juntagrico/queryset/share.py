@@ -31,7 +31,7 @@ class ShareQueryset(PolymorphicQuerySet):
         """Share must be terminated before it can be paid back"""
         on_date = on_date or datetime.date.today()
         return self.annotate(backpayable=ExpressionWrapper(
-            Q(termination_date__lte=on_date),
+            Q(termination_date__lte=on_date, paid_date__isnull=False, payback_date__isnull=True),
             output_field=BooleanField(),
         ))
 

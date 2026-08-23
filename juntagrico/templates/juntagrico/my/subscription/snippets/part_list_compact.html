@@ -12,18 +12,16 @@
                     {% if part.is_trial %}
                         <span class="badge badge-info">{% trans "Probe" %}</span>
                     {% endif %}
-                    {% if remaining <= 0 %}
+                    {% if part.canceled %}
+                        <span class="badge badge-danger">{% trans "gekündigt" %}</span>
+                    {% elif remaining <= 0 %}
                         <span class="badge badge-danger">{% trans "abgelaufen" %}</span>
-                    {% else %}
-                        {% if part.canceled %}
-                            <span class="badge badge-danger">{% trans "gekündigt" %}</span>
-                        {% elif status == 'waiting' %}
-                            <span class="badge badge-secondary">{% trans "wartend" %}</span>
-                        {% elif status == 'active' %}
-                            <span class="badge badge-success">{% trans "aktiv" %}</span>
-                        {% elif status == 'inactive' %}
-                            <span class="badge badge-danger">{% trans "inaktiv" %}</span>
-                        {% endif %}
+                    {% elif status == 'waiting' %}
+                        <span class="badge badge-secondary">{% trans "wartend" %}</span>
+                    {% elif status == 'active' %}
+                        <span class="badge badge-success">{% trans "aktiv" %}</span>
+                    {% elif status == 'inactive' %}
+                        <span class="badge badge-danger">{% trans "inaktiv" %}</span>
                     {% endif %}
                 </li>
             {% endwith %}
