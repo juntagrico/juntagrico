@@ -448,9 +448,7 @@ juntagrico.is_operations_group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning::
-    Deprecated. This permission will be replaced by more granular permissions in the next releases.
-
-- (De)activate subscriptions
+    Removed in Juntagrico 2.1
 
 Search Hints:
     * German: Ist in der BG
