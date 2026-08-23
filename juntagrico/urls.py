@@ -152,10 +152,6 @@ urlpatterns = [
     path('my/future', juntagrico_admin.future, name='future'),
     path('manage/subscription/inconsistencies', manage.subscription_inconsistencies,
          name='manage-subscription-inconsistencies'),
-    path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
-         name='sub-activate'),
-    path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
-         name='sub-deactivate'),
     # /manage/subscription/part
 
     path('manage/subscription/part/<int:part_id>/activate/', manage.activate_part,
