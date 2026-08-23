@@ -10,7 +10,7 @@
 
 {% block intro %}
     <p>
-        {% if membership_required_on_signup %}
+        {% if membership_required == 'always' %}
             {% block info_required %}
                 <strong>
                     {% blocktrans trimmed with v_membership=vocabulary.membership %}
@@ -18,11 +18,19 @@
                     {% endblocktrans %}
                 </strong>
             {% endblock %}
-        {% elif membership_required %}
+        {% elif membership_required == 'for_sub' %}
             {% block info_required_with_subscription %}
                 <strong>
                     {% blocktrans trimmed with v_membership=vocabulary.membership v_subscription_pl=vocabulary.subscription_pl %}
                         Die {{ v_membership }} ist erforderlich für die von dir gewählten {{ v_subscription_pl }}.
+                    {% endblocktrans %}
+                </strong>
+            {% endblock %}
+        {% elif membership_required == 'for_no_sub' %}
+            {% block info_required_with_no_subscription %}
+                <strong>
+                    {% blocktrans trimmed with v_membership=vocabulary.membership v_no_subscription_acc=vocabulary.no_subscription_acc %}
+                        Die {{ v_membership }} ist erforderlich wenn du {{ v_no_subscription_acc }} gewählt hast.
                     {% endblocktrans %}
                 </strong>
             {% endblock %}

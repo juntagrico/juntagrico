@@ -297,14 +297,13 @@ class SelectMembershipView(SignupView, FormView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['membership_required_on_signup'] = Config.membership('required_on_signup')
         context_data['membership_required'] = self.signup_manager.requires_membership()
         context_data['membership_fee'] = Config.membership('fee')
         return context_data
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['required'] = self.signup_manager.requires_membership()
+        form_kwargs['required'] = bool(self.signup_manager.requires_membership())
         if 'data' not in form_kwargs and self.signup_manager.get('membership') is not None:
             form_kwargs['data'] = {'membership': self.signup_manager.get('membership')}
         return form_kwargs
