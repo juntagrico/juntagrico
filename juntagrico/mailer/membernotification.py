@@ -48,6 +48,19 @@ def shares_created(member, shares):
     ).send()
 
 
+def shares_canceled_for_you(account, shares):
+    if shares:
+        EmailBuilder(
+            account,
+            _('{share} gekündigt').format(share=Config.vocabulary('share')),
+            'juntagrico/mails/member/share/canceled.txt',
+            {
+                'shares': shares,
+            },
+            'for_shares'
+        ).send()
+
+
 def email_confirmation(member):
     EmailBuilder(
         member,
