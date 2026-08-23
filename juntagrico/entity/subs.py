@@ -26,6 +26,10 @@ class Subscription(Billable, SimpleStateModel):
     '''
     One Subscription that may be shared among several people.
     '''
+    identifier = models.CharField(
+        _('Kennzeichnung'), max_length=30, null=True, blank=True, unique=True,
+        help_text=_('Eindeutige Kennzeichnung (optional)')
+    )
     depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
