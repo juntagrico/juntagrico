@@ -4,8 +4,9 @@ from django.conf import settings
 from django.core import mail
 from django.urls import reverse
 
-from juntagrico.models import Member, Share, Subscription, SubscriptionMembership
+from juntagrico.models import Share, SubscriptionMembership
 from . import JuntagricoTestCase
+from ..entity.member import Invitee
 
 
 class CoMemberTests(JuntagricoTestCase):
@@ -47,40 +48,12 @@ class CoMemberTests(JuntagricoTestCase):
     def testAddNewCoMember(self):
         new_co_member_data = self.get_co_member_data('new_comember@juntagrico.org')
         self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
-        self.assertEqual(Member.objects.filter(email=new_co_member_data['email']).count(), 1)
+        self.assertEqual(Invitee.objects.filter(email=new_co_member_data['email']).count(), 1)
         if settings.ENABLE_SHARES:
-            self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
-        self.assertEqual(Subscription.objects.filter(subscriptionmembership__member__email=new_co_member_data['email']).count(), 1)
-        # membership and, if enabled, share order emails to co-member & admin notifications for the same
-        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
-
-    def testAddExistingCoMemberWithSub(self):
-        # existing member with subs can not be added as co members
-        # message to contact admin will show
-        new_co_member_data = self.get_co_member_data(self.member2.email)
-        # response is 200 (form error)
-        response = self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data)
-        self.assertListEqual(
-            ['has_active_subscription'],  # first code 'part_activation_date_mismatch' reaches here as none somehow
-            [e.code for e in response.context_data['form'].errors['email'].as_data()]
-        )
-        # no new shares should be created
-        self.assertEqual(Share.objects.filter(member=self.member2).count(), 0)
-        # member now is not part of subscription
-        self.assertNotEqual(self.member2.subscription_current, self.sub)
-
-    def testAddExistingCoMemberWithSubEndingSameDay(self):
-        # corner case: co-member just left their other subscription today. New subscription will be joined tomorrow
-        new_co_member_data = self.get_co_member_data(self.switching_co_member.email)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
-        self.switching_co_member.refresh_from_db()
-        self.assertIsNone(self.co_member.subscription_current)
-        self.assertTrue(
-            self.switching_co_member.subscriptionmembership_set.filter(
-                subscription=self.sub,
-                join_date=datetime.date.today() + datetime.timedelta(days=1)
-            ).exists()
-        )
+            # share is not created yet
+            self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 0)
+        # invitation email
+        self.assertEqual(len(mail.outbox), 1)
 
     def testAddExistingCoMember(self):
         co_member_before = self.co_member.__dict__
@@ -95,5 +68,5 @@ class CoMemberTests(JuntagricoTestCase):
         self.assertEqual(self.co_member.first_name, co_member_before['first_name'])
         # no new shares should be created
         self.assertEqual(Share.objects.filter(member=self.co_member).count(), 0)
-        # member now is part of subscription
-        self.assertEqual(self.co_member.subscription_current, self.sub)
+        # invitation created
+        self.assertTrue(Invitee.objects.filter(email=co_member_before['email']).exists())
