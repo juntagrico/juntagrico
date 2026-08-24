@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Min, Max
@@ -259,6 +260,14 @@ def cancel(request):
     # cancel the job
     job.canceled = True
     job.save()
+    # log action
+    LogEntry.objects.log_actions(
+        user_id=request.user.id,
+        queryset=[job.get_real_instance()],
+        action_flag=CHANGE,
+        change_message=_('abgesagt'),
+        single_object=True,
+    )
     return return_to_previous_location(request)
 
 

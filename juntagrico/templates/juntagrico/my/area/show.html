@@ -61,8 +61,7 @@
                 {% endfor %}
                 {% if edit_form %}
                     <div class="mt-3">
-                        {# TODO: open popup instead #}
-                        <a href="{% url 'admin:juntagrico_activityarea_change' area.id %}#juntagrico-contact-content_type-object_id-group"
+                        <a href="{% url 'admin:juntagrico_activityarea_change' area.id %}?next={{ request.path|urlencode }}#juntagrico-contact-content_type-object_id-group"
                            target="_blank"
                            id="edit_contacts" class="btn btn-outline-primary">
                             <i class="bi bi-pencil-square mr-1"></i>

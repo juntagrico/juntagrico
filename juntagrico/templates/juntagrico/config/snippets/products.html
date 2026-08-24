@@ -12,8 +12,13 @@
                 <div class="card-header">
                     <strong>{{ product }}</strong>
                     {% if perms.juntagrico.change_subscriptionproduct %}
-                        <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}">
+                        <a href="{% url 'admin:juntagrico_subscriptionproduct_change' product.id %}?next={{ request.path|urlencode }}">
                             <i class="bi bi-pencil-square"></i>
+                        </a>
+                    {% endif %}
+                    {% if perms.juntagrico.delete_subscriptionproduct %}
+                        <a href="{% url 'admin:juntagrico_subscriptionproduct_delete' product.id %}?next={{ request.path|urlencode }}">
+                            <i class="bi bi-trash"></i>
                         </a>
                     {% endif %}
                 </div>
@@ -46,7 +51,7 @@
     {% endfor %}
     {% if perms.juntagrico.add_subscriptionproduct %}
         <div class="col mb-3">
-            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionproduct_add' %}">
+            <a class="btn btn-primary" href="{% url 'admin:juntagrico_subscriptionproduct_add' %}?next={{ request.path|urlencode }}">
                 <i class="bi bi-plus mr-1"></i>
                 {% trans "Produkt hinzufügen" %}
             </a>

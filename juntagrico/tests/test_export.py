@@ -66,3 +66,10 @@ class ExportTests(JuntagricoTestCase):
         response = self.assertPost(export_url, member=self.admin,
                                    data=self.get_data(1, selected=fields['SubscriptionPartResource']))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
+
+
+class EmptyExportTests(ExportTests):
+    @classmethod
+    def set_up_job(cls):
+        # don't create any jobs
+        pass

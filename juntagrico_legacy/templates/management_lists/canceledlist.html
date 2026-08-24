@@ -41,7 +41,7 @@
             {% for subscription in management_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}?next={{ request.path|urlencode }}">
                             {{ subscription }}
                         </a>
                     </td>
