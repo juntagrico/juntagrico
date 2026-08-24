@@ -105,6 +105,10 @@ urlpatterns = [
     path('job/<int:job_id>/convert/preview', job.convert_to_recurring_preview, name='job-conversion-preview'),
     path('job/convert/onetime', job.convert_to_one_time, name='job-convert-to-one-time'),
     path('job/cancel', job.cancel, name='job-cancel'),
+    path('job/<int:job_id>/message/add', job.add_message, name='job-message-add'),
+    path('job/message/<int:message_id>/remove', job.remove_message, name='job-message-remove'),
+    path('job/account/<int:account_id>', job.by_account, name='job-by-account'),
+
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
@@ -144,13 +148,10 @@ urlpatterns = [
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
+    path('manage/subscription/shares', manage.SubscriptionSharesView.as_view(), name='manage-sub-shares'),
     path('my/future', juntagrico_admin.future, name='future'),
     path('manage/subscription/inconsistencies', manage.subscription_inconsistencies,
          name='manage-subscription-inconsistencies'),
-    path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
-         name='sub-activate'),
-    path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
-         name='sub-deactivate'),
     # /manage/subscription/part
 
     path('manage/subscription/part/<int:part_id>/activate/', manage.activate_part,
@@ -190,14 +191,23 @@ urlpatterns = [
          name='manage-member-deactivate-single'),
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
 
+    # /manage/account
+    path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
+    path('manage/account/<int:account_id>/notes/edit', manage.account_notes_edit, name='manage-account-notes-edit'),
+
+
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),
 
     # /manage/share
     path('manage/share/unpaid', manage.ShareUnpaidView.as_view(), name='manage-share-unpaid'),
+    path('manage/share', manage.ShareView.as_view(), name='manage-share'),
+    path('manage/share/account/<int:account_id>', manage.ShareByAccountView.as_view(), name='manage-share-by-account'),
+    path('manage/share/cancel', manage.share_cancel, name='manage-share-cancel'),
     path('manage/share/canceled', manage.ShareCanceledView.as_view(), name='manage-share-canceled'),
     path('manage/share/payout', manage.share_payout, name='manage-share-payout'),
     path('manage/share/payout/<int:share_id>', manage.share_payout, name='manage-share-payout-single'),
+    path('manage/share/archive', manage.ShareArchiveView.as_view(), name='manage-share-archive'),
 
     # /manage/depot
     path('manage/depot/<int:depot_id>/subscription', manage.DepotSubscriptionView.as_view(),

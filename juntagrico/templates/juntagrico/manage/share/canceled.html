@@ -1,4 +1,4 @@
-{% extends "../base.html" %}
+{% extends "./show.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load juntagrico.snippets %}
@@ -10,98 +10,75 @@
     </h3>
 {% endblock %}
 
-{% block content %}
-    {% action_date request %}
-    {% include '../member/snippets/toggle_buttons.html' %}
-    {{ block.super }}
+{% block head %}
 {% endblock %}
 
-{% block list %}
-    <table id="filter-table" class="list table">
-        <thead>
-            <tr>
-                <th class="filter">
-                    {% vocabulary "share" %}
-                </th>
-                <th class="filter">
-                    {% vocabulary "member" %}
-                </th>
-                <th class="filter">
-                    {% trans "Kündigungsdatum" %}
-                </th>
-                <th class="filter">
-                    {% trans "Enddatum" %}
-                </th>
-                <th class="filter">
-                    {% trans "Zurückgesandt" %}
-                </th>
-                <th class="filter">
-                    {% trans "IBAN" %}
-                </th>
-                <th>
-                    {% trans "Aktionen" %}
-                </th>
-                <th class="filter">
-                    {% trans "Notizen" %}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for share in object_list %}
-                <tr>
-                    <td>
-                        <a href="{% url 'admin:juntagrico_share_change' share.id %}">
-                            {{ share }}
-                        </a>
-                        <div class="d-none share_id{% if share.backpayable %} backpayable{% endif %}">
-                            {{ share.id }}{# spaces are required here #}
-                        </div>
-                    </td>
-                    <td>
-                        {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=share.member %}
-                    </td>
-                    <td>
-                        {{ share.cancelled_date|date:"Y-m-d" }}
-                    </td>
-                    <td>
-                        {{ share.termination_date|date:"Y-m-d" }}
-                    </td>
-                    <td>
-                        {% if share.sent_back %}
-                            {% trans "(J)" %}
-                        {% else %}
-                            {% trans "(N)" %}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if share.member.iban %}
-                        {{ share.member.iban }}
-                        {% else %}
-                        {% trans "keine IBAN angegeben" %}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if perms.juntagrico.change_share %}
-                            {% if share.backpayable %}
-                                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
-                                    {% trans "Ausbuchen" %}
-                                </a>
-                            {% else %}
-                                {% trans "Enddatum ausstehend" %}
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {{ share.notes }}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% block inner_list_head %}
+    <th class="filter">
+        {% trans "Kündigungsdatum" %}
+    </th>
+    <th class="filter">
+        {% trans "Enddatum" %}
+    </th>
+    <th class="filter">
+        {% trans "Zurückgesandt" %}
+    </th>
+    <th class="filter">
+        {% trans "IBAN" %}
+    </th>
+    <th>
+        {% trans "Ausbuchen" %}
+    </th>
 {% endblock %}
 
-{% block datatable_constructor %}
-    {{ block.super }}
+{% block inner_list_foot %}
+    <th>
+        {% trans "Kündigungsdatum" %}
+    </th>
+    <th>
+        {% trans "Enddatum" %}
+    </th>
+    <th>
+        {% trans "Zurückgesandt" %}
+    </th>
+    <th>
+        {% trans "IBAN" %}
+    </th>
+    <th>
+        {% trans "Ausbuchen" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_entry %}
+    <td>
+        {{ share.cancelled_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.termination_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.sent_back|yesno:_('ja,nein') }}
+    </td>
+    <td>
+        {{ share.member.iban|default:_('keine IBAN angegeben') }}
+    </td>
+    <td>
+        {% if perms.juntagrico.change_share %}
+            {% if share.backpayable %}
+                <div class="d-none share_id{% if share.backpayable %} backpayable{% endif %}">
+                    {{ share.id }}{# spaces are required here #}
+                </div>
+                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
+                    {% trans "Ausbuchen" %}
+                </a>
+            {% else %}
+                {% trans "Enddatum ausstehend" %}
+            {% endif %}
+        {% endif %}
+    </td>
+{% endblock %}
+
+{% block datatable_constructor_extra %}
     config.layout.topStart.features.buttons.push(
         id_action_button(
             '<i class="bi bi-file-earmark-binary"></i> {% trans "Zahlungsdatei erzeugen" %}',

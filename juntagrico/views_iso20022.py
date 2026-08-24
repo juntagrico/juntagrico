@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -6,9 +5,10 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
+from juntagrico.view_decorators import any_permission_required
 
 
-@permission_required('juntagrico.is_operations_group')
+@any_permission_required('juntagrico.view_share', 'juntagrico.change_share')
 def share_pain001(request):
     if request.method != 'POST':
         raise Http404

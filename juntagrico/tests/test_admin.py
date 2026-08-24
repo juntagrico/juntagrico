@@ -110,6 +110,37 @@ class AdminTests(JuntagricoTestCaseWithShares):
         }, member=self.area_admin_job_modifier, code=302)
         self.assertGreater(RecuringJob.objects.last().time, timezone.now())
 
+    def testAdminReturn(self):
+        change_url = reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)) + '?next=/config/'
+        self.assertGet(change_url, member=self.area_admin_job_modifier)
+        response = self.assertPost(
+            change_url,
+            data={
+                'type': self.job1.type.pk,
+                'slots': 1,
+                'multiplier': 1,
+                'time_0': self.job1.time.date(),
+                'time_1': self.job1.time.time(),
+                'assignment_set-TOTAL_FORMS': 0,
+                'assignment_set-INITIAL_FORMS': 0,
+                'juntagrico-contact-content_type-object_id-TOTAL_FORMS': 0,
+                'juntagrico-contact-content_type-object_id-INITIAL_FORMS': 0,
+            },
+            member=self.area_admin_job_modifier,
+            code=302,
+        )
+        self.assertRedirects(response, reverse('config'), fetch_redirect_response=False)
+
+    def testAdminDeleteReturn(self):
+        delete_url = reverse('admin:juntagrico_recuringjob_delete', args=(self.job1.pk,)) + '?next=/config/'
+        response = self.assertPost(
+            delete_url,
+            data={'post': 'yes'},
+            member=self.area_admin_job_modifier,
+            code=302,
+        )
+        self.assertRedirects(response, reverse('config'), fetch_redirect_response=False)
+
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
         url = reverse('admin:juntagrico_delivery_changelist')

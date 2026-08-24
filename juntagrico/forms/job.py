@@ -9,15 +9,16 @@ from django.forms import (
     CharField,
     Textarea,
     BooleanField,
-    ModelChoiceField,
+    ModelChoiceField, ModelForm,
 )
 from django.template.loader import get_template
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _, gettext_lazy
 from django_select2.forms import ModelSelect2Widget
 
 from juntagrico.config import Config
-from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType
+from juntagrico.entity.jobs import JobExtra, Assignment, Job, JobType, JobMessage
 from juntagrico.entity.member import Member
 from juntagrico.forms.account import MemberSelect2Widget
 from juntagrico.signals import subscribed, assignment_changed
@@ -179,7 +180,16 @@ class JobSubscribeForm(Form):
                     if self.cleaned_data['extra' + str(extra.extra_type.id)]:
                         assignment.job_extras.add(extra)
                 assignment.save()
-        self.send_signals(slots, self.cleaned_data['message'])
+        
+        # store message
+        message = self.cleaned_data['message']
+        if message:
+            JobMessage.objects.create(
+                job=self.job,
+                account=self.member,
+                message=message,
+            )
+        self.send_signals(slots, message)
 
     def send_signals(self, slots, message=''):
         # send signals
@@ -227,7 +237,6 @@ class EditAssignmentForm(JobSubscribeForm):
 class AddAssignmentForm(Form):
     account = ModelChoiceField(
         None, label=_('Wer?'), widget=MemberSelect2Widget,
-        help_text=_('Wird automatisch informiert.')
     )
     slots = SlotField(label=_('Teilnahme:'))
 
@@ -237,6 +246,7 @@ class AddAssignmentForm(Form):
         self.job = job
         self.editor = editor
         self.fields['account'].queryset = Member.objects.active()
+        self.fields['account'].help_text = mark_safe('<i class="bi bi-envelope mr-1"></i>' + _('Wird automatisch informiert.'))
         self.fields['slots'].set_choices(1)
 
     def save(self):
@@ -284,3 +294,9 @@ class ConvertToRecurringJobForm(Form):
 
     def save(self, one_time_job):
         return one_time_job.convert(self.cleaned_data['job_type'])
+
+
+class AddJobMessageForm(ModelForm):
+    class Meta:
+        model = JobMessage
+        fields = ['message']

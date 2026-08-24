@@ -440,9 +440,14 @@ MEMBERSHIP
   The setting takes a dictionary of key-value pairs:
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
-    - [New since version 2.1] ``'cumulative_shares'``: If true shares count either for membership or for subscription, not both (Bool)
-    - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
+    - ``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)
+    - ``'required_on_signup'``: whether a membership is mandatory to signup up
+        - True: always require membership on signup
+        - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
+        - False: don't require membership during signup, unless selected subscriptions require it
     - ``'fee'``: yearly membership fee (Float, Integer or String)
+    - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
+      and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
 
   default value
 
@@ -452,8 +457,9 @@ MEMBERSHIP
             'enable': True,
             'required_shares': 1,
             'cumulative_shares': False,
-            'required_on_signup': True,
+            'required_on_signup': 'if_no_sub',
             'fee': 0,
+            'sync_shares': True,
         }
 
 
@@ -542,7 +548,7 @@ Jobs
 
 ASSIGNMENT_UNIT
 ^^^^^^^^^^^^^^^
-  The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
+  The mode how assignments are counted: Valid values are ENTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
 
   Type: String
 

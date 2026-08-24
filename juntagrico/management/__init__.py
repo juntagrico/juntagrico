@@ -2,8 +2,11 @@
 from typing import TYPE_CHECKING, Any
 
 from django.apps import apps as global_apps
+from django.core.files.storage import default_storage
 from django.db import DEFAULT_DB_ALIAS, migrations, router
 
+from juntagrico.config import Config
+from juntagrico.util.pdf import internal_storage
 
 if TYPE_CHECKING:
     from django.apps.registry import Apps
@@ -117,3 +120,16 @@ def inject_rename_permissions(
                 inserts.append((index + 1, operation))
         for inserted, (index, operation) in enumerate(inserts):
             migration.operations.insert(inserted + index, operation)  # type: ignore[attr-defined]
+
+
+def move_internal_files(**kwargs: Any) -> None:
+    """
+    migrate existing depot lists from default storage to internal storage
+    """
+    for depot_list in Config.depot_lists():
+        file_name = depot_list['name'] + '.pdf'
+        if default_storage.exists(file_name):
+            if not internal_storage.exists(file_name):
+                # move it only if it doesn't exist yet
+                internal_storage.save(file_name, default_storage.open(file_name))
+            default_storage.delete(file_name)

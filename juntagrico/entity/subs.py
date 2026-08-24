@@ -12,21 +12,24 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import adminnotification
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
+from juntagrico.util import temporal
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
-from juntagrico.util.temporal import start_of_next_business_year
 
 
 class Subscription(Billable, SimpleStateModel):
     '''
     One Subscription that may be shared among several people.
     '''
+    identifier = models.CharField(
+        _('Kennzeichnung'), max_length=30, null=True, blank=True, unique=True,
+        help_text=_('Eindeutige Kennzeichnung (optional)')
+    )
     depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
@@ -45,7 +48,7 @@ class Subscription(Billable, SimpleStateModel):
         )
     )
     start_date = models.DateField(
-        _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
+        _('Gewünschtes Startdatum'), null=False, default=temporal.start_of_next_business_year)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
@@ -91,6 +94,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
+        # DEPRECATED: use parts.active() instead
         return self.parts.filter(q_isactive())
 
     @property
@@ -158,16 +162,17 @@ class Subscription(Billable, SimpleStateModel):
         return ShareDao.all_shares_subscription(self).count()
 
     @property
+    def shares(self):
+        """all shares of members currently in this subscription"""
+        current_members = self.current_members
+        shares = Share.objects.filter(member__in=current_members)
+        shares._bound_members = current_members
+        return shares
+
+    @property
     def available_shares(self):
         """amount of shares dedicated to subscription"""
-        current_members = self.current_members
-        share_count = Share.objects.filter(member__in=current_members).usable().count()
-        if Config.cumulative_shares_for_membership():
-            # if cumulative, subtract shares that are needed for membership
-            share_count -= Membership.objects.filter(
-                account__in=current_members
-            ).not_canceled().count() * Config.membership('required_shares')
-        return share_count
+        return self.shares.count_dedicated(only_total=True)
 
     @property
     def paid_shares(self):
@@ -235,7 +240,12 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def next_size_change_date():
-        return start_of_next_business_year()
+        return temporal.start_of_next_business_year()
+
+    def next_end_date(self):
+        if not self.parts.non_trial().exists() and self.parts.is_trial().exists():
+            return max(trial.end_of_trial_date for trial in self.parts.is_trial())
+        return temporal.end_of_business_year()
 
     def activate_future_depot(self):
         if self.future_depot is not None:

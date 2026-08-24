@@ -2,7 +2,6 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
-from django.core.files.storage import default_storage
 from django.core.management import call_command
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
@@ -17,7 +16,7 @@ from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
-from juntagrico.util.pdf import return_pdf_http
+from juntagrico.util.pdf import return_pdf_http, internal_storage
 from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
 
@@ -81,11 +80,11 @@ def manage_list(request, extra_lists=None):
         )
         for depot_list in list(Config.depot_lists(default_names)) + extra_lists:
             file_name = depot_list['file_name'] + '.pdf'
-            exists = default_storage.exists(file_name)
+            exists = internal_storage.exists(file_name)
             creation_time = None
             if exists:
                 try:
-                    creation_time = default_storage.get_created_time(file_name)
+                    creation_time = internal_storage.get_created_time(file_name)
                 except NotImplementedError:
                     pass
             depot_lists.append({

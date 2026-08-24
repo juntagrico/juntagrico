@@ -1,0 +1,98 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}Ehemalige {{ v_share_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block inner_list_head %}
+    <th class="filter">
+        {% trans "Bestellt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Bezahlt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Ausgestellt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Eingebucht am" %}
+    </th>
+    <th class="filter">
+        {% trans "Gekündigt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Gekündigt auf" %}
+    </th>
+    <th class="filter">
+        {% trans "Zurückbezahlt am" %}
+    </th>
+    <th class="filter">
+        {% trans "Zurückgesandt" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_foot %}
+    <th>
+        {% trans "Bestellt am" %}
+    </th>
+    <th>
+        {% trans "Bezahlt am" %}
+    </th>
+    <th>
+        {% trans "Ausgestellt am" %}
+    </th>
+    <th>
+        {% trans "Eingebucht am" %}
+    </th>
+    <th>
+        {% trans "Gekündigt am" %}
+    </th>
+    <th>
+        {% trans "Gekündigt auf" %}
+    </th>
+    <th>
+        {% trans "Zurückbezahlt am" %}
+    </th>
+    <th>
+        {% trans "Zurückgesandt" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_entry %}
+    <td>
+        {{ share.creation_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.paid_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.issue_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.booking_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.cancelled_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.termination_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.payback_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {{ share.sent_back|yesno:_('Ja,Nein') }}
+    </td>
+{% endblock %}
+
+{% block datatable_constructor_extra %}
+{% endblock %}

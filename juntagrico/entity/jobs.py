@@ -1,3 +1,4 @@
+import datetime
 from functools import cached_property
 from itertools import zip_longest
 
@@ -22,7 +23,7 @@ from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.mailer import adminnotification
-from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
+from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet, JobMessageQuerySet
 from juntagrico.signals import area_left
 from juntagrico.util.ical import generate_ical_for_job
 
@@ -239,14 +240,21 @@ class JobType(AbstractJobType):
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
-    time = models.DateTimeField(_('Zeitpunkt'))
+    time = models.DateTimeField(
+        _('Zeitpunkt'),
+        help_text=_('Teilnehmende werden bei Änderung automatisch per E-mail benachrichtigt'),
+    )
     multiplier = models.FloatField(
         _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1.0,
         validators=[MinValueValidator(0)])
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
-    canceled = models.BooleanField(_('abgesagt'), default=False)
+    canceled = models.BooleanField(
+        _('abgesagt'),
+        default=False,
+        help_text=_('Teilnehmende werden bei Absage automatisch per E-mail benachrichtigt'),
+    )
 
     members = models.ManyToManyField('Member', through='Assignment', related_name='jobs')
 
@@ -417,7 +425,10 @@ class Job(JuntagricoBasePoly):
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
-        permissions = (('can_edit_past_jobs', _('kann vergangene Jobs editieren')),)
+        permissions = (
+            ('can_edit_past_jobs', _('kann vergangene Jobs editieren')),
+            ('manage_job_messages', _('kann alle Mitteilungen zu Einsätzen sehen und verwalten'))
+        )
 
 
 class CheckJobCapabilities:
@@ -470,6 +481,9 @@ class CheckJobCapabilities:
     def can_cancel(self):
         can_change = self.user.has_perm(f'{self.job_app_label}.change_{self.job_model_name}') or self.is_coordinator
         return not (self.job.canceled or self.job.has_started()) and can_change
+
+    def can_manage_messages(self):
+        return self.access is not None or self.user.has_perm(f'{self.job_app_label}.manage_job_messages')
 
 
 class RecuringJob(Job):
@@ -641,6 +655,9 @@ class Assignment(JuntagricoBaseModel):
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
+    def name(self):
+        return self.job.type.get_name
+
     @admin.display(ordering='job__time')
     def time(self):
         return self.job.time
@@ -659,3 +676,35 @@ class Assignment(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('assignment')
         verbose_name_plural = Config.vocabulary('assignment_pl')
+
+
+class JobMessage(JuntagricoBaseModel):
+    KEEP_HOURS = 48
+
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='messages')
+    account = models.ForeignKey(
+        'Member',
+        on_delete=models.CASCADE,
+        verbose_name=Config.vocabulary('member'),
+        related_name='job_messages',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_public = models.BooleanField(
+        _('Sichtbar für alle'),
+        default=False,
+        help_text=_('Sichtbar für alle {members}').format(members=Config.vocabulary('member_pl')),
+    )
+    message = models.TextField(_('Mitteilung'))
+
+    objects = JobMessageQuerySet.as_manager()
+
+    @classmethod
+    def purge(cls):
+        # using the job start time as it is much easier to check and sufficient for this purpose
+        return cls.objects.filter(
+            job__time__lt=timezone.now() - datetime.timedelta(hours=cls.KEEP_HOURS),
+        ).delete()
+
+    class Meta:
+        verbose_name = _('Einsatzmitteilung')
+        verbose_name_plural = _('Einsatzmitteilungen')

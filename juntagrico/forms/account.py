@@ -1,8 +1,11 @@
 import datetime
 
+from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Button
 from django.core.exceptions import ValidationError
 from django.db.models import F, Exists, OuterRef
+from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _, gettext, ngettext
@@ -25,6 +28,27 @@ from juntagrico.signals import share_canceled
 
 def choice_to_bool(value):
     return value == 'True'
+
+
+class NotesForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = ['notes']
+        labels = {'notes': ''}
+        help_texts = {'notes': ''}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_action = reverse('manage-account-notes-edit', args=[self.instance.pk])
+        self.helper.layout = Layout(
+            'notes',
+            FormActions(
+                Submit('submit', gettext('Speichern')),
+                Button('cancel', gettext('Abbrechen'), css_class='swapper', data_swap='.notes-swap'),
+            ),
+        )
 
 
 class CancellationForm(forms.ModelForm):
@@ -67,7 +91,9 @@ class CancellationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.primary_subscriptions = self.instance.subscription_primary.not_terminated()
         for subscription in self.primary_subscriptions:
-            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(keep=True)
+            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(
+                keep=True, end_date=subscription.next_end_date()
+            )
 
         self.co_memberships = (
             self.instance.subscriptionmembership_set

@@ -24,14 +24,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
         self.assertGet(reverse('subscription-single', args=[self.sub2.pk]))
 
-    def testSubActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
-        self.member2.refresh_from_db()
-        self.area.refresh_from_db()
-        self.assertIsNone(self.member2.subscription_future)
-        self.assertEqual(self.member2.subscription_current, self.sub2)
-        self.assertTrue(self.member2 in self.area.members.all())
-
     def testPrimaryChange(self):
         self.assertGet(reverse('primary-change', args=[self.sub.pk]))
         Membership.objects.create(account=self.member3)
@@ -99,7 +91,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.sub.refresh_from_db()
         # check: type and amount unchanged
         self.assertEqual(self.sub.future_parts.count(), initial_count)
-        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+        self.assertTrue(self.sub.future_parts.filter(type=self.sub_type).exists())
 
     def testTypeChange(self):
         # add a shares for type2
@@ -199,21 +191,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             self.member4.join_subscription(old_sub)
         with self.assertRaises(ValidationError):
             self.member4.join_subscription(self.sub)
-
-    def testSubDeActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
-        self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
-        self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
-        self.assertEqual(len(self.member2.subscriptions_old), 0)
-        self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
-        self.member2.refresh_from_db()
-        self.sub2.refresh_from_db()
-        self.assertFalse(self.sub2.active)
-        self.assertIsNone(self.member2.subscription_current)
-        self.assertEqual(len(self.member2.subscriptions_old), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
-        self.sub2.refresh_from_db()
-        self.assertFalse(self.sub2.active)
 
     def testPartDeActivation(self):
         new_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)

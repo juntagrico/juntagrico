@@ -108,6 +108,13 @@ $(function () {
         body.find('.participant-mobile').text(mobile).attr('href', 'tel:' + mobile)
     })
 
+    // open modal to write message
+    $('.add-message').on('click', function (event) {
+        let modal = $('#add_message_modal')
+        modal.modal('show')
+        return false
+    })
+
     // apply suggested job types on click
     $('.suggested-job-type').on('click', function (event) {
         let suggestion = $(this)

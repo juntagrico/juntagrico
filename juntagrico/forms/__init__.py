@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div, Button
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -440,6 +440,19 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
             for sub_type in SubscriptionType.objects.all()
         }
+    
+    def _get_share_error_message(self):
+        return mark_safe(
+            _('Es werden mehr {shares} benötigt.').format(
+                shares=Config.vocabulary('share_pl'),
+            )
+            + '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                reverse('manage-shares'),
+                _('&rarr; Bestelle hier mehr {shares}').format(
+                    shares=Config.vocabulary('share_pl')
+                ),
+            )
+        )
 
 
 class SubscriptionPartSelectRequiredForm(SubscriptionPartBaseForm):
@@ -527,15 +540,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
-                share_error_message = mark_safe(
-                    _('Es werden mehr {shares} benötigt.').format(
-                        shares=Config.vocabulary('share_pl')
-                    ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('manage-shares'),
-                        _('&rarr; Bestelle hier mehr {shares}').format(shares=Config.vocabulary('share_pl'))
-                    )
-                )
-                raise ValidationError(share_error_message, code='share_error')
+                raise ValidationError(self._get_share_error_message(), code='share_error')
         # check that at least one subscription was selected
         if sum(selected.values()) == 0:
             amount_error_message = mark_safe(
@@ -597,15 +602,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 additional_available_shares = self.part.subscription.available_shares - self.part.subscription.required_shares
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
-                    share_error_message = mark_safe(
-                        _('Es werden mehr {shares} benötigt.').format(
-                            shares=Config.vocabulary('share_pl'),
-                        ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                            reverse('manage-shares'),
-                            _('&rarr; Bestelle hier mehr {shares}').format(shares=Config.vocabulary('share_pl'))
-                        )
-                    )
-                    raise ValidationError(share_error_message, code='share_error')
+                    raise ValidationError(self._get_share_error_message(), code='share_error')
         else:
             # re-raise field error as form error
             for error_code, error in self.errors.items():
@@ -650,6 +647,11 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
     def send_notification(self, new_part):
         membernotification.trial_continued_for_you(self.part, new_part)
         pass
+
+    def _get_share_error_message(self):
+        return _('Es werden mehr {shares} benötigt.').format(
+            shares=Config.vocabulary('share_pl'),
+        )
 
 
 class TrialCloseoutForm(Form):
@@ -862,6 +864,7 @@ class AreaDescriptionForm(ModelForm):
             'description',
             FormActions(
                 Submit('submit', _('Speichern')),
+                Button('cancel', _('Abbrechen'), css_class='swapper', data_swap='.description-swap'),
             ),
         )
 

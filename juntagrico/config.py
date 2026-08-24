@@ -144,8 +144,9 @@ class Config:
             'enable': True,
             'required_shares': 1,
             'cumulative_shares': False,
-            'required_on_signup': True,
+            'required_on_signup': 'if_no_sub',
             'fee': 0,
+            'sync_shares': True,
         }
     )
 

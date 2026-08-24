@@ -1,7 +1,7 @@
 from io import StringIO
 
 from django.core import mail
-from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.template.loader import get_template
 from django.test import override_settings
 from django.urls import reverse
@@ -9,15 +9,25 @@ from django.core.management import call_command
 
 from ..config import Config
 from ..entity.depot import Tour
+from ..entity.subs import Subscription
 from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
 
 
-@override_settings(STORAGES={
-    'default': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
-    'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-})
-class DepotlistGenerationTests(JuntagricoTestCase):
+@override_settings(
+    STORAGES={
+        'internal': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
+        'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    }
+)
+class DepotlistTestCase(JuntagricoTestCase):
+    def setUp(self):
+        super().setUp()
+        from ..util.pdf import internal_storage
+        self.internal_storage = internal_storage
+
+
+class DepotlistGenerationTests(DepotlistTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -27,18 +37,20 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         cls.sub4 = cls.create_sub_now(cls.depot, future_depot=cls.depot2)
         cls.member4.join_subscription(cls.sub4, True)
 
-    def tearDown(self):
-        default_storage.delete('depotlist.pdf')
-        default_storage.delete('depot_overview.pdf')
-        default_storage.delete('amount_overview.pdf')
+    def setUp(self):
+        super().setUp()
+        self.internal_storage.delete('depotlist.pdf')
+        self.internal_storage.delete('depot_overview.pdf')
+        self.internal_storage.delete('amount_overview.pdf')
 
     def assertListsCreated(self):
-        self.assertTrue(default_storage.exists('depotlist.pdf'))
-        self.assertTrue(default_storage.exists('depot_overview.pdf'))
-        self.assertTrue(default_storage.exists('amount_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('depotlist.pdf'))
+        self.assertTrue(self.internal_storage.exists('depot_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('amount_overview.pdf'))
         self.assertEqual(mail.outbox[0].subject, 'Juntagrico - Neue Depot-Liste generiert')  # admin notification email
 
     def testDepotListData(self):
+        Subscription.objects.update(identifier=None)
         data = depot_list_data()
         self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub])
         # test depot list numbers
@@ -97,6 +109,36 @@ class DepotlistGenerationTests(JuntagricoTestCase):
             </tr>
         """, rendered_html)
 
+    def testDepotListDataWithIdentifiers(self):
+        result = [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub]
+        for i, sub in enumerate(result):
+            sub.identifier = f'B{i}'
+            sub.save()
+        data = depot_list_data()
+        self.assertListEqual(list(data['subscriptions']), result)
+        # test depot list numbers
+        rendered_html = get_template('exports/depotlist.html').render(data)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B0 - first_name2 last_name2</td>
+            <td class="top-border left-border">3</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B1 - first_name3 last_name3, first_name1 last_name1</td>
+            <td class="top-border left-border">2</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B2 - First_name4 Last_name4</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B3 - first_name6 last_name6</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B4 - first_name7 last_name7</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+
     def testManualDepotListGeneration(self):
         url = reverse('lists')
         data = {
@@ -107,7 +149,7 @@ class DepotlistGenerationTests(JuntagricoTestCase):
         # member has no access
         self.assertGet(url, 200)  # can see lists only
         self.assertPost(url, data, 200)
-        self.assertFalse(default_storage.exists('depotlist.pdf'))
+        self.assertFalse(self.internal_storage.exists('depotlist.pdf'))
         # admin has access
         self.assertGet(url, 200, self.admin)
         self.assertPost(url, data, 302, self.admin)
@@ -156,12 +198,8 @@ class DepotListConfigTest(JuntagricoTestCase):
 
 @override_settings(
     DEPOT_LISTS={'amount_overview': 'exports/amount_overview.html'},
-    STORAGES={
-        'default': {'BACKEND': 'django.core.files.storage.InMemoryStorage'},
-        'staticfiles': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    }
 )
-class AmountOverviewWithMultipleTourDaysTests(JuntagricoTestCase):
+class AmountOverviewWithMultipleTourDaysTests(DepotlistTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -171,10 +209,22 @@ class AmountOverviewWithMultipleTourDaysTests(JuntagricoTestCase):
 
     def testMultipleTourDays(self):
         default_depot_list_generation(depot_list_data())
-        self.assertTrue(default_storage.exists('amount_overview.pdf'))
+        self.assertTrue(self.internal_storage.exists('amount_overview.pdf'))
 
 
-class DepotListTests(JuntagricoTestCase):
+class DepotListTests(DepotlistTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.load_members()
+        cls.default_member = cls.member
+
+    def setUp(self):
+        super().setUp()
+        file = ContentFile('test')
+        self.internal_storage.save('depotlist.pdf', file)
+        self.internal_storage.save('depot_overview.pdf', file)
+        self.internal_storage.save('amount_overview.pdf', file)
+
     def testViewDepotList(self):
         url = reverse('lists')
         self.assertGet(url)

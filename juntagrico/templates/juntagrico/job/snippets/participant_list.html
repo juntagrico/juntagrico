@@ -23,7 +23,11 @@
     <ul>
         {% for participant in participants %}
             <li class="participant">
-                <span class="participant-name">{{ participant }}</span>
+                {% if can_view_members %}
+                    <a href="{% url 'manage-account-single' participant.id %}" class="participant-name mr-2">{{ participant }}</a>
+                {% else %}
+                    <span class="participant-name mr-2">{{ participant }}</span>
+                {% endif %}
                 {% if participant.slots > 1 %}
                     <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
                 {% endif %}

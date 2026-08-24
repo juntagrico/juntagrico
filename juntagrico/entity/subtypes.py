@@ -113,7 +113,12 @@ class SubscriptionType(JuntagricoBaseModel):
         _('Erfordert {membership}').format(membership=Config.vocabulary('membership')),
         default=True
     )
-    shares = models.PositiveIntegerField(_('Anz benötigter Anteilsscheine'), default=0)
+    shares = models.IntegerField(
+        _('Anz benötigter {shares}').format(
+            shares=Config.vocabulary('share_pl')
+        ),
+        default=0,
+    )
     required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)

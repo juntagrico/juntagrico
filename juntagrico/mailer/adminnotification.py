@@ -244,6 +244,16 @@ def member_unsubscribed_from_job(job, **kwargs):
         _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)
 
 
+def job_message(job, member, message):
+    _template_member_in_job(
+        job,
+        _('Mitteilung zum Einsatz'),
+        'message',
+        member=member,
+        message=message,
+    )
+
+
 def _template_assignment_changed(job, subject, template_name, **kwargs):
     if recipients := job.get_emails(get_member=True, exclude=kwargs['editor'].email):
         kwargs['job'] = job
