@@ -5,7 +5,6 @@ from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case,
     OuterRef, PositiveIntegerField
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
-from polymorphic.query import PolymorphicQuerySet
 
 from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
@@ -33,7 +32,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
     ).values('total')
 
 
-class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModelQuerySet, PolymorphicQuerySet):
+class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModelQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
