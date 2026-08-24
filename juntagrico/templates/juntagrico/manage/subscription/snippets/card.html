@@ -16,6 +16,12 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
+                                            {% if subscription.identifier %}
+                                                <span>
+                                                    {{ subscription.identifier }}
+                                                </span>
+                                                -
+                                            {% endif %}
                                             <strong class="card-title my-1">
                                                 {% include 'juntagrico/snippets/subscription/membership_dates.html' with subscription_membership=submem %}
                                             </strong>

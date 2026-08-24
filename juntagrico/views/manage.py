@@ -411,6 +411,13 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     queryset = Subscription.objects.active
     title = _('Alle aktiven {subscriptions} im Überblick').format(subscriptions=Config.vocabulary('subscription_pl'))
 
+    def get_context_data(self, **kwargs):
+        queryset = self.get_queryset()
+        if callable(queryset):
+            queryset = queryset()
+        kwargs['show_identifier'] = queryset.filter(identifier__isnull=False).exists()
+        return super().get_context_data(**kwargs)
+
 
 class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, TemplateView):
     permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
@@ -432,6 +439,7 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
             deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
             joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
             left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
+            show_identifier=Subscription.objects.filter(identifier__isnull=False).exists(),
         ))
         return super().get_context_data(**kwargs)
 
@@ -445,6 +453,10 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
                 Q(parts__activation_date=None, parts__isnull=False)
                 | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
             ).prefetch_related('parts').distinct()
+
+    def get_context_data(self, **kwargs):
+        kwargs['show_identifier'] = self.get_queryset().filter(identifier__isnull=False).exists()
+        return super().get_context_data(**kwargs)
 
 
 @permission_required('juntagrico.change_subscriptionpart')

@@ -13,9 +13,6 @@
 
 {% block list_head %}
     <th class="filter">
-        {% vocabulary "subscription" %}
-    </th>
-    <th class="filter">
         {% trans "Status" %}
     </th>
     <th class="filter">
@@ -29,17 +26,11 @@
     </th>
     <th class="filter">
         {% trans "Ausreichend?" %}
-    </th>
-    <th class="filter">
-        {% trans "Kontakt" %}
     </th>
 {% endblock %}
 
 {% block list_foot %}
     <th>
-        {% vocabulary "subscription" %}
-    </th>
-    <th>
         {% trans "Status" %}
     </th>
     <th>
@@ -54,55 +45,44 @@
     <th>
         {% trans "Ausreichend?" %}
     </th>
-    <th>
-        {% trans "Kontakt" %}
-    </th>
 {% endblock %}
 
 {% block list_entry %}
-    <tr>
+    <td>
+        {{ subscription.state_text }}
+        {% if subscription.canceled %}
+            <span class="badge badge-danger">{% trans "gekündigt" %}</span>
+        {% endif %}
+    </td>
+    <td>
+        {% for item in subscription.content_strings %}
+            <div>
+                {{ item }}
+            </div>
+        {% endfor %}
+    </td>
+    {% with required=subscription.required_shares %}
         <td>
-            {% include 'juntagrico/manage/subscription/snippets/display_linked.html' %}
+            {{ subscription.required_shares }}
         </td>
-        <td>
-            {{ subscription.state_text }}
-            {% if subscription.canceled %}
-                <span class="badge badge-danger">{% trans "gekündigt" %}</span>
-            {% endif %}
-        </td>
-        <td>
-            {% for item in subscription.content_strings %}
-                <div>
-                    {{ item }}
-                </div>
-            {% endfor %}
-        </td>
-        {% with required=subscription.required_shares %}
+        {% with counted=subscription.shares.count_dedicated %}
             <td>
-                {{ subscription.required_shares }}
-            </td>
-            {% with counted=subscription.shares.count_dedicated %}
-                <td>
-                    <span class="badge {% if counted.paid >= required %}badge-success{% else %}badge-danger{% endif %}"
-                          title="{% trans 'Bezahlte Anteilscheine' %}">
-                        {{ counted.paid }}
+                <span class="badge {% if counted.paid >= required %}badge-success{% else %}badge-danger{% endif %}"
+                      title="{% trans 'Bezahlte Anteilscheine' %}">
+                    {{ counted.paid }}
+                </span>
+                {% if counted.total > counted.paid %}
+                    (
+                    <span class="badge {% if counted.total >= required %}badge-success{% else %}badge-danger{% endif %}"
+                          title="{% trans 'Alle Anteilscheine' %}">
+                        {{ counted.total }}
                     </span>
-                    {% if counted.total > counted.paid %}
-                        (
-                        <span class="badge {% if counted.total >= required %}badge-success{% else %}badge-danger{% endif %}"
-                              title="{% trans 'Alle Anteilscheine' %}">
-                            {{ counted.total }}
-                        </span>
-                        )
-                    {% endif %}
-                </td>
-                <td>
-                    {% if counted.paid >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
-                </td>
-            {% endwith %}
+                    )
+                {% endif %}
+            </td>
+            <td>
+                {% if counted.paid >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
+            </td>
         {% endwith %}
-        <td>
-            {% include 'juntagrico/manage/subscription/snippets/members_linked.html' %}
-        </td>
-    </tr>
+    {% endwith %}
 {% endblock %}

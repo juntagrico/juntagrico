@@ -349,6 +349,9 @@ class JuntagricoTestCase(TestCase):
             start_date='2018-01-01',
             **kwargs
         )
+        if 'identifier' not in kwargs:
+            sub.identifier = f'A{sub.id}'
+            sub.save()
         if isinstance(parts, SubscriptionType):
             parts = [parts]
         for part in parts:
