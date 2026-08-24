@@ -108,10 +108,17 @@ class SignupManager(SessionManager):
         return form
 
     def requires_membership(self):
-        return Config.membership('enable') and (
-            Config.membership('required_on_signup') or
-            any([sub.requires_membership for sub in self.subscriptions()])
-        )
+        if Config.membership('enable'):
+            required_on_signup = Config.membership('required_on_signup')
+            if required_on_signup is True:
+                return 'always'
+            else:
+                subs = self.subscriptions()
+                if any(sub.requires_membership for sub in subs):
+                    return 'for_sub'
+                elif not subs and required_on_signup == 'if_no_sub':
+                    return 'for_no_sub'
+        return ''
 
     def membership_ok(self):
         return (
