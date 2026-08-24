@@ -21,6 +21,10 @@ class TrialSubscriptionTestCase(JuntagricoTestCaseWithShares):
 
 
 class TrialSubscriptionTests(TrialSubscriptionTestCase):
+    def testTrialViews(self):
+        self.assertGet(reverse('subscription-single', args=[self.trial_sub1.id]))
+        self.assertGet(reverse('cancel'))
+
     def testCancelTrial(self):
         self.assertGet(reverse('part-cancel', args=[self.trial_part1.id]), 302)
         self.trial_part1.refresh_from_db()
