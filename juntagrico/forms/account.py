@@ -91,7 +91,9 @@ class CancellationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.primary_subscriptions = self.instance.subscription_primary.not_terminated()
         for subscription in self.primary_subscriptions:
-            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(keep=True)
+            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(
+                keep=True, end_date=subscription.next_end_date()
+            )
 
         self.co_memberships = (
             self.instance.subscriptionmembership_set

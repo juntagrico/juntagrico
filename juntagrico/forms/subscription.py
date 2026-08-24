@@ -55,33 +55,45 @@ class PrimaryMemberChangeForm(HorizontalFormMixin, forms.ModelForm):
 class CancellationField(forms.ChoiceField):
     widget = forms.RadioSelect
 
-    def __init__(self, keep=False, *args, **kwargs):
+    def __init__(self, keep=False, end_date=False, *args, **kwargs):
         label = kwargs.pop('label', _('Auf wann möchtest du {this_subscription_acc} kündigen?').format(
             this_subscription_acc=Config.vocabulary('this_subscription_acc')
         ),)
 
-        choices = [
-            ('regular', mark_safe(_('auf den nächsten regulären Termin: {date}').format(
-                date=f'<strong>{date_format(temporal.next_cancelation_date())}</strong>'
-            ))),
-            ('asap', _('so bald wie möglich')),
-        ]
-        if keep:
-            choices += [
+        if end_date is not False:
+            self.date = end_date
+        else:
+            self.date = temporal.end_of_business_year()
+        self.keep = keep
+        initial = kwargs.pop('initial', 'regular')
+        super().__init__(*args, choices=self.get_choices(), label=label, initial=initial, **kwargs)
+
+    def set_end_date(self, date):
+        if self.date != date:
+            self.date = date
+            self.choices = self.get_choices()
+
+    def get_choices(self):
+        choices = []
+        if self.date:
+            choices.append(('regular', mark_safe(_('auf das Ende der Laufzeit: {date}').format(
+                date=f'<strong>{date_format(self.date)}</strong>'
+            ))))
+        choices.append(('asap', _('so bald wie möglich')))
+        if self.keep:
+            choices.append(
                 ('keep', _('{this_subscription_acc} behalten').format(
                     this_subscription_acc=Config.vocabulary('this_subscription_acc')
-                )),
-            ]
-
-        initial = kwargs.pop('initial', 'regular')
-        super().__init__(*args, choices=choices, label=label, initial=initial, **kwargs)
+                ))
+            )
+        return choices
 
     def clean(self, value):
         choice = super().clean(value)
         if choice == 'asap':
             return datetime.date.today()
         if choice == 'regular':
-            return temporal.next_cancelation_date()
+            return self.date
         return None
 
 
@@ -99,6 +111,7 @@ class CancellationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['cancellation'].set_end_date(self.instance.next_end_date())
         self.helper = FormHelper()
 
     def save(self, commit=True):
