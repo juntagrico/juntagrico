@@ -55,12 +55,15 @@ class PrimaryMemberChangeForm(HorizontalFormMixin, forms.ModelForm):
 class CancellationField(forms.ChoiceField):
     widget = forms.RadioSelect
 
-    def __init__(self, keep=False, end_date=None, *args, **kwargs):
+    def __init__(self, keep=False, end_date=False, *args, **kwargs):
         label = kwargs.pop('label', _('Auf wann möchtest du {this_subscription_acc} kündigen?').format(
             this_subscription_acc=Config.vocabulary('this_subscription_acc')
         ),)
 
-        self.date = end_date or temporal.end_of_business_year()
+        if end_date is not False:
+            self.date = end_date
+        else:
+            self.date = temporal.end_of_business_year()
         self.keep = keep
         initial = kwargs.pop('initial', 'regular')
         super().__init__(*args, choices=self.get_choices(), label=label, initial=initial, **kwargs)
@@ -71,18 +74,18 @@ class CancellationField(forms.ChoiceField):
             self.choices = self.get_choices()
 
     def get_choices(self):
-        choices = [
-            ('regular', mark_safe(_('auf das Ende der Laufzeit: {date}').format(
+        choices = []
+        if self.date:
+            choices.append(('regular', mark_safe(_('auf das Ende der Laufzeit: {date}').format(
                 date=f'<strong>{date_format(self.date)}</strong>'
-            ))),
-            ('asap', _('so bald wie möglich')),
-        ]
+            ))))
+        choices.append(('asap', _('so bald wie möglich')))
         if self.keep:
-            choices += [
+            choices.append(
                 ('keep', _('{this_subscription_acc} behalten').format(
                     this_subscription_acc=Config.vocabulary('this_subscription_acc')
-                )),
-            ]
+                ))
+            )
         return choices
 
     def clean(self, value):
