@@ -366,6 +366,7 @@ class SubscriptionSurcharge(JuntagricoBaseModel):
     )
     description = models.CharField(
         _('Bezeichnung'),
+        max_length=255,
         blank=True,
     )
     amount = models.DecimalField(
