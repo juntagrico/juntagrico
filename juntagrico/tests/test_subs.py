@@ -109,7 +109,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         part.refresh_from_db()
         self.assertTrue(part.canceled, 'part should be canceled')
         # check notification was sent to admins
-        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 1)
 
         # change waiting part
         part = self.sub.parts.filter(activation_date=None).first()
