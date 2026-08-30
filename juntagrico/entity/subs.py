@@ -355,3 +355,26 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     class Meta:
         verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
+
+
+class SubscriptionSurcharge(JuntagricoBaseModel):
+    subscription = models.ForeignKey(
+        'Subscription',
+        related_name='surcharges',
+        on_delete=models.CASCADE,
+        verbose_name=Config.vocabulary('subscriptionadmin'),
+    )
+    description = models.CharField(
+        _('Bezeichnung'),
+        blank=True,
+    )
+    amount = models.DecimalField(
+        _('Betrag'), max_digits=9, decimal_places=2, help_text=_('Verwende negative Beträge für Rabatte.')
+    )
+    date = models.DateField(_('Verrechnungsdatum'))
+    yearly_until = models.PositiveIntegerField(
+        _('Jährlich wiederholen bis'),
+        blank=True,
+        null=True,
+        help_text=_('Falls angegeben, wird der Betrag jedes Jahr fällig bis und mit diesem Jahr.'),
+    )
