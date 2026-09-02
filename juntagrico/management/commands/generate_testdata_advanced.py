@@ -4,7 +4,7 @@ import random
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.test import override_settings
-from faker import Faker
+from faker import Faker  # deptry: ignore[DEP004]
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot, DepotCoordinator

@@ -10,6 +10,27 @@ on:
     branches: [ main, 'releases/**' ]
 
 jobs:
+  check-dependencies:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Install deptry
+        run: |
+          pip install --upgrade -r requirements.txt
+          pip install deptry
+
+      - name: Run deptry
+        run: deptry . --github-output
+
   # run tests. DO NOT use secrets and write permissions here
   tests:
     name: Tests
