@@ -79,3 +79,6 @@ dev = [
     "psycopg>=3.1.8",
     "ruff>=0.14.11",
 ]
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["crispy-bootstrap4", "svglib"]
