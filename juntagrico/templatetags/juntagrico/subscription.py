@@ -22,3 +22,20 @@ def overview(part_overview):
     loop(result, '', part_overview)
     result.append('</ul>')
     return '\n'.join(result)
+
+
+@register.simple_tag
+def price_summary(subscription, parts, surcharges):
+    part_summary = {part: part.type.price for part in parts}
+    surcharge_summary = {surcharge: surcharge.amount for surcharge in surcharges}
+    summary = {
+        'parts_total': sum(part_summary.values()),
+        'depot_fee': subscription.depot.fee,
+        'surcharges_total': sum(surcharge_summary.values()),
+    }
+    return {
+        'parts': part_summary,
+        'surcharges': surcharge_summary,
+        'total': sum(summary.values()),
+        **summary,
+    }

@@ -16,7 +16,8 @@ from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import adminnotification
-from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet, \
+    SubscriptionSurchargeQuerySet
 from juntagrico.signals import depot_change_confirmed
 from juntagrico.util import temporal
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
@@ -373,9 +374,5 @@ class SubscriptionSurcharge(JuntagricoBaseModel):
         _('Betrag'), max_digits=9, decimal_places=2, help_text=_('Verwende negative Beträge für Rabatte.')
     )
     date = models.DateField(_('Verrechnungsdatum'))
-    yearly_until = models.PositiveIntegerField(
-        _('Jährlich wiederholen bis'),
-        blank=True,
-        null=True,
-        help_text=_('Falls angegeben, wird der Betrag jedes Jahr fällig bis und mit diesem Jahr.'),
-    )
+
+    objects = SubscriptionSurchargeQuerySet.as_manager()
