@@ -2,7 +2,6 @@ import datetime
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _, gettext
-from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.entity import notifiable
@@ -51,7 +50,7 @@ class Share(Billable):
         _('Notizen'), default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
-    objects = PolymorphicManager.from_queryset(ShareQueryset)()
+    objects = ShareQueryset.as_manager()
 
     _state_dict = {
         0: 'unpaid',
