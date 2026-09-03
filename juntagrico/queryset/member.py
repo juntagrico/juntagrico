@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
 from django.utils.decorators import method_decorator
@@ -126,4 +127,5 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             .annotate_core_assignment_count(start, end, prefix, **extra_filters)
 
     def as_email_recipients(self):
-        return [f'{m} <{m.email}>' for m in self]
+        allowed = re.compile(r"[^\w \-._']", flags=re.UNICODE)
+        return [f'{allowed.sub("", str(m))} <{m.email}>' for m in self]
