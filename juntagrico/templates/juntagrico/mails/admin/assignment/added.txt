@@ -1,0 +1,6 @@
+{% extends "juntagrico/mails/admin/job/signup.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans %}Soeben wurde {{ member }} von {{ editor }} zu einem Einsatz angemeldet.{% endblocktrans %}{% endblock %}
+{% block count %}{% blocktrans %}Anzahl Personen: {{ count }}{% endblocktrans %}{% endblock %}
+{% block email %}{% blocktrans %}Email von {{ editor }}{% endblocktrans %}: {{ editor.email }}
+{% blocktrans %}Email von {{ member }}{% endblocktrans %}: {{ member.email }}{% endblock %}

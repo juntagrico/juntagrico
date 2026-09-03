@@ -8,8 +8,7 @@
         {% if extra %}
             {% trans "Zusatzabos bestellen" %}
         {% else %}
-            {% vocabulary "subscription" as v_subscription %}
-            {% blocktrans %}{{ v_subscription }}-Bestandteile bestellen{% endblocktrans %}
+            {% blocktrans with v_subscription=vocabulary.subscription %}{{ v_subscription }} erweitern{% endblocktrans %}
         {% endif %}
     </h3>
 {% endblock %}

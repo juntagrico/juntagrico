@@ -1,0 +1,20 @@
+{% extends "juntagrico/mails/member/job/subscription_changed.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "organisation_name" as c_organisation_name %}
+
+{% block intro %}{% blocktrans trimmed with e=editor jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
+{{ e }} hat dich für den {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" um {{ jt }}-{{ jet }} angemeldet.
+{% endblocktrans %}
+{% blocktrans trimmed with e=editor %}
+Falls das ein Irrtum war, antworte auf dieses E-Mail um {{ e }} zu kontaktieren.
+{% endblocktrans %}
+{% endblock %}
+
+{% block slots %}
+{% if count == 1 %}
+{% trans "Du kommst allein zum Einsatz." %}
+{% else %}
+{% blocktrans with other_count=count|add:"-1" %}Du kommst mit {{ other_count }} weiteren Personen zum Einsatz.{% endblocktrans %}
+{% endif %}
+{% endblock %}

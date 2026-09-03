@@ -15,7 +15,11 @@
     {% if co_members %}
         <span class="switch switch-sm">
             <input class="switch toggle-display" type="checkbox" id="show_co_members" data-filter=".co-member">
-            <label for="show_co_members">{% trans "MitabonnentInnen anzeigen" %}</label>
+            <label for="show_co_members">
+                {% blocktrans trimmed with v_co_member_pl=vocabulary.co_member_pl %}
+                    {{ v_co_member_pl }} anzeigen
+                {% endblocktrans %}
+            </label>
         </span>
     {% endif %}
 </div>

@@ -1,6 +1,7 @@
 import datetime
 
 from django.core import mail
+from django.test import tag
 from django.urls import reverse
 
 from juntagrico.entity.subs import SubscriptionPart
@@ -20,6 +21,14 @@ class TrialSubscriptionTestCase(JuntagricoTestCaseWithShares):
 
 
 class TrialSubscriptionTests(TrialSubscriptionTestCase):
+    def testTrialViews(self):
+        self.assertGet(reverse('subscription-single', args=[self.trial_sub1.id]))
+        self.assertGet(reverse('sub-cancel', args=[self.trial_sub1.id]))
+        self.assertGet(reverse('cancel'))
+        self.trial_sub1.activate()
+        self.assertGet(reverse('sub-cancel', args=[self.trial_sub1.id]))
+        self.assertGet(reverse('cancel'))
+
     def testCancelTrial(self):
         self.assertGet(reverse('part-cancel', args=[self.trial_part1.id]), 302)
         self.trial_part1.refresh_from_db()
@@ -43,7 +52,7 @@ class TrialSubscriptionTests(TrialSubscriptionTestCase):
         self.assertEqual(self.trial_part1.type, self.trial_sub_type)
         self.assertTrue(self.trial_part1.canceled)
         # check notification was sent to admins
-        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 1)
 
     def testContinueTrialBeforeActivation(self):
         mail.outbox.clear()
@@ -102,6 +111,17 @@ class ActiveTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
         self.assertEqual(self.trial_part1.type, self.trial_sub_type)
         self.assertTrue(self.trial_part1.canceled)
         self.assertEqual(len(mail.outbox), 1)  # notification to member
+
+    @tag('shares')
+    def testContinueTrialByAdminWithInsufficientShares(self):
+        mail.outbox.clear()
+        post_data = {'part_type': self.sub_type2.id}
+        self.assertPost(reverse('manage-trial-continue', args=[self.trial_part1.pk]), post_data, 200, member=self.admin)
+        self.trial_sub1.refresh_from_db()
+        # check: part is unchanged.
+        self.assertEqual(self.trial_sub1.parts.count(), 1)
+        self.assertEqual(self.trial_sub1.future_parts.first().type, self.trial_sub_type)
+        self.assertEqual(len(mail.outbox), 0)  # no notification to member
 
     def testDeactivateTrial(self):
         self.assertGet(reverse('manage-trial-deactivate', args=[self.trial_part1.pk]), 302, member=self.admin)

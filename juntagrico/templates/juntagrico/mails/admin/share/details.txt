@@ -1,0 +1,5 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "share" as v_share %}
+{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
+{{ server_url }}{% url 'admin:juntagrico_share_change' share.id %}

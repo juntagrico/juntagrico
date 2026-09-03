@@ -2,8 +2,7 @@ import datetime
 from datetime import date
 
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum, F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -22,16 +21,14 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
-from juntagrico.mailer import membernotification, adminnotification
+from juntagrico.forms.subscription import PrimaryMemberChangeForm, CancellationForm, LeaveForm
+from juntagrico.mailer import adminnotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.management import cancel_sub
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
-from juntagrico.util.temporal import end_of_next_business_year, end_of_business_year, \
-    cancelation_date, next_membership_end_date
-from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
-    using_change_date
+from juntagrico.util.temporal import next_membership_end_date
+from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part
 
 
 @primary_member_of_subscription
@@ -70,25 +67,20 @@ def depot_change(request, subscription_id):
 
 @primary_member_of_subscription
 def primary_change(request, subscription_id):
-    '''
-    change primary member
-    '''
+    """ change primary member
+    """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
-        subscription.primary_member = new_primary
-        subscription.save()
-        return redirect('subscription-single', subscription_id=subscription.id)
-    if Config.enable_shares():
-        co_members = [m for m in subscription.co_members() if m.is_cooperation_member]
+        form = PrimaryMemberChangeForm(request.POST, instance=subscription)
+        if form.is_valid():
+            form.save()
+            return redirect('subscription-single', subscription_id=subscription.id)
     else:
-        co_members = subscription.co_members()
-    renderdict = {
-        'subscription': subscription,
-        'co_members': co_members,
-        'has_comembers': len(co_members) > 0
-    }
-    return render(request, 'pm_change.html', renderdict)
+        form = PrimaryMemberChangeForm(instance=subscription)
+
+    return render(request, 'juntagrico/my/subscription/change_primary.html', {
+        'form': form,
+    })
 
 
 @primary_member_of_subscription_of_part
@@ -221,28 +213,6 @@ def error_page(request, error_message):
     return render(request, 'error.html', renderdict)
 
 
-@permission_required('juntagrico.is_operations_group')
-@using_change_date
-def activate_subscription(request, change_date, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    try:
-        subscription.activate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.is_operations_group')
-@using_change_date
-def deactivate_subscription(request, change_date, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    try:
-        subscription.deactivate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
 @primary_member_of_subscription_of_part
 def cancel_part(request, part):
     part.cancel()
@@ -251,34 +221,45 @@ def cancel_part(request, part):
 
 
 @primary_member_of_subscription
-def cancel_subscription(request, subscription_id):
+def cancel_subscription(request, subscription_id, form_class=CancellationForm):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
-        cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
-        return redirect('subscription-landing')
-    renderdict = {
-        'end_date': end_date,
-    }
-    return render(request, 'cancelsubscription.html', renderdict)
+        form = form_class(instance=subscription, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('subscription-landing')
+    else:
+        form = form_class(instance=subscription)
+
+    return render(request, 'cancelsubscription.html', {
+        'form': form,
+    })
 
 
 @login_required
-def leave_subscription(request, subscription_id):
+def leave_subscription(request, subscription_id, form_class=LeaveForm):
     member = request.user.member
-    subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
-    share_error = Config.enable_shares() and subscription.share_overflow - member.usable_shares_count < 0
-    primary = subscription.primary_member.id == member.id
-    has_min_shares = not Config.enable_shares() or member.is_cooperation_member
-    can_leave = has_min_shares and not share_error and not primary
-    if not can_leave:
-        return redirect('subscription-landing')
+    subscription_membership = member.subscriptionmembership_set.get(subscription_id=subscription_id)
+    share_error = Config.enable_shares() and (
+        subscription_membership.subscription.share_overflow
+        - member.usable_shares_for_sub_count
+        < 0
+    )
+    is_primary = subscription_membership.subscription.primary_member.id == member.id
+    if share_error or is_primary:
+        return redirect('subscription-single', subscription_id=subscription_id)
+
     if request.method == 'POST':
-        member.leave_subscription(subscription)
-        primary_member = subscription.primary_member
-        membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
-        return redirect('home')
-    return render(request, 'leavesubscription.html', {})
+        form = form_class(instance=subscription_membership, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('subscription-landing')
+    else:
+        form = form_class(instance=subscription_membership)
+
+    return render(request, 'juntagrico/my/subscription/leave.html', {
+        'form': form,
+    })
 
 
 @primary_member_of_subscription
@@ -313,15 +294,22 @@ def manage_shares(request):
         shareerror = False
     member = request.user.member
     shares = member.share_set.order_by(F('cancelled_date').asc(nulls_first=True), F('paid_date').desc(nulls_last=True))
+    is_member = Config.membership('enable') and member.memberships.not_canceled().exists()
 
     active_share_years = member.active_share_years
     current_year = datetime.date.today().year
     if active_share_years and current_year in active_share_years:
         active_share_years.remove(current_year)
+
+    total_required = member.required_shares_count
+    required_for_membership = Config.membership('required_shares') if is_member else 0
+    if Config.cumulative_shares_for_membership():
+        total_required += required_for_membership
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': member.required_shares_count,
+        'required_for_membership': required_for_membership,
+        'required_for_subscription': total_required,
         'ibanempty': not member.iban,
         'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
@@ -354,10 +342,8 @@ def share_certificate(request):
 @login_required
 def cancel_share(request, share_id):
     member = request.user.member
+    share = get_object_or_404(Share, id=share_id, member=member)
     if member.cancellable_shares_count > 0:
-        share = get_object_or_404(Share, id=share_id, member=member)
-        share.cancelled_date = datetime.date.today()
-        share.termination_date = next_membership_end_date()
-        share.save()
+        share.cancel()
         share_canceled.send(sender=Share, instance=share)
     return return_to_previous_location(request)

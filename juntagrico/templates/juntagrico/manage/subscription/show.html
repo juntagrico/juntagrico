@@ -20,10 +20,15 @@
     <table id="filter-table" class="list table">
         <thead>
             <tr>
-                {% block list_head %}
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                {% if show_identifier %}
                     <th class="filter">
-                        {% vocabulary "subscription" %}
+                        {% trans "Kennzeichnung" %}
                     </th>
+                {% endif %}
+                {% block list_head %}
                     <th class="filter">
                         {% trans "Inhalt" %}
                     </th>
@@ -35,18 +40,23 @@
                     <th class="filter">
                         {% trans "Aktivierungsdatum" %}
                     </th>
-                    <th class="filter">
-                        {% trans "Kontakt" %}
-                    </th>
                 {% endblock %}
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                {% block list_foot %}
+                <th>
+                    {% vocabulary "subscription" %}
+                </th>
+                {% if show_identifier %}
                     <th>
-                        {% vocabulary "subscription" %}
+                        {% trans "Kennzeichnung" %}
                     </th>
+                {% endif %}
+                {% block list_foot %}
                     <th>
                         {% trans "Inhalt" %}
                     </th>
@@ -58,19 +68,24 @@
                     <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
-                    <th>
-                        {% trans "Kontakt" %}
-                    </th>
                 {% endblock %}
+                <th>
+                    {% trans "Kontakt" %}
+                </th>
             </tr>
         </tfoot>
         <tbody>
             {% for subscription in object_list %}
-                {% block list_entry %}
-                    <tr>
+                <tr>
+                    <td>
+                        {% include './snippets/display_linked.html' %}
+                    </td>
+                    {% if show_identifier %}
                         <td>
-                            {% include './snippets/display_linked.html' %}
+                            {{ subscription.identifier|default_if_none:'' }}
                         </td>
+                    {% endif %}
+                    {% block list_entry %}
                         <td>
                             {% for item in subscription.content_strings %}
                                 <div>
@@ -86,11 +101,11 @@
                         <td>
                             {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>
-                        <td>
-                            {% include './snippets/members_linked.html' %}
-                        </td>
-                    </tr>
-                {% endblock %}
+                    {% endblock %}
+                    <td>
+                        {% include './snippets/members_linked.html' %}
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

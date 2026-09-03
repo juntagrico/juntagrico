@@ -134,6 +134,9 @@ There you can add a coordinator and distribute the following permissions.
 - Can manage jobs: Coordinator can create and modify all jobs of this area
 - Can manage assignments: Coordinator can change and remove assignments of jobs in this area
 
+All area coordinators can view and delete the messages left on jobs in their area.
+The permission `juntagrico.manage_job_messages` grants access to view and delete messages on all jobs.
+
 
 .. _reference-permission-notifications:
 
@@ -178,7 +181,26 @@ Search Hints:
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets :ref:`notified <reference-notifications-member-canceled>` when any member cancels their membership.
+Person gets :ref:`notified <reference-notifications-member-canceled>` when any member closes their account.
+
+Search Hints:
+    * German: Kündigung informiert
+
+
+.. _reference-permissions-notified_on_membership_creation:
+
+juntagrico.notified_on_membership_creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets :ref:`notified <reference-notifications-membership-created>` when a new membership is requested.
+
+Search Hints:
+    * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_membership_cancellation:
+
+juntagrico.notified_on_membership_cancellation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets :ref:`notified <reference-notifications-membership-canceled>` when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
@@ -426,9 +448,7 @@ juntagrico.is_operations_group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning::
-    Deprecated. This permission will be replaced by more granular permissions in the next releases.
-
-- (De)activate subscriptions
+    Removed in Juntagrico 2.1
 
 Search Hints:
     * German: Ist in der BG

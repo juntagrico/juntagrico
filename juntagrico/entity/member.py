@@ -9,10 +9,10 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
+from juntagrico.entity.share import Share
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
-from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.util.users import make_username, make_password
 
 
@@ -58,13 +58,18 @@ class Member(JuntagricoBaseModel):
     deactivation_date = models.DateField(
         _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(
-        _('Enddatum'), null=True, blank=True, help_text=_('Voraussichtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
+        _('Enddatum'), null=True, blank=True, help_text=_('Gewünschtes Löschdatum. Hat keinen Effekt im System'))  # TODO: Obsolete
     notes = models.TextField(
         _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
     signup_comment = models.TextField(
-        _('Kommentar bei Anmeldung'), blank=True, default='', help_text=_('Kommentar, den das Mitglied bei der Anmeldung hinterlassen hat')
+        _('Kommentar bei Anmeldung'), blank=True, default='',
+        help_text=_('Kommentar, den das Mitglied bei der Anmeldung hinterlassen hat')
+    )
+    cancellation_comment = models.TextField(
+        _('Kommentar bei Abmeldung'), blank=True, default='',
+        help_text=_('Kommentar, den das Mitglied bei der Kündigung hinterlassen hat')
     )
 
     subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
@@ -106,9 +111,17 @@ class Member(JuntagricoBaseModel):
         return (
             (allowed_areas & member.areas.all()).exists()  # member is in contactable area
             or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of contactable area
+            or member.job_messages.in_areas(allowed_areas).exists()  # member left message on job in contactable area
             # member is in coordinated depot
             or member.subscription_current and member.subscription_current.depot in allowed_depots
         )
+
+    @property
+    def shares(self):
+        """ forward compatibility """
+        if not self.pk:
+            Share.objects.none()
+        return self.share_set
 
     @property
     def active_shares(self):
@@ -147,10 +160,6 @@ class Member(JuntagricoBaseModel):
         return self.active_shares.count()
 
     @property
-    def is_cooperation_member(self):
-        return self.active_shares_count > 0
-
-    @property
     def usable_shares(self):
         """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
@@ -163,19 +172,44 @@ class Member(JuntagricoBaseModel):
         return self.usable_shares.count()
 
     @property
+    def usable_shares_for_sub_count(self):
+        usable = self.shares.usable().count()
+        if Config.cumulative_shares_for_membership():
+            usable -= self.memberships.not_canceled().required_shares_count()
+        return usable
+
+    @property
+    def usable_shares_for_membership_count(self):
+        usable = self.shares.usable().count()
+        if Config.cumulative_shares_for_membership():
+            usable -= self.required_shares_count
+        return usable
+
+    @property
     def required_shares_count(self):
+        """ shares required for subscription"""
         # calculate required shares backwards to account for shared subscriptions
-        not_canceled_share_count = self.usable_shares_count
+        not_canceled_share_count = self.usable_shares_for_sub_count
         overflow_list = [not_canceled_share_count]
-        if self.subscription_future is not None:
-            overflow_list.append(self.subscription_future.share_overflow)
+        future_subscription = self.subscription_future
+        if future_subscription is not None and future_subscription.waiting:
+            overflow_list.append(future_subscription.share_overflow)
         if self.subscription_current is not None:
             overflow_list.append(self.subscription_current.share_overflow)
         return not_canceled_share_count - min(overflow_list)
 
     @property
     def cancellable_shares_count(self):
-        return self.usable_shares_count - max(self.required_shares_count, 1)
+        is_member = Config.membership('enable') and self.memberships.not_canceled().exists()
+        if Config.cumulative_shares_for_membership():
+            aggregate = sum
+        else:
+            aggregate = max
+        required_shares = aggregate((
+            self.required_shares_count,
+            Config.membership('required_shares') if is_member else 0,
+        ))
+        return self.shares.usable().count() - required_shares
 
     @property
     def subscription_future(self):
@@ -216,20 +250,13 @@ class Member(JuntagricoBaseModel):
             subscription.save()
 
     def leave_subscription(self, subscription=None, changedate=None):
+        print('Member.leave_subscription is deprecated: Use SubscriptionMembership.leave instead')
         subscription = subscription or self.subscription_current
         if subscription == self.subscription_current:
             del self.subscription_current  # clear cache
         if subscription:
-            sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-            changedate = changedate or datetime.date.today()
-            # if subscription will not have been left at change date already
-            if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date > changedate):
-                # if subscription will have been joined at change date
-                if sub_membership.join_date is not None and sub_membership.join_date <= changedate:
-                    sub_membership.leave_date = changedate
-                    sub_membership.save()
-                else:
-                    sub_membership.delete()
+            if sub_membership := self.subscriptionmembership_set.filter(subscription=subscription).first():
+                sub_membership.leave(changedate)
 
     @property
     def in_subscription(self):
@@ -295,20 +322,12 @@ class Member(JuntagricoBaseModel):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
-    def cancel(self, date=None, commit=True):
-        date = date or datetime.date.today()
-        self.cancellation_date = date
-        # if all shares of member are already paid back and has no subscriptions: deactivate automatically
-        has_sub = self.subscription_current or self.subscription_future
-        if not has_sub and not self.share_set.potentially_pending_payback().exists():
-            self.end_date = date
-            self.deactivation_date = date
-        else:
-            self.end_date = next_membership_end_date(self.cancellation_date)
-        for share in self.share_set.all():
-            share.cancel(date, self.end_date)
-        if commit:
-            self.save()
+    def cancel(self, date=None):
+        today = datetime.date.today()
+        if date is None or date > today:
+            date = today
+        self.cancellation_date = self.cancellation_date or date
+        self.save()
 
     def deactivate(self, date=None):
         date = date or datetime.date.today()
@@ -346,8 +365,10 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return check_sub_membership_consistency(self)
 
     def can_leave(self):
-        enough_shares_to_leave = self.subscription.share_overflow - self.member.share_set.usable().count() >= 0
-        return self.leave_date is None and self.member.is_cooperation_member and enough_shares_to_leave
+        return self.leave_date is None and (
+            not Config.enable_shares() or
+            self.subscription.share_overflow - self.member.shares.usable().count() >= 0
+        )
 
     def waiting(self, date=None):
         return self.join_date is None or self.join_date > (date or datetime.date.today())
@@ -366,6 +387,17 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def co_members(self):
         return self.subscription.co_members(self.member)
+
+    def leave(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        # if subscription will not have been left at change date already
+        if self.leave_date is None or self.leave_date > on_date:
+            # if subscription will have been joined at change date
+            if self.join_date is not None and self.join_date <= on_date:
+                self.leave_date = on_date
+                self.save()
+            else:
+                self.delete()
 
     class Meta:
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))

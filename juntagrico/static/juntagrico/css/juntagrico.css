@@ -76,7 +76,10 @@ body#juntagrico-views-profile .asteriskField {
     font-size: 30pt;
 }
 
-h2::first-letter, h3::first-letter, h4::first-letter {
+.capfirst::first-letter,
+h2::first-letter,
+h3::first-letter,
+h4::first-letter {
     text-transform: uppercase;
 }
 
@@ -101,34 +104,34 @@ a:hover.delete {
     min-height: 100%;
     position: relative;
     padding: 0 40px 0 40px;
-}
-
-@media (min-width: 768px) {
-    .page-container {
-        width: 750px
-    }
-}
-
-@media (min-width: 992px) {
-    .page-container {
-        width: 970px
-    }
-}
-
-@media (min-width: 1200px) {
-    .page-container {
-        width: 1170px
-    }
+    width: 100%;
+    max-width: 1400px;
 }
 
 /* layouts */
 body.wide-layout > .page-container {
-    width: 95%;
-    max-width: 95%;
+    max-width: 100%;
 }
 
 .full-width {
     width: 100%;
+}
+
+@media (min-width: 768px) {
+    .page-title.offset-md-3 {
+        /* match sidebar */
+        margin-left: min(25%, 14em);
+    }
+}
+
+.sidebar-large {
+    flex-basis: 14em;
+}
+
+@media (min-width: 768px) {
+    .content-container {
+        max-width: calc(100% - min(25%, 14em));
+    }
 }
 
 /* row size stuff checked */
@@ -149,11 +152,6 @@ div.all-page-title.row {
 .footer {
     margin-top: 60px;
     margin-bottom: 50px;
-}
-
-/* messages stuff checked */
-.messages {
-    margin-bottom: 2em;
 }
 
 /* menu stuff checked */
@@ -469,7 +467,6 @@ a.phone-number {
 /* impersonate link */
 
 .impersonate-action {
-    color: #606560;
     float: right;
     display: inline-block;
 }
@@ -532,4 +529,8 @@ a.phone-number {
     /* handles large multi selection fields like in the email form */
     max-height: 15em;
     overflow: scroll;
+}
+
+.share-overview {
+    max-width: 60em;
 }

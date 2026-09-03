@@ -1,0 +1,19 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% if change_date %}
+{% blocktrans trimmed with v_your_subscription_dat=vocabulary.your_subscription_dat date=change_date|date:"d.m.Y" %}
+Glückwunsch. Folgende Bestandteile von {{ v_your_subscription_dat }} werden per {{ date }} aktiviert.
+{% endblocktrans %}
+{% else %}
+{% blocktrans trimmed with v_your_subscription_dat=vocabulary.your_subscription_dat %}
+Glückwunsch. Folgende Bestandteile von {{ v_your_subscription_dat }} wurden per sofort aktiviert.
+{% endblocktrans %}
+{% endif %}
+
+{% for part in activated_parts %}
++ {{ part }}
+{% endfor %}
+{% endblock %}

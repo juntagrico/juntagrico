@@ -1,0 +1,32 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block body %}
+    <div id="{{ name }}_content">
+        <ul class="list-unstyled contact-list mb-0">
+            <li class="contact-item mb-2" aria-label="{% trans 'E-Mail' %}" title="{% trans 'E-Mail' %}">
+                <i class="bi bi-envelope-fill mr-2" aria-hidden="true"></i>
+                <a class="participant-email" href=""></a>
+                <a class="participant-email-link" href="#" data-url="{% url 'email-to-member' 99 %}"><i class="bi bi-send ml-2"></i></a>
+            </li>
+
+            <li class="contact-item mb-2" aria-label="{% trans 'Telefon' %}" title="{% trans 'Telefon' %}">
+                <i class="bi bi-telephone-fill mr-2" aria-hidden="true"></i>
+                <a class="participant-phone" href=""></a>
+            </li>
+
+            <li class="contact-item participant-mobile-container" aria-label="{% trans 'Mobil' %}" title="{% trans 'Mobil' %}">
+                <i class="bi bi-phone-fill mr-2" aria-hidden="true"></i>
+                <a class="participant-mobile" href=""></a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block cancel %}
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Schliessen" %}</button>
+{% endblock %}
+
+{% block buttons %}
+{% endblock %}

@@ -14,21 +14,7 @@
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">
-                    {% with jd=submem.join_date ld=submem.leave_date %}
-                        {% if jd %}
-                            {% if submem.waiting %}
-                                {% blocktrans %}Ab {{ jd }}{% endblocktrans %}
-                            {% else %}
-                                {% if ld %}
-                                    {% blocktrans %}{{ jd }} - {{ ld }}{% endblocktrans %}
-                                {% else %}
-                                    {% blocktrans %}Seit {{ jd }}{% endblocktrans %}
-                                {% endif %}
-                            {% endif %}
-                        {% else %}
-                            {% trans "Start ausstehend" %}
-                        {% endif %}
-                    {% endwith %}
+                    {% include 'juntagrico/snippets/subscription/membership_dates.html' with subscription_membership=submem %}
                 </h5>
                 <h6 class="card-subtitle mb-2 text-muted">
                     {% with co_members=submem.co_members %}

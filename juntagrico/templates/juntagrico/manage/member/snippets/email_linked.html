@@ -1,7 +1,13 @@
 {% if can_see_emails or perms.juntagrico.can_send_mails %}
-    <div>
-        <a href="{% url "email-to-member" member.id  %}" class="email" data-id="{{ member.id }}">
+    {% if member.inactive %}
+        <div>
             {{ member.email }}
-        </a>
-    </div>
+        </div>
+    {% else %}
+        <div>
+            <a href="{% url "email-to-member" member.id  %}" class="email" data-id="{{ member.id }}">
+                {{ member.email }}
+            </a>
+        </div>
+    {% endif %}
 {% endif %}

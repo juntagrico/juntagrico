@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block list %}
+    {% config 'enable_membership' as c_enable_membership %}
     <table id="filter-table" class="list table">
         <thead>
             <tr>
@@ -23,6 +24,11 @@
                     <th class="filter">
                         {% trans "Kontakt" %}
                     </th>
+                    {% if c_enable_membership %}
+                        <th class="filter">
+                            {{ vocabulary.member_type }}
+                        </th>
+                    {% endif %}
                     {% if not hide_areas %}
                         <th class="filter">
                             {% trans "Tätigkeitsbereiche" %}
@@ -46,6 +52,11 @@
                     <th>
                         {% trans "Kontakt" %}
                     </th>
+                    {% if c_enable_membership %}
+                        <th>
+                            {{ vocabulary.member_type }}
+                        </th>
+                    {% endif %}
                     {% if not hide_areas %}
                         <th>
                             {% trans "Tätigkeitsbereiche" %}
@@ -71,6 +82,11 @@
                             <td>
                                 {% include './snippets/display_linked.html' %}
                             </td>
+                            {% if c_enable_membership %}
+                                <td>
+                                    {{ member.memberships.active_or_requested.first.state_text|default:'nein' }}
+                                </td>
+                            {% endif %}
                             {% if not hide_areas %}
                                 <td>
                                     {% for area in member.areas.all %}

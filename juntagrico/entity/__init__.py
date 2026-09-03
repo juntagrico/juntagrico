@@ -8,6 +8,8 @@ from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.models import PolymorphicModel
 from schwifty import IBAN
 
+from juntagrico.lifecycle import parse_date
+
 
 class OldHolder:
     '''find a better name'''
@@ -71,6 +73,8 @@ class SimpleStateModel(models.Model):
         self.activation_date = self.activation_date or date  # allows immediate deactivation
         if not self.cancellation_date:
             self.cancellation_date = today  # cancel immediately
+        if date < self.activation_date:  # can't deactivate before activations
+            date = self.activation_date
         self.deactivation_date = self.deactivation_date or date
         self.save()
 
@@ -114,11 +118,11 @@ class SimpleStateModel(models.Model):
         if is_deactivated:
             if not is_active:
                 raise ValidationError(gettext('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
-            elif self.activation_date > self.deactivation_date:
+            elif parse_date(self.activation_date) > parse_date(self.deactivation_date):
                 raise ValidationError(gettext('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
             elif not is_canceled:
                 raise ValidationError(gettext('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
-        if is_canceled and self.cancellation_date > today:
+        if is_canceled and parse_date(self.cancellation_date) > today:
             raise ValidationError(gettext('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 
     class Meta:

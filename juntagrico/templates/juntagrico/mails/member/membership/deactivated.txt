@@ -1,0 +1,11 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% blocktrans trimmed with v_not_a_member_type=vocabulary.not_a_member_type %}
+Soeben wurde dein Austritt von {{ v_d_enriched_organisation }} bestätigt.
+Du bist jetzt {{ v_not_a_member_type }} mehr.
+{% endblocktrans %}
+{% endblock %}

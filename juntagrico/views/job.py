@@ -12,10 +12,26 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST, require_GET
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea, OneTimeJob, RecuringJob, JobType
+from juntagrico.entity.jobs import (
+    Job,
+    Assignment,
+    JobExtra,
+    ActivityArea,
+    OneTimeJob,
+    RecuringJob,
+    JobType,
+    JobMessage,
+)
 from juntagrico.entity.member import Member
 from juntagrico.forms import BusinessYearForm
-from juntagrico.forms.job import JobSubscribeForm, EditAssignmentForm, ConvertToRecurringJobForm
+from juntagrico.forms.job import (
+    JobSubscribeForm,
+    EditAssignmentForm,
+    ConvertToRecurringJobForm,
+    AddAssignmentForm,
+    AddJobMessageForm,
+)
+from juntagrico.mailer import adminnotification
 from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
@@ -123,24 +139,37 @@ def memberjobs(request):
     """
     Assignments of current user
     """
-    member = request.user.member
+    return by_account(request, request.user.member.id, 'memberjobs.html')
 
-    # get date range in which this member was doing assignments
-    date_range = Assignment.objects.filter(member=member).aggregate(
+
+@login_required
+def by_account(request, account_id, template_name='juntagrico/job/list/by_account.html'):
+    viewer = request.user.member
+    account = get_object_or_404(Member, pk=account_id)
+
+    if account != viewer and not (
+        request.user.has_perm('juntagrico.view_assignment')
+        or request.user.has_perm('juntagrico.change_assignment')
+    ):
+        raise PermissionDenied
+
+    # get date range in which this account has any assignments
+    date_range = Assignment.objects.filter(member=account).aggregate(
         min_date=Min('job__time__date'), max_date=Max('job__time__date')
     )
     year_selection_form = BusinessYearForm(date_range['min_date'], date_range['max_date'], request.GET)
 
-    # get assignments of member in selected business year
+    # get assignments of account in selected business year
     if year_selection_form.is_valid():
         assignments = Assignment.objects.filter(
-            member=member,
+            member=account,
             job__time__date__range=year_selection_form.date_range()
         )
     else:
         assignments = Assignment.objects.none()
 
-    return render(request, 'memberjobs.html', {
+    return render(request, template_name, {
+        'account': account,
         'year_selection_form': year_selection_form,
         'assignments': assignments,
     })
@@ -309,3 +338,68 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
         'form': form,
         'success': success,
     })
+
+
+@require_POST
+@login_required
+def add_assignment(request, job_id, form_class=AddAssignmentForm):
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    is_assignment_coordinator = job.check_if(request.user).is_assignment_coordinator
+    if not (is_assignment_coordinator
+            or request.user.has_perm('juntagrico.add_assignment')):
+        raise PermissionDenied
+
+    form = form_class(job, request.POST, editor=request.user.member)
+    if form.is_valid():
+        form.save()
+        messages.success(request, mark_safe('<i class="bi bi-check2-circle"></i> ' +
+                                                _('Erfolgreich hinzugefügt')))
+    else:
+        messages.error(request, _('Hinzufügen fehlgeschlagen'))
+    return redirect('job', job_id=job_id)
+
+
+@require_POST
+@login_required
+def add_message(request, job_id, form_class=AddJobMessageForm):
+    job = get_object_or_404(Job, id=job_id)
+    member = request.user.member
+    # check permission
+    if member not in job.participants:
+        raise PermissionDenied
+
+    form = form_class(request.POST)
+    form.instance.account = member
+    form.instance.job = job
+    if form.is_valid():
+        form.save()
+        adminnotification.job_message(job, member, form.instance.message)
+        messages.success(
+            request,
+            mark_safe(
+                '<i class="bi bi-check2-circle"></i> ' + _('Mitteilung verschickt')
+            ),
+        )
+    else:
+        messages.error(request, _('Senden fehlgeschlagen'))
+    return redirect('job', job_id=job_id)
+
+
+@require_POST
+@login_required
+def remove_message(request, message_id):
+    member = request.user.member
+    message = get_object_or_404(JobMessage, id=message_id)
+    if message.account == member or message.job.check_if(request.user).can_manage_messages():
+        message.delete()
+        messages.success(
+            request,
+            mark_safe('<i class="bi bi-check2-circle"></i> ' + _('Mitteilung gelöscht')),
+        )
+    else:
+        messages.error(
+            request,
+            mark_safe('<i class="bi bi-exclamation-octagon"></i> ' + _('Keine Berechtigung')),
+        )
+    return redirect('job', job_id=message.job.id)

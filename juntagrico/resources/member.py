@@ -7,7 +7,7 @@ from import_export.widgets import ManyToManyWidget, DecimalWidget
 from ..entity.jobs import ActivityArea, Job
 from ..entity.member import Member
 from ..config import Config
-from . import DateRangeResourceMixin
+from . import DateRangeResourceMixin, TranslatedModelResource
 
 
 class MemberResource(resources.ModelResource):
@@ -27,6 +27,13 @@ class MemberResource(resources.ModelResource):
         name = Config.vocabulary('member_pl')
 
 
+class TranslatedMemberResource(TranslatedModelResource, MemberResource):
+    class Meta:
+        verbose_names = {
+            'subscriptions': Config.vocabulary('subscription_pl'),
+        }
+
+
 class MemberWithAssignmentsAndAreaResource(DateRangeResourceMixin, resources.ModelResource):
     depot = Field('subscription_current__depot__name', 'depot', readonly=True)
     areas = Field('areas', widget=ManyToManyWidget(ActivityArea, field='name'), readonly=True)
@@ -43,6 +50,17 @@ class MemberWithAssignmentsAndAreaResource(DateRangeResourceMixin, resources.Mod
         name = _("{0} mit {1}, Tätigkeitsbereich und {2}").format(Config.vocabulary('member_pl'),
                                                                   Config.vocabulary('depot'),
                                                                   Config.vocabulary('assignment_pl'))
+
+
+class TranslatedMemberWithAssignmentsAndAreaResource(MemberWithAssignmentsAndAreaResource, TranslatedModelResource):
+    class Meta:
+        verbose_names = {
+            'subscriptions': Config.vocabulary('subscription_pl'),
+            'depot': Config.vocabulary('depot'),
+            'areas': _('Tätigkeitsbereiche'),
+            'assignment_count': _('Arbeitseinsätze'),
+            'core_assignment_count': _('Kern Arbeitseinsätze'),
+        }
 
 
 class MemberAssignmentsPerArea(DateRangeResourceMixin, resources.ModelResource):
