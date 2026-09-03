@@ -52,7 +52,7 @@ class TrialSubscriptionTests(TrialSubscriptionTestCase):
         self.assertEqual(self.trial_part1.type, self.trial_sub_type)
         self.assertTrue(self.trial_part1.canceled)
         # check notification was sent to admins
-        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 1)
 
     def testContinueTrialBeforeActivation(self):
         mail.outbox.clear()

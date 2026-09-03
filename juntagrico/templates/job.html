@@ -89,10 +89,10 @@
                     {% endif %}
 
                     {% if can_cancel %}
-                        <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
-                              onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %} {% trans "Teilnehmende werden automatisch per E-Mail benachrichtigt" %}')">
+                        <form action="{% url 'job-cancel' %}" method="POST" class="d-inline" id="job_cancel_form">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger mb-1" name="job_id" value="{{ job.id }}">
+                            <input type="hidden" name="job_id" value="{{ job.id }}">
+                            <button type="button" class="btn btn-outline-danger mb-1" data-toggle="modal" data-target="#cancel_job_modal">
                                 <i class="bi bi-ban mr-1"></i>
                                 {% trans "Einsatz absagen" %}
                             </button>
@@ -105,6 +105,9 @@
         {# Modals #}
         {% if convertion_form %}
             {% include "juntagrico/job/modals/convert_to_recurring.html" with name='convert_to_recurring_job' %}
+        {% endif %}
+        {% if can_cancel %}
+            {% include "juntagrico/job/modals/cancel.html" with name='cancel_job' %}
         {% endif %}
     {% endblock %}
 

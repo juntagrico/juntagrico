@@ -340,7 +340,7 @@
         "mobile_phone": "phone",
         "iban": "",
         "confirmed": true,
-        "reachable_by_email": false,
+        "reachable_by_email": true,
         "cancellation_date": null,
         "deactivation_date": null,
         "end_date": null,

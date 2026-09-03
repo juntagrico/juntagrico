@@ -72,6 +72,12 @@ def sync(sender, instance, **kwargs):
         activation_date = active_shares.aggregate(
             paid_date=Min('paid_date'),
         )['paid_date']
+        # if member has previous membership the current one can't start before the previous ended
+        end_of_last_membership = account.memberships.aggregate(
+            deactivation_date=Max('deactivation_date'),
+        )['deactivation_date']
+        if end_of_last_membership and end_of_last_membership > activation_date:
+            activation_date = end_of_last_membership + datetime.timedelta(days=1)
         if current_membership is not None:
             # update existing membership
             current_membership.activation_date = activation_date

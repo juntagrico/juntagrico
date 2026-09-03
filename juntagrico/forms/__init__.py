@@ -625,8 +625,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
 
     def send_notification(self, new_part):
         # notify admin
-        adminnotification.subpart_canceled(self.part)
-        adminnotification.subparts_created([new_part], self.part.subscription)
+        adminnotification.subpart_changed(self.part, new_part)
 
 
 class SubscriptionPartContinueForm(SubscriptionPartChangeForm):

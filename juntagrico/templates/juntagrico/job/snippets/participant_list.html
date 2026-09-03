@@ -57,7 +57,22 @@
                     {% endspaceless %}
                 {% endif %}
                 {% if not participant.inactive %}
-                    {% if can_contact or participant.reachable_by_email %}
+                    {% if can_contact %}
+                        {% spaceless %}
+                            <a class="contact-member"
+                               href="#"
+                               data-toggle="modal"
+                               data-target="#participant_details_modal"
+                               data-id="{{ participant.id }}"
+                               data-name="{{ participant.get_name }}"
+                               data-phone="{{ participant.phone }}"
+                               data-mobile="{{ participant.mobile_phone|default:'' }}"
+                               data-email="{{ participant.email }}"
+                            >
+                                <i class="bi bi-person-vcard"></i>
+                            </a>
+                        {% endspaceless %}
+                    {% elif participant.reachable_by_email %}
                         {% spaceless %}
                             <a class="contact-member" href="{% url 'email-to-member' participant.id %}">
                                 <i class="bi bi-envelope"></i>
@@ -82,6 +97,10 @@
     {# Modal for editing assignment #}
     {% if can_edit_assignments %}
         {% include "./modal_edit_assignment.html" with name='edit_assignment' %}
+    {% endif %}
+
+    {% if can_contact %}
+        {% include "../modals/participant_details.html" with name='participant_details' %}
     {% endif %}
 
 {% endif %}
