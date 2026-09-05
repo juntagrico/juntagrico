@@ -1,3 +1,4 @@
+{% load juntagrico.snippets %}
 {% load juntagrico.common %}
 {% load i18n %}
 {% load juntagrico.config %}
@@ -16,21 +17,25 @@
 
     {% block price %}
         {% if type.has_periods %}
-            {% for period in type.periods.all %}
-                <div>
-                    <strong>{{ period.price|price }}</strong>
-                    {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}
-                </div>
-            {% endfor %}
+            {% block periodic_price %}
+                {% for period in type.periods.all %}
+                    <div>
+                        <strong>{{ period.price|price }}</strong>
+                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}
+                    </div>
+                {% endfor %}
+            {% endblock %}
             {% include "juntagrico/snippets/subscription/depot_fee.html" %}
         {% else %}
             <div class="type-details type-price">
-                <strong>{{ type.price|price }}</strong>
-                {% if type.trial_days %}
-                    {% blocktrans with days=type.trial_days %}für {{ days }} Tage{% endblocktrans %}
-                {% else %}
-                    {% trans "pro Jahr" %}
-                {% endif %}
+                {% block price_display %}
+                    <strong>{{ type.price|price }}</strong>
+                    {% if type.trial_days %}
+                        {% blocktrans with days=type.trial_days %}für {{ days }} Tage{% endblocktrans %}
+                    {% else %}
+                        {% trans "pro Jahr" %}
+                    {% endif %}
+                {% endblock %}
                 {% include "juntagrico/snippets/subscription/depot_fee.html" %}
             </div>
         {% endif %}
@@ -94,7 +99,7 @@
     {% block duration %}
         {% if not type.has_periods %}
             <div class="type-duration mt-3">
-                {% trans "Laufzeit" %}: {{ type.min_duration_info }}
+                {% trans "Laufzeit" %}: {% type_duration_info type %}
             </div>
         {% endif %}
     {% endblock %}

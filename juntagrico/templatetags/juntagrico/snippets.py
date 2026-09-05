@@ -11,6 +11,7 @@ from juntagrico.entity.jobs import Job, RecuringJob, JobMessage
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.forms.job import AddAssignmentForm, AddJobMessageForm
+from juntagrico.util import temporal
 
 register = template.Library()
 
@@ -95,6 +96,14 @@ def subscription_depot_fee(subscription_type, depot=''):
         condition = subscription_type.depot_conditions.filter(depot=depot).first()
         fee = condition.fee if condition else 0
     return fee
+
+
+@register.inclusion_tag('juntagrico/snippets/subscription/type_duration_info.html')
+def type_duration_info(subscription):
+    return {
+        'subscription': subscription,
+        'end_of_business_year': temporal.end_of_business_year(),
+    }
 
 
 @register.inclusion_tag('juntagrico/snippets/action_date.html')
