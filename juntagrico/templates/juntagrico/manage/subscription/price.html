@@ -1,0 +1,115 @@
+{% extends "./show.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.subscription %}
+{% load juntagrico.config %}
+
+{% block page_title %}
+    <h3>
+        {{ title }} {{ year_selection_form.year.value }}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% crispy year_selection_form %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list_head %}
+    {% config "currency" as c_currency %}
+    <th class="filter">
+        {% trans "Inhalt" %} [{{ c_currency }}]
+    </th>
+    <th class="filter">
+        {% trans "Summe Inhalt" %} [{{ c_currency }}]
+    </th>
+    {% if show_depot_fee %}
+        <th class="filter">
+            {% trans "Depotzuschlag" %} [{{ c_currency }}]
+        </th>
+        <th class="filter">
+            {% trans "Summe Depotzuschlag" %} [{{ c_currency }}]
+        </th>
+    {% endif %}
+    <th class="filter">
+        {% trans "Aufschlag/Abschlag" %} [{{ c_currency }}]
+    </th>
+    <th class="filter">
+        {% trans "Total" %} [{{ c_currency }}]
+    </th>
+{% endblock %}
+
+{% block list_foot %}
+    <th>
+        {% trans "Inhalt" %}
+    </th>
+    <th>
+        {% trans "Summe Inhalt" %}
+    </th>
+    {% if show_depot_fee %}
+        <th>
+            {% trans "Depotzuschlag" %}
+        </th>
+        <th>
+            {% trans "Summe Depotzuschlag" %}
+        </th>
+    {% endif %}
+    <th>
+        {% trans "Aufschlag/Abschlag" %}
+    </th>
+    <th>
+        {% trans "Total" %}
+    </th>
+{% endblock %}
+
+{% block list_entry %}
+    {% price_summary subscription subscription.relevant_parts subscription.relevant_surcharges as price_summary %}
+    <td>
+        {% for part, price in price_summary.parts.items %}
+            <div>
+                {{ part }}: {{ price|floatformat:"-2u" }}
+                {% if part.starts %}
+                    <span class="badge badge-warning">
+                        {% blocktrans with start_date=part.starts|date:"d.m.Y" %}ab {{ start_date }}{% endblocktrans %}
+                    </span>
+                {% endif %}
+                {% if part.ends %}
+                    <span class="badge badge-warning">
+                        {% blocktrans with end_date=part.ends|date:"d.m.Y" %}bis {{ end_date }}{% endblocktrans %}
+                    </span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </td>
+    <td>
+        {{ price_summary.parts_total|floatformat:"-2u" }}
+    </td>
+    <td>
+        {% for part, fee in price_summary.depot_fee_by_type.items %}
+             <div>
+                {{ part }}: {{ fee|floatformat:"-2u" }}
+            </div>
+        {% endfor %}
+        {% if price_summary.depot_fee_general %}
+            <div>
+                {{ subscription.depot }}: {{ price_summary.depot_fee_general|floatformat:"-2u" }}
+            </div>
+        {% endif %}
+    </td>
+    {% if show_depot_fee %}
+        <td>
+            {{ price_summary.depot_fee_total|floatformat:"-2u" }}
+        </td>
+        <td>
+            {% for surcharge, amount in price_summary.surcharges.items %}
+                <div>
+                    {{ surcharge.date|date:"d.m.Y" }} - {{ surcharge.description }}: {{ amount|floatformat:"-2u" }}
+                </div>
+            {% endfor %}
+        </td>
+    {% endif %}
+    <td>
+        {{ price_summary.total|floatformat:"-2u" }}
+    </td>
+{% endblock %}

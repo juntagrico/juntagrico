@@ -16,7 +16,8 @@ from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import adminnotification
-from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet, \
+    SubscriptionSurchargeQuerySet
 from juntagrico.signals import depot_change_confirmed
 from juntagrico.util import temporal
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
@@ -355,3 +356,23 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     class Meta:
         verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
+
+
+class SubscriptionSurcharge(JuntagricoBaseModel):
+    subscription = models.ForeignKey(
+        'Subscription',
+        related_name='surcharges',
+        on_delete=models.CASCADE,
+        verbose_name=Config.vocabulary('subscriptionadmin'),
+    )
+    description = models.CharField(
+        _('Bezeichnung'),
+        max_length=255,
+        blank=True,
+    )
+    amount = models.DecimalField(
+        _('Betrag'), max_digits=9, decimal_places=2, help_text=_('Verwende negative Beträge für Rabatte.')
+    )
+    date = models.DateField(_('Verrechnungsdatum'))
+
+    objects = SubscriptionSurchargeQuerySet.as_manager()

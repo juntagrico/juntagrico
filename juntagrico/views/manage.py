@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, Exists, OuterRef, F
+from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -17,13 +17,17 @@ from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.depot import (
+    Depot,
+    DepotCoordinator,
+    DepotSubscriptionTypeCondition,
+)
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription, SubscriptionPart, SubscriptionSurcharge
 from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.forms.account import NotesForm
@@ -441,6 +445,47 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
             left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
             show_identifier=Subscription.objects.filter(identifier__isnull=False).exists(),
         ))
+        return super().get_context_data(**kwargs)
+
+
+class SubscriptionPriceView(SubscriptionView):
+    template_name = 'juntagrico/manage/subscription/price.html'
+    title = Config.vocabulary('price')
+
+    def get_queryset(self):
+        start, end = temporal.get_business_date_range(int(self.request.GET.get('year') or datetime.date.today().year))
+        return (
+            Subscription.objects.in_daterange(start, end)
+            .prefetch_related(
+                Prefetch(
+                    'parts',
+                    queryset=SubscriptionPart.objects.in_daterange(start, end)
+                    .annotate_change_in_range(start, end)
+                    .annotate(price=F('type__price')),
+                    to_attr='relevant_parts',
+                ),
+                Prefetch(
+                    'surcharges',
+                    queryset=SubscriptionSurcharge.objects.in_daterange(start, end),
+                    to_attr='relevant_surcharges',
+                ),
+            )
+            .select_related('depot')
+            .prefetch_related('depot__subscription_type_conditions')
+        )
+
+    def get_context_data(self, **kwargs):
+        # get date range in which subscriptions exist
+        date_range = Subscription.objects.aggregate(
+            min_date=Min('activation_date'), max_date=Max('deactivation_date')
+        )
+        kwargs['year_selection_form'] = forms.BusinessYearForm(
+            date_range['min_date'], date_range['max_date'], self.request.GET
+        )
+        kwargs['show_depot_fee'] = (
+            Depot.objects.exclude(fee=0).exists()
+            or DepotSubscriptionTypeCondition.objects.exclude(fee=0).exists()
+        )
         return super().get_context_data(**kwargs)
 
 
