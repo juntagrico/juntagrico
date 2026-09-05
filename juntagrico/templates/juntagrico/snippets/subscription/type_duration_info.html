@@ -1,0 +1,11 @@
+{% load i18n %}
+
+{% if subscription.trial_days %}
+    {% blocktrans trimmed with num=subscription.trial_days %}
+        Für {{ num }} Tage. Keine automatische Verlängerung.
+    {% endblocktrans %}
+{% elif not subscription.has_periods %}
+    {% blocktrans trimmed with until=end_of_business_year|date:'d.M' %}
+        Bis {{ until }}. Automatische Verlängerung.
+    {% endblocktrans %}
+{% endif %}
