@@ -24,9 +24,14 @@
     <th class="filter">
         {% trans "Summe Inhalt" %} [{{ c_currency }}]
     </th>
-    <th class="filter">
-        {% trans "Depotzuschlag" %} [{{ c_currency }}]
-    </th>
+    {% if show_depot_fee %}
+        <th class="filter">
+            {% trans "Depotzuschlag" %} [{{ c_currency }}]
+        </th>
+        <th class="filter">
+            {% trans "Summe Depotzuschlag" %} [{{ c_currency }}]
+        </th>
+    {% endif %}
     <th class="filter">
         {% trans "Aufschlag/Abschlag" %} [{{ c_currency }}]
     </th>
@@ -42,9 +47,14 @@
     <th>
         {% trans "Summe Inhalt" %}
     </th>
-    <th>
-        {% trans "Depotzuschlag" %}
-    </th>
+    {% if show_depot_fee %}
+        <th>
+            {% trans "Depotzuschlag" %}
+        </th>
+        <th>
+            {% trans "Summe Depotzuschlag" %}
+        </th>
+    {% endif %}
     <th>
         {% trans "Aufschlag/Abschlag" %}
     </th>
@@ -76,15 +86,29 @@
         {{ price_summary.parts_total|floatformat:"-2u" }}
     </td>
     <td>
-        {{ price_summary.depot_fee|floatformat:"-2u" }}
-    </td>
-    <td>
-        {% for surcharge, amount in price_summary.surcharges.items %}
-            <div>
-                {{ surcharge.date|date:"d.m.Y" }} - {{ surcharge.description }}: {{ amount|floatformat:"-2u" }}
+        {% for part, fee in price_summary.depot_fee_by_type.items %}
+             <div>
+                {{ part }}: {{ fee|floatformat:"-2u" }}
             </div>
         {% endfor %}
+        {% if price_summary.depot_fee_general %}
+            <div>
+                {{ subscription.depot }}: {{ price_summary.depot_fee_general|floatformat:"-2u" }}
+            </div>
+        {% endif %}
     </td>
+    {% if show_depot_fee %}
+        <td>
+            {{ price_summary.depot_fee_total|floatformat:"-2u" }}
+        </td>
+        <td>
+            {% for surcharge, amount in price_summary.surcharges.items %}
+                <div>
+                    {{ surcharge.date|date:"d.m.Y" }} - {{ surcharge.description }}: {{ amount|floatformat:"-2u" }}
+                </div>
+            {% endfor %}
+        </td>
+    {% endif %}
     <td>
         {{ price_summary.total|floatformat:"-2u" }}
     </td>

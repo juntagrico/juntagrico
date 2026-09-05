@@ -26,16 +26,26 @@ def overview(part_overview):
 
 @register.simple_tag
 def price_summary(subscription, parts, surcharges):
-    part_summary = {part: part.type.price for part in parts}
+    part_summary = {part: part.price for part in parts}
     surcharge_summary = {surcharge: surcharge.amount for surcharge in surcharges}
+    depot_fees = {
+        conditions.subscription_type_id: conditions.fee
+        for conditions in subscription.depot.subscription_type_conditions.all() if conditions.fee != 0
+    }
+    depot_fee_summary = {
+        part: depot_fees[part.type_id]
+        for part in parts if part.type_id in depot_fees
+    }
     summary = {
         'parts_total': sum(part_summary.values()),
-        'depot_fee': subscription.depot.fee,
+        'depot_fee_total': sum(depot_fee_summary.values()) + subscription.depot.fee,
         'surcharges_total': sum(surcharge_summary.values()),
     }
     return {
         'parts': part_summary,
         'surcharges': surcharge_summary,
+        'depot_fee_by_type': depot_fee_summary,
+        'depot_fee_general': subscription.depot.fee,
         'total': sum(summary.values()),
         **summary,
     }

@@ -17,7 +17,11 @@ from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.depot import (
+    Depot,
+    DepotCoordinator,
+    DepotSubscriptionTypeCondition,
+)
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
@@ -450,17 +454,24 @@ class SubscriptionPriceView(SubscriptionView):
 
     def get_queryset(self):
         start, end = temporal.get_business_date_range(int(self.request.GET.get('year') or datetime.date.today().year))
-        return Subscription.objects.in_daterange(start, end).prefetch_related(
-            Prefetch(
-                'parts',
-                queryset=SubscriptionPart.objects.in_daterange(start, end).annotate_change_in_range(start, end),
-                to_attr='relevant_parts',
-            ),
-            Prefetch(
-                'surcharges',
-                queryset=SubscriptionSurcharge.objects.in_daterange(start, end),
-                to_attr='relevant_surcharges',
-            ),
+        return (
+            Subscription.objects.in_daterange(start, end)
+            .prefetch_related(
+                Prefetch(
+                    'parts',
+                    queryset=SubscriptionPart.objects.in_daterange(start, end)
+                    .annotate_change_in_range(start, end)
+                    .annotate(price=F('type__price')),
+                    to_attr='relevant_parts',
+                ),
+                Prefetch(
+                    'surcharges',
+                    queryset=SubscriptionSurcharge.objects.in_daterange(start, end),
+                    to_attr='relevant_surcharges',
+                ),
+            )
+            .select_related('depot')
+            .prefetch_related('depot__subscription_type_conditions')
         )
 
     def get_context_data(self, **kwargs):
@@ -470,6 +481,10 @@ class SubscriptionPriceView(SubscriptionView):
         )
         kwargs['year_selection_form'] = forms.BusinessYearForm(
             date_range['min_date'], date_range['max_date'], self.request.GET
+        )
+        kwargs['show_depot_fee'] = (
+            Depot.objects.exclude(fee=0).exists()
+            or DepotSubscriptionTypeCondition.objects.exclude(fee=0).exists()
         )
         return super().get_context_data(**kwargs)
 
