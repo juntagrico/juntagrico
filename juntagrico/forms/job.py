@@ -25,11 +25,11 @@ class JobSubscribeForm(Form):
 
     text = {
         'options': {
-            0: _('Abmelden'),
-            1: _('Unbegleitet'),
-            2: _('Zu Zweit'),
-            3: _('Zu Dritt'),
-            4: _('Zu Viert'),
+            0: gettext_lazy('Abmelden'),
+            1: gettext_lazy('Unbegleitet'),
+            2: gettext_lazy('Zu Zweit'),
+            3: gettext_lazy('Zu Dritt'),
+            4: gettext_lazy('Zu Viert'),
             None: lambda x: _('{0} weitere Personen und ich').format(x - 1)
         },
     }

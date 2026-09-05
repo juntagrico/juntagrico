@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
@@ -22,8 +23,8 @@ class SubscriptionProduct(JuntagricoBaseModel):
         return self.name
 
     class Meta:
-        verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Produkt'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Produkt'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -69,8 +70,8 @@ class SubscriptionCategory(JuntagricoBaseModel):
         return self.name or gettext('(Ohne Namen)')
 
     class Meta:
-        verbose_name = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Kategorie'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Kategorie'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -96,8 +97,8 @@ class SubscriptionBundle(JuntagricoBaseModel):
         return str(self.category or _("(Nicht Bestellbar)"))
 
     class Meta:
-        verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Pakete').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Paket'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Pakete'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -155,6 +156,6 @@ class SubscriptionType(JuntagricoBaseModel):
         return self.pk < other.pk
 
     class Meta:
-        verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Typ'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Typen'), Config.vocabulary('subscription'))
         ordering = ['sort_order']

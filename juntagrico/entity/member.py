@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.utils.functional import cached_property
+from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
@@ -332,8 +333,8 @@ class Member(JuntagricoBaseModel):
 class SubscriptionMembership(JuntagricoBaseModel):
     member = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, verbose_name=Config.vocabulary('subscription'))
-    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=_('Erster Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
-    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=_('Letzter Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=format_lazy(_('Erster Tag an dem {0} bezogen wird'), Config.vocabulary('subscription')))
+    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=format_lazy(_('Letzter Tag an dem {0} bezogen wird'), Config.vocabulary('subscription')))
 
     def __str__(self):
         if not self.join_date:
@@ -368,5 +369,5 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return self.subscription.co_members(self.member)
 
     class Meta:
-        verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{}-Mitgliedschaft'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{}-Mitgliedschaften'), Config.vocabulary('subscription'))
