@@ -212,6 +212,10 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertListEqual(list(self.sub.current_members.order_by('id')), [self.member, self.member3])
 
     def testManagePriceList(self):
+        # use depot 2, because it has a fee
+        self.canceled_sub.depot = self.depot2
+        self.canceled_sub.save()
+        # member has access
         self.assertGet(reverse('manage-subscription-price'))
         # member2 has no access
         self.assertGet(
