@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _, gettext
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset, SubscriptionProductQueryset
-from juntagrico.util import temporal
 
 
 class SubscriptionProduct(JuntagricoBaseModel):
@@ -143,14 +142,6 @@ class SubscriptionType(JuntagricoBaseModel):
     @property
     def has_periods(self):
         return self.periods.count() > 0
-
-    def min_duration_info(self):
-        if self.trial_days:
-            return gettext('Für {num} Tage. Keine automatische Verlängerung.').format(num=self.trial_days)
-        if self.has_periods:
-            return None  # price list already shows end of periods
-        date = temporal.end_of_business_year()
-        return gettext('Bis {day}.{month}. Automatische Verlängerung.').format(day=date.day, month=date.month)
 
     @property
     def display_name(self):
