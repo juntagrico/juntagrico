@@ -1,8 +1,21 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
-    OuterRef, PositiveIntegerField
+from django.db.models import (
+    When,
+    Q,
+    F,
+    ExpressionWrapper,
+    DurationField,
+    Case,
+    DateField,
+    FloatField,
+    Sum,
+    Subquery,
+    OuterRef,
+    PositiveIntegerField,
+    QuerySet,
+)
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
@@ -67,7 +80,7 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
 
     def in_date_range(self, start, end):
         """
-        subscriptions that were active in the given period
+        subscriptions that were active or waiting in the given period
         """
         return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
 
@@ -277,3 +290,10 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
 
     def count_units(self):
         return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']
+
+
+class SubscriptionSurchargeQuerySet(QuerySet):
+    def in_daterange(self, from_date, till_date):
+        """select surcharges/discounts within the given date range
+        """
+        return self.filter(date__gte=from_date, date__lte=till_date)

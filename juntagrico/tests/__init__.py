@@ -15,7 +15,7 @@ from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription, SubscriptionPart, SubscriptionSurcharge
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
     ProductSize, SubscriptionBundleProductSize
 
@@ -398,6 +398,8 @@ class JuntagricoTestCase(TestCase):
         cls.member7.join_subscription(cls.deactivated_sub, True)
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
+        # create subscription surcharge
+        SubscriptionSurcharge.objects.create(subscription=cls.sub, amount=100, description='surcharge', date=today)
 
     @classmethod
     def set_up_extra_sub_types(cls):

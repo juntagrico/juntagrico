@@ -146,6 +146,7 @@ urlpatterns = [
     # /manage/subscription
     path('manage/subscription/recent', manage.SubscriptionRecentView.as_view(), name='manage-sub-recent'),
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
+    path('manage/subscription/price', manage.SubscriptionPriceView.as_view(), name='manage-subscription-price'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
     path('manage/subscription/shares', manage.SubscriptionSharesView.as_view(), name='manage-sub-shares'),

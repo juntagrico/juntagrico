@@ -1,3 +1,4 @@
+{% load juntagrico.common %}
 {% load juntagrico.widgets %}
 {% load i18n %}
 {% load juntagrico.config %}
@@ -79,6 +80,20 @@
                                         </small>
                                         {% include 'juntagrico/my/subscription/snippets/part_list_compact.html' with parts=subscription.parts.waiting_or_active list_class='list-unstyled' no_actions=True only %}
                                     </div>
+
+                                    {% if subscription.surcharges %}
+                                        <div class="mt-3">
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-cash mr-2"></i>{% trans 'Aufschläge/Abschläge' %}
+                                            </small>
+                                            {% for surcharge in subscription.surcharges.all|dictsort:"date" %}
+                                                <div>
+                                                    {{ surcharge.date|date:"SHORT_DATE_FORMAT" }}
+                                                    - {{ surcharge.description }}: {{ surcharge.amount|price }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
 
                                     <div class="mt-3">
                                         <small class="text-muted d-block">
