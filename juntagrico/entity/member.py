@@ -8,7 +8,13 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
+from juntagrico.entity import (
+    JuntagricoBaseModel,
+    notifiable,
+    LowercaseEmailField,
+    validate_iban,
+    absolute_url,
+)
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
@@ -26,6 +32,7 @@ def q_left_subscription(asof=None):
     return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
+@absolute_url(name='manage-account-single')
 class Member(JuntagricoBaseModel):
     '''
     Additional fields for Django's default user class.
