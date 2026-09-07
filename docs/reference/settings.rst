@@ -234,19 +234,21 @@ DOCUMENTS
 
   Tags define where the document is shown:
 
-  - 'account': show on profile/membership page
-  - 'account-signup': same as above and additionally show it in the first step of the signup process
-  - 'account-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'membership-signup' show on step "membership" during signup process
-  - 'membership-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'subscription': show on subscription overview page
-  - 'extrasub': show below subscription parts on subscription overview page
-  - 'activityarea': show on activity area overview page
+  - ``'account'``: show on profile/membership page
+  - ``'account-signup'``: same as above and additionally show it in the first step of the signup process
+  - ``'account-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'membership-signup'``: show on step "membership" during signup process
+  - ``'membership-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'subscription'``: show on subscription overview page
+  - ``'extrasub'``: show below subscription parts on subscription overview page
+  - ``'activityarea'``: show on activity area overview page
 
   Type: List of Tuples or Strings
 
   Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and
   adding the same document in DOCUMENTS will show the document twice.
+
+  Default value is ``[]``, but if the other document settings are set, they are applied as follows:
 
   .. code-block:: python
 
@@ -438,13 +440,16 @@ MEMBERSHIP
   Membership configuration
 
   The setting takes a dictionary of key-value pairs:
+
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
     - ``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)
     - ``'required_on_signup'``: whether a membership is mandatory to signup up
+
         - True: always require membership on signup
         - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
         - False: don't require membership during signup, unless selected subscriptions require it
+
     - ``'fee'``: yearly membership fee (Float, Integer or String)
     - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
       and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
@@ -762,7 +767,7 @@ VOCABULARY
         'subscription_pl' : 'Abos',
         'the_subscription': 'das Abo',
         'the_subscription_acc': 'das Abo',  # für ...
-        'no_subscription_acc': 'kein Abo',
+        'no_subscription_acc': 'kein Abo',  # für ...
         'this_subscription_acc': 'dieses Abo',  # für ...
         'this_subscription_dat': 'diesem Abo',  # von ...
         'your_subscription_acc': 'dein Abo',  # für ...
