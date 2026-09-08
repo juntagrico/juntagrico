@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch
+from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch, Sum
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -461,7 +461,8 @@ class SubscriptionPriceView(SubscriptionView):
                     'parts',
                     queryset=SubscriptionPart.objects.in_daterange(start, end)
                     .annotate_change_in_range(start, end)
-                    .annotate(price=F('type__price')),
+                    .annotate(price=F('type__price'))
+                    .annotate(period_price=Sum('type__periods__price')),
                     to_attr='relevant_parts',
                 ),
                 Prefetch(

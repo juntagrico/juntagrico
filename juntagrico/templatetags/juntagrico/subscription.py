@@ -26,7 +26,7 @@ def overview(part_overview):
 
 @register.simple_tag
 def price_summary(subscription, parts, surcharges):
-    part_summary = {part: part.price for part in parts}
+    part_summary = {part: part.period_price or part.price for part in parts}
     surcharge_summary = {surcharge: surcharge.amount for surcharge in surcharges}
     depot_fees = {
         conditions.subscription_type_id: conditions.fee
