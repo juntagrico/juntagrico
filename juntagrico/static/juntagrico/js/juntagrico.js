@@ -48,6 +48,13 @@ $(function () {
     }
 
     $('.swapper').Swap()
+    $('.account-search-launcher').on('input', function (e) {
+        let modal = $('#account_search_modal')
+        modal.modal('show')
+        let launcher = $(this);
+        $('#account_search_modal .select2-search__field').val(launcher.val())
+        launcher.val('')
+    })
 });
 
 function email_button(action, default_email_all) {

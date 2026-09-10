@@ -127,6 +127,11 @@
                     </div>
                 {% endblock %}
             </div>
+
+            {% if perms.juntagrico.view_member %}
+                {% account_search %}
+            {% endif %}
+
         </div>
         <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap/js/bootstrap.bundle.min.js' %}">
         </script>

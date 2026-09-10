@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
 from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch, Sum
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
@@ -105,6 +106,14 @@ class MemberActiveView(MemberView):
 class MemberArchiveView(MemberView):
     queryset = Member.objects.inactive
     title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
+
+
+@permission_required('juntagrico.view_member')
+def account_search(request):
+    account = request.GET.get('account')
+    if account:
+        return HttpResponseRedirect(reverse('manage-account-single', args=[account]))
+    return render(request, 'juntagrico/search.html')
 
 
 @permission_required('juntagrico.view_member')
