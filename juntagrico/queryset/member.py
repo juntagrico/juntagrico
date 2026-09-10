@@ -44,19 +44,21 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             deactivation_date__isnull=True
         )
 
-    def has_active_subscription(self, on_date=None):
+    def has_active_subscription(self, on_date=None, in_depot=None):
         on_date = on_date or datetime.date.today()
+        depot_query = []
+        if in_depot is not None:
+            if is_iterable(in_depot):
+                depot_query.append(Q(subscriptions__depot__in=in_depot))
+            else:
+                depot_query.append(Q(subscriptions__depot=in_depot))
         return self.filter(
             q_subscription_activated(on_date),
             ~q_subscription_deactivated(on_date),
             q_joined_subscription(on_date),
-            ~q_left_subscription(on_date)
+            ~q_left_subscription(on_date),
+            *depot_query
         )
-
-    def in_depot(self, depot):
-        if is_iterable(depot):
-            return self.filter(subscriptions__depot__in=depot)
-        return self.filter(subscriptions__depot=depot)
 
     def has_active_shares(self, on_date=None):
         on_date = on_date or datetime.date.today()
