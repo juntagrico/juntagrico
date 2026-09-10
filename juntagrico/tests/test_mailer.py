@@ -295,7 +295,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions'],
+                'to_list': ['all_subscriptions', 'all_memberships'],
                 'to_members': [self.member.id],
                 'to_areas': [self.area.id],
                 'to_depots': [self.depot.id],
