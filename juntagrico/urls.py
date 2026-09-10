@@ -193,6 +193,7 @@ urlpatterns = [
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
 
     # /manage/account
+    path('manage/account/search', manage.account_search, name='manage-account-search'),
     path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
     path('manage/account/<int:account_id>/notes/edit', manage.account_notes_edit, name='manage-account-notes-edit'),
 
