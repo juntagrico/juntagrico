@@ -21,7 +21,6 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.signals import depot_changed, share_canceled
@@ -99,9 +98,6 @@ def part_change(request, part,
     """
     change part of a subscription
     """
-    if not SubscriptionType.objects.can_change():
-        return render(request, template_name)
-
     if request.method == 'POST':
         form = form_class(part, request.POST)
         if form.is_valid():

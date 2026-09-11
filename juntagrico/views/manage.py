@@ -21,7 +21,6 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
@@ -302,10 +301,6 @@ def activate_trial(request, change_date, part_id):
 @permission_required('juntagrico.change_subscriptionpart')
 def continue_trial(request, part_id, template_name='juntagrico/my/subscription/trial/continue.html'):
     part = get_object_or_404(SubscriptionPart, id=part_id)
-
-    if not SubscriptionType.objects.can_change():
-        return render(request, template_name)
-
     if request.method == 'POST':
         form = SubscriptionPartContinueByAdminForm(part, request.POST)
         if form.is_valid():
