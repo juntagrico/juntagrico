@@ -29,24 +29,52 @@ class SpecialRoles(models.Model):
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
-                       ('can_send_mails', _('Kann E-Mails versenden')),
-                       ('can_email_attachments', _('Kann Anhänge per E-Mail senden')),
-                       ('can_use_general_email', _('Kann allgemeine E-Mail-Adresse verwenden')),
-                       ('can_use_for_members_email', _('Kann E-Mail-Adresse "for_members" verwenden')),
-                       ('can_use_for_subscriptions_email', _('Kann E-Mail-Adresse "for_subscription" verwenden')),
-                       ('can_use_for_shares_email', _('Kann E-Mail-Adresse "for_shares" verwenden')),
-                       ('can_use_technical_email', _('Kann technische E-Mail-Adresse verwenden')),
-                       ('can_email_all_with_share',
-                        _('Kann E-Mails an alle mit {0} senden').format(Config.vocabulary('share'))),
-                       ('can_email_all_with_sub',
-                        _('Kann E-Mails an alle mit {0} senden').format(Config.vocabulary('subscription'))),
-                       ('depot_list_notification',
-                        _('Wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
-                       ('can_view_exports', _('Kann Exporte öffnen')),
-                       ('can_view_lists', _('Kann Listen öffnen')),
-                       ('can_generate_lists', _('Kann Listen erzeugen')),
-                       )
+        permissions = (
+            ('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
+            ('can_send_mails', _('Kann E-Mails versenden')),
+            ('can_email_attachments', _('Kann Anhänge per E-Mail senden')),
+            ('can_use_general_email', _('Kann allgemeine E-Mail-Adresse verwenden')),
+            (
+                'can_use_for_members_email',
+                _('Kann E-Mail-Adresse "for_members" verwenden'),
+            ),
+            (
+                'can_use_for_subscriptions_email',
+                _('Kann E-Mail-Adresse "for_subscription" verwenden'),
+            ),
+            (
+                'can_use_for_shares_email',
+                _('Kann E-Mail-Adresse "for_shares" verwenden'),
+            ),
+            ('can_use_technical_email', _('Kann technische E-Mail-Adresse verwenden')),
+            (
+                'can_email_all_with_membership',
+                _('Kann E-Mails an alle mit {0} senden').format(
+                    Config.vocabulary('membership')
+                ),
+            ),
+            (
+                'can_email_all_with_share',
+                _('Kann E-Mails an alle mit {0} senden').format(
+                    Config.vocabulary('share')
+                ),
+            ),
+            (
+                'can_email_all_with_sub',
+                _('Kann E-Mails an alle mit {0} senden').format(
+                    Config.vocabulary('subscription')
+                ),
+            ),
+            (
+                'depot_list_notification',
+                _('Wird bei {0}-Listen-Erstellung informiert').format(
+                    Config.vocabulary('depot')
+                ),
+            ),
+            ('can_view_exports', _('Kann Exporte öffnen')),
+            ('can_view_lists', _('Kann Listen öffnen')),
+            ('can_generate_lists', _('Kann Listen erzeugen')),
+        )
 
 
 # Don't connect new signals here, connect them in apps.py instead
