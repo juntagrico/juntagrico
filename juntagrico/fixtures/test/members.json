@@ -75,6 +75,11 @@
                 "specialroles"
             ],
             [
+                "can_email_all_with_membership",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
                 "can_email_all_with_sub",
                 "juntagrico",
                 "specialroles"
