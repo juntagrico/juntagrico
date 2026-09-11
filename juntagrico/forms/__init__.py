@@ -620,6 +620,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     def __init__(self, part=None, *args, **kwargs):
         self.part = part
         self.pre_check()
+        kwargs['extra'] = part.is_extra  # extra parts can only be changed to another extra part
         super().__init__(*args, **kwargs)
         self.fields['part_type'].choices = self.get_choices
         self.helper.label_class = ''
