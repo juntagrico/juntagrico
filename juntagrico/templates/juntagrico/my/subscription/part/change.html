@@ -10,6 +10,11 @@
 {% endblock %}
 
 {% block content %}
-    <h4>{% trans "Wähle einen neuen Bestandteil" %}</h4>
-    {{ block.super }}
+    {% if form %}
+        <h4>{% trans "Wähle einen neuen Bestandteil" %}</h4>
+        {{ block.super }}
+    {% else %}
+        <h4>{% trans "Bestandteil kann nicht geändert werden" %}</h4>
+        <p>{% trans "Es sind keine anderen Typen definiert." %}</p>
+    {% endif %}
 {% endblock %}
