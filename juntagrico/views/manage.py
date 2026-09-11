@@ -299,7 +299,7 @@ def activate_trial(request, change_date, part_id):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def continue_trial(request, part_id):
+def continue_trial(request, part_id, template_name='juntagrico/my/subscription/trial/continue.html'):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     if request.method == 'POST':
         form = SubscriptionPartContinueByAdminForm(part, request.POST)
@@ -308,7 +308,7 @@ def continue_trial(request, part_id):
             return redirect(reverse('manage-sub-trial'))
     else:
         form = SubscriptionPartContinueByAdminForm(part)
-    return render(request, 'juntagrico/my/subscription/trial/continue.html', {
+    return render(request, template_name, {
         'form': form,
     })
 
