@@ -1,6 +1,10 @@
 // Datatables
 $(function () {
     if ($.fn.dataTable) {
+        if ($.fn.dataTable.Buttons) {
+            // Show buttons separately (spacing in css) instead of a joined bootstrap btn-group.
+            $.fn.dataTable.Buttons.defaults.dom.container.className = 'dt-buttons d-flex flex-wrap'
+        }
         $.extend($.fn.dataTable.defaults, {
             responsive: true,
             paging: false,

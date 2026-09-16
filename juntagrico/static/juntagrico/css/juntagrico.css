@@ -327,6 +327,16 @@ textarea#recipients[disabled=disabled] {
     padding-bottom: .5rem;
 }
 
+div.dt-buttons {
+    gap: .25rem;
+}
+
+@media screen and (max-width: 767px) {
+    div.dt-buttons {
+        justify-content: center;
+    }
+}
+
 .dtsb-titleRow {
     display: none;
 }
