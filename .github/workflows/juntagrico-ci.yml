@@ -1,16 +1,12 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
 name: juntagrico-ci
 
 on:
   push:
     branches: [ main ]
-  pull_request_target:
+  pull_request:
     branches: [ main, 'releases/**' ]
 
 jobs:
-  # DO NOT use secrets and write permissions here
   check-dependencies:
     name: Dependency Check
     runs-on: ubuntu-latest
@@ -18,9 +14,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
-          allow-unsafe-pr-checkout: true
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -35,7 +28,6 @@ jobs:
       - name: Run deptry
         run: deptry . --github-output
 
-  # run tests. DO NOT use secrets and write permissions here
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -86,9 +78,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-      with:
-        ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
-        allow-unsafe-pr-checkout: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
@@ -121,7 +110,6 @@ jobs:
         name: coverage-${{ matrix.exclude-test }}
         path: coverage-${{ matrix.exclude-test }}.lcov
 
-  # upload coverage. DO NOT execute PR code here
   coverage:
     name: Coverage Report
     needs: tests
@@ -131,13 +119,11 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - uses: actions/download-artifact@v6
         with:
           path: coverage
           merge-multiple: true
       - uses: qltysh/qlty-action/coverage@v2
         with:
-          oidc: true
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: coverage/coverage*.lcov
