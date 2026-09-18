@@ -292,6 +292,8 @@ class MailerTests(JuntagricoTestCaseWithShares):
         })
 
     def testMailSend(self):
+        self.member.last_name += '="ö<>é,@'  # add some forbidden characters (and some allowed non-trivial ones)
+        self.member.save()
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
@@ -310,7 +312,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].attachments[0][0], 'test_mailer.py')
         expected = [
-            'first_name1 last_name1 <email1@email.org>',
+            'first_name1 last_name1öé <email1@email.org>',
             'first_name3 last_name3 <email3@email.org>',
             'first_name6 last_name6 <member6@email.org>',
             'first_name7 last_name7 <member7@email.org>',
