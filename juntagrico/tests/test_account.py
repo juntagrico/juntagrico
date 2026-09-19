@@ -5,11 +5,13 @@ from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.formats import date_format
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
 from ..entity.jobs import RecuringJob, Assignment
+from ..forms.account import MemberSelect2Widget
 
 
 class AccountTests(JuntagricoTestCase):
@@ -142,6 +144,40 @@ class AccountOverviewTests(JuntagricoTestCaseWithShares):
         )
         self.member.refresh_from_db()
         self.assertEqual(self.member.notes, 'New note')
+
+
+class SearchTest(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # create account with the same name to test display of search results.
+        cls.another_member = cls.create_member(
+            'another_one@email.org',
+            first_name=cls.member2.first_name,
+            last_name=cls.member2.last_name,
+        )
+
+    def testAccountSearch(self):
+        response = self.assertGet(
+            reverse('manage-account-search') + f'?account={self.member2.id}',
+            code=302,
+            member=self.admin,
+        )
+        self.assertRedirects(response, reverse('manage-account-single', args=[self.member2.id]))
+
+    def testDuplicateMemberDisplay(self):
+        # note: join date will not show when rendering the field with initial data.
+        ids = [self.member2.id, self.another_member.id]
+        widget = MemberSelect2Widget(
+            queryset=Member.objects.filter(id__in=ids)
+        )
+        today = datetime.date.today()
+        for option in widget.get_queryset():
+            label = widget.label_from_instance(option)
+            self.assertEqual(
+                label,
+                f'{option.first_name} {option.last_name} ({date_format(today, "SHORT_DATE_FORMAT")})',
+            )
 
 
 class AdminTest(JuntagricoTestCase):
