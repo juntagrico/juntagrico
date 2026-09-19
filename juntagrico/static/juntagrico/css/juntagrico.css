@@ -327,6 +327,10 @@ textarea#recipients[disabled=disabled] {
     padding-bottom: .5rem;
 }
 
+/* forward compatibility with bootstrap 5 */
+.gap-1 {
+    gap: .25rem !important;
+}
 .dtsb-titleRow {
     display: none;
 }
