@@ -297,7 +297,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions'],
+                'to_list': ['all_subscriptions', 'all_memberships'],
                 'to_members': [self.member.id],
                 'to_areas': [self.area.id],
                 'to_depots': [self.depot.id],
@@ -318,6 +318,7 @@ class MailerTests(JuntagricoTestCaseWithShares):
             'first_name7 last_name7 <member7@email.org>',
         ]
         if settings.ENABLE_SHARES:
+            expected.insert(2, 'first_name5 last_name5 <email5@email.org>')
             expected = ['First_name4 Last_name4 <email4@email.org>'] + expected
         self.assertListEqual(sorted(mail.outbox[0].bcc), expected)
         self.assertRedirects(response, reverse('email-sent'))

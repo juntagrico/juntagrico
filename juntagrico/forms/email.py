@@ -18,6 +18,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
 from juntagrico.forms import InternalModelSelect2MultipleWidget
 from juntagrico.forms.account import MemberSelect2MultipleWidget
 from juntagrico.util.html import EmailHtmlParser
@@ -174,6 +175,11 @@ class RecipientsForm(BaseRecipientsForm):
 
     def get_recipient_list_choices(self):
         choices = []
+        if Config.enable_membership() and self.sender.user.has_perm('juntagrico.can_email_all_with_membership'):
+            choices.append((
+                'all_memberships',
+                _('Alle mit {membership}').format(membership=Config.vocabulary('membership'))
+            ))
         if self.sender.user.has_perm('juntagrico.can_email_all_with_sub'):
             choices.append((
                 'all_subscriptions',
@@ -197,6 +203,8 @@ class RecipientsForm(BaseRecipientsForm):
             recipients |= Member.objects.active().has_active_subscription(in_depot=to_depots)
         if 'all_shares' in to_list:
             recipients |= Member.objects.active().has_active_shares()
+        if 'all_memberships' in to_list:
+            recipients |= Member.objects.active().filter(memberships__in=Membership.objects.active())
         if to_areas := cleaned_data.get('to_areas'):
             recipients |= Member.objects.active().filter(areas__in=to_areas)
         if to_jobs := cleaned_data.get('to_jobs'):
