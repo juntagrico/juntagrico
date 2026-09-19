@@ -9,6 +9,7 @@ from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from djrichtextfield.widgets import RichTextWidget
 
@@ -62,7 +63,7 @@ class BaseRecipientsForm(forms.Form):
             if areas is not None or depots is not None:
                 members = Member.objects.filter(reachable_by_email=True)
                 if depots is not None:
-                    members |= Member.objects.has_active_subscription().in_depot(depots)
+                    members |= Member.objects.has_active_subscription(in_depot=depots)
                 if areas is not None:
                     jobs_in_area = Job.objects.in_areas(areas)
                     members |= Member.objects.filter(areas__in=areas)
@@ -127,7 +128,8 @@ class RecipientsForm(BaseRecipientsForm):
     )
     to_depots = forms.ModelMultipleChoiceField(
         Depot.objects.order_by('id'),
-        label=_('An alle {with_active_subscription} in diesen {depots}').format(
+        label=format_lazy(
+            _('An alle {with_active_subscription} in diesen {depots}'),
             with_active_subscription=Config.vocabulary('with_active_subscription'),
             depots=Config.vocabulary('depot_pl')
         ),
@@ -192,7 +194,7 @@ class RecipientsForm(BaseRecipientsForm):
         if 'all_subscriptions' in to_list:
             recipients |= Member.objects.active().has_active_subscription()
         elif to_depots := cleaned_data.get('to_depots'):
-            recipients |= Member.objects.active().has_active_subscription().in_depot(to_depots)
+            recipients |= Member.objects.active().has_active_subscription(in_depot=to_depots)
         if 'all_shares' in to_list:
             recipients |= Member.objects.active().has_active_shares()
         if to_areas := cleaned_data.get('to_areas'):
@@ -209,7 +211,8 @@ class RecipientsForm(BaseRecipientsForm):
 
 class DepotRecipientsForm(BaseRecipientsForm):
     to_depot = forms.BooleanField(
-        label=_('An alle {with_active_subscription} in {depot} {depot_name}').format(
+        label=format_lazy(
+            _('An alle {with_active_subscription} in {depot} {depot_name}'),
             with_active_subscription=Config.vocabulary('subscription'),
             depot=Config.vocabulary('depot'),
             depot_name='{}'
@@ -225,14 +228,14 @@ class DepotRecipientsForm(BaseRecipientsForm):
         depot = Depot.objects.get(pk=self.depot_id)
         self.fields['to_depot'].label = self.fields['to_depot'].label.format(depot.name)
         self.fields['to_members'].label = _('An diese Personen in {}').format(Config.vocabulary('depot'))
-        self.fields['to_members'].queryset = Member.objects.active().has_active_subscription().in_depot(self.depot_id)
+        self.fields['to_members'].queryset = Member.objects.active().has_active_subscription(in_depot=self.depot_id)
 
     def get_count_url(self):
         return reverse('email-count-depot-recipients', args=[self.depot_id])
 
     def _populate_recipients_queryset(self, recipients):
         if self.cleaned_data.get('to_depot'):
-            recipients |= Member.objects.active().has_active_subscription().in_depot(self.depot_id)
+            recipients |= Member.objects.active().has_active_subscription(in_depot=self.depot_id)
         return super()._populate_recipients_queryset(recipients)
 
 
