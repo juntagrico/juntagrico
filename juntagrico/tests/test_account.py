@@ -165,6 +165,13 @@ class SearchTest(JuntagricoTestCase):
         )
         self.assertRedirects(response, reverse('manage-account-single', args=[self.member2.id]))
 
+    def testNoResults(self):
+        self.assertGet(
+            reverse('manage-account-search'),
+            code=200,
+            member=self.admin,
+        )
+
     def testDuplicateMemberDisplay(self):
         # note: join date will not show when rendering the field with initial data.
         ids = [self.member2.id, self.another_member.id]
