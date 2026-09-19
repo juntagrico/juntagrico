@@ -1,3 +1,4 @@
+from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from import_export import resources
 
@@ -40,7 +41,7 @@ class MemberWithAssignmentsAndAreaResource(DateRangeResourceMixin, resources.Mod
         model = Member
         exclude = ('user',)
         export_order = ('id', 'first_name', 'last_name')
-        name = _("{0} mit {1}, Tätigkeitsbereich und {2}").format(Config.vocabulary('member_pl'),
+        name = format_lazy(_("{0} mit {1}, Tätigkeitsbereich und {2}"), Config.vocabulary('member_pl'),
                                                                   Config.vocabulary('depot'),
                                                                   Config.vocabulary('assignment_pl'))
 
@@ -72,5 +73,5 @@ class MemberAssignmentsPerArea(DateRangeResourceMixin, resources.ModelResource):
         model = Member
         fields = ('id', 'name')
         export_order = fields
-        name = _("{0}: {1} nach Tätigkeitsbereich").format(Config.vocabulary('member_pl'),
+        name = format_lazy(_("{0}: {1} nach Tätigkeitsbereich"), Config.vocabulary('member_pl'),
                                                            Config.vocabulary('assignment_pl'))

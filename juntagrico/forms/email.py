@@ -11,6 +11,7 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2MultipleWidget
 from djrichtextfield.widgets import RichTextWidget
@@ -158,7 +159,7 @@ class RecipientsForm(BaseRecipientsForm):
     )
     to_depots = forms.ModelMultipleChoiceField(
         Depot.objects.order_by('id'),
-        label=_('An alle mit aktivem/r {} in diesen {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot_pl')),
+        label=format_lazy(_('An alle mit aktivem/r {} in diesen {}'), Config.vocabulary('subscription'), Config.vocabulary('depot_pl')),
         required=False,
         widget=InternalModelSelect2MultipleWidget(
             model=Depot,
@@ -235,7 +236,7 @@ class RecipientsForm(BaseRecipientsForm):
 
 class DepotRecipientsForm(BaseRecipientsForm):
     to_depot = forms.BooleanField(
-        label=_('An alle mit aktivem/r {} in {} {}').format(Config.vocabulary('subscription'), Config.vocabulary('depot'), '{}'),
+        label=format_lazy(_('An alle mit aktivem/r {} in {} {}'), Config.vocabulary('subscription'), Config.vocabulary('depot'), '{}'),
         required=False
     )
 
