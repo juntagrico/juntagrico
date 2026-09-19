@@ -4,6 +4,7 @@ from functools import cached_property
 from django.contrib import admin
 from django.db import models
 from django.db.models import Max
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
@@ -35,7 +36,7 @@ class Subscription(Billable, SimpleStateModel):
         Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
-        verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
+        verbose_name=format_lazy(_('Zukünftiges {}'), Config.vocabulary('depot')),
         help_text='Nur setzen, wenn {} geändert werden soll'.format(Config.vocabulary('depot')))
     primary_member = models.ForeignKey(
         'Member', related_name='subscription_primary', null=True, blank=True, on_delete=models.PROTECT,
@@ -43,7 +44,8 @@ class Subscription(Billable, SimpleStateModel):
     )
     nickname = models.CharField(
         _('Spitzname'), max_length=30, blank=True,
-        help_text=_('Ersetzt die {co_members} auf der {depot}-Liste.').format(
+        help_text=format_lazy(
+            _('Ersetzt die {co_members} auf der {depot}-Liste.'),
             co_members=Config.vocabulary('co_member_pl'),
             depot=Config.vocabulary('depot'),
         )
@@ -287,7 +289,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
-                             verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+                             verbose_name=format_lazy(_('{0}-Typ'), Config.vocabulary('subscription')))
 
     objects = SubscriptionPartQuerySet.as_manager()
 
@@ -354,8 +356,8 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @notifiable
     class Meta:
-        verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{} Bestandteil'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{} Bestandteile'), Config.vocabulary('subscription'))
 
 
 class SubscriptionSurcharge(JuntagricoBaseModel):

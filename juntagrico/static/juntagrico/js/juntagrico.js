@@ -1,6 +1,10 @@
 // Datatables
 $(function () {
     if ($.fn.dataTable) {
+        if ($.fn.dataTable.Buttons) {
+            // Show buttons separately (with gap) instead of a joined bootstrap btn-group.
+            $.fn.dataTable.Buttons.defaults.dom.container.className = 'dt-buttons d-flex flex-wrap gap-1 justify-content-center justify-content-md-start'
+        }
         $.extend($.fn.dataTable.defaults, {
             responsive: true,
             paging: false,
@@ -48,6 +52,13 @@ $(function () {
     }
 
     $('.swapper').Swap()
+    $('.account-search-launcher').on('input', function (e) {
+        let modal = $('#account_search_modal')
+        modal.modal('show')
+        let launcher = $(this);
+        $('#account_search_modal .select2-search__field').val(launcher.val())
+        launcher.val('')
+    })
 });
 
 function email_button(action, default_email_all) {

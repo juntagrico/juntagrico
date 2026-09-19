@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
@@ -94,9 +95,9 @@ class AreaCoordinator(JuntagricoBaseModel):
     area = models.ForeignKey(ActivityArea, related_name='coordinator_access', on_delete=models.CASCADE)
     member = models.ForeignKey('Member', related_name='area_access', on_delete=models.PROTECT)
     can_modify_area = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
-    can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
-    can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
-    can_remove_member = models.BooleanField(_('Kann {0} entfernen').format(Config.vocabulary('member_pl')), default=True)
+    can_view_member = models.BooleanField(format_lazy(_('Kann {0} sehen'), Config.vocabulary('member_pl')), default=True)
+    can_contact_member = models.BooleanField(format_lazy(_('Kann {0} kontaktieren'), Config.vocabulary('member_pl')), default=True)
+    can_remove_member = models.BooleanField(format_lazy(_('Kann {0} entfernen'), Config.vocabulary('member_pl')), default=True)
     can_modify_jobs = models.BooleanField(_('Kann Jobs verwalten'), default=True)
     can_modify_assignments = models.BooleanField(_('Kann Einsatzanmeldungen verwalten'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -245,7 +246,7 @@ class Job(JuntagricoBasePoly):
         help_text=_('Teilnehmende werden bei Änderung automatisch per E-mail benachrichtigt'),
     )
     multiplier = models.FloatField(
-        _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1.0,
+        format_lazy(_('{0} vielfaches'), Config.vocabulary('assignment')), default=1.0,
         validators=[MinValueValidator(0)])
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(

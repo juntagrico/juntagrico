@@ -21,6 +21,8 @@ class AssignmentTests(JuntagricoTestCase):
             cls.create_sub(cls.depot, cls.sub_trial_type, cls.activation_date, ),
             # trial sub shorter than planned
             cls.create_sub(cls.depot, cls.sub_trial_type, cls.activation_date, deactivation_date=date(day=15, month=1, year=cls.year)),
+            # trial sub longer than planned
+            cls.create_sub(cls.depot, cls.sub_trial_type, cls.activation_date, deactivation_date=date(day=1, month=3, year=cls.year)),
             # trial sub at the end of the year
             cls.create_sub(cls.depot, cls.sub_trial_type, date(day=15, month=12, year=cls.year)),
             # trial sub starting last year
@@ -44,18 +46,21 @@ class AssignmentTests(JuntagricoTestCase):
         # trial sub ongoing
         self.assertEqual(subs[self.subs[2].id].required_assignments, 10)
         self.assertEqual(subs[self.subs[2].id].required_core_assignments, 3)
-        # trial sub shorter than normal trial period
-        self.assertEqual(subs[self.subs[3].id].required_assignments, 5)
-        self.assertEqual(subs[self.subs[3].id].required_core_assignments, 2)
+        # trial sub shorter than normal trial period -> should not impact required assignments
+        self.assertEqual(subs[self.subs[3].id].required_assignments, 10)
+        self.assertEqual(subs[self.subs[3].id].required_core_assignments, 3)
+        # trial sub longer than normal trial period -> should not impact required assignments
+        self.assertEqual(subs[self.subs[4].id].required_assignments, 10)
+        self.assertEqual(subs[self.subs[4].id].required_core_assignments, 3)
         # trial sub at the end of the year
-        self.assertEqual(subs[self.subs[4].id].required_assignments, 6)  # 17/30 rounded
-        self.assertEqual(subs[self.subs[4].id].required_core_assignments, 2)
+        self.assertEqual(subs[self.subs[5].id].required_assignments, 6)  # 17/30 rounded
+        self.assertEqual(subs[self.subs[5].id].required_core_assignments, 2)
         # trial sub starting last year
-        self.assertEqual(subs[self.subs[5].id].required_assignments, 4)  # 13/30 rounded
-        self.assertEqual(subs[self.subs[5].id].required_core_assignments, 1)
+        self.assertEqual(subs[self.subs[6].id].required_assignments, 4)  # 13/30 rounded
+        self.assertEqual(subs[self.subs[6].id].required_core_assignments, 1)
         # ordered, not activated sub
-        self.assertEqual(subs[self.subs[6].id].required_assignments, 0)
-        self.assertEqual(subs[self.subs[6].id].required_core_assignments, 0)
+        self.assertEqual(subs[self.subs[7].id].required_assignments, 0)
+        self.assertEqual(subs[self.subs[7].id].required_core_assignments, 0)
         # multiple parts
-        self.assertEqual(subs[self.subs[7].id].required_assignments, 20)
-        self.assertEqual(subs[self.subs[7].id].required_core_assignments, 6)
+        self.assertEqual(subs[self.subs[8].id].required_assignments, 20)
+        self.assertEqual(subs[self.subs[8].id].required_core_assignments, 6)

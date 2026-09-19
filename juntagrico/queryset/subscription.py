@@ -149,12 +149,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                     # If activated and deactivated on same day, ignore the part
                     When(parts__deactivation_date=F('parts__activation_date'),
                          then=Cast(F('parts__deactivation_date') - self.one_day, DateField())),
+                    # on trial subs assume they last for trial duration.
+                    When(parts__type__trial_days__gt=0,
+                         then=Cast(F('parts__activation_date') + F('parts__type__trial_duration'), DateField())),
                     # use deactivation date if set
                     When(parts__deactivation_date__isnull=False,
                          then='parts__deactivation_date'),
-                    # on trial subs without deactivation date assume they will last for trial duration.
-                    When(parts__type__trial_days__gt=0,
-                         then=Cast(F('parts__activation_date') + F('parts__type__trial_duration'), DateField())),
                     # otherwise default to end of period
                     default=end,
                     output_field=DateField()
