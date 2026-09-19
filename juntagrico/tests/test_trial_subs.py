@@ -4,6 +4,7 @@ from django.core import mail
 from django.urls import reverse
 
 from juntagrico.entity.subs import SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.tests import JuntagricoTestCaseWithShares
 
 
@@ -57,6 +58,46 @@ class TrialSubscriptionTests(TrialSubscriptionTestCase):
         # no notifications in that case
         self.assertEqual(len(mail.outbox), 0)
 
+    def testContinueTrialWithoutOptions(self):
+        # make all types trial
+        SubscriptionType.objects.update(trial_days=30)
+        # can't change part
+        mail.outbox.clear()
+        self.assertGet(reverse('part-continue', args=[self.trial_part1.id]))
+        post_data = {'part_type': self.sub_type3.id}
+        self.assertPost(
+            reverse('part-continue', args=[self.trial_part1.pk]), post_data, code=200
+        )
+        self.trial_sub1.refresh_from_db()
+        # check: part type didn't change
+        self.assertEqual(self.trial_sub1.parts.count(), 1)
+        self.assertEqual(self.trial_sub1.parts.first().type, self.trial_sub_type)
+        # no notifications
+        self.assertEqual(len(mail.outbox), 0)
+
+    def testContinueExtraTrial(self):
+        self.trial_sub_type.is_extra = True
+        self.trial_sub_type.save()
+        self.assertGet(reverse('part-continue', args=[self.trial_part1.id]))
+
+        # can't continue with normal type
+        post_data = {'part_type': self.sub_type3.id}
+        self.assertPost(
+            reverse('part-continue', args=[self.trial_part1.pk]), post_data, code=200
+        )
+        self.trial_sub1.refresh_from_db()
+        # check: part type didn't change
+        self.assertEqual(self.trial_sub1.parts.count(), 1)
+        self.assertEqual(self.trial_sub1.parts.first().type, self.trial_sub_type)
+
+        # can continue with extra type
+        post_data = {'part_type': self.extrasub_type.id}
+        self.assertPost(reverse('part-continue', args=[self.trial_part1.pk]), post_data, code=302)
+        self.trial_sub1.refresh_from_db()
+        # check: has only one part with new type
+        self.assertEqual(self.trial_sub1.parts.count(), 1)
+        self.assertEqual(self.trial_sub1.parts.first().type, self.extrasub_type)
+        
 
 class WaitingTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
     def testManagementList(self):
