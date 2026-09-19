@@ -53,20 +53,37 @@ class Share(Billable):
 
     objects = PolymorphicManager.from_queryset(ShareQueryset)()
 
-    __state_text_dict = {0: _('unbezahlt'),
-                         1: _('bezahlt'),
-                         2: _('storniert'),
-                         3: _('gekündigt'),
-                         7: _('zurückerstattet')}
+    _state_dict = {
+        0: 'unpaid',
+        1: 'paid',
+        2: 'voided',
+        3: 'canceled',
+        7: 'paidback',
+    }
+
+    _state_text_dict = {
+        0: _('unbezahlt'),
+        1: _('bezahlt'),
+        2: _('storniert'),
+        3: _('gekündigt'),
+        7: _('zurückerstattet')
+    }
 
     @property
-    def state_text(self):
+    def _state_code(self):
         today = datetime.date.today()
         paid = (self.paid_date is not None and self.paid_date <= today) << 0
         canceled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
         paid_back = (self.payback_date is not None and self.payback_date <= today) << 2
-        state_code = paid + canceled + paid_back
-        return Share.__state_text_dict.get(state_code, _('Fehler!'))
+        return paid + canceled + paid_back
+
+    @property
+    def state(self):
+        return self._state_dict.get(self._state_code, 'error')
+
+    @property
+    def state_text(self):
+        return self._state_text_dict.get(self._state_code, _('Fehler!'))
 
     @property
     def identifier(self):
@@ -87,7 +104,8 @@ class Share(Billable):
         date = date or datetime.date.today()
         self.payback_date = date
         self.save()
-        self.member.deactivate(date)
+        if membership := self.member.memberships.canceled().first():
+            membership.deactivate(date)
 
     @notifiable
     class Meta:

@@ -2,6 +2,6 @@
 {% load juntagrico.config %}
 {% vocabulary "subscription" as v_subscription %}
 <div class="alert alert-danger">
-    {% blocktrans %}Du hast kein/e/n {{ v_subscription }}.{% endblocktrans %}
+    {% blocktrans with v_no_subscription_acc=vocabulary.no_subscription_acc %}Du hast {{ v_no_subscription_acc }}.{% endblocktrans %}
     {% include 'juntagrico/my/subscription/snippets/buttons/create_subscription.html' %}
 </div>

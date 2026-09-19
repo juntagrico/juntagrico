@@ -5,15 +5,12 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, Fieldset, HTML
 from django import forms
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import OuterRef, Exists
 from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
-from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
-from django_select2.forms import ModelSelect2MultipleWidget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
@@ -21,6 +18,9 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
+from juntagrico.entity.membership import Membership
+from juntagrico.forms import InternalModelSelect2MultipleWidget
+from juntagrico.forms.account import MemberSelect2MultipleWidget
 from juntagrico.util.html import EmailHtmlParser
 
 
@@ -42,41 +42,9 @@ class MultipleFileInput(forms.FileInput):
         return super().media + Media(js=['juntagrico/js/forms/attachmentAppender.js'])
 
 
-class InternalModelSelect2MultipleWidget(ModelSelect2MultipleWidget):
-    def __init__(self, *args, **kwargs):
-        kwargs['data_view'] = 'internal-select2-view'
-        super().__init__(*args, **kwargs)
-
-
 class JobSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
     def label_from_instance(self, obj):
         return obj.get_label()
-
-
-class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
-    model = Member
-    search_fields = [
-        'first_name__icontains',
-        'last_name__icontains',
-        'email__icontains',
-    ]
-
-    def get_queryset(self):
-        # annotate if another member with the exact same name exists
-        return super().get_queryset().annotate(
-            duplicate=Exists(
-                Member.objects.exclude(pk=OuterRef('pk')).filter(
-                    first_name=OuterRef('first_name'),
-                    last_name=OuterRef('last_name')
-                )
-            )
-        )
-
-    def label_from_instance(self, obj):
-        label = super().label_from_instance(obj)
-        if getattr(obj, 'duplicate', False):
-            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
-        return label
 
 
 class BaseRecipientsForm(forms.Form):
@@ -98,8 +66,10 @@ class BaseRecipientsForm(forms.Form):
                 if depots is not None:
                     members |= Member.objects.has_active_subscription(in_depot=depots)
                 if areas is not None:
+                    jobs_in_area = Job.objects.in_areas(areas)
                     members |= Member.objects.filter(areas__in=areas)
-                    members |= Member.objects.filter(assignment__job__in=Job.objects.in_areas(areas))
+                    members |= Member.objects.filter(assignment__job__in=jobs_in_area)
+                    members |= Member.objects.filter(job_messages__job__in=jobs_in_area)
                 self.fields['to_members'].queryset = members.active().distinct()
             else:
                 # must be defined here because "today" is evaluated dynamically in "active()"
@@ -159,7 +129,11 @@ class RecipientsForm(BaseRecipientsForm):
     )
     to_depots = forms.ModelMultipleChoiceField(
         Depot.objects.order_by('id'),
-        label=format_lazy(_('An alle mit aktivem/r {} in diesen {}'), Config.vocabulary('subscription'), Config.vocabulary('depot_pl')),
+        label=format_lazy(
+            _('An alle {with_active_subscription} in diesen {depots}'),
+            with_active_subscription=Config.vocabulary('with_active_subscription'),
+            depots=Config.vocabulary('depot_pl')
+        ),
         required=False,
         widget=InternalModelSelect2MultipleWidget(
             model=Depot,
@@ -201,15 +175,22 @@ class RecipientsForm(BaseRecipientsForm):
 
     def get_recipient_list_choices(self):
         choices = []
+        if Config.enable_membership() and self.sender.user.has_perm('juntagrico.can_email_all_with_membership'):
+            choices.append((
+                'all_memberships',
+                _('Alle mit {membership}').format(membership=Config.vocabulary('membership'))
+            ))
         if self.sender.user.has_perm('juntagrico.can_email_all_with_sub'):
             choices.append((
                 'all_subscriptions',
-                _('Alle mit aktivem/r {}').format(Config.vocabulary('subscription'))
+                _('Alle {with_active_subscription}').format(
+                    with_active_subscription=Config.vocabulary('with_active_subscription')
+                )
             ))
         if Config.enable_shares() and self.sender.user.has_perm('juntagrico.can_email_all_with_share'):
             choices.append((
                 'all_shares',
-                _('Alle mit {}').format(Config.vocabulary('share'))
+                _('Alle mit {share}').format(share=Config.vocabulary('share'))
             ))
         return choices
 
@@ -222,6 +203,8 @@ class RecipientsForm(BaseRecipientsForm):
             recipients |= Member.objects.active().has_active_subscription(in_depot=to_depots)
         if 'all_shares' in to_list:
             recipients |= Member.objects.active().has_active_shares()
+        if 'all_memberships' in to_list:
+            recipients |= Member.objects.active().filter(memberships__in=Membership.objects.active())
         if to_areas := cleaned_data.get('to_areas'):
             recipients |= Member.objects.active().filter(areas__in=to_areas)
         if to_jobs := cleaned_data.get('to_jobs'):
@@ -236,7 +219,12 @@ class RecipientsForm(BaseRecipientsForm):
 
 class DepotRecipientsForm(BaseRecipientsForm):
     to_depot = forms.BooleanField(
-        label=format_lazy(_('An alle mit aktivem/r {} in {} {}'), Config.vocabulary('subscription'), Config.vocabulary('depot'), '{}'),
+        label=format_lazy(
+            _('An alle {with_active_subscription} in {depot} {depot_name}'),
+            with_active_subscription=Config.vocabulary('subscription'),
+            depot=Config.vocabulary('depot'),
+            depot_name='{}'
+        ),
         required=False
     )
 

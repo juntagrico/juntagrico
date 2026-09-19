@@ -39,6 +39,10 @@ class ManagementCommandsTest(JuntagricoTestCaseWithShares):
         call_command('mailtexts', stderr=out)
         self.assertEqual(out.getvalue(), '')
 
+        out = StringIO()
+        call_command('mailtexts', language='fr', stderr=out)
+        self.assertEqual(out.getvalue(), '')
+
     def test_remind_members(self):
         # add another assignment of member to job2
         self.create_assignment(self.job2, self.member)

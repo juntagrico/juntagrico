@@ -27,6 +27,15 @@
     }
 },
 {
+    "model": "juntagrico.billable",
+    "pk": 4,
+    "fields": {
+        "polymorphic_ctype_id": [
+            "juntagrico","share"
+        ]
+    }
+},
+{
     "model": "juntagrico.share",
     "pk": 1,
     "fields": {
@@ -84,6 +93,26 @@
         "reason_for_acquisition": null,
         "reason_for_cancellation": null,
         "notes": ""
+    }
+},
+{
+    "model": "juntagrico.share",
+    "pk": 4,
+    "fields": {
+        "member": 5,
+        "value": "250.00",
+        "creation_date": "2024-01-21",
+        "paid_date": "2017-03-27",
+        "issue_date": "2017-03-27",
+        "booking_date": "2017-12-27",
+        "cancelled_date": "2017-12-27",
+        "termination_date": "2017-12-27",
+        "payback_date": "2017-12-27",
+        "number": 105,
+        "sent_back": true,
+        "reason_for_acquisition": null,
+        "reason_for_cancellation": null,
+        "notes": "inactive share"
     }
 }
 ]

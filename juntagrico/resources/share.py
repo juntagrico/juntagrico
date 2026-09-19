@@ -1,6 +1,8 @@
+from django.utils.translation import gettext as _
 from import_export import resources
 from import_export.fields import Field
 
+from . import TranslatedModelResource
 from ..config import Config
 from ..entity.share import Share
 
@@ -27,3 +29,12 @@ class ShareResource(resources.ModelResource):
         }
         export_order = ('id', 'number')
         name = Config.vocabulary('share_pl')
+
+
+class TranslatedShareResource(TranslatedModelResource, ShareResource):
+    class Meta:
+        verbose_names = {
+            'member_first_name': _('Vorname'),
+            'member_last_name': _('Nachname'),
+            'member_email': _('E-Mail'),
+        }

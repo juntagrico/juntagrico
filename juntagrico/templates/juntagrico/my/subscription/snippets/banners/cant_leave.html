@@ -1,0 +1,7 @@
+{% load i18n %}
+<div class="alert alert-{{ level|default:'danger' }}">
+    {% blocktrans trimmed with v_share_pl=vocabulary.share_pl v_this_subscription_acc=vocabulary.this_subscription_acc v_co_member_pl=vocabulary.co_member_pl %}
+        Deine {{ v_share_pl }} werden für {{ v_this_subscription_acc }} benötigt.
+        Deine {{ v_co_member_pl }} müssen zuerst die fehlenden {{ v_share_pl }} zeichnen, damit du {{ v_this_subscription_acc }} verlassen kannst.
+    {% endblocktrans %}
+</div>

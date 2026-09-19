@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import auth
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.entity.depot import Depot
@@ -10,7 +11,7 @@ from . import JuntagricoTestCase
 from ..config import Config
 
 
-class CreateSubscriptionTests(JuntagricoTestCase):
+class CreateSubscriptionTestCase(JuntagricoTestCase):
     @staticmethod
     def newMemberData(email='test@user.com'):
         return {
@@ -25,6 +26,24 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'birthday': '03.03.2026',
             'agb': 'on'
         }
+
+    def prepareSession(self, subscription_count=1, **kwargs):
+        session = self.client.session
+        session['signup'] = {
+            'main_member': self.newMemberData('fake@example.com'),
+            'subscriptions': {self.sub_type2.id: subscription_count},
+            'depot': Depot.objects.values_list('id', flat=True)[0],
+            'start_date': '2026-03-01',
+            'shares': {'of_member': 1},
+            **kwargs,
+        }
+        if (
+            extras := SubscriptionType.objects.is_extra()
+            .visible()
+            .values_list('id', flat=True)
+        ):
+            session['signup']['extras'] = {extras[0]: 0}
+        session.save()
 
     def assertGet(self, url, code=200, member=None, **kwargs):
         """ Stay logged out
@@ -48,8 +67,12 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         response = self.client.get(reverse(get))
         self.assertRedirects(response, reverse(redirect), fetch_redirect_response=False)
 
+
+class CreateSubscriptionTests(CreateSubscriptionTestCase):
+    share_order_count = 1
+
     def addSubToSummary(self, with_co_member=False):
-        sub_types_id = SubscriptionType.objects.values_list('id', flat=True)
+        sub_types_id = SubscriptionType.objects.normal().visible().values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-subscription'),
             {
@@ -60,7 +83,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         if self.with_extra_subs:
             self.assertRedirects(response, reverse('cs-extras'))
             self.assertGet(reverse('cs-extras'))
-            sub_types_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)
+            sub_types_id = SubscriptionType.objects.is_extra().visible().values_list('id', flat=True)
             response = self.client.post(
                 reverse('cs-extras'),
                 {
@@ -96,13 +119,21 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertGet(reverse('cs-co-members'))
 
         response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
             response = self.client.post(
                 reverse('cs-shares'),
                 {
-                    'of_member': 1,
+                    'of_member': self.share_order_count,
                     'of_co_member[0]': 0,
                 }
             )
@@ -117,7 +148,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=member_email).count(), 1)
         if settings.ENABLE_SHARES:
-            self.assertEqual(Share.objects.filter(member__email=member_email).count(), initial_share_count + 1)
+            self.assertEqual(
+                Share.objects.filter(member__email=member_email).count(),
+                initial_share_count + self.share_order_count,
+            )
         subscription = Subscription.objects.filter(primary_member__email=member_email).first()
         self.assertNotEqual(subscription, None)
         # look for comment in admin notification
@@ -139,7 +173,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         if with_co_member:
             mail_count += 2  # Welcome to co-member & admin notification
         if settings.ENABLE_SHARES:
-            mail_count += 2  # share email & admin notification
+            mail_count += 1 + self.share_order_count  # share email & admin notification(s)
             # no shares are ordered for co-member, thus no more emails
         self.assertEqual(len(mail.outbox), mail_count)
 
@@ -147,6 +181,13 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         new_member_data['email'] = 'Test@user.com'
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(BUSINESS_REGULATIONS='')
+    def testSignupWithoutDocuments(self):
+        new_member_data = self.newMemberData()
+        self.assertGet(reverse('signup'))
+        response = self.client.post(reverse('signup'), new_member_data)
+        self.assertRedirects(response, reverse('cs-subscription'))
 
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
@@ -182,17 +223,27 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, True, 'test comment', 3 if settings.ENABLE_SHARES else 1)
+        self.commonAddSub(
+            self.member4.email,
+            True,
+            'test comment',
+            (2 + self.share_order_count) if settings.ENABLE_SHARES else 1,
+        )
         # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
-        self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
+        self.assertEqual(len(mail.outbox), (4 + self.share_order_count) if settings.ENABLE_SHARES else 3)
 
     def testAddSubWithoutComember(self):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, False, 'test comment', 2 if settings.ENABLE_SHARES else 0)
+        self.commonAddSub(
+            self.member4.email,
+            False,
+            'test comment',
+            (1 + self.share_order_count) if settings.ENABLE_SHARES else 0,
+        )
         # share mails (if enabled) for member & admin + 1 admin notification on new subscription
-        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 1)
+        self.assertEqual(len(mail.outbox), (2 + self.share_order_count) if settings.ENABLE_SHARES else 1)
 
     def testSignupWithComment(self):
         self.commonSignupTest(False, True)
@@ -243,30 +294,28 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
 
     def testExistingCoMember(self):
-        session = self.client.session
-        session['signup'] = {
-            'main_member': self.newMemberData('fake@example.com'),
-            'subscriptions': {SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]: 1},
-            'depot': Depot.objects.values_list('id', flat=True)[0],
-            'start_date': '2026-03-01',
-            'shares': {'of_member': 1},
-        }
-        if extras := SubscriptionType.objects.is_extra().visible().values_list('id', flat=True):
-            session['signup']['extras'] = {extras[0]: 0}
-        session.save()
+        self.prepareSession()
         co_member_data = self.newMemberData(self.area_admin.email)
         response = self.client.post(reverse('cs-co-members'), co_member_data)
         self.assertRedirects(response, reverse('cs-co-members'))
         self.assertGet(reverse('cs-co-members'))
         self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
         response = self.client.get(reverse('cs-co-members'))
+
+        if Config.membership('enable'):
+            self.assertRedirects(response, reverse('cs-membership'))
+            self.assertGet(reverse('cs-membership'))
+            response = self.client.post(
+                reverse('cs-membership'), {'membership': True}
+            )
+
         if Config.enable_shares():
             self.assertRedirects(response, reverse('cs-shares'))
             self.assertGet(reverse('cs-shares'))
             response = self.client.post(
                 reverse('cs-shares'),
                 {
-                    'of_member': 1,
+                    'of_member': self.share_order_count,
                     'of_co_member[0]': 1,
                 }
             )
@@ -276,9 +325,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
     def testExternalSignup(self):
         def externalSignupDetails(email='test@user.com', shares=10, comment='User comment', extra_only=False):
             if extra_only:
-                sub_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)[0]
+                sub_id = SubscriptionType.objects.is_extra().visible().values_list('id', flat=True)[0]
             else:
-                sub_id = SubscriptionType.objects.values_list('id', flat=True)[0]
+                sub_id = SubscriptionType.objects.normal().visible().values_list('id', flat=True)[0]
             return {
                 'first_name': 'First Name',
                 'family_name': 'Last Name',
@@ -291,6 +340,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 'subscription_%s' % sub_id: 1,
                 'depot_id': Depot.objects.values_list('id', flat=True)[0],
                 'start_date': '1900-01-01',
+                'membership': 'True',
                 'shares': shares,
                 'comment': comment,
                 'by_laws_accepted': 'True',
@@ -311,5 +361,47 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 self.assertRedirects(response, reverse('cs-subscription'))
 
 
-class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
+class CreateMembershipTests(CreateSubscriptionTestCase):
+    url = reverse('cs-membership')
+
+    @override_settings(MEMBERSHIP={'required_on_signup': True})
+    def testMembershipRequiredAlways(self):
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        self.assertGet(self.url)
+        self.assertPost(self.url, {'membership': False}, 200)
+        self.assertPost(self.url, {'membership': True})
+
+    def testMembershipRequiredIfNoSub(self):
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        self.assertGet(self.url)
+        self.assertPost(self.url, {'membership': False}, 200)
+        self.assertPost(self.url, {'membership': True})
+
+    @override_settings(MEMBERSHIP={'required_on_signup': False})
+    def testMembershipRequiredBySubscription(self):
+        self.prepareSession(co_members_done=True)
+        self.assertGet(self.url)
+        self.assertPost(self.url, {'membership': False}, 200)
+        self.assertPost(self.url, {'membership': True})
+
+    @override_settings(MEMBERSHIP={'required_on_signup': False})
+    def testMembershipOptional(self):
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        self.assertGet(self.url)
+        self.assertPost(self.url, {'membership': False})
+        # check editing membership
+        self.assertGet(reverse('cs-membership') + '?mod')
+
+
+class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests, CreateMembershipTests):
     with_extra_subs = False
+
+
+@override_settings(MEMBERSHIP={'enable': False})
+class CreateSubscriptionWithoutMembershipsTests(CreateSubscriptionTests):
+    pass
+
+
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class CreateSubscriptionWithCumulativeSharesTests(CreateSubscriptionTests, CreateMembershipTests):
+    share_order_count = 2

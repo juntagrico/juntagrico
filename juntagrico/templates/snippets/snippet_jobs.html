@@ -6,13 +6,13 @@
 
 {% block tools %}
     {% if perms.juntagrico.change_recuringjob or can_manage_jobs %}
-        <a href="{% url 'admin:juntagrico_recuringjob_add' %}?next={{ request.path|urlencode }}" class="btn btn-primary mr-1">
+        <a href="{% url 'admin:juntagrico_recuringjob_add' %}{% querystring next=request.path %}" class="btn btn-primary mr-1">
             <i class="bi bi-calendar-plus mr-1"></i>
             {% trans "Wiederkehrenden Einsatz ausschreiben" %}
         </a>
     {% endif %}
     {% if perms.juntagrico.change_onetimejob or can_manage_jobs %}
-        <a href="{% url 'admin:juntagrico_onetimejob_add' %}?next={{ request.path|urlencode }}" class="btn btn-outline-primary">
+        <a href="{% url 'admin:juntagrico_onetimejob_add' %}{% querystring next=request.path %}" class="btn btn-outline-primary">
             <i class="bi bi-plus mr-1"></i>
             {% trans "Einzel-Einsatz ausschreiben" %}
         </a>
@@ -52,18 +52,24 @@
                     </td>
                 {% endif %}
                 <td class="
-                    {% if job.status_percentage < 25 %}
+                    {% if job.canceled %}
+                        text-muted
+                    {% elif job.status_percentage < 25 %}
                         text-danger
                     {% elif job.status_percentage < 100%}
                     {% else %}
                         text-success
                     {% endif %}
                 ">
-                    {% block job_status %}
-                        {% if job.free_slots > -1 %}
-                        {{ job.occupied_slots }} / {{ job.slots }}
-                        {% endif %}
-                    {% endblock %}
+                    {% if job.canceled %}
+                        -
+                    {% else %}
+                        {% block job_status %}
+                            {% if job.free_slots > -1 %}
+                            {{ job.occupied_slots }} / {{ job.slots }}
+                            {% endif %}
+                        {% endblock %}
+                    {% endif %}
                 </td>
                 {% if show_free_slot_filter %}
                     <td class="d-none">

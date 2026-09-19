@@ -169,6 +169,21 @@ Defines the structure to display subscription bundles in the subscription/part o
 
 Has the same blocks as ``category_container.html``.
 
+juntagrico/snippets/subscription/type.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays subscription type in any order process and in configuration view.
+
+- ``price``: price display for all cases
+- ``periodic_price``: price display for types that have periods
+- ``price_display``: price display for types without periods
+
+
+juntagrico/snippets/subscription/type_duration_info.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays the runtime of the subscription type.
+
 
 juntagrico/subscription/create/form/no_subscription_field.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -191,8 +206,10 @@ juntagrico/subscription/create/select_start_date.html
 juntagrico/subscription/create/select_shares.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``intro_1``: First part of intro
-- ``intro_2``:  Last part of intro
+- ``intro_membership``: Explaining required shares for membership
+- ``intro_subscriptions``: Explaining required shares for subscriptions
+- ``intro_signup``: Explaining required shares for signup
+- ``intro_additional``: Last part of intro
 
 juntagrico/subscription/create/summary.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -207,6 +224,18 @@ Each section has a block:
 - ``activity_areas``
 - ``shares``
 - ``comment``
+
+
+juntagrico/subscription/create/summary/snippets/part.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays selected subscription part types in signup summary.
+
+- ``price``: price display for all cases
+- ``periodic_price``: price display for types that have periods
+- ``trial_price``: price display for trial types without periods
+- ``regular_price``: price display for non-trial types without periods
+
 
 Subscription Templates
 ----------------------
