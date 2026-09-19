@@ -432,6 +432,9 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def type_filter(self, qs):
         return qs.filter(visible=True, is_extra=self.extra)
 
+    def available_types(self):
+        return self.type_filter(SubscriptionType.objects.all())
+
     def _get_initial(self, subscription_type):
         return 0
 
@@ -563,25 +566,31 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     part_type = ChoiceField()
 
     def __init__(self, part=None, *args, **kwargs):
-        self.pre_check(part)
-        super().__init__(*args, **kwargs)
         self.part = part
+        self.pre_check()
+        kwargs['extra'] = part.is_extra  # extra parts can only be changed to another extra part
+        super().__init__(*args, **kwargs)
         self.fields['part_type'].choices = self.get_choices
         self.helper.label_class = ''
         self.helper.field_class = 'col-md-12'
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Ändern'), css_class='btn-success')
+        if self.available_types().exists():
+            self.helper.layout = Layout(
+                *self._collect_type_fields(),
+                FormActions(
+                    self.get_submit_button()
+                )
             )
-        )
+        else:
+            self.helper.layout = Layout(
+                HTML(f'<p>{_("Es sind keine Optionen verfügbar.")}</p>')
+            )
 
-    @staticmethod
-    def pre_check(part):
-        if part.subscription.canceled or part.subscription.inactive:
+    def pre_check(self):
+        if self.part.subscription.canceled or self.part.subscription.inactive:
             raise Http404("Can't change subscription part of canceled subscription")
-        if not SubscriptionType.objects.can_change():
-            raise Http404("Can't change subscription part if there is only one subscription type")
+
+    def get_submit_button(self):
+        return Submit('submit', _('Ändern'), css_class='btn-success')
 
     def get_type_field(self, subscription_type):
         return SubscriptionTypeOption('part_type', instance=subscription_type)
@@ -590,7 +599,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         return super().type_filter(qs).exclude(pk=self.part.type.pk)
 
     def get_choices(self):
-        for subscription_type in self.type_filter(SubscriptionType.objects.normal().visible()):
+        for subscription_type in self.available_types():
             yield subscription_type.id, subscription_type.name
 
     def clean(self):
@@ -629,14 +638,8 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
 
 
 class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
-    def __init__(self, part=None, *args, **kwargs):
-        super().__init__(part, *args, **kwargs)
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Bestellen'), css_class='btn-success')
-            )
-        )
+    def get_submit_button(self):
+        return Submit('submit', _('Bestellen'), css_class='btn-success')
 
     def type_filter(self, qs):
         return super().type_filter(qs).exclude(trial_days__gt=0)

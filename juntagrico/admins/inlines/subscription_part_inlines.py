@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
+from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -37,7 +38,7 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
 class SubscriptionPartInline(admin.TabularInline):
     formset = SubscriptionPartInlineFormset
     model = SubscriptionPart
-    verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
-    verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
+    verbose_name = format_lazy(_('{} Bestandteil'), Config.vocabulary('subscription'))
+    verbose_name_plural = format_lazy(_('{} Bestandteile'), Config.vocabulary('subscription'))
     extra = 0
     autocomplete_fields = ['type']
