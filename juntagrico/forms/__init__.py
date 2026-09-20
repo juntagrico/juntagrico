@@ -546,17 +546,8 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
                 raise ValidationError(self._get_share_error_message(), code='share_error')
         # check that at least one subscription was selected
         if sum(selected.values()) == 0:
-            amount_error_message = mark_safe(
-                _('Wähle mindestens 1 {subscription} aus.').format(
-                    subscription=Config.vocabulary('subscription')
-                ) + (
-                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('sub-cancel', args=[self.subscription.id]),
-                        _('&rarr; Oder {subscription} komplett künden').format(
-                            subscription=Config.vocabulary('subscription')
-                        )
-                    )
-                )
+            amount_error_message = _('Wähle mindestens 1 {subscription} aus.').format(
+                subscription=Config.vocabulary('subscription')
             )
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
