@@ -218,8 +218,11 @@ class CancellationForm(forms.ModelForm):
             self.fields[field].required = payment_details_required
 
         areas = self.instance.areas.all()
-        self.fields['activity_areas'].queryset = areas
-        self.fields['activity_areas'].initial = areas.values_list('id', flat=True)
+        if areas.exists():
+            self.fields['activity_areas'].queryset = areas
+            self.fields['activity_areas'].initial = areas.values_list('id', flat=True)
+        else:
+            del self.fields['activity_areas']
         self.helper = FormHelper()
 
     def get_primary_subscriptions_and_fields(self):
@@ -386,11 +389,12 @@ class CancellationForm(forms.ModelForm):
                 summary['co_membership'].append(co_membership)
 
         # leave activity areas
-        leave_areas = self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas'])
-        for activity_area in leave_areas:
-            activity_area.leave(self.instance)
-        if leave_areas:
-            summary['activity_area'] = leave_areas
+        if 'activity_areas' in self.cleaned_data:
+            leave_areas = self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas'])
+            for activity_area in leave_areas:
+                activity_area.leave(self.instance)
+            if leave_areas:
+                summary['activity_area'] = leave_areas
 
         # cancel membership
         if Config.membership('enable') and self.cleaned_data.get('membership') is False:
