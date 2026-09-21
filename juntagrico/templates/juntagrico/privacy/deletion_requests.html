@@ -1,0 +1,38 @@
+{% extends "juntagrico/manage/member/show.html" %}
+{% load i18n %}
+
+{% block list_head %}
+    <th class="filter">
+        {% trans "Kontakt" %}
+    </th>
+    <th class="filter">
+        {% trans "Deaktiviert seit" %}
+    </th>
+    <th>
+    </th>
+{% endblock %}
+
+{% block list_foot %}
+    <th>
+        {% trans "Kontakt" %}
+    </th>
+    <th>
+        {% trans "Deaktiviert seit" %}
+    </th>
+    <th>
+    </th>
+{% endblock %}
+
+{% block list_entry %}
+    <td>
+        {% include 'juntagrico/manage/member/snippets/display_linked.html' %}
+    </td>
+    <td>
+        {{ member.deactivation_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        <a href="{% url 'privacy-anonymize' member.id %}" class="btn btn-warning">
+            {% trans "anonymisieren" %}
+        </a>
+    </td>
+{% endblock %}
