@@ -191,6 +191,7 @@ urlpatterns = [
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
+    path('manage/account/nonmembers', manage.AccountWithoutMembershipView.as_view(), name='manage-account-no-membership'),
 
     # /manage/account
     path('manage/account/search', manage.account_search, name='manage-account-search'),

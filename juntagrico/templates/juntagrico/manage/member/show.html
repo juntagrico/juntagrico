@@ -84,7 +84,7 @@
                             </td>
                             {% if c_enable_membership %}
                                 <td>
-                                    {{ member.memberships.active_or_requested.first.state_text|default:'nein' }}
+                                    {{ member.memberships.active_or_requested.first.state_text|default:_('nein') }}
                                 </td>
                             {% endif %}
                             {% if not hide_areas %}

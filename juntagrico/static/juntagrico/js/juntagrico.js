@@ -253,7 +253,7 @@ $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') 
 
 $.fn.Swap = function (target) {
     $(this).on("click", function (e) {
-        $(target || $(this).data('swap')).toggleClass("d-none");
+        $($.find(target || $(this).data('swap'))).toggleClass("d-none");
         e.preventDefault();
         return false;
     })

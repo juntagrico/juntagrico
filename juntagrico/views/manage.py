@@ -106,7 +106,26 @@ class MemberActiveView(MemberView):
 
 class MemberArchiveView(MemberView):
     queryset = Member.objects.inactive
-    title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Inaktive {members}'), members=Config.vocabulary('member_pl'))
+
+
+class AccountWithoutMembershipView(MemberView):
+    template_name = 'juntagrico/manage/member/without_membership.html'
+    title = format_lazy(
+        _('Aktive {accounts} ohne {membership}'),
+        accounts=Config.vocabulary('account_pl'),
+        membership=Config.vocabulary('membership'),
+    )
+
+    def get_queryset(self):
+        return Member.objects.active().exclude(memberships__in=Membership.objects.active_or_requested()).annotate(
+            last_membership=Max('memberships__deactivation_date')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shares_enabled'] = Config.enable_shares()
+        return context
 
 
 @permission_required('juntagrico.view_member')
