@@ -12,4 +12,5 @@ class ActivityAreaDao:
 
     @staticmethod
     def all_core_areas():
+        print('ActivityAreaDao.all_core_areas is deprecated: Use ActivityArea.objects.filter(core=True) instead')
         return ActivityArea.objects.filter(core=True)
