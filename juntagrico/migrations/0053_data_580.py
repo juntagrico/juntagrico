@@ -8,7 +8,7 @@ def initialize_membership(apps, schema_editor):
     members = apps.get_model('juntagrico', 'Member')
     memberships = apps.get_model('juntagrico', 'Membership')
     if Config.enable_shares():
-        for member in members.objects.filter(user__isnull=False, share__isnull=False).order_by('user__date_joined'):
+        for member in members.objects.filter(user__isnull=False, share__isnull=False).distinct().order_by('user__date_joined'):
             memberships.objects.create(
                 account=member,
                 activation_date=member.user.date_joined.date(),
