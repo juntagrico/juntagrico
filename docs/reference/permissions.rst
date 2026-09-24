@@ -104,7 +104,7 @@ Also require at least view permission for members.
 Area and Depot Admins
 ---------------------
 Depot Coordinators
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. warning::
     Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed.
@@ -348,7 +348,7 @@ Search Hints:
     * German: Emails versenden
 
 juntagrico.can_email_all_with_sub
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the option in the email form to send mass emails to all users with active subscription.
 
 Requires:

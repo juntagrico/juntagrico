@@ -3018,11 +3018,11 @@ msgid "Nicht leer"
 msgstr "Non vide"
 
 #: juntagrico/templates/js/i18n.js:63
-msgid "Größer als"
+msgid "Grösser als"
 msgstr "Supérieur à"
 
 #: juntagrico/templates/js/i18n.js:64
-msgid "Größer als oder gleich"
+msgid "Grösser als oder gleich"
 msgstr "Supérieur ou égal à"
 
 #: juntagrico/templates/js/i18n.js:65
@@ -3066,7 +3066,7 @@ msgid "Filterregel entfernen"
 msgstr "Supprimer la règle de filtre"
 
 #: juntagrico/templates/js/i18n.js:86
-msgid "Äußere Kriterien"
+msgid "Äussere Kriterien"
 msgstr "Critères externes"
 
 #: juntagrico/templates/js/i18n.js:88

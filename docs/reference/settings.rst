@@ -509,7 +509,7 @@ Shares
 
 ENABLE_SHARES
 ^^^^^^^^^^^^^
-  Enable all share related funtionality
+  Enable all share related functionality
 
   Type: String
 
@@ -577,6 +577,7 @@ FIRST_JOB_INFO
   This setting will automatically enable admin notifications for the indicated first jobs.
   Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
   or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+
     - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
     - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
     - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type

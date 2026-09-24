@@ -1,0 +1,497 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Notifications & Emails"
+msgstr "Benachrichtigungen & E-Mails"
+
+msgid "Juntagrico sends out automatic notifications to members and admins via email."
+msgstr "Juntagrico sendet automatische Benachrichtigungen an Mitglieder und Admins per E-Mail."
+
+msgid "The content of each notification can be modified by overriding their template, listed below. See :ref:`template overrides <reference-templates>` on how to set it up."
+msgstr "Der Inhalt jeder Benachrichtigung kann durch Überschreiben ihrer Vorlage angepasst werden, die unten aufgelistet ist. Siehe :ref:`Template-Überschreibungen <reference-templates>`, wie dies eingerichtet wird."
+
+msgid "For some notifications recipients can be configured :ref:`using permissions <reference-permission-notifications>`."
+msgstr "Bei einigen Benachrichtigungen können Empfänger :ref:`mittels Berechtigungen <reference-permission-notifications>` konfiguriert werden."
+
+msgid "Some notifications can be disabled or need to be enabled using their \"key\" in :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`."
+msgstr "Einige Benachrichtigungen können deaktiviert oder müssen aktiviert werden mit ihrem \"Key\" in :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` oder :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`."
+
+msgid "You can preview the emails using the manage.py :ref:`mailtexts command <reference-commands-mailtexts>`."
+msgstr "Du kannst die E-Mails mit dem manage.py :ref:`mailtexts-Befehl <reference-commands-mailtexts>` vorschauen."
+
+msgid "Email Header & Footer"
+msgstr "E-Mail-Kopfzeile & Fusszeile"
+
+msgid "All emails are sent using these base templates. Override these to change the header, footer and formatting of the email:"
+msgstr "Alle E-Mails werden mit diesen Basis-Templates versendet. Überschreibe diese, um Kopfzeile, Fusszeile und Formatierung der E-Mail zu ändern:"
+
+msgid "`mails/email.txt`"
+msgstr "`mails/email.txt`"
+
+msgid "`mails/email.html`"
+msgstr "`mails/email.html`"
+
+msgid "Signup Emails"
+msgstr "Registrierungs-E-Mails"
+
+msgid "Never add text, that is entered during the signup process, e.g. in the comment field, to the email content. This could be abused to send spam."
+msgstr "Füge niemals Text, der während des Registrierungsprozesses eingegeben wird, z.B. im Kommentar-Feld, zum E-Mail-Inhalt hinzu. Dies könnte missbraucht werden, um Spam zu versenden."
+
+msgid "Welcome member"
+msgstr "Willkommen Mitglied"
+
+msgid "Trigger: Member completes the signup process"
+msgstr "Auslöser: Mitglied schliesst den Registrierungsprozess ab"
+
+msgid "Template: ``mails/member/member_welcome.txt``"
+msgstr "Template: ``mails/member/member_welcome.txt``"
+
+msgid "Recipients: The member who signed up"
+msgstr "Empfänger: Das Mitglied, das sich registriert hat"
+
+msgid "Welcome co-member"
+msgstr "Willkommen Nebenmitglied"
+
+msgid "Trigger: Member completes the signup process where they added co-members"
+msgstr "Auslöser: Mitglied schliesst den Registrierungsprozess ab, bei dem es Nebenmitglieder hinzugefügt hat"
+
+msgid "Template: The template depends on whether the co-member already had an account"
+msgstr "Template: Das Template hängt davon ab, ob das Nebenmitglied bereits einen Account hatte"
+
+msgid "For new co-members: ``mails/member/co_member_welcome.txt``"
+msgstr "Für neue Nebenmitglieder: ``mails/member/co_member_welcome.txt``"
+
+msgid "For co-members with an existing account: ``mails/member/co_added.txt``"
+msgstr "Für Nebenmitglieder mit bestehendem Account: ``mails/member/co_added.txt``"
+
+msgid "Recipients: The co-member(s) added during the signup process"
+msgstr "Empfänger: Das/die Nebenmitglied(er), das/die während des Registrierungsprozesses hinzugefügt wurde(n)"
+
+msgid "Email address confirmation"
+msgstr "E-Mail-Adresse bestätigen"
+
+msgid "Trigger: Member requests a new email address confirmation link"
+msgstr "Auslöser: Mitglied fordert einen neuen E-Mail-Adresse-Bestätigungslink an"
+
+msgid "Template: ``mails/member/email_confirm.txt``"
+msgstr "Template: ``mails/member/email_confirm.txt``"
+
+msgid "Recipients: The same member"
+msgstr "Empfänger: Dasselbe Mitglied"
+
+msgid "Password Reset"
+msgstr "Passwort zurücksetzen"
+
+msgid "Trigger: Member fills out the \"forgot password\" form"
+msgstr "Auslöser: Mitglied füllt das \"Passwort vergessen\"-Formular aus"
+
+msgid "Template: ``mails/member/password_reset.txt``"
+msgstr "Template: ``mails/member/password_reset.txt``"
+
+msgid "Membership Notifications"
+msgstr "Mitgliedschafts-Benachrichtigungen"
+
+msgid "Member Created"
+msgstr "Mitglied erstellt"
+
+msgid "Trigger: On signal :ref:`member_created <reference-signals-member-created>`"
+msgstr "Auslöser: Auf Signal :ref:`member_created <reference-signals-member-created>`"
+
+msgid "Template: ``mails/admin/member_created.txt``"
+msgstr "Template: ``mails/admin/member_created.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_member_creation <reference-permissions-notified_on_member_creation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_member_creation <reference-permissions-notified_on_member_creation>`"
+
+msgid "Member Canceled"
+msgstr "Mitglied gekündigt"
+
+msgid "Trigger: Member requests closure of their account"
+msgstr "Auslöser: Mitglied fordert Schliessung ihres Accounts an"
+
+msgid "Template: ``mails/admin/member_canceled.txt``"
+msgstr "Template: ``mails/admin/member_canceled.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>`"
+
+msgid "Membership Created"
+msgstr "Mitgliedschaft erstellt"
+
+msgid "Trigger: A membership is requested during signup or from an existing account"
+msgstr "Auslöser: Eine Mitgliedschaft wird während der Registrierung oder von einem bestehenden Account beantragt"
+
+msgid "Template: ``juntagrico/mails/admin/membership/created.txt``"
+msgstr "Template: ``juntagrico/mails/admin/membership/created.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_creation <reference-permissions-notified_on_membership_creation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_membership_creation <reference-permissions-notified_on_membership_creation>`"
+
+msgid "Membership Activated"
+msgstr "Mitgliedschaft aktiviert"
+
+msgid "key: ``membership_activated``"
+msgstr "Key: ``membership_activated``"
+
+msgid "Trigger: Admin activates a membership on the management list"
+msgstr "Auslöser: Admin aktiviert eine Mitgliedschaft auf der Verwaltungsliste"
+
+msgid "Template: ``juntagrico/mails/admin/membership/activated.txt``"
+msgstr "Template: ``juntagrico/mails/admin/membership/activated.txt``"
+
+msgid "Recipients: Member of the activated Membership"
+msgstr "Empfänger: Mitglied der aktivierten Mitgliedschaft"
+
+msgid "Membership Canceled"
+msgstr "Mitgliedschaft gekündigt"
+
+msgid "Trigger: Member cancels their membership"
+msgstr "Auslöser: Mitglied kündigt seine Mitgliedschaft"
+
+msgid "Template: ``juntagrico/mails/admin/membership/canceled.txt``"
+msgstr "Template: ``juntagrico/mails/admin/membership/canceled.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>`"
+
+msgid "Membership Deactivated"
+msgstr "Mitgliedschaft deaktiviert"
+
+msgid "key: ``membership_deactivated``"
+msgstr "Key: ``membership_deactivated``"
+
+msgid "Trigger: Admin deactivates a membership on the management list"
+msgstr "Auslöser: Admin deaktiviert eine Mitgliedschaft auf der Verwaltungsliste"
+
+msgid "Template: ``juntagrico/mails/admin/membership/deactivated.txt``"
+msgstr "Template: ``juntagrico/mails/admin/membership/deactivated.txt``"
+
+msgid "Recipients: Former member of the deactivated Membership"
+msgstr "Empfänger: Ehemaliges Mitglied der deaktivierten Mitgliedschaft"
+
+msgid "Subscription Notifications"
+msgstr "Abonnement-Benachrichtigungen"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "Trigger: New or existing member orders a new subscription"
+msgstr "Auslöser: Neues oder bestehendes Mitglied bestellt ein neues Abonnement"
+
+msgid "Template: ``mails/admin/subscription_created.txt``"
+msgstr "Template: ``mails/admin/subscription_created.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_subscription_creation <reference-permissions-notified_on_subscription_creation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_subscription_creation <reference-permissions-notified_on_subscription_creation>`"
+
+msgid "Part Created"
+msgstr "Teil erstellt"
+
+msgid "Trigger: Member with an existing susbcription orders a new subscription part or changes one"
+msgstr "Auslöser: Mitglied mit bestehendem Abonnement bestellt ein neues Abonnement-Teil oder ändert eines"
+
+msgid "Template: ``mails/admin/subpart_created.txt``"
+msgstr "Template: ``mails/admin/subpart_created.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_subscriptionpart_creation <reference-permissions-notified_on_subscriptionpart_creation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_subscriptionpart_creation <reference-permissions-notified_on_subscriptionpart_creation>`"
+
+msgid "Subscription or Part Activated"
+msgstr "Abonnement oder Teil aktiviert"
+
+msgid "key: ``subscription_activated``"
+msgstr "Key: ``subscription_activated``"
+
+msgid "Trigger: Admin activates a subscription or part on the pending changes management view"
+msgstr "Auslöser: Admin aktiviert ein Abonnement oder Teil in der Wartenden-Änderungen-Verwaltungsansicht"
+
+msgid "Template: ``juntagrico/mails/member/subscription/activated.txt``"
+msgstr "Template: ``juntagrico/mails/member/subscription/activated.txt``"
+
+msgid "Recipients: Member of the activated subscription/part"
+msgstr "Empfänger: Mitglied des aktivierten Abonnements/Teils"
+
+msgid "Subscription or Part Changed"
+msgstr "Abonnement oder Teil geändert"
+
+msgid "key: ``subscription_activated`` or ``subscription_deactivated``"
+msgstr "Key: ``subscription_activated`` oder ``subscription_deactivated``"
+
+msgid "Trigger: Admin activates some parts and deactivates other parts on the same subscription on the pending changes management view"
+msgstr "Auslöser: Admin aktiviert einige Teile und deaktiviert andere Teile desselben Abonnements in der Wartenden-Änderungen-Verwaltungsansicht"
+
+msgid "Template: ``juntagrico/mails/member/subscription/changed.txt``"
+msgstr "Template: ``juntagrico/mails/member/subscription/changed.txt``"
+
+msgid "Recipients: Member of the changed parts"
+msgstr "Empfänger: Mitglied der geänderten Teile"
+
+msgid "Subscription or Part Deactivated"
+msgstr "Abonnement oder Teil deaktiviert"
+
+msgid "key: ``subscription_deactivated``"
+msgstr "Key: ``subscription_deactivated``"
+
+msgid "Trigger: Admin deactivates a subscription or part on the pending changes management view"
+msgstr "Auslöser: Admin deaktiviert ein Abonnement oder Teil in der Wartenden-Änderungen-Verwaltungsansicht"
+
+msgid "Template: ``juntagrico/mails/member/subscription/deactivated.txt``"
+msgstr "Template: ``juntagrico/mails/member/subscription/deactivated.txt``"
+
+msgid "Recipients: Member of the deactivated subscription/part"
+msgstr "Empfänger: Mitglied des deaktivierten Abonnements/Teils"
+
+msgid "Part Canceled"
+msgstr "Teil gekündigt"
+
+msgid "Trigger: Member cancels a subscription part or changes one, but not the entire subscription"
+msgstr "Auslöser: Mitglied kündigt ein Abonnement-Teil oder ändert eines, aber nicht das gesamte Abonnement"
+
+msgid "Template: ``mails/admin/subpart_canceled.txt``"
+msgstr "Template: ``mails/admin/subpart_canceled.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_subscriptionpart_cancellation <reference-permissions-notified_on_subscriptionpart_cancellation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_subscriptionpart_cancellation <reference-permissions-notified_on_subscriptionpart_cancellation>`"
+
+msgid "Canceled"
+msgstr "Gekündigt"
+
+msgid "Trigger: Member cancels the entire subscription"
+msgstr "Auslöser: Mitglied kündigt das gesamte Abonnement"
+
+msgid "Template: ``mails/admin/subscription_canceled.txt``"
+msgstr "Template: ``mails/admin/subscription_canceled.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_subscription_cancellation <reference-permissions-notified_on_subscription_cancellation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_subscription_cancellation <reference-permissions-notified_on_subscription_cancellation>`"
+
+msgid "Left Subscription"
+msgstr "Abonnement verlassen"
+
+msgid "Trigger: Member leaves their subscription"
+msgstr "Auslöser: Mitglied verlässt sein Abonnement"
+
+msgid "Template: ``mails/member/co_member_left_subscription.txt``"
+msgstr "Template: ``mails/member/co_member_left_subscription.txt``"
+
+msgid "Recipients: The primary member of the subscription"
+msgstr "Empfänger: Das Hauptmitglied des Abonnements"
+
+msgid "Depot notifications"
+msgstr "Depot-Benachrichtigungen"
+
+msgid "Change Request"
+msgstr "Änderungsanfrage"
+
+msgid "Trigger: On signal :ref:`depot_changed <reference-signals-depot_changed>` from sender ``Subscription``"
+msgstr "Auslöser: Auf Signal :ref:`depot_changed <reference-signals-depot_changed>` vom Sender ``Subscription``"
+
+msgid "Template: ``juntagrico/mails/admin/depot_changed.txt``"
+msgstr "Template: ``juntagrico/mails/admin/depot_changed.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_depot_change <reference-permissions-notified_on_depot_change>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_depot_change <reference-permissions-notified_on_depot_change>`"
+
+msgid "Change Confirmation"
+msgstr "Änderungsbestätigung"
+
+msgid "Trigger: On signal :ref:`depot_change_confirmed <reference-signals-depot_change_confirmed>` from sender ``Subscription``"
+msgstr "Auslöser: Auf Signal :ref:`depot_change_confirmed <reference-signals-depot_change_confirmed>` vom Sender ``Subscription``"
+
+msgid "Template: ``mails/member/depot_changed.txt``"
+msgstr "Template: ``mails/member/depot_changed.txt``"
+
+msgid "Recipients: Primary member of the subscription with co-members in cc"
+msgstr "Empfänger: Hauptmitglied des Abonnements mit Nebenmitgliedern in CC"
+
+msgid "Share Notifications"
+msgstr "Anteilscheine-Benachrichtigungen"
+
+msgid "Ordered"
+msgstr "Bestellt"
+
+msgid "Trigger: Member orders a share for themselves or their co-members"
+msgstr "Auslöser: Mitglied bestellt eine Aktie für sich selbst oder seine Nebenmitglieder"
+
+msgid "Template: ``mails/member/share_created.txt``"
+msgstr "Template: ``mails/member/share_created.txt``"
+
+msgid "Recipients: The member that owns the ordered share"
+msgstr "Empfänger: Das Mitglied, das die bestellte Aktie besitzt"
+
+msgid "Trigger: On signal :ref:`share_created <reference-signals-share_created>`"
+msgstr "Auslöser: Auf Signal :ref:`share_created <reference-signals-share_created>`"
+
+msgid "Template: ``mails/admin/share_created.txt``"
+msgstr "Template: ``mails/admin/share_created.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_share_creation <reference-permissions-notified_on_share_creation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_share_creation <reference-permissions-notified_on_share_creation>`"
+
+msgid "Trigger: On signal :ref:`share_canceled <reference-signals-share_canceled>`"
+msgstr "Auslöser: Auf Signal :ref:`share_canceled <reference-signals-share_canceled>`"
+
+msgid "Template: ``mails/admin/share_canceled.txt``"
+msgstr "Template: ``mails/admin/share_canceled.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>`"
+
+msgid "Job Notifications"
+msgstr "Job-Benachrichtigungen"
+
+msgid "Subscribed"
+msgstr "Abonniert"
+
+msgid "key: ``job_subscribed`` email to contact is only sent, if member leaves a message or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>` contains this key."
+msgstr "Key: ``job_subscribed`` E-Mail an Kontakt wird nur gesendet, wenn Mitglied eine Nachricht hinterlässt oder :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>` diesen Key enthält."
+
+msgid "Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job`` if member had no assignment in job before"
+msgstr "Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom Sender ``Job``, wenn Mitglied zuvor keine Aufgabe im Job hatte"
+
+msgid "Templates:"
+msgstr "Templates:"
+
+msgid "``mails/admin/share_canceled.txt`` email to member"
+msgstr "``mails/admin/share_canceled.txt`` E-Mail an Mitglied"
+
+msgid "``juntagrico/mails/admin/job/signup.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/job/signup.txt`` E-Mail an Kontakt des Jobs"
+
+msgid "Recipients:"
+msgstr "Empfänger:"
+
+msgid "Member that signup up for the job"
+msgstr "Mitglied, das sich für den Job angemeldet hat"
+
+msgid "Contact of the job. Falls back to contact(s) of job type or area that display their email."
+msgstr "Kontakt des Jobs. Fällt zurück auf Kontakt(e) des Job-Typs oder Bereichs, der/die seine/seine E-Mail anzeigen."
+
+msgid "Reminder"
+msgstr "Erinnerung"
+
+msgid "Trigger: Via cron job, 2 days before job starts"
+msgstr "Auslöser: Über Cron-Job, 2 Tage bevor Job beginnt"
+
+msgid "Template: ``mails/member/job_reminder.txt``"
+msgstr "Template: ``mails/member/job_reminder.txt``"
+
+msgid "Recipient: All member that are signup up for the job"
+msgstr "Empfänger: Alle Mitglieder, die sich für den Job angemeldet haben"
+
+msgid "Job time changed"
+msgstr "Job-Zeit geändert"
+
+msgid "Trigger: On signal :ref:`job_time_changed <reference-signals-job_time_changed>` from sender ``RecuringJob`` or ``OneTimeJob``"
+msgstr "Auslöser: Auf Signal :ref:`job_time_changed <reference-signals-job_time_changed>` vom Sender ``RecuringJob`` oder ``OneTimeJob``"
+
+msgid "Template: ``mails/member/job_time_changed.txt``"
+msgstr "Template: ``mails/member/job_time_changed.txt``"
+
+msgid "Trigger: On signal :ref:`job_canceled <reference-signals-job_canceled>` from sender ``RecuringJob`` or ``OneTimeJob``"
+msgstr "Auslöser: Auf Signal :ref:`job_canceled <reference-signals-job_canceled>` vom Sender ``RecuringJob`` oder ``OneTimeJob``"
+
+msgid "Template: ``mails/member/job_canceled.txt``"
+msgstr "Template: ``mails/member/job_canceled.txt``"
+
+msgid "Job Subscription changed"
+msgstr "Job-Abonnement geändert"
+
+msgid "key: ``job_subscription_changed`` for job contact notification"
+msgstr "Key: ``job_subscription_changed`` für Job-Kontakt-Benachrichtigung"
+
+msgid "Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job`` if member had assignment(s) in job before and still has assignment(s) after the change"
+msgstr "Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom Sender ``Job``, wenn Mitglied vorher Aufgaben im Job hatte und nach der Änderung immer noch Aufgaben hat"
+
+msgid "``juntagrico/mails/member/job/subscription_changed.txt`` email to member"
+msgstr "``juntagrico/mails/member/job/subscription_changed.txt`` E-Mail an Mitglied"
+
+msgid "``juntagrico/mails/admin/job/changed_subscription.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/job/changed_subscription.txt`` E-Mail an Kontakt des Jobs"
+
+msgid "Member that changed their subscription to the job"
+msgstr "Mitglied, das sein Abonnement zum Job geändert hat"
+
+msgid "Unsubscribed from assignment"
+msgstr "Von Aufgabe abgemeldet"
+
+msgid "key: ``job_unsubscribed`` for job contact notification"
+msgstr "Key: ``job_unsubscribed`` für Job-Kontakt-Benachrichtigung"
+
+msgid "Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job`` if member had assignment(s) in job before and has none now."
+msgstr "Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom Sender ``Job``, wenn Mitglied vorher Aufgaben im Job hatte und jetzt keine hat."
+
+msgid "``juntagrico/mails/member/job/unsubscribed.txt`` email to member"
+msgstr "``juntagrico/mails/member/job/unsubscribed.txt`` E-Mail an Mitglied"
+
+msgid "``juntagrico/mails/admin/job/unsubscribed.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/job/unsubscribed.txt`` E-Mail an Kontakt des Jobs"
+
+msgid "Member that unsubscribed from the job"
+msgstr "Mitglied, das sich vom Job abgemeldet hat"
+
+msgid "Assignment changed"
+msgstr "Aufgabe geändert"
+
+msgid "Trigger: On signal :ref:`assignment_changed <reference-signals-member-assignment_changed>` from sender ``Member`` if member still has assignment(s) in job."
+msgstr "Auslöser: Auf Signal :ref:`assignment_changed <reference-signals-member-assignment_changed>` vom Sender ``Member``, wenn Mitglied immer noch Aufgaben im Job hat."
+
+msgid "``juntagrico/mails/member/assignment/changed.txt`` email to member"
+msgstr "``juntagrico/mails/member/assignment/changed.txt`` E-Mail an Mitglied"
+
+msgid "``juntagrico/mails/admin/assignment/changed.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/assignment/changed.txt`` E-Mail an Kontakt des Jobs"
+
+msgid "Member whose job assignment was changed. Not sent, if member changed their own assignment."
+msgstr "Mitglied, dessen Job-Aufgabe geändert wurde. Nicht gesendet, wenn Mitglied seine eigene Aufgabe geändert hat."
+
+msgid "Contact of the job, that is not the admin who changed the assignment. Falls back to contact(s) of job type or area that display their email."
+msgstr "Kontakt des Jobs, der nicht der Admin ist, der die Aufgabe geändert hat. Fällt zurück auf Kontakt(e) des Job-Typs oder Bereichs, der/die seine/seine E-Mail anzeigen."
+
+msgid "Assignment removed"
+msgstr "Aufgabe entfernt"
+
+msgid "Trigger: On signal :ref:`assignment_changed <reference-signals-member-assignment_changed>` from sender ``Member`` if member has no assignments in job now."
+msgstr "Auslöser: Auf Signal :ref:`assignment_changed <reference-signals-member-assignment_changed>` vom Sender ``Member``, wenn Mitglied jetzt keine Aufgaben im Job hat."
+
+msgid "``juntagrico/mails/member/assignment/removed.txt`` email to member"
+msgstr "``juntagrico/mails/member/assignment/removed.txt`` E-Mail an Mitglied"
+
+msgid "``juntagrico/mails/admin/assignment/removed.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/assignment/removed.txt`` E-Mail an Kontakt des Jobs"
+
+msgid "Member whose job assignment was removed. Not sent, if member removed their own assignment."
+msgstr "Mitglied, dessen Job-Aufgabe entfernt wurde. Nicht gesendet, wenn Mitglied seine eigene Aufgabe entfernt hat."
+
+msgid "Management Command Notifications"
+msgstr "Verwaltungs-Befehls-Benachrichtigungen"
+
+msgid "Depot lists generated"
+msgstr "Depot-Listen erstellt"
+
+msgid "Trigger: On signal :ref:`called <reference-signals-management-command-called>` from sender ``generate_depot_list.Command``."
+msgstr "Auslöser: Auf Signal :ref:`called <reference-signals-management-command-called>` vom Sender ``generate_depot_list.Command``."
+
+msgid "Template: ``mails/admin/depot_list_generated.txt``"
+msgstr "Template: ``mails/admin/depot_list_generated.txt``"
+
+msgid "Recipients: Users with the permission :ref:`juntagrico.depot_list_notification <reference-permissions-depot_list_notification>`"
+msgstr "Empfänger: Benutzer mit der Berechtigung :ref:`juntagrico.depot_list_notification <reference-permissions-depot_list_notification>`"
