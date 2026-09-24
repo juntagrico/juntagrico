@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Development"
+msgstr "Entwicklung"
+
+msgid "This are the instructions for juntagrico developers. If you want to use juntagrico, follow the :ref:`installation instructions <intro-installation>` instead."
+msgstr "Dies sind die Anweisungen für Juntagrico-Entwickler. Wenn du Juntagrico verwenden möchtest, folge stattdessen den :ref:`Installations-Anweisungen <intro-installation>`."
+
+msgid "Setup using venv"
+msgstr "Einrichtung mit venv"
+
+msgid "The following list of commands provides an easy way of getting started with the development in juntagrico. It was tested on macOS 13 and Linux. Contributions for getting it setup and running under Windows are welcome."
+msgstr "Die folgende Liste von Befehlen bietet eine einfache Möglichkeit, mit der Entwicklung in Juntagrico zu beginnen. Sie wurde auf macOS 13 und Linux getestet. Beiträge zur Einrichtung und zum Betrieb unter Windows sind willkommen."
+
+msgid "Installing Python and dependencies"
+msgstr "Python und Abhängigkeiten installieren"
+
+msgid "First we need to install Git and Python 3. Under macOS you can use `homebrew <https://docs.brew.sh/Installation>`_ to easily install Python via the command line."
+msgstr "Zuerst müssen wir Git und Python 3 installieren. Unter macOS kannst du `Homebrew <https://docs.brew.sh/Installation>`_ verwenden, um Python einfach über die Kommandozeile zu installieren."
+
+msgid "With the basic dependencies installed we can clone the repository and setup the project."
+msgstr "Mit den installierten Basis-Abhängigkeiten können wir das Repository klonen und das Projekt einrichten."
+
+msgid "Configure and run"
+msgstr "Konfigurieren und ausführen"
+
+msgid "you can now open http://localhost:8000 in your browser."
+msgstr "du kannst nun http://localhost:8000 in deinem Browser öffnen."
+
+msgid "Setup using Docker"
+msgstr "Einrichtung mit Docker"
+
+msgid "You can also use a docker container instead of installing python directly."
+msgstr "Du kannst auch einen Docker-Container verwenden, anstatt Python direkt zu installieren."
+
+msgid "Execute the tests:"
+msgstr "Tests ausführen:"
+
+msgid "Execute the linter:"
+msgstr "Linter ausführen:"
+
+msgid "Generate the documentation:"
+msgstr "Dokumentation generieren:"
+
+msgid "You find the generated documentation in the _build/html folder."
+msgstr "Du findest die generierte Dokumentation im Ordner `_build/html`."
+
+msgid "Display an example of all mail texts:"
+msgstr "Eine Beispiele aller E-Mail-Texte anzeigen:"
+
+msgid "Start the application (using an integrated sqlite database):"
+msgstr "Die Anwendung starten (unter Verwendung einer integrierten SQLite-Datenbank):"
+
+msgid "During the process you can specify the admin credentials. Access the application under http://localhost:8000"
+msgstr "Während des Prozesses kannst du die Admin-Anmeldeangaben angeben. Greife auf die Anwendung unter http://localhost:8000 zu"

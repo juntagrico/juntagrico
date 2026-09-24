@@ -1,0 +1,269 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:14+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../intro/advanced.rst:2 0e0d70b208aa4ba5b3fa6f39b06e097c
+msgid "Advanced Setup"
+msgstr "Erweiterte Einrichtung"
+
+#: ../../intro/advanced.rst:7 a1d942acb85c4d46889706741789ced4
+msgid "Addons"
+msgstr "Erweiterungen"
+
+#: ../../intro/advanced.rst:9 0e2a8e8a42914de1a8c13862aea5bdbc
+msgid ""
+"You can install the following addons to extend the functionality of "
+"Juntagrico:"
+msgstr ""
+"Du kannst folgende Erweiterungen installieren, um die Funktionalität von "
+"Juntagrico zu erweitern:"
+
+#: ../../intro/advanced.rst:11 a5ad02cef0344b1e8d7b6861df41c93c
+msgid ""
+"`juntagrico-billing <https://github.com/juntagrico/juntagrico-billing>`_:"
+" create bills, send bills and manage payments."
+msgstr ""
+"`juntagrico-billing <https://github.com/juntagrico/juntagrico-billing>`_:"
+" Rechnungen erstellen, versenden und Zahlungen verwalten."
+
+#: ../../intro/advanced.rst:12 5e22867b9c464cd2990573c830fb18c0
+msgid ""
+"`juntagrico-custom-sub <https://github.com/juntagrico/juntagrico-custom-"
+"sub>`_: allow the user to select the amount of predefined products in his"
+" or her subscription."
+msgstr ""
+"`juntagrico-custom-sub <https://github.com/juntagrico/juntagrico-custom-"
+"sub>`_: Ermöglicht es Benutzern, die Menge vordefinierter Produkte in "
+"ihrem Abonnement auszuwählen."
+
+#: ../../intro/advanced.rst:13 1a7f8fb0b10f414595694707da6072eb
+msgid ""
+"`juntagrico-assignment-request <https://github.com/juntagrico/juntagrico-"
+"assignment-request>`_: allow members to request assignments for jobs they"
+" have done, that were not announced."
+msgstr ""
+"`juntagrico-assignment-request <https://github.com/juntagrico/juntagrico-"
+"assignment-request>`_: Erlaubt Mitgliedern, gemachte Einsätze zu melden, "
+"die nicht ausgeschrieben wurden."
+
+#: ../../intro/advanced.rst:14 8dc083cd75ce443b808c9b022c4c7d7b
+msgid ""
+"`juntagrico-godparent <https://github.com/juntagrico/juntagrico-"
+"godparent>`_: match new members with more experienced members that help "
+"them getting started in your cooperative."
+msgstr ""
+"`juntagrico-godparent <https://github.com/juntagrico/juntagrico-"
+"godparent>`_: Verbindet neue Mitglieder mit erfahrenen Mitgliedern, die "
+"ihnen beim Einstieg in deine Genossenschaft helfen."
+
+#: ../../intro/advanced.rst:15 d306282399aa4c38af62edef56f1e249
+msgid ""
+"`juntagrico-pg <https://github.com/juntagrico/juntagrico-pg>`_: postgres "
+"database editor for admins."
+msgstr ""
+"`juntagrico-pg <https://github.com/juntagrico/juntagrico-pg>`_: Postgres-"
+"Datenbankeditor für Administratoren."
+
+#: ../../intro/advanced.rst:16 63d91bba854845d198b9d23d13501d12
+msgid ""
+"`juntagrico-badges <https://github.com/juntagrico/juntagrico-badges>`_: "
+"allows distributing virtual badges to members and group and organize them"
+" based on these."
+msgstr ""
+"`juntagrico-badges <https://github.com/juntagrico/juntagrico-badges>`_: "
+"Ermöglicht die Verteilung virtueller Abzeichen an Mitglieder und deren "
+"Gruppierung/Organisierung danach."
+
+#: ../../intro/advanced.rst:17 370e9e4f1e8342c289d7058172da08a9
+msgid ""
+"`juntagrico-crowdfunding <https://github.com/juntagrico/juntagrico-"
+"crowdfunding>`_: allows you to create (public) crowdfunding campaigns."
+msgstr ""
+"`juntagrico-crowdfunding <https://github.com/juntagrico/juntagrico-"
+"crowdfunding>`_: Ermöglicht dir, (öffentliche) Crowdfunding-Kampagnen zu "
+"erstellen."
+
+#: ../../intro/advanced.rst:18 2b4bd23ea47c4fae8fb9b3317551c293
+msgid ""
+"`juntagrico-webdav <https://github.com/juntagrico/juntagrico-webdav>`_: "
+"include webdav folders in order to share files with your members."
+msgstr ""
+"`juntagrico-webdav <https://github.com/juntagrico/juntagrico-webdav>`_: "
+"Integriere WebDAV-Ordner, um Dateien mit deinen Mitgliedern zu teilen."
+
+#: ../../intro/advanced.rst:20 66b58b703daf40efaf8417e71db2e8e9
+msgid ""
+"The linked repositories contain additional information and installation "
+"instructions."
+msgstr ""
+"Die verlinkten Repositories enthalten zusätzliche Informationen und "
+"Installationsanleitungen."
+
+#: ../../intro/advanced.rst:26 e5f832533e3a4701b92b957e2874980e
+msgid "Rich Text Editor"
+msgstr "Rich-Text-Editor"
+
+#: ../../intro/advanced.rst:28 d54a4243dfac4b6daf02d76ab71cda60
+msgid ""
+"Juntagrico uses django-richtextfields. You can find more information on "
+"the configuration options here https://pypi.org/project/django-"
+"richtextfield/"
+msgstr ""
+"Juntagrico nutzt django-richtextfields. Weitere Informationen zu den "
+"Konfigurationsoptionen findest du hier: https://pypi.org/project/django-"
+"richtextfield/"
+
+#: ../../intro/advanced.rst:31 5099c88bca6847a3be01056376d79b0a
+msgid ""
+"The examples below use the TinyMCE editor, which comes pre-installed with"
+" juntagrico. You may use any other editor."
+msgstr ""
+"Die folgenden Beispiele verwenden den TinyMCE-Editor, der standardmässig "
+"mit Juntagrico installiert ist. Du kannst aber auch einen anderen Editor "
+"nutzen."
+
+#: ../../intro/advanced.rst:36 0adad5587f19449384bdb7fee4d7ec2e
+msgid "Mailer"
+msgstr "Mail-System"
+
+#: ../../intro/advanced.rst:38 5e4632ed93d6497e86c66ba4130b332f
+msgid ""
+"You can customize the rich text field in the mailer in the `settings.py` "
+"using:"
+msgstr ""
+"Du kannst das Rich-Text-Feld im Mail-System in der `settings.py` anpassen"
+" mittels:"
+
+#: ../../intro/advanced.rst:50 41fc3c1bcf094941b29288bb83d36d32
+msgid "Admin Interface"
+msgstr "Administrations-Oberfläche"
+
+#: ../../intro/advanced.rst:52 5ef7e9c279564f73bb2f1ca209f87372
+msgid ""
+"The rich text editor in the admin interface allows formatting text of "
+"most descriptions, like the job descriptions, entered through the admin "
+"interface, This feature is disabled by default. Use the steps below to "
+"enable it."
+msgstr ""
+"Der Rich-Text-Editor in der Admin-Oberfläche ermöglicht die Formatierung "
+"von Texten in den meisten Beschreibungen, z.B. Jobbeschreibungen, die "
+"über die Admin-Oberfläche eingegeben werden. Dieses Feature ist "
+"standardmässig deaktiviert. Verwende die Schritte unten, um es zu "
+"aktivieren."
+
+#: ../../intro/advanced.rst:57 9c107d5c01f445a0b828aee8333e6218
+msgid ""
+"When the rich text editor is enabled, text, when saved, will be saved as "
+"HTML. Disabling the rich text editor will not convert the text back. The "
+"HTML has to be converted back manually."
+msgstr ""
+"Wenn der Rich-Text-Editor aktiviert ist, wird Text beim Speichern als "
+"HTML gespeichert. Das Deaktivieren des Editors konvertiert den Text nicht"
+" zurück. Das HTML muss manuell zurückkonvertiert werden."
+
+#: ../../intro/advanced.rst:61 3358e6ee0dba46ae8a3795fe26c9d6e0
+msgid ""
+"When text from rich text fields is used in plain text emails the HTML "
+"tags need to be removed using the ``striptags`` filter. This is done in "
+"the default email templates. You will have to do it in your customized "
+"email texts as well."
+msgstr ""
+"Wenn Text aus Rich-Text-Feldern in Klartext-E-Mails verwendet wird, "
+"müssen die HTML-Tags mithilfe des ``striptags``-Filters entfernt werden. "
+"Dies geschieht in den Standard-E-Mail-Vorlagen. Du musst dies auch bei "
+"deinen angepassten E-Mail-Texten durchführen."
+
+#: ../../intro/advanced.rst:64 7c505cc3e895470897ff7d5af4e7da7c
+msgid "To enable the rich text editor you have to modify the following setting."
+msgstr ""
+"Um den Rich-Text-Editor zu aktivieren, musst du folgende Einstellung "
+"ändern."
+
+#: ../../intro/advanced.rst:73 c523266916aa4c628f9cb37abde34673
+msgid ""
+"Instead you can also pass your custom configuration to the `admin` "
+"argument."
+msgstr ""
+"Alternativ kannst du auch deine eigene Konfiguration an das Argument "
+"`admin` übergeben."
+
+#: ../../intro/advanced.rst:85 dd5b64b240be48cb99a5099d815a5f79
+msgid "Custom Templates"
+msgstr "Angepasste Vorlagen"
+
+#: ../../intro/advanced.rst:87 a6db35a20c194834b6e99fb87b0bb9cc
+msgid ""
+"Templates can be modified, e.g., to change texts or menu entries. "
+":ref:`See Templates Reference <reference-templates>`."
+msgstr ""
+"Vorlagen können angepasst werden, z.B. um Texte oder Menüeinträge zu "
+"ändern. :ref:`Siehe Vorlagen-Referenz <reference-templates>`."
+
+#: ../../intro/advanced.rst:93 c3476070bcfa4155b6c5bdeb63bf592c
+msgid "Custom Code"
+msgstr "Eigener Code"
+
+#: ../../intro/advanced.rst:95 9cf20b039e274c2386bf68c99f2357d5
+msgid ""
+"You can modify juntagrico with your own code. Use the provided "
+":ref:`Hooks <reference-hooks>`, link to the emitted :ref:`Signals "
+"<reference-signals>` or create your own :ref:`Exports <reference-"
+"exports>`."
+msgstr ""
+"Du kannst Juntagrico mit eigenem Code anpassen. Verwende die "
+"bereitgestellten :ref:`Hooks <reference-hooks>`, verlinke zu den "
+"ausgestossenen :ref:`Signals <reference-signals>` oder erstelle deine "
+"eigenen :ref:`Exports <reference-exports>`."
+
+#: ../../intro/advanced.rst:98 c41291fde06c4d2f908c31aac3e88a76
+msgid ""
+"juntagrico may change in the future and you will have to maintain your "
+"changes accordingly. Instead of making complex modifications, try opening"
+" a feature request, to either get your modifications included in "
+"juntagrico or at least get an official hook to do your changes."
+msgstr ""
+"Juntagrico kann sich in Zukunft ändern und du wirst deine Änderungen "
+"entsprechend pflegen müssen. Statt komplexer Änderungen solltest du "
+"versuchen, eine Feature-Anfrage zu eröffnen, um entweder deine "
+"Modifikationen in Juntagrico aufnehmen zu lassen oder mindestens einen "
+"offiziellen Hook für deine Änderungen zu erhalten."
+
+#: ../../intro/advanced.rst:101 5f0b5967f798480ca17eab2583be975a
+msgid ""
+"Modifications can be made, once all django apps have been loaded, i.e. in"
+" the ``ready`` method of your app config in ``apps.py`` in the main "
+"folder of your project or addon:"
+msgstr ""
+"Änderungen können vorgenommen werden, sobald alle Django-Apps geladen "
+"wurden, also in der ``ready``-Methode deiner App-Konfiguration in "
+"``apps.py`` im Hauptordner deines Projekts oder Addons:"
+
+#: ../../intro/advanced.rst:122 8b1f0a76790f42b0be7ffe624950f5f7
+msgid "Modifying Text in Code"
+msgstr "Text im Code ändern"
+
+#: ../../intro/advanced.rst:124 84b9bda7e9514feb9c9176f05abc0917
+msgid ""
+"Some text is written directly into code instead of templates. These texts"
+" can be modified with :ref:`Custom Code <intro-custom-code>`."
+msgstr ""
+"Mancher Text wird direkt im Code statt in Vorlagen geschrieben. Diese "
+"Texte können mit :ref:`Custom Code <intro-custom-code>` geändert werden."
+

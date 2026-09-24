@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Management Commands"
+msgstr "Verwaltungs-Befehle"
+
+msgid "These commands can be called from a CLI. Read the `official documentation <https://docs.djangoproject.com/en/4.2/ref/django-admin/>`_ for help."
+msgstr "Diese Befehle können von einer CLI aufgerufen werden. Lies die `offizielle Dokumentation <https://docs.djangoproject.com/en/4.2/ref/django-admin/>`_ für Hilfe."
+
+msgid "Call the commands with ``-h`` for more details on the usage."
+msgstr "Rufe die Befehle mit ``-h`` für weitere Details zur Verwendung auf."
+
+msgid "createadmin"
+msgstr "createadmin"
+
+msgid "This creates a super user like the command ``createsuperuser`` and creates a member for that new user, which is required by juntagrico to be able to log in. If you need to create members for previously created superusers, use ``create_member_for_superusers`` instead."
+msgstr "Dies erstellt einen Super-Benutzer wie der Befehl ``createsuperuser`` und erstellt ein Mitglied für diesen neuen Benutzer, das von Juntagrico benötigt wird, um sich anmelden zu können. Wenn du Mitglieder für zuvor erstellte Super-Benutzer erstellen musst, verwende stattdessen ``create_member_for_superusers``."
+
+msgid "create_member_for_superusers"
+msgstr "create_member_for_superusers"
+
+msgid "The command ``create_member_for_superusers`` will create such a member for all existing super users. The member is required by juntagrico to be able to log in."
+msgstr "Der Befehl ``create_member_for_superusers`` erstellt ein solches Mitglied für alle bestehenden Super-Benutzer. Das Mitglied wird von Juntagrico benötigt, um sich anmelden zu können."
+
+msgid "generate_depot_list"
+msgstr "generate_depot_list"
+
+msgid "This command generates all depot lists. This can be used to generate the lists regularly, e.g., using a cronjob."
+msgstr "Dieser Befehl erstellt alle Depot-Listen. Dies kann verwendet werden, um die Listen regelmässig zu erstellen, z.B. mit einem Cron-Job."
+
+msgid "When using a :ref:`custom depot list generator <settings-default-depotlist-generators>`, the arguments have the effect, that you implement."
+msgstr "Wenn du einen :ref:`benutzerdefinierten Depot-Listen-Generator <settings-default-depotlist-generators>` verwendest, haben die Argumente die Wirkung, die du implementierst."
+
+msgid "Currently all pending depot changes are applied, when executing the command on a weekday specified in :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>`. This behaviour will be DEPRECATED. Use ``--future`` explicitly, to apply the depot changes. Use ``--no-future`` to prevent depot changes in that case."
+msgstr "Derzeit werden alle ausstehenden Depot-Änderungen angewendet, wenn der Befehl an einem Wochentag ausgeführt wird, der in :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` angegeben ist. Dieses Verhalten wird VERALTET sein. Verwende ``--future`` explizit, um die Depot-Änderungen anzuwenden. Verwende ``--no-future``, um Depot-Änderungen in diesem Fall zu verhindern."
+
+msgid "remind_members"
+msgstr "remind_members"
+
+msgid "Sends a job reminder email to all members that are signed up to a job in the next 48 hours. Will only send the notification once, i.e., executing the command twice will not send another notification to those already notified."
+msgstr "Sendet eine Job-Erinnerungs-E-Mail an alle Mitglieder, die für einen Job in den nächsten 48 Stunden angemeldet sind. Sendet die Benachrichtigung nur einmal, d.h. die zweimalige Ausführung des Befehls sendet keine weitere Benachrichtigung an diejenigen, die bereits benachrichtigt wurden."
+
+msgid "shift_time"
+msgstr "shift_time"
+
+msgid "When changing the ``TIMEZONE`` setting on an existing installation, you will have to adapt the times of all existing jobs. This command helps you with that task."
+msgstr "Wenn du die ``TIMEZONE``-Einstellung bei einer bestehenden Installation änderst, musst du die Zeiten aller bestehenden Jobs anpassen. Dieser Befehl hilft dir bei dieser Aufgabe."
+
+msgid "No notification emails will be sent, when changing the job time with this command."
+msgstr "Keine Benachrichtigungs-E-Mails werden gesendet, wenn die Job-Zeit mit diesem Befehl geändert wird."
+
+msgid "This command is also available to super users under the hidden url ``/command/shifttime``."
+msgstr "Dieser Befehl ist auch für Super-Benutzer unter der versteckten URL ``/command/shifttime`` verfügbar."
+
+msgid "mailtexts"
+msgstr "mailtexts"
+
+msgid "Prints the text of all notification emails using real data from the database, but without sending any emails. This can be used to test, if the emails meet your expectations, e.g. if your modifications work as expected."
+msgstr "Druckt den Text aller Benachrichtigungs-E-Mails mit echten Daten aus der Datenbank, aber ohne E-Mails zu senden. Dies kann verwendet werden, um zu testen, ob die E-Mails deinen Erwartungen entsprechen, z.B. ob deine Änderungen wie erwartet funktionieren."
+
+msgid "generate_testdata"
+msgstr "generate_testdata"
+
+msgid "Do not use this command in production"
+msgstr "Verwende diesen Befehl nicht im Produktionsbetrieb"
+
+msgid "In a testing environment, this command can be used to generate some minimum test data, e.g. subscription types, members, jobs etc."
+msgstr "In einer Test-Umgebung kann dieser Befehl verwendet werden, um einige Mindest-Testdaten zu generieren, z.B. Abonnement-Typen, Mitglieder, Jobs etc."
+
+msgid "generate_testdata_advanced"
+msgstr "generate_testdata_advanced"
+
+msgid "This command requires ``faker``. Install it via pip."
+msgstr "Dieser Befehl erfordert ``faker``. Installiere es via pip."
+
+msgid "Like ``generate_testdata`` but produces a much bigger set of test data."
+msgstr "Wie ``generate_testdata`` aber erzeugt einen viel grösseren Satz an Testdaten."
