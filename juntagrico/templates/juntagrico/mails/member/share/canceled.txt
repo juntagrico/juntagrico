@@ -1,0 +1,10 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+
+{% block message %}
+{% blocktrans with v_share_pl=vocabulary.share_pl trimmed %}
+Soeben wurden {{ v_share_pl }} für dich gekündigt:
+{% endblocktrans %}
+{% for share in shares %}- {{ share }}
+{% endfor %}
+{% endblock %}

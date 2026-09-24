@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load juntagrico.snippets %}
+{% load juntagrico.widgets %}
+{% load juntagrico.subscription %}
+{% load juntagrico.config %}
+{% load i18n %}
+{% load static %}
+
+{% block page_title %}
+    <h3>
+        {% vocabulary 'account' %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% config "enable_shares" as c_enable_shares %}
+
+    <div class="row">
+        <div class="col-12 col-xl-5 mb-4">
+            {% block account %}
+                {% include './snippets/card.html' %}
+            {% endblock %}
+
+            {% block membership %}
+                {% if perms.juntagrico.view_membership or perms.juntagrico.change_membership %}
+                    {% include 'juntagrico/manage/membership/snippets/card.html' %}
+                {% endif %}
+            {% endblock %}
+
+            {% block share %}
+                {% if c_enable_shares %}
+                    {% if perms.juntagrico.view_share or perms.juntagrico.change_share %}
+                        {% include 'juntagrico/manage/share/snippets/card.html' %}
+                    {% endif %}
+                {% endif %}
+            {% endblock %}
+
+            {% block activity_area %}
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header">
+                        <h5 class="my-1"><i class="bi bi-ui-checks-grid mr-2"></i>{% trans 'Tätigkeitsbereiche' %}</h5>
+                    </div>
+                    {% if account.areas.exists %}
+                        <div class="card-body">
+                            <ul class="list-unstyled my-0">
+                                {% with coordinated_areas=account.coordinated_areas.all %}
+                                    {% for area in account.areas.all %}
+                                        <li>
+                                            <a href="{% url 'area' area.id %}">{{ area }}</a>
+                                            {% if area in coordinated_areas %}
+                                                <span class="badge badge-dark ml-2">
+                                                    {% trans 'Koordinator:in' %}
+                                                </span>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                {% endwith %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="card-body text-center">
+                            <p class="text-muted py-2">{% trans 'keine' %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endblock %}
+
+            {% block note %}
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header">
+                        {% if notes_form %}
+                            <span class="notes-swap float-right swapper" role="button" data-swap=".notes-swap">
+                                <i class="bi bi-pencil-square"></i>
+                            </span>
+                        {% endif %}
+                        <h5 class="my-1"><i class="bi bi-sticky mr-2"></i>{% trans 'Notizen' %}</h5>
+                    </div>
+
+                    {% if account.notes %}
+                        <div class="card-body notes-swap">
+                            {{ account.notes|linebreaksbr }}
+                        </div>
+                    {% else %}
+                        <div class="card-body notes-swap text-center">
+                            <p class="text-muted py-2">{% trans 'keine' %}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if notes_form %}
+                        <div class="card-body notes-swap d-none">
+                            {% crispy notes_form %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endblock %}
+        </div>
+
+        <div class="col-12 col-xl-7">
+            {% block assignment %}
+                {% if perms.juntagrico.view_assignment or perms.juntagrico.change_assignment %}
+                    {% include 'juntagrico/manage/assignment/snippets/card.html' %}
+                {% endif %}
+            {% endblock %}
+
+            {% block subscription %}
+                {% if perms.juntagrico.view_subscription or perms.juntagrico.change_subscription %}
+                    {% include 'juntagrico/manage/subscription/snippets/card.html' %}
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

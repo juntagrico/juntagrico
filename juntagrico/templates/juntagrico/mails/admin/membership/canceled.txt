@@ -1,0 +1,14 @@
+{% extends "juntagrico/mails/admin/member/base.txt" %}
+{% load i18n %}
+
+{% block member_message %}
+{% blocktrans trimmed with v_membership=vocabulary.membership %}
+Soeben hat {{ account }} der/die/das {{ v_membership }} gekündet.
+{% endblocktrans %}
+
+{% if message %}
+{% blocktrans trimmed %}
+Kommentar: {{ message }}
+{% endblocktrans %}
+{% endif %}
+{% endblock %}

@@ -2,11 +2,13 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Case, When, Q, Value, DateField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.models import PolymorphicModel
 from schwifty import IBAN
+
+from juntagrico.lifecycle import parse_date
 
 
 class OldHolder:
@@ -36,6 +38,29 @@ class SimpleStateModelQuerySet(QuerySet):
         exclude those that ended before or started after our date range.
         """
         return self.filter(activation_date__lte=till_date).exclude(deactivation_date__lt=from_date)
+
+    def annotate_change_in_range(self, from_date, till_date):
+        return self.annotate(
+            starts=Case(
+                When(
+                    Q(activation_date__gte=from_date)
+                    & Q(activation_date__lte=till_date),
+                    then='activation_date',
+                ),
+                default=Value(None),
+                output_field=DateField(),
+            )
+        ).annotate(
+            ends=Case(
+                When(
+                    Q(deactivation_date__gte=from_date)
+                    & Q(deactivation_date__lte=till_date),
+                    then='deactivation_date',
+                ),
+                default=Value(None),
+                output_field=DateField(),
+            )
+        )
 
 
 class SimpleStateModel(models.Model):
@@ -71,6 +96,8 @@ class SimpleStateModel(models.Model):
         self.activation_date = self.activation_date or date  # allows immediate deactivation
         if not self.cancellation_date:
             self.cancellation_date = today  # cancel immediately
+        if date < self.activation_date:  # can't deactivate before activations
+            date = self.activation_date
         self.deactivation_date = self.deactivation_date or date
         self.save()
 
@@ -114,11 +141,11 @@ class SimpleStateModel(models.Model):
         if is_deactivated:
             if not is_active:
                 raise ValidationError(gettext('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
-            elif self.activation_date > self.deactivation_date:
+            elif parse_date(self.activation_date) > parse_date(self.deactivation_date):
                 raise ValidationError(gettext('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
             elif not is_canceled:
                 raise ValidationError(gettext('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
-        if is_canceled and self.cancellation_date > today:
+        if is_canceled and parse_date(self.cancellation_date) > today:
             raise ValidationError(gettext('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 
     class Meta:

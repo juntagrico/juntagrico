@@ -1,0 +1,11 @@
+{% extends "juntagrico/mails/admin/subscription/base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block subscription_message %}
+{% vocabulary "subscription" as v_subscription %}
+{% blocktrans %}Soeben wurde ein {{ v_subscription }}-Bestandteil geändert{% endblocktrans %}
+
+{%trans "Bisher: " %}{{ old_part }}
+{%trans "Neu: " %}{{ new_part }}
+{% endblock %}
