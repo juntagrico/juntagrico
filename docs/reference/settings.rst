@@ -374,7 +374,7 @@ SIGNUP_MANAGER
     "juntagrico.util.sessions.SignupManager"
 
 ENFORCE_MAIL_CONFIRMATION
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
   At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link.
 
   Type: Boolean
@@ -429,7 +429,7 @@ Shares
 
 ENABLE_SHARES
 ^^^^^^^^^^^^^
-  Enable all share related funtionality
+  Enable all share related functionality
 
   Type: String
 
@@ -473,7 +473,7 @@ Jobs
 
 ASSIGNMENT_UNIT
 ^^^^^^^^^^^^^^^
-  The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
+  The mode how assignments are counted: Valid values are ENTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
 
   Type: String
 
@@ -497,6 +497,7 @@ FIRST_JOB_INFO
   This setting will automatically enable admin notifications for the indicated first jobs.
   Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
   or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+
     - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
     - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
     - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type
@@ -530,7 +531,7 @@ ALLOW_JOB_UNSUBSCRIBE
 
 
 JOBS_FRONTPAGE
-^^^^^^^^
+^^^^^^^^^^^^^^
 
   Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs.
 
@@ -643,7 +644,7 @@ Appearance
 
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
 

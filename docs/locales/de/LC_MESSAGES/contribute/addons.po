@@ -1,0 +1,147 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../contribute/addons.rst:2 76e16f1c3ebf4c32a1b2d28daf58f670
+msgid "Addons"
+msgstr "Addons"
+
+#: ../../contribute/addons.rst:4 d19b4a1305214eaaa823b4e5fe94f368
+msgid ""
+"Juntagrico is a django app and can be extended with additional django "
+"apps. This page lists the various ways in which such addons can integrate"
+" with juntagrico."
+msgstr ""
+"Juntagrico ist eine Django-Applikation und kann durch zusätzliche Django-"
+"Apps erweitert werden. Diese Seite listet die verschiedenen Möglichkeiten"
+" auf, wie solche Addons mit Juntagrico integriert werden können."
+
+#: ../../contribute/addons.rst:7 6b85a045862244d3948da4ef7c69b7f6
+msgid "For a list of existing addons :ref:`See Advanced Setup <intro-addons>`."
+msgstr ""
+"Für eine Liste bestehender Addons :ref:`Siehe Erweiterte Einrichtung "
+"<intro-addons>`."
+
+#: ../../contribute/addons.rst:10 24e50ee1c5a5483fb9869f6d18e3d4c3
+msgid "Override Templates"
+msgstr "Vorlagen überschreiben"
+
+#: ../../contribute/addons.rst:12 5f81b7ee00eb49a0920d3c1933671d13
+msgid ""
+"Templates can be overridden by the addon in the same way the project can "
+"override templates. Addons must be added **above** juntagrico in the "
+"``INSTALLED_APPS``. :ref:`See Templates Reference <reference-templates>`."
+msgstr ""
+"Vorlagen können vom Addon auf dieselbe Weise überschrieben werden, wie "
+"das Projekt Vorlagen überschreiben kann. Addons müssen **über** "
+"Juntagrico in ``INSTALLED_APPS`` hinzugefügt werden. :ref:`Siehe "
+"Vorlagen-Referenz <reference-templates>`."
+
+#: ../../contribute/addons.rst:17 09e7ec0770e94eb19be300117f7edb42
+msgid "Extend Signup"
+msgstr "Anmeldung erweitern"
+
+#: ../../contribute/addons.rst:20 b10b89e23c344e778c9db8b1be150672
+msgid "Add a page to the signup process"
+msgstr "Seite zum Anmeldsprozess hinzufügen"
+
+#: ../../contribute/addons.rst:22 e7b7deb4ab644b0887aebb3f72e30313
+msgid "Add a url and view for your new signup page."
+msgstr "Eine URL und View für deine neue Anmeldeseite hinzufügen."
+
+#: ../../contribute/addons.rst:23 a56ef1964ac5457b963dba922fe1fb3a
+msgid ""
+"Subclass the signup manager class and instruct the user to set it in the "
+":ref:`SIGNUP_MANAGER <settings-signup-manager>` setting."
+msgstr ""
+"Die Signup-Manager-Klasse als Unterklasse erstellen und den Benutzer "
+"anweisen, diese in der Einstellung :ref:`SIGNUP_MANAGER <settings-signup-"
+"manager>` zu setzen."
+
+#: ../../contribute/addons.rst:25 d7804d8fc20643d7bf769cd35fe42929
+msgid ""
+"In your new signup view, when the form is submitted successfully, save "
+"the data in your signup manager or at least save a flag there, that the "
+"step was completed. Note that the session must be JSON serializable."
+msgstr ""
+"In deinem neuen Signup-View, wenn das Formular erfolgreich abgesendet "
+"wird, die Daten im Signup-Manager speichern oder zumindest ein Flag "
+"setzen, dass dieser Schritt abgeschlossen wurde. Beachte, dass die "
+"Session JSON-serialisierbar sein muss."
+
+#: ../../contribute/addons.rst:28 cd0fe3339e744cee893155a8758d7706
+msgid ""
+"Override the ``get_next_page`` method of your signup manager and define "
+"the criteria, when the new page should be loaded. E.g., when the depot "
+"has been selected, but your new entity hasn’t. Return the url name of "
+"your new page in that case."
+msgstr ""
+"Die Methode ``get_next_page`` deines Signup-Managers überschreiben und "
+"definieren, unter welchen Kriterien die neue Seite geladen werden soll. "
+"Zum Beispiel, wenn das Depot ausgewählt wurde, aber deine neue Entität "
+"noch nicht. Gib in diesem Fall den URL-Namen deiner neuen Seite zurück."
+
+#: ../../contribute/addons.rst:34 e0e11ac6af1649dc87070bfc1056facf
+msgid "Modify the summary page"
+msgstr "Zusammenfassungsseite bearbeiten"
+
+#: ../../contribute/addons.rst:36 6be9d0f3bd5542a1af8b54e023838371
+msgid ""
+"Override an adjacent block in the summary page template to add your new "
+"entity."
+msgstr ""
+"Einen benachbarten Block in der Zusammenfassungsseiten-Vorlage "
+"überschreiben, um deine neue Entität hinzuzufügen."
+
+#: ../../contribute/addons.rst:37 a50d3e641b914e328690610373c5f398
+msgid ""
+"Create an edit link in your summary section, that leads back to the new "
+"page of the signup process and allows modifying the selection."
+msgstr ""
+"Erstelle einen Bearbeitungslink in deinem Zusammenfassungsabschnitt, der "
+"zurück zur neuen Seite des Anmeldeprozesses führt und die Auswahl "
+"bearbeiten lässt."
+
+#: ../../contribute/addons.rst:41 5463c23cca4b47be90f26522e090c103
+msgid "Save and notify"
+msgstr "Speichern und Benachrichtigen"
+
+#: ../../contribute/addons.rst:43 3caa095e665b4a1e9d1376a18379e01b
+msgid ""
+"Override the ``apply`` method or one of the specific ``apply_...`` "
+"methods of your custom signup manager. E.g. if you need the subscription "
+"to be saved before your new entity can be saved, override "
+"``apply_subscriptions``, call the super method and then save your new "
+"entity."
+msgstr ""
+"Die Methode ``apply`` oder eine der spezifischen ``apply_...``-Methoden "
+"deines benutzerdefinierten Signup-Managers überschreiben. Zum Beispiel, "
+"wenn das Abonnement gespeichert werden muss, bevor deine neue Entität "
+"gespeichert werden kann, überschreibe ``apply_subscriptions``, rufe die "
+"Super-Methode auf und speichere dann deine neue Entität."
+
+#: ../../contribute/addons.rst:48 81d371c03b734f89b34c71aa6351ce42
+msgid ""
+"Send emails notifications if needed. Either in the same place or "
+"overriding the ``send_emails`` method."
+msgstr ""
+"Bei Bedarf E-Mail-Benachrichtigungen senden. Entweder an derselben Stelle"
+" oder indem die Methode ``send_emails`` überschrieben wird."
+

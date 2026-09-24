@@ -1,0 +1,624 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../reference/templates.rst:4 8576eeffdee84f09b654953e98e75cab
+msgid "Templates"
+msgstr "Templates"
+
+#: ../../reference/templates.rst:6 14851c4604e44eaa872d456bc48342df
+msgid "In django templates can be overwritten and modified by other apps."
+msgstr ""
+"In Django können Templates von anderen Apps überschrieben und geändert "
+"werden."
+
+#: ../../reference/templates.rst:8 4f917de0559844e8a02e1e5657d28360
+msgid ""
+"Juntagrico provides template snippets or template blocks, that allow you "
+"to modify parts of certain templates, e.g., descriptive text or menu "
+"entries."
+msgstr ""
+"Juntagrico bietet Template-Schnipsel oder Template-Blöcke, mit denen du "
+"Teile bestimmter Templates ändern kannst, z.B. beschreibenden Text oder "
+"Menüeinträge."
+
+#: ../../reference/templates.rst:12 e21e1aa2d9a14c75907fc4b12134bdae
+msgid ""
+"Templates or template blocks that are not documented in this reference "
+"may change in future versions without notice. Changing undocumented and "
+"will increase your maintenance work."
+msgstr ""
+"Templates oder Template-Blöcke, die in dieser Referenz nicht dokumentiert"
+" sind, können in zukünftigen Versionen ohne Ankündigung geändert werden. "
+"Das Ändern von Undokumentiertem wird deinen Wartungsaufwand erhöhen."
+
+#: ../../reference/templates.rst:16 f75b963b83f64e5e8741194b12390d42
+msgid ""
+"If you think the changes you want to make could also benefit other "
+"juntagrico users, consider opening an issue, suggesting your changes to "
+"juntagrico directly. If you need your changes quickly, you may still want"
+" to override the templates as described here."
+msgstr ""
+"Wenn du denkst, dass die Änderungen, die du machen möchtest, auch anderen"
+" Juntagrico-Benutzern nützen könnten, erwäge ein Issue zu eröffnen und "
+"deine Änderungen direkt an Juntagrico vorzuschlagen. Wenn du deine "
+"Änderungen schnell brauchst, kannst du die Templates trotzdem wie hier "
+"beschrieben überschreiben."
+
+#: ../../reference/templates.rst:21 fa30a91ed2444fe09078f2a54e74e86d
+msgid ""
+"Some texts, e.g. of forms, do not appear in the template. To change these"
+" :ref:`see below <intro-modify-text-in-code>`"
+msgstr ""
+"Einige Texte, z.B. von Formularen, erscheinen nicht im Template. Um diese"
+" zu ändern, :ref:`siehe unten <intro-modify-text-in-code>`"
+
+#: ../../reference/templates.rst:24 28b9aa11b0b14a49b4030fffc3851f50
+msgid "Set up Template Overrides"
+msgstr "Template-Überschreibungen einrichten"
+
+#: ../../reference/templates.rst:26 1270116a84994660ae7695618dc59d23
+msgid ""
+"The instructions for overriding templates in django can be found in the "
+"`the official documentation <https://docs.djangoproject.com/en/4.2/howto"
+"/overriding-templates/>`_. Roughly these are the steps:"
+msgstr ""
+"Die Anweisungen zum Überschreiben von Templates in Django finden sich in "
+"der `offiziellen Dokumentation "
+"<https://docs.djangoproject.com/en/4.2/howto/overriding-templates/>`_. "
+"Grob gesagt sind dies die Schritte:"
+
+#: ../../reference/templates.rst:29 0a8c169a1eb5408abcd63a334bb20218
+msgid ""
+"In the ``settings.py`` either enable the ``app_directories`` template "
+"loader or set ``APP_DIRS`` to True on the ``TEMPLATES`` setting. And make"
+" sure that the app with the template overrides is somewhere above "
+"``'juntagrico'`` in the ``INSTALLED_APPS``"
+msgstr ""
+"In der ``settings.py`` entweder den ``app_directories``-Template-Loader "
+"aktivieren oder ``APP_DIRS`` auf True bei der ``TEMPLATES``-Einstellung "
+"setzen. Und sicherstellen, dass die App mit den Template-Überschreibungen"
+" irgendwo oberhalb von ``'juntagrico'`` in ``INSTALLED_APPS`` steht"
+
+#: ../../reference/templates.rst:33 2e93749c2d9d4570b1c60b63a4170e6e
+msgid ""
+"Alternatively, you can set ``DIRS`` to your ``TEMPLATES`` settings to the"
+" folder where you will place the template overrides."
+msgstr ""
+"Alternativ kannst du ``DIRS`` in deinen ``TEMPLATES``-Einstellungen auf "
+"den Ordner setzen, in dem du die Template-Überschreibungen platzieren "
+"wirst."
+
+#: ../../reference/templates.rst:47 65846ad9154e4b0aafc323b50e54ac27
+msgid ""
+"Create a template file in your templates folder (in your app or in the "
+"project root, depending on the above setting) with the same path as the "
+"`template file in juntagrico "
+"<https://github.com/juntagrico/juntagrico/tree/main/juntagrico/templates>`_,"
+" that you want to override."
+msgstr ""
+"Erstelle eine Template-Datei in deinem Templates-Ordner (in deiner App "
+"oder im Projektroot, je nach obiger Einstellung) mit demselben Pfad wie "
+"die `Template-Datei in Juntagrico "
+"<https://github.com/juntagrico/juntagrico/tree/main/juntagrico/templates>`_,"
+" die du überschreiben möchtest."
+
+#: ../../reference/templates.rst:51 7433b07b71b741c99a9c03a1c0f9fed2
+msgid ""
+"The project will now use your copy of the template instead of the "
+"original. If you only want to modify certain blocks on that template, "
+"extend the original template and modify the block(s) like this:"
+msgstr ""
+"Das Projekt verwendet nun deine Kopie des Templates statt dem Original. "
+"Wenn du nur bestimmte Blöcke in diesem Template ändern möchtest, "
+"erweitere das Original-Template und ändere den/die Block(e) wie folgt:"
+
+#: ../../reference/templates.rst:65 9cd7d98597444bf1971916962203ded4
+msgid "Email Templates"
+msgstr "E-Mail-Templates"
+
+#: ../../reference/templates.rst:67 c4fdf5e7425246e6aa5d7b0f11f5cbed
+msgid ""
+"Email Templates can be overridden in the same way as every other "
+"template. Read the :ref:`Notification reference <reference-"
+"notifications>` to see which email templates exist."
+msgstr ""
+"E-Mail-Templates können auf dieselbe Weise wie jedes andere Template "
+"überschrieben werden. Lies die :ref:`Benachrichtigungs-Referenz "
+"<reference-notifications>`, um zu sehen, welche E-Mail-Templates "
+"existieren."
+
+#: ../../reference/templates.rst:71 7a14c48fcdbf4405a0b282744c9a95d8
+msgid "Menu Templates"
+msgstr "Menü-Templates"
+
+#: ../../reference/templates.rst:75 895335e3dcb94e76b67adbb481dd0315
+msgid ""
+"Make sure to always add ``{{ block.super }}`` to include extensions by "
+"addons."
+msgstr ""
+"Stelle sicher, dass du immer ``{{ block.super }}`` hinzufügst, um "
+"Erweiterungen durch Addons einzuschliessen."
+
+#: ../../reference/templates.rst:80 0c0e255973094cf18a950021066194bd
+msgid "juntagrico/menu/user.html|extend"
+msgstr "juntagrico/menu/user.html|extend"
+
+#: ../../reference/templates.rst:82 3d8d6db820db400ab63822842fc2774f
+msgid "Add entries to the user menu."
+msgstr "Einträge zum Benutzer-Menü hinzufügen."
+
+#: ../../reference/templates.rst:84 ../../reference/templates.rst:102
+#: 4f0183db65524138a4f4946a126a7f6d 807b3e2f870046a7b1c6d2319e104706
+msgid "Example:"
+msgstr "Beispiel:"
+
+#: ../../reference/templates.rst:98 ed8cc79fca1141ed8b354556a10e3664
+msgid "juntagrico/menu/admin.html|extend"
+msgstr "juntagrico/menu/admin.html|extend"
+
+#: ../../reference/templates.rst:100 dcf3180fd2ba4d728e6883c7eb1de31b
+msgid "Add entries to the admin menu."
+msgstr "Einträge zum Admin-Menü hinzufügen."
+
+#: ../../reference/templates.rst:116 d71f94ad2bd44ac1ae8f8692274592d6
+msgid "juntagrico/menu/admin/subscriptions.html|extend"
+msgstr "juntagrico/menu/admin/subscriptions.html|extend"
+
+#: ../../reference/templates.rst:118 2c6a1b98af154554828c0113cc62beb6
+msgid "Add entries to the subscription section in the admin menu."
+msgstr "Einträge zum Abonnement-Abschnitt im Admin-Menü hinzufügen."
+
+#: ../../reference/templates.rst:121 b83cedbc2c1a470fb0e55d1e6b8a84e5
+msgid "juntagrico/menu/admin/\\*.html|sub"
+msgstr "juntagrico/menu/admin/\\*.html|sub"
+
+#: ../../reference/templates.rst:123 87c5df76deb74771af0db2274ad0534b
+msgid "Change admin sub menu entries of:"
+msgstr "Admin-Submenü-Einträge ändern von:"
+
+#: ../../reference/templates.rst:125 58aefd175358444c97759b3e2048f855
+msgid "``activityareas.html``"
+msgstr "``activityareas.html``"
+
+#: ../../reference/templates.rst:126 ba1c025d26564f75b8a13957fa6ae7ab
+msgid "``assignments.html``"
+msgstr "``assignments.html``"
+
+#: ../../reference/templates.rst:127 6dc0bf41ebda4b82857d03d231897c59
+msgid "``depots.html``"
+msgstr "``depots.html``"
+
+#: ../../reference/templates.rst:128 eb448df404224e198ef2a22be05c6c12
+msgid "``extra_subscriptions.html``"
+msgstr "``extra_subscriptions.html``"
+
+#: ../../reference/templates.rst:129 ed8facb9af834896a9d91263b6992969
+msgid "``lists.html``"
+msgstr "``lists.html``"
+
+#: ../../reference/templates.rst:130 21c8c3f943b5453fbabd434848c59723
+msgid "``members.html``"
+msgstr "``members.html``"
+
+#: ../../reference/templates.rst:131 3fb50884cb5449ef817a30b5e433d9b7
+msgid "``shares.html``"
+msgstr "``anteilsscheine.html``"
+
+#: ../../reference/templates.rst:132 d1224ec4d0944c42b1fd6dc31359093c
+msgid "``subscriptions.html``"
+msgstr "``subscriptions.html``"
+
+#: ../../reference/templates.rst:135 751db3ddb3ba4d2982da88f213a19d4b
+msgid "Signup Templates"
+msgstr "Registrierungs-Templates"
+
+#: ../../reference/templates.rst:137 85ab2615eb54414da82f75a12ddf8347
+msgid "All signup pages have these 2 blocks to override:"
+msgstr "Alle Registrierungsseiten haben diese 2 Blöcke zum Überschreiben:"
+
+#: ../../reference/templates.rst:139 7c8303a149774976a6970ace68ac71ab
+msgid "``title``: Text of the title"
+msgstr "``title``: Text der Überschrift"
+
+#: ../../reference/templates.rst:140 3c02d82134f54622b9e8eb0007a9eff4
+msgid "``intro``: Text after the title"
+msgstr "``intro``: Text nach der Überschrift"
+
+#: ../../reference/templates.rst:142 679e45936d684215b08c9ffba07b29a2
+msgid "The signup templates are located in the folder ``createsubscription``."
+msgstr ""
+"Die Registrierungs-Templates befinden sich im Ordner "
+"``createsubscription``."
+
+#: ../../reference/templates.rst:144 7d69d3f8353a493ba33b0e66b2e8aaf7
+msgid "Some pages have additional blocks listed below."
+msgstr "Einige Seiten haben zusätzliche Blöcke, die unten aufgelistet sind."
+
+#: ../../reference/templates.rst:147 27e6a74a669b4035b5dbec0812e57e56
+msgid "juntagrico/signup/member.html"
+msgstr "juntagrico/signup/member.html"
+
+#: ../../reference/templates.rst:149 ../../reference/templates.rst:194
+#: 2ede6671dec14724af5bb8c166fb02a2 beb47a4e2433473e945110dfa39be780
+msgid "``intro_1``: First part of intro"
+msgstr "``intro_1``: Erster Teil der Einleitung"
+
+#: ../../reference/templates.rst:150 713a6de29c054bde8693b28e128e9f99
+msgid "``intro_with_shares``: Part of intro, about shares"
+msgstr "``intro_with_shares``: Teil der Einleitung, über Anteilsscheine"
+
+#: ../../reference/templates.rst:151 5e31da1819114a2594ca962b6d7a080c
+msgid "``intro_2``  Last part of intro"
+msgstr "``intro_2`` Letzter Teil der Einleitung"
+
+#: ../../reference/templates.rst:152 6bc0edebcdee4ead945ba4d49166982d
+msgid "``read_instructions``: Text on documents that should be read"
+msgstr "``read_instructions``: Text zu Dokumenten, die gelesen werden sollten"
+
+#: ../../reference/templates.rst:155 d4ebe911467a4b35aad1d580b26e7f79
+msgid "juntagrico/form/layout/category_container.html"
+msgstr "juntagrico/form/layout/category_container.html"
+
+#: ../../reference/templates.rst:157 73b5203d875743559843a1e6cf77b115
+msgid ""
+"Defines the structure to display subscription categories in the "
+"subscription/part order and change forms"
+msgstr ""
+"Definiert die Struktur zur Anzeige von Abonnement-Kategorien in den "
+"Abonnement-/Teil-Bestell- und Änderungsformularen"
+
+#: ../../reference/templates.rst:159 75a1a2aceb6a4d9c94a018690cbfbb0f
+msgid "Blocks:"
+msgstr "Blöcke:"
+
+#: ../../reference/templates.rst:161 33a06a1f07694ff8a6d80f1540be40b0
+msgid "``head``: Name and description of category"
+msgstr "``head``: Name und Beschreibung der Kategorie"
+
+#: ../../reference/templates.rst:162 bf2dcd754d3e4a7187b780c1d3b15402
+msgid "``fields``: Nested fields"
+msgstr "``fields``: Verschachtelte Felder"
+
+#: ../../reference/templates.rst:166 e09e0226adfd4c68a049bea54fb3fff2
+msgid "juntagrico/form/layout/bundle_container.html"
+msgstr "juntagrico/form/layout/bundle_container.html"
+
+#: ../../reference/templates.rst:168 3313ac4d23354d87ad0435ca9765c667
+msgid ""
+"Defines the structure to display subscription bundles in the "
+"subscription/part order and change forms."
+msgstr ""
+"Definiert die Struktur zur Anzeige von Abonnement-Bundles in den "
+"Abonnement-/Teil-Bestell- und Änderungsformularen."
+
+#: ../../reference/templates.rst:170 334df3afb38e45cb9d3afbe9ae465f56
+msgid "Has the same blocks as ``category_container.html``."
+msgstr "Hat dieselben Blöcke wie ``category_container.html``."
+
+#: ../../reference/templates.rst:174 d7333fcc26754264896cdd6a034c2882
+msgid "juntagrico/subscription/create/form/no_subscription_field.html"
+msgstr "juntagrico/subscription/create/form/no_subscription_field.html"
+
+#: ../../reference/templates.rst:176 c43fc0f2c5734db4860791179742ba95
+msgid "``description``: Textlabel on signup option without subscription"
+msgstr "``description``: Beschriftung bei Registrierungsoption ohne Abonnement"
+
+#: ../../reference/templates.rst:177 e5331c21124a4fdfbc04e4b2c59cc06d
+msgid "``base_fee``: Base fee description on signup option without subscription"
+msgstr ""
+"``base_fee``: Grundgebühr-Beschreibung bei Registrierungsoption ohne "
+"Abonnement"
+
+#: ../../reference/templates.rst:181 742f19fe498f4835b167af02e7f624fe
+msgid "juntagrico/subscription/create/select_depot.html"
+msgstr "juntagrico/subscription/create/select_depot.html"
+
+#: ../../reference/templates.rst:183 8733bdd8b3e0434484766b76fc3a9d83
+msgid "``label``: of depot selection field"
+msgstr "``label``: von Depot-Auswahlfeld"
+
+#: ../../reference/templates.rst:186 a6653000cfaa46449aced033793cd04b
+msgid "juntagrico/subscription/create/select_start_date.html"
+msgstr "juntagrico/subscription/create/select_start_date.html"
+
+#: ../../reference/templates.rst:188 e6f32bad8c2d43838b47c3638e99c025
+msgid "``label``: Label of date selection field"
+msgstr "``label``: Beschriftung des Datums-Auswahlfelds"
+
+#: ../../reference/templates.rst:189 8217e9a1f1114eb8ae302c359d9301bc
+msgid "``hint``: text below selection field"
+msgstr "``hint``: Text unter Auswahlfeld"
+
+#: ../../reference/templates.rst:192 31dc42fb066e41d59123ed4b0ec8a148
+msgid "juntagrico/subscription/create/select_shares.html"
+msgstr "juntagrico/subscription/create/select_shares.html"
+
+#: ../../reference/templates.rst:195 ff73259feb7b454d8a5e505fef346e46
+msgid "``intro_2``:  Last part of intro"
+msgstr "``intro_2`` Letzter Teil der Einleitung"
+
+#: ../../reference/templates.rst:198 74eaec6b84c84254a463bc5fb8fa6bbd
+msgid "juntagrico/subscription/create/summary.html"
+msgstr "juntagrico/subscription/create/summary.html"
+
+#: ../../reference/templates.rst:200 bac985593ba04008bcc727b5b40cbf9b
+msgid "Each section has a block:"
+msgstr "Jeder Abschnitt hat einen Block:"
+
+#: ../../reference/templates.rst:202 a07aec73686c4affa322ad2ff5a4b5b9
+msgid "``profile``"
+msgstr "``profile``"
+
+#: ../../reference/templates.rst:203 47ee2c37e0754460b4e6891a2efda244
+msgid "``subscription``"
+msgstr "``subscription``"
+
+#: ../../reference/templates.rst:204 2b5df3d7174b4f8ea07984ccacc27beb
+msgid "``depot``"
+msgstr "``depot``"
+
+#: ../../reference/templates.rst:205 4e2ab10895414b2fa5d7df1bb68fb85c
+msgid "``start_date``"
+msgstr "``start_date``"
+
+#: ../../reference/templates.rst:206 07409f03b82a412ba41eaf3f9406f1fa
+msgid "``co_member``"
+msgstr "``co_member``"
+
+#: ../../reference/templates.rst:207 307647aa043b4b27affe88282b0f2b9e
+msgid "``activity_areas``"
+msgstr "``activity_areas``"
+
+#: ../../reference/templates.rst:208 f05e329c335241ff9ff09a09cf4bf5db
+msgid "``shares``"
+msgstr "``anteilsscheine``"
+
+#: ../../reference/templates.rst:209 1080d4df723c4f67b39014371841cc7d
+msgid "``comment``"
+msgstr "``comment``"
+
+#: ../../reference/templates.rst:212 8bc2296a02634dc4896ea951f6472a2b
+msgid "Subscription Templates"
+msgstr "Abonnement-Templates"
+
+#: ../../reference/templates.rst:217 4e1574a5579a47c8b90d6bb3df4935c9
+msgid "juntagrico/my/subscription/single.html|extend"
+msgstr "juntagrico/my/subscription/single.html|extend"
+
+#: ../../reference/templates.rst:219 f69c00d1079f4a22b1b6d6c2f00f93d4
+msgid ""
+"Add content to the subscription overview page, for members that have a "
+"subscription."
+msgstr ""
+"Inhalt zur Abonnement-Übersichtsseite hinzufügen, für Mitglieder, die ein"
+" Abonnement haben."
+
+#: ../../reference/templates.rst:225 b5998e4aea86445c8c1ae0982bffdcba
+msgid "juntagrico/my/subscription/none.html|extend"
+msgstr "juntagrico/my/subscription/none.html|extend"
+
+#: ../../reference/templates.rst:227 839574c80faa404c82ec96d07160da86
+msgid ""
+"Add content to the subscription overview page, for members that have no "
+"subscription."
+msgstr ""
+"Inhalt zur Abonnement-Übersichtsseite hinzufügen, für Mitglieder, die "
+"kein Abonnement haben."
+
+#: ../../reference/templates.rst:231 ced7fdc8b39a437f9876754eedd50973
+msgid "Depot Templates"
+msgstr "Depot-Templates"
+
+#: ../../reference/templates.rst:234 8c41fff38f1244a0a31117445ba7ad74
+msgid "juntagrico/my/depot/show.html"
+msgstr "juntagrico/my/depot/show.html"
+
+#: ../../reference/templates.rst:236 5ee6c348f00b4a588389954e061b1668
+msgid "Each section has a block to overwrite or extend it:"
+msgstr ""
+"Jeder Abschnitt hat einen Block, um ihn zu überschreiben oder zu "
+"erweitern:"
+
+#: ../../reference/templates.rst:238 d5b8bdab5cf5461ebe7bd78c9e6cf058
+msgid "``address``"
+msgstr "``adresse``"
+
+#: ../../reference/templates.rst:239 25e849c6820c4a05b2f2457379afe2f5
+msgid "``pickup``"
+msgstr "``pickup``"
+
+#: ../../reference/templates.rst:240 6cd29bc26be34e5db1865cd568ec6b9b
+msgid "``contact``"
+msgstr "``kontakt``"
+
+#: ../../reference/templates.rst:241 52288f1295304b2483ca71531743f7bf
+msgid "``description``"
+msgstr "``beschreibung``"
+
+#: ../../reference/templates.rst:242 94f13e77b610480098945f3669a2613e
+msgid "``access_information``"
+msgstr "``zugangsinformation``"
+
+#: ../../reference/templates.rst:243 faf5550520a54af3beada307533c42eb
+msgid "``map``"
+msgstr "``karte``"
+
+#: ../../reference/templates.rst:247 8b6b0c4697c14b3b8a3b81885cf0dca6
+msgid "Activity Area Templates"
+msgstr "Tätigkeitsbereich-Templates"
+
+#: ../../reference/templates.rst:250 4007b9e92a9c4cad86eb8c428c10a8a9
+msgid "juntagrico/my/area/snippets/intro.html"
+msgstr "juntagrico/my/area/snippets/intro.html"
+
+#: ../../reference/templates.rst:252 ae4adcf749c54e7d932365a1f6efac11
+msgid "Intro text on the activity area overview page"
+msgstr "Einleitungstext auf der Tätigkeitsbereich-Übersichtsseite"
+
+#: ../../reference/templates.rst:254 7e48bff168384b799add47e688c2f9d3
+msgid "``all``: Use this block if you want to append or prepend text"
+msgstr ""
+"``all``: Verwende diesen Block, wenn du Text anhängen oder voranstellen "
+"möchtest"
+
+#: ../../reference/templates.rst:257 3346ef5b7c514164af985c075d5d3f84
+msgid "juntagrico/my/area/list.html"
+msgstr "juntagrico/my/area/list.html"
+
+#: ../../reference/templates.rst:259 ab5d8016672a4e95adad5b502a6a7a63
+msgid ""
+"``intro``: Intro including structure. To just change the text, override "
+"``snippets/intro.html``. See above."
+msgstr ""
+"``intro``: Einleitung inklusive Struktur. Um nur den Text zu ändern, "
+"überschreibe ``snippets/intro.html``. Siehe oben."
+
+#: ../../reference/templates.rst:260 d5af0fcf94434287b58ef46b43ee0ecd
+msgid "``list``: Entire list of activity areas"
+msgstr "``list``: Gesamte Liste der Tätigkeitsbereiche"
+
+#: ../../reference/templates.rst:261 0ef3e94c863c46feafc70f91811211fe
+msgid ""
+"``section_head``: Title above area list. If core areas exist separate "
+"titles are shown for core and non-core areas."
+msgstr ""
+"``section_head``: Titel über Bereichsliste. Wenn Kernbereiche existieren,"
+" werden separate Titel für Kern- und Nicht-Kernbereiche angezeigt."
+
+#: ../../reference/templates.rst:262 8230f9c69fd1487798f9e6b09c5df4b0
+msgid "``area_list``: List structure of activity areas"
+msgstr "``area_list``: Listenstruktur der Tätigkeitsbereiche"
+
+#: ../../reference/templates.rst:263 f6446ca524614e9eade5a71cfb07b664
+msgid "``area``: Display of activity area in list element"
+msgstr "``area``: Anzeige des Tätigkeitsbereichs im Listenelement"
+
+#: ../../reference/templates.rst:264 82b6609c857e4263853d6fb3641cef56
+msgid "``coordinated_areas``: List of areas coordinated by this user"
+msgstr ""
+"``coordinated_areas``: Liste der Bereiche, die von diesem Benutzer "
+"koordiniert werden"
+
+#: ../../reference/templates.rst:267 784e124cea8242fd823974834cbbcc4d
+msgid "juntagrico/my/area/show.html"
+msgstr "juntagrico/my/area/show.html"
+
+#: ../../reference/templates.rst:269 3799839bcad646a8a10f53e905204c59
+msgid "``join``: Slider to join activity area"
+msgstr "``join``: Schieberegler zum Beitritt zum Tätigkeitsbereich"
+
+#: ../../reference/templates.rst:270 3d7c9e2d17a84ca6b074c2789f676045
+msgid "``description``: Full description structure"
+msgstr "``description``: Vollständige Beschreibungsstruktur"
+
+#: ../../reference/templates.rst:271 2afae816fdee4b809cb16102d1140c81
+msgid "``description_text``: Description Text"
+msgstr "``description_text``: Beschreibungstext"
+
+#: ../../reference/templates.rst:272 804252ddfa8e4e75a51b690ef2e7cc7c
+msgid "``contacts``: List of activity area contacts"
+msgstr "``contacts``: Liste der Tätigkeitsbereich-Kontakte"
+
+#: ../../reference/templates.rst:273 47a77f3f6a4a483889c2722ada668edf
+msgid "``members``: Count and link to member list for admins"
+msgstr "``members``: Anzahl und Link zur Mitgliederliste für Admins"
+
+#: ../../reference/templates.rst:274 a0d9ca556a454ed3ad6d85ccb947d189
+msgid "``upcoming``: List of upcoming jobs in activity area"
+msgstr "``upcoming``: Liste der kommenden Jobs im Tätigkeitsbereich"
+
+#: ../../reference/templates.rst:277 e0499bb3a1ff4513aab43460ce07a8c9
+msgid "Membership Templates"
+msgstr "Mitgliedschafts-Templates"
+
+#: ../../reference/templates.rst:280 2a08a66dd9264e5d8b7b52f8659c70b8
+msgid "juntagrico/my/membership/cancel.html"
+msgstr "juntagrico/my/membership/cancel.html"
+
+#: ../../reference/templates.rst:282 eb772bf9030748cda0cb346314511b49
+msgid "``intro``: Text after title"
+msgstr "``intro``: Text nach Überschrift"
+
+#: ../../reference/templates.rst:285 580179ead75149c59780c84cb7264730
+msgid "juntagrico/my/membership/profile.html"
+msgstr "juntagrico/my/membership/profile.html"
+
+#: ../../reference/templates.rst:287 62145352b63041d6b93076662f21a3c3
+msgid "Blocks exist for the text in the info banner on top and for the buttons"
+msgstr "Es existieren Blöcke für den Text im Infobanner oben und für die Buttons"
+
+#: ../../reference/templates.rst:289 aaabd83edec2463894504d788b679b69
+msgid "``info_canceled``"
+msgstr "``info_canceled``"
+
+#: ../../reference/templates.rst:290 d2fd90f7c242414086c86952ad21c042
+msgid "``info_active``"
+msgstr "``info_active``"
+
+#: ../../reference/templates.rst:291 ffca539538594c709e982cebe2ebb59a
+msgid "``button_change_password``"
+msgstr "``button_change_password``"
+
+#: ../../reference/templates.rst:292 f4e690c664ab4fbcb6273ad9154d3803
+msgid "``button_cancel_membership``"
+msgstr "``button_cancel_membership``"
+
+#: ../../reference/templates.rst:296 38a3992577f7404ea0d271b63f928f91
+msgid "Widget Templates"
+msgstr "Widget-Templates"
+
+#: ../../reference/templates.rst:299 f39784b5312b4148bf190a57de51ac29
+msgid "juntagrico/widgets/assignment_progress.html|progress"
+msgstr "juntagrico/widgets/assignment_progress.html|progress"
+
+#: ../../reference/templates.rst:301 1f634a1cf8054076b0989b8c0d5c1da7
+msgid "Change appearance of the assignment progress widget in menu."
+msgstr "Aussehen des Einsatz-Fortschritts-Widgets im Menü ändern."
+
+#: ../../reference/templates.rst:303 2e14598e896044ffac6aca8a3639ca23
+msgid "E.g. to use the bean icon indicators of previous juntagrico versions do:"
+msgstr ""
+"Z.B. um die Bohnen-Icon-Indikatoren früherer Juntagrico-Versionen zu "
+"verwenden, mache folgendes:"
+
+#: ../../reference/templates.rst:314 02721e791e4b4bfc9c7db63c0ace4faa
+msgid ""
+"The ``future`` argument on ``assignment_progress`` specifies if planned "
+"future assignments are counted as well:"
+msgstr ""
+"Das ``future``-Argument bei ``assignment_progress`` spezifiziert, ob "
+"geplante zukünftige Einsätze ebenfalls gezählt werden:"
+
+#: ../../reference/templates.rst:316 9ffda79d4a014c17a70003edcf6db575
+msgid "None: Count future assignments"
+msgstr "None: Zukünftige Einsätze zählen"
+
+#: ../../reference/templates.rst:317 e93d1ca1f9e24f43993cf1bfaccf7966
+msgid "False: Don't count future assignments"
+msgstr "False: Zukünftige Einsätze nicht zählen"
+
+#: ../../reference/templates.rst:318 3b04f25477aa47328e7af3ad331cbbe5
+msgid ""
+"True: Count future assignments separately. This is not supported by the "
+"classic assignments widget."
+msgstr ""
+"True: Zukünftige Einsätze separat zählen. Dies wird vom klassischen "
+"Einsatz-Widget nicht unterstützt."

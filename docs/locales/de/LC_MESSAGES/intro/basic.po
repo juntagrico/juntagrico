@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../intro/basic.rst:4 30fa92578d12466182e1e710a46d886f
+msgid "Basic Setup"
+msgstr "Grundlegende Einrichtung"
+
+#: ../../intro/basic.rst:7 1262b1999c304e799cca10ade774ef69
+msgid "Recommended Settings"
+msgstr "Empfohlene Einstellungen"
+
+#: ../../intro/basic.rst:9 36776d09e2cb417b912574cef4f29c4b
+msgid ""
+"These settings, in the ``settings.py`` are ideally set, before the "
+"instance is used for production, as changing these settings likely "
+"require manual changes on the production data when done later."
+msgstr ""
+"Diese Einstellungen in der ``settings.py`` sollten idealerweise gesetzt "
+"werden, bevor diese Instanz für den Produktionsbetrieb verwendet wird, da"
+" Änderungen an diesen Einstellungen wahrscheinlich manuelle Anpassungen "
+"der Produktionsdaten erfordern, wenn sie später vorgenommen werden."
+
+#: ../../intro/basic.rst:13 1bcbce8b695445f395da3a778b4b05a4
+msgid "Set the Timezone"
+msgstr "Zeitzone festlegen"
+
+#: ../../intro/basic.rst:15 3017541d6cd348b198f46929445cdc9d
+msgid "Define the timezone, where your organisation is based, e.g.:"
+msgstr "Lege die Zeitzone fest, in der deine Organisation ansässig ist, z.B.:"
+
+#: ../../intro/basic.rst:22 9285f843eae14c80a15f5d4e88d4c6b6
+msgid ""
+"If this is added or changed later, all jobs will be shifted in time and "
+"will have to be adjusted."
+msgstr ""
+"Wenn dies später hinzugefügt oder geändert wird, werden alle Jobs "
+"zeitlich verschoben und müssen angepasst werden."
+
+#: ../../intro/basic.rst:25 3ddd5f9c200b4dad986228f1ab0346a3
+msgid "Count assignments by hour"
+msgstr "Zuordnungen nach Stunden zählen"
+
+#: ../../intro/basic.rst:27 b2faed665a504129ba3a1693bbc24695
+msgid ""
+"If your organization counts the members assignment per hour instead of "
+"per job, use this setting:"
+msgstr ""
+"Wenn deine Organisation die Zuordnungen von Mitgliedern pro Stunde statt "
+"pro Job zählt, verwende diese Einstellung:"
+
+#: ../../intro/basic.rst:33 23239e753ac143d2900be3441c7f7c4c
+msgid ""
+"If you change this later, the setting will only be applied to all new job"
+" signups. If you need to change it, it is recommended to change it on the"
+" change of your business year."
+msgstr ""
+"Wenn du dies später änderst, wird die Einstellung nur auf alle neuen Job-"
+"Anmeldungen angewendet. Wenn du dies ändern musst, wird empfohlen, es "
+"beim Wechsel deines Geschäftsjahres zu tun."
+
+#: ../../intro/basic.rst:37 a987c790ddf348c09591db90f09c1bde
+msgid "Initial Configuration"
+msgstr "Anfangskonfiguration"
+
+#: ../../intro/basic.rst:39 f803cf7d819d438db8bb350c9bb71893
+msgid ""
+"These configurations are done in the django admin interface inside of "
+"your instance."
+msgstr ""
+"Diese Konfigurationen werden in der Django-Admin-Oberfläche innerhalb "
+"deiner Instanz durchgeführt."
+
+#: ../../intro/basic.rst:45 bd43dbf4a4b54f91bb25f08ccb9e949d
+msgid "Configure the Website Name and Domain"
+msgstr "Website-Namen und Domain konfigurieren"
+
+#: ../../intro/basic.rst:46 4e7fa5fa94b2478baf057633e6b0d9b6
+msgid ""
+"The website name and domain are displayed in various places on the "
+"website and in some emails. In the Django-Admin under Websites edit the "
+"`example.com` entry and set the names to your website domain and display "
+"name."
+msgstr ""
+"Der Website-Name und die Domain werden an verschiedenen Stellen auf der "
+"Website und in einigen E-Mails angezeigt. Bearbeite im Django-Admin unter"
+" Websites den Eintrag `example.com` und setze die Namen auf deine "
+"Website-Domain und deinen Anzeigenamen."
+
+#: ../../intro/basic.rst:51 84b6fc77c7c240f3ab6bdde3f38c79aa
+msgid "Custom Logo & Style"
+msgstr "Benutzerdefiniertes Logo & Stil"
+
+#: ../../intro/basic.rst:54 3e89b1167ad644438686c20e5f85e0ca
+#, python-brace-format
+msgid "Replace ``{app}`` with the name of your app in the following instructions."
+msgstr "Ersetze ``{app}`` mit dem Namen deiner App in den folgenden Anweisungen."
+
+#: ../../intro/basic.rst:56 2d481f93347544669619f8cecb43e559
+#, python-brace-format
+msgid "Adjust the file ``{app}/static/{app}/css/customize.css``:"
+msgstr "Bearbeite die Datei ``{app}/static/{app}/css/customize.css``:"
+
+#: ../../intro/basic.rst:69 1b97d49afb44421a9243d33580b2a00a
+#, python-brace-format
+msgid ""
+"Add the image file of the logo to ``{app}/static/{app}/img/logo.png`` or "
+"as specified in the css above."
+msgstr ""
+"Füge die Bilddatei des Logos zu ``{app}/static/{app}/img/logo.png`` hinzu"
+" oder wie oben im CSS angegeben."
+
+#: ../../intro/basic.rst:71 8beadd35aba84b6ea606cf2620b8768e
+msgid "Other customizations can be added to the same css file."
+msgstr "Andere Anpassungen können derselben CSS-Datei hinzugefügt werden."
+
+#: ../../intro/basic.rst:74 c0715353d93748fca93ee34fde6aa18f
+msgid "Depot list setup"
+msgstr "Depotlisten-Einrichtung"
+
+#: ../../intro/basic.rst:76 58a045caae3e4688967bee1b4abe2109
+msgid "Initial List Generation"
+msgstr "Erste Liste generieren"
+
+#: ../../intro/basic.rst:77 c96acec844df49c9a8aca61907592750
+msgid ""
+"The depot lists are created by the following django management command "
+":ref:`generate_depot_list <reference-generate-depot-list>`. This command "
+"can be called manually or using a cronjob."
+msgstr ""
+"Die Depotlisten werden durch den folgenden Django-Management-Befehl "
+"erstellt :ref:`generate_depot_list <reference-generate-depot-list>`. "
+"Dieser Befehl kann manuell oder mit einem cronjob aufgerufen werden."
+
+#: ../../intro/basic.rst:80 bdac1f7082cc43548a1080708baa7a9b
+msgid ""
+"Make sure to set the :ref:`depot list settings <settings-depot>` "
+"according to your needs."
+msgstr ""
+"Stelle sicher, dass die :ref:`Depotlisten-Einstellungen <settings-depot>`"
+" entsprechend deiner Bedürfnissen gesetzt sind."
+
+#: ../../intro/basic.rst:84 584d9cd1ae3d4b6d8159c89dede8eef7
+msgid "Admin Permission Setup"
+msgstr "Administrator-Berechtigungseinrichtung"
+
+#: ../../intro/basic.rst:86 8822e0189a46412699773dc7a11db5b7
+msgid ""
+"It is recommended to limit the access for each person with an "
+"administrative task to only include the relevant access. This will make "
+"the navigation easier for them, as the menus only show what they need. "
+"And it will allow them to do their tasks with more confidence, as the "
+"risk of changing things by accident is reduced."
+msgstr ""
+"Es wird empfohlen, den Zugriff für jede Person mit administrativen "
+"Aufgaben so zu beschränken, dass nur relevante Zugriffe enthalten sind. "
+"Dies wird die Navigation für sie erleichtern, da die Menüs nur zeigen, "
+"was sie benötigen. Und es wird ihnen ermöglichen, ihre Aufgaben mit mehr "
+"Vertrauen auszuführen, da das Risiko verringert wird, versehentlich Dinge"
+" zu ändern."
+
+#: ../../intro/basic.rst:90 5b18e03638a442a1b9cee46a3e21d57c
+msgid ""
+"Juntagrico does not assume any specific organisation structure. Instead "
+"permissions can be distributed with a high level of granularity. Read "
+":ref:`Permissions <reference-permissions>` on how to set permissions."
+msgstr ""
+"Juntagrico nimmt keine spezifische Organisationsstruktur an. Stattdessen "
+"können Berechtigungen mit einem hohen Grad an Granularität verteilt "
+"werden. Lese :ref:`Berechtigungen <reference-permissions>`, wie "
+"Berechtigungen festgelegt werden."
+
+#: ../../intro/basic.rst:96 35f4d6a8f5b54913aeff4c037bd26e7f
+msgid "Configure Admin Notifications"
+msgstr "Administrator-Benachrichtigungen konfigurieren"
+
+#: ../../intro/basic.rst:98 0b08b483e5d5426d92eacfc00fbe5423
+msgid ""
+"Email notifications for admins are also configured :ref:`using "
+"permissions <reference-permission-notifications>`."
+msgstr ""
+"E-Mail-Benachrichtigungen für Administratoren werden ebenfalls :ref:`über"
+" Berechtigungen <reference-permission-notifications>` konfiguriert."
+
+#: ../../intro/basic.rst:102 ec37aa60d1ef4d74a4d019ec7f3d4d7e
+msgid "Text Adjustments"
+msgstr "Textanpassungen"
+
+#: ../../intro/basic.rst:105 19c80a99f61543799e7571ad71a39bcf
+msgid "Adjust Terminology"
+msgstr "Terminologie anpassen"
+
+#: ../../intro/basic.rst:107 8cf07b1b1bdd4565b132023ac6d158e9
+msgid ""
+"Common terms, e.g. for shares, subscriptions, members can be overridden "
+"using the ``VOCABULARY`` setting. Only set the terms you want to "
+"override, e.g.:"
+msgstr ""
+"Häufige Begriffe, z.B. für Anteile, Abonnements, Mitglieder, können "
+"überschrieben werden mittels der ``VOCABULARY``-Einstellung. Lege nur die"
+" Begriffe fest, die du überschreiben möchtest, z.B.:"
+
+#: ../../intro/basic.rst:118 4f1baee89dca4946aa840011025b723a
+msgid "Change Texts"
+msgstr "Texte ändern"
+
+#: ../../intro/basic.rst:120 1e7408b5c7c048559fa9c2388561b712
+msgid ""
+"By default the texts in juntagrico, including in automated emails, are "
+"formulated rather neutral, such that they are applicable to most of the "
+"basic use cases of juntagrico. You may want to add additional hints or "
+"some personal touch to the texts."
+msgstr ""
+"Standardmässig sind die Texte in Juntagrico, einschliesslich "
+"automatisierter E-Mails, eher neutral formuliert, sodass sie auf die "
+"meisten grundlegenden Gebrauchsfälle von Juntagrico anwendbar sind. Du "
+"möchtest möglicherweise zusätzliche Hinweise oder eine persönliche Note "
+"zu den Texten hinzufügen."
+
+#: ../../intro/basic.rst:124 e481d613c8134b7891f3a74c117d529a
+msgid ""
+"Most texts can be modified using :ref:`custom templates <intro-custom-"
+"templates>`. Some texts, e.g. in forms, can be changed with :ref:`custom "
+"code <intro-custom-code>`."
+msgstr ""
+"Die meisten Texte können mittels :ref:`benutzerdefinierter Vorlagen "
+"<intro-custom-templates>` modifiziert werden. Einige Texte, z.B. in "
+"Formularen, können mit :ref:`benutzerdefiniertem Code <intro-custom-"
+"code>` geändert werden."
+
+#: ../../intro/basic.rst:128 f6d7f75dff7f4ec690b5816bd1b74e9e
+msgid ""
+"If you make modifications to the code or templates, you may have to adapt"
+" these, whenever they are updated in juntagrico."
+msgstr ""
+"Wenn du Änderungen am Code oder an Vorlagen vornehmen, musst du diese "
+"möglicherweise anpassen, wann immer sie in Juntagrico aktualisiert "
+"werden."

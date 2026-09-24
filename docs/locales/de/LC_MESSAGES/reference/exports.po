@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../reference/exports.rst:4 bfb7cc015cf74f3bb0abf0343984ddf1
+msgid "Exports"
+msgstr "Exporte"
+
+#: ../../reference/exports.rst:6 afbc6fcf1b094f15b7c9a280b7b8e097
+msgid ""
+"Juntagrico uses `django_import_export <https://django-import-"
+"export.readthedocs.io/en/stable/>`_ to provide customizable data exports."
+msgstr ""
+"Juntagrico nutzt `django_import_export <https://django-import-"
+"export.readthedocs.io/en/stable/>`_, um anpassbare Daten-Exporte "
+"bereitzustellen."
+
+#: ../../reference/exports.rst:9 0cb8362bc8e2474bb24bf0a1510d5680
+msgid "Export Formats"
+msgstr "Export-Formate"
+
+#: ../../reference/exports.rst:11 40ca02aed7e9448c9b6e398f2c4936fb
+msgid ""
+"All formats supported by `tablib "
+"<https://tablib.readthedocs.io/en/stable/formats.html>`_ can be used for "
+"export. Some formats have additional dependencies. Add these to you "
+"``requirements.txt`` if you want to export in these formats:"
+msgstr ""
+"Alle Formate, die von `tablib "
+"<https://tablib.readthedocs.io/en/stable/formats.html>`_ unterstützt "
+"werden, können für Exporte verwendet werden. Einige Formate haben "
+"zusätzliche Abhängigkeiten. Füge diese zu deiner ``requirements.txt`` "
+"hinzu, wenn du in diesen Formaten exportieren möchtest:"
+
+#: ../../reference/exports.rst:14 3f1cb31b397644ec9592c30350c145b5
+msgid "xlsx: ``openpyxl>=2.6.0``"
+msgstr "xlsx: ``openpyxl>=2.6.0``"
+
+#: ../../reference/exports.rst:15 6cf7ce3e809c44f7aabd549e4315b2dd
+msgid "xls: ``xlwt``"
+msgstr "xls: ``xlwt``"
+
+#: ../../reference/exports.rst:16 b16e32f5fdc446a09f2984f7593ea74b
+msgid "ods: ``odfpy``"
+msgstr "ods: ``odfpy``"
+
+#: ../../reference/exports.rst:17 6df5283af4164b4b9b8eea4ccb1a18d1
+msgid "yaml: ``pyyaml``"
+msgstr "yaml: ``pyyaml``"
+
+#: ../../reference/exports.rst:21 e126c74f84e44de1963f720d251a9d1a
+msgid "Add Export"
+msgstr "Export hinzufügen"
+
+#: ../../reference/exports.rst:23 25af559e9b7f48a39228344b202469c7
+msgid ""
+"Exports are defined in a ``Resource`` class. Read the `documentation of "
+"django_import_export on how to define resources <https://django-import-"
+"export.readthedocs.io/en/stable/advanced_usage.html#customize-resource-"
+"options>`_."
+msgstr ""
+"Exporte werden in einer ``Resource``-Klasse definiert. Lies die "
+"`Dokumentation von django_import_export zur Definition von Ressourcen "
+"<https://django-import-"
+"export.readthedocs.io/en/stable/advanced_usage.html#customize-resource-"
+"options>`_."
+
+#: ../../reference/exports.rst:27 862d970821e346ba9ee5263c7fc12c14
+msgid "Example Resources"
+msgstr "Beispiel-Ressourcen"
+
+#: ../../reference/exports.rst:47 e1283b7be7a0494c8b84a2190e59d740
+msgid "Integrating your Resources"
+msgstr "Integration deiner Ressourcen"
+
+#: ../../reference/exports.rst:49 298321d8b1f34d3e868f30d48003a54c
+msgid ""
+"You need to modify the admin classes, where the export shall be shown. "
+"See :ref:`Custom Code <intro-custom-code>` on where to add this code."
+msgstr ""
+"Du musst die Admin-Klassen ändern, in denen der Export angezeigt werden "
+"soll. Siehe :ref:`Eigenes Code <intro-custom-code>`, wo du diesen Code "
+"hinzufügen kannst."
+
+#: ../../reference/exports.rst:51 340769112b5a4c8986bb208625b3fbdd
+msgid "If the admin already has an export, it is easy to add another one:"
+msgstr ""
+"Wenn der Admin bereits einen Export hat, ist es einfach, einen weiteren "
+"hinzuzufügen:"
+
+#: ../../reference/exports.rst:59 8975b17a9d6e44d48733190ec9119938
+msgid ""
+"Otherwise you will have to modify the existing admin with the "
+"``ExportMixin`` class."
+msgstr ""
+"Andernfalls musst du den bestehenden Admin mit der ``ExportMixin``-Klasse"
+" ändern."
+
+#: ../../reference/exports.rst:62 a5fec706717e4e41ab7523dce3570240
+msgid ""
+"For admins that use the ``SortableAdminMixin``, use "
+"``SortableExportMixin`` instead."
+msgstr ""
+"Für Admins, die ``SortableAdminMixin`` verwenden, verwende stattdessen "
+"``SortableExportMixin``."

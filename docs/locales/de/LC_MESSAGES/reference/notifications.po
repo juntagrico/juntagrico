@@ -1,0 +1,725 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../reference/notifications.rst:4 35cc1404e3474bb7a00336c9944b89a8
+msgid "Notifications & Emails"
+msgstr "Benachrichtigungen & E-Mails"
+
+#: ../../reference/notifications.rst:6 c9a1b25237dd470b934903186213cfde
+msgid ""
+"Juntagrico sends out automatic notifications to members and admins via "
+"email."
+msgstr ""
+"Juntagrico sendet automatische Benachrichtigungen an Mitglieder und "
+"Admins per E-Mail."
+
+#: ../../reference/notifications.rst:8 de9b34175e0849b7adcdda0c2f505c16
+msgid ""
+"The content of each notification can be modified by overriding their "
+"template, listed below. See :ref:`template overrides <reference-"
+"templates>` on how to set it up."
+msgstr ""
+"Der Inhalt jeder Benachrichtigung kann durch Überschreiben ihrer Vorlage "
+"angepasst werden, die unten aufgelistet ist. Siehe :ref:`Template-"
+"Überschreibungen <reference-templates>`, wie dies eingerichtet wird."
+
+#: ../../reference/notifications.rst:11 9911121e1ac4460b82fadf25f1fd0081
+msgid ""
+"For some notifications recipients can be configured :ref:`using "
+"permissions <reference-permission-notifications>`."
+msgstr ""
+"Bei einigen Benachrichtigungen können Empfänger :ref:`mittels "
+"Berechtigungen <reference-permission-notifications>` konfiguriert werden."
+
+#: ../../reference/notifications.rst:13 72f4467691094e8aaff40b6d4224b0c5
+msgid ""
+"You can preview the emails using the manage.py :ref:`mailtexts command "
+"<reference-commands-mailtexts>`."
+msgstr ""
+"Du kannst die E-Mails mit dem manage.py :ref:`mailtexts-Befehl "
+"<reference-commands-mailtexts>` vorschauen."
+
+#: ../../reference/notifications.rst:16 d42113b0b49843ec8fc37604abc05bfa
+msgid "Email Header & Footer"
+msgstr "E-Mail-Kopfzeile & Fusszeile"
+
+#: ../../reference/notifications.rst:18 1ee9c5a169b94a7eb16e27eeac04aaab
+msgid ""
+"All emails are sent using these base templates. Override these to change "
+"the header, footer and formatting of the email:"
+msgstr ""
+"Alle E-Mails werden mit diesen Basis-Templates versendet. Überschreibe "
+"diese, um Kopfzeile, Fusszeile und Formatierung der E-Mail zu ändern:"
+
+#: ../../reference/notifications.rst:20 c915e3f8e0c34884904958bcd4c9d5de
+msgid "`mails/email.txt`"
+msgstr "`mails/email.txt`"
+
+#: ../../reference/notifications.rst:21 85efdfbe34db42b59fcaf734d9739238
+msgid "`mails/email.html`"
+msgstr "`mails/email.html`"
+
+#: ../../reference/notifications.rst:25 213354506b694e3ea7d777eca647ab19
+msgid "Signup Emails"
+msgstr "Registrierungs-E-Mails"
+
+#: ../../reference/notifications.rst:28 9fddb78c5554478585ae45d69ceb4b7a
+msgid ""
+"Never add text, that is entered during the signup process, e.g. in the "
+"comment field, to the email content. This could be abused to send spam."
+msgstr ""
+"Füge niemals Text, der während des Registrierungsprozesses eingegeben "
+"wird, z.B. im Kommentar-Feld, zum E-Mail-Inhalt hinzu. Dies könnte "
+"missbraucht werden, um Spam zu versenden."
+
+#: ../../reference/notifications.rst:32 cc1b12e2cf6148699632eb591f4df288
+msgid "Welcome member"
+msgstr "Willkommen Mitglied"
+
+#: ../../reference/notifications.rst:33 4d0dc65946b345a7993e449bdc1d643c
+msgid "Trigger: Member completes the signup process"
+msgstr "Auslöser: Mitglied schliesst den Registrierungsprozess ab"
+
+#: ../../reference/notifications.rst:35 774ed642bb614cb9a89157391f719efb
+msgid "Template: ``mails/member/member_welcome.txt``"
+msgstr "Template: ``mails/member/member_welcome.txt``"
+
+#: ../../reference/notifications.rst:37 0a0d083989694eeb924df091c0d892a9
+msgid "Recipients: The member who signed up"
+msgstr "Empfänger: Das Mitglied, das sich registriert hat"
+
+#: ../../reference/notifications.rst:40 064b8a131a264d2d8468de6ebef77bef
+msgid "Welcome co-member"
+msgstr "Willkommen Nebenmitglied"
+
+#: ../../reference/notifications.rst:41 e5148fed08544298abb2811964ab6645
+msgid "Trigger: Member completes the signup process where they added co-members"
+msgstr ""
+"Auslöser: Mitglied schliesst den Registrierungsprozess ab, bei dem es "
+"Nebenmitglieder hinzugefügt hat"
+
+#: ../../reference/notifications.rst:43 6312a2b5d1f842df912ab47f9e10206a
+msgid ""
+"Template: The template depends on whether the co-member already had an "
+"account"
+msgstr ""
+"Template: Das Template hängt davon ab, ob das Nebenmitglied bereits einen"
+" Account hatte"
+
+#: ../../reference/notifications.rst:45 91f1813dab5f43889c0e4bde82d83ba1
+msgid "For new co-members: ``mails/member/co_member_welcome.txt``"
+msgstr "Für neue Nebenmitglieder: ``mails/member/co_member_welcome.txt``"
+
+#: ../../reference/notifications.rst:46 ee5cf0f8ac294a7094827e6adb07c91a
+msgid "For co-members with an existing account: ``mails/member/co_added.txt``"
+msgstr "Für Nebenmitglieder mit bestehendem Account: ``mails/member/co_added.txt``"
+
+#: ../../reference/notifications.rst:48 0d255efd8db6445fb02a750811ef0fa0
+msgid "Recipients: The co-member(s) added during the signup process"
+msgstr ""
+"Empfänger: Das/die Nebenmitglied(er), das/die während des "
+"Registrierungsprozesses hinzugefügt wurde(n)"
+
+#: ../../reference/notifications.rst:51 bb598bc42c9245458a67c98d9b07d4ab
+msgid "Email address confirmation"
+msgstr "E-Mail-Adresse bestätigen"
+
+#: ../../reference/notifications.rst:52 bc484d3f0caa460b9477bc05534b2f7f
+msgid "Trigger: Member requests a new email address confirmation link"
+msgstr "Auslöser: Mitglied fordert einen neuen E-Mail-Adresse-Bestätigungslink an"
+
+#: ../../reference/notifications.rst:54 684de13d11504fa78bd9967d3b760bf2
+msgid "Template: ``mails/member/email_confirm.txt``"
+msgstr "Template: ``mails/member/email_confirm.txt``"
+
+#: ../../reference/notifications.rst:56 ../../reference/notifications.rst:64
+#: 84e7f3cdbe754d83809f8a59687b4314 89c6dc03f0c343bcb9e0ebb390ae5040
+msgid "Recipients: The same member"
+msgstr "Empfänger: Dasselbe Mitglied"
+
+#: ../../reference/notifications.rst:59 2e64e9ec509744ab8b857e4420f8bd8b
+msgid "Password Reset"
+msgstr "Passwort zurücksetzen"
+
+#: ../../reference/notifications.rst:60 cc882363ecab46ea910bc0aa23675ff6
+msgid "Trigger: Member fills out the \"forgot password\" form"
+msgstr "Auslöser: Mitglied füllt das \"Passwort vergessen\"-Formular aus"
+
+#: ../../reference/notifications.rst:62 1b9bb84f082e420f98a6d8958db56bb9
+msgid "Template: ``mails/member/password_reset.txt``"
+msgstr "Template: ``mails/member/password_reset.txt``"
+
+#: ../../reference/notifications.rst:67 3d7fa25ecd844c0c815931465fbad8bc
+msgid "Membership Notifications"
+msgstr "Mitgliedschafts-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:72 326be03c7d5a47b88f8630a9cfd8a51a
+msgid "Member Created"
+msgstr "Mitglied erstellt"
+
+#: ../../reference/notifications.rst:73 2888296e15c342119b58ed7a2355fe85
+msgid ""
+"Trigger: On signal :ref:`member_created <reference-signals-member-"
+"created>`"
+msgstr ""
+"Auslöser: Auf Signal :ref:`member_created <reference-signals-member-"
+"created>`"
+
+#: ../../reference/notifications.rst:75 a22f2212b9fb41bd8f4bb4aa01306afa
+msgid "Template: ``mails/admin/member_created.txt``"
+msgstr "Template: ``mails/admin/member_created.txt``"
+
+#: ../../reference/notifications.rst:77 3aa26d26f785474686aa0cf766f7bc0d
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_member_creation <reference-permissions-"
+"notified_on_member_creation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_member_creation <reference-permissions-"
+"notified_on_member_creation>`"
+
+#: ../../reference/notifications.rst:82 8a4b3598bad342d7ac9940affef05de4
+msgid "Member Canceled"
+msgstr "Mitglied gekündigt"
+
+#: ../../reference/notifications.rst:84 b0055437345e4da8b3fe1d567e32e07b
+msgid ""
+"Trigger: On signal :ref:`canceled <reference-signals-canceled>` from "
+"sender ``Member``"
+msgstr ""
+"Auslöser: Auf Signal :ref:`canceled <reference-signals-"
+"canceled>` vom Sender ``Member``"
+
+#: ../../reference/notifications.rst:86 a1bf2cd0ca6642c09d2bf8d2104b1c21
+msgid "Template: ``mails/admin/member_canceled.txt``"
+msgstr "Template: ``mails/admin/member_canceled.txt``"
+
+#: ../../reference/notifications.rst:88 ec2a06346cbe4b6ca4386ad063aaf207
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_member_cancellation <reference-permissions-"
+"notified_on_member_cancellation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_member_cancellation <reference-permissions-"
+"notified_on_member_cancellation>`"
+
+#: ../../reference/notifications.rst:92 2aad3c1be5784b34be1a971b745cf887
+msgid "Subscription Notifications"
+msgstr "Abonnement-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:97 ../../reference/notifications.rst:183
+#: 79061dc45c07445f8cbf51a8d23572e7 f0d88bcb72c046d09d2072adf99edca0
+msgid "Created"
+msgstr "Erstellt"
+
+#: ../../reference/notifications.rst:98 d65aeaa6cc64447aa163407c5c58cca3
+msgid "Trigger: New or existing member orders a new subscription"
+msgstr "Auslöser: Neues oder bestehendes Mitglied bestellt ein neues Abonnement"
+
+#: ../../reference/notifications.rst:100 3629f180fb8343cd9d9d2d828a3fd075
+msgid "Template: ``mails/admin/subscription_created.txt``"
+msgstr "Template: ``mails/admin/subscription_created.txt``"
+
+#: ../../reference/notifications.rst:102 78b9030139f74881a87c9545e308b289
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_subscription_creation <reference-"
+"permissions-notified_on_subscription_creation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_subscription_creation <reference-"
+"permissions-notified_on_subscription_creation>`"
+
+#: ../../reference/notifications.rst:107 9ce09ba901064cbb92bfea8a0c1abf1b
+msgid "Part Created"
+msgstr "Teil erstellt"
+
+#: ../../reference/notifications.rst:108 333e8dfb798542b19dd613b22bf43217
+msgid ""
+"Trigger: Member with an existing susbcription orders a new subscription "
+"part or changes one"
+msgstr ""
+"Auslöser: Mitglied mit bestehendem Abonnement bestellt ein neues "
+"Abonnement-Teil oder ändert eines"
+
+#: ../../reference/notifications.rst:110 4ca5faa3ea294417a6662141c557c105
+msgid "Template: ``mails/admin/subpart_created.txt``"
+msgstr "Template: ``mails/admin/subpart_created.txt``"
+
+#: ../../reference/notifications.rst:112 85b9a81dcfaa42b69860ceed381c624b
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_subscriptionpart_creation <reference-"
+"permissions-notified_on_subscriptionpart_creation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_subscriptionpart_creation <reference-"
+"permissions-notified_on_subscriptionpart_creation>`"
+
+#: ../../reference/notifications.rst:117 8325712e984841039e0fdd81b57334a0
+msgid "Part Canceled"
+msgstr "Teil gekündigt"
+
+#: ../../reference/notifications.rst:118 b861f80f3da349e190f604c3439a85fa
+msgid ""
+"Trigger: Member cancels a subscription part or changes one, but not the "
+"entire subscription"
+msgstr ""
+"Auslöser: Mitglied kündigt ein Abonnement-Teil oder ändert eines, aber "
+"nicht das gesamte Abonnement"
+
+#: ../../reference/notifications.rst:120 9393b7e814ed453a84c6bb8f7edb27aa
+msgid "Template: ``mails/admin/subpart_canceled.txt``"
+msgstr "Template: ``mails/admin/subpart_canceled.txt``"
+
+#: ../../reference/notifications.rst:122 a118740f6eee48f5b7589a79c34325b6
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_subscriptionpart_cancellation <reference-"
+"permissions-notified_on_subscriptionpart_cancellation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_subscriptionpart_cancellation <reference-"
+"permissions-notified_on_subscriptionpart_cancellation>`"
+
+#: ../../reference/notifications.rst:127 ../../reference/notifications.rst:194
+#: ../../reference/notifications.rst:243 910d9991232447fd939ec86729d7b0b3
+#: 9367a66b0ec44b07a2e3aa1d25d38f95 c77b3622d311483b986f61571f6a866c
+msgid "Canceled"
+msgstr "Gekündigt"
+
+#: ../../reference/notifications.rst:128 f680eed804ff436c9a1f59eab195cecf
+msgid "Trigger: Member cancels the entire subscription"
+msgstr "Auslöser: Mitglied kündigt das gesamte Abonnement"
+
+#: ../../reference/notifications.rst:130 c2a98b81ddb641c688a305eb0e96dc58
+msgid "Template: ``mails/admin/subscription_canceled.txt``"
+msgstr "Template: ``mails/admin/subscription_canceled.txt``"
+
+#: ../../reference/notifications.rst:132 6f62d26ac6cd450f97eefb55a528abdf
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_subscription_cancellation <reference-"
+"permissions-notified_on_subscription_cancellation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_subscription_cancellation <reference-"
+"permissions-notified_on_subscription_cancellation>`"
+
+#: ../../reference/notifications.rst:136 cb4e7e54b774465c836a35b228cd1bb2
+msgid "Left Subscription"
+msgstr "Abonnement verlassen"
+
+#: ../../reference/notifications.rst:137 1d561e6a57fc4fadab26c299dbf2da13
+msgid "Trigger: Member leaves their subscription"
+msgstr "Auslöser: Mitglied verlässt sein Abonnement"
+
+#: ../../reference/notifications.rst:139 b0c3a64b2f02419bba5ec8851eb7607c
+msgid "Template: ``mails/member/co_member_left_subscription.txt``"
+msgstr "Template: ``mails/member/co_member_left_subscription.txt``"
+
+#: ../../reference/notifications.rst:141 63710fb2526f49cd8f90df7456c2fd2d
+msgid "Recipients: The primary member of the subscription"
+msgstr "Empfänger: Das Hauptmitglied des Abonnements"
+
+#: ../../reference/notifications.rst:145 c4c71425f84c4b45a5eec00517b90bc6
+msgid "Depot notifications"
+msgstr "Depot-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:150 5a82d580cab647fd964d5e1cff5a402d
+msgid "Change Request"
+msgstr "Änderungsanfrage"
+
+#: ../../reference/notifications.rst:151 1f475af64ff442eab713b517cc8db95f
+msgid ""
+"Trigger: On signal :ref:`depot_changed <reference-signals-depot_changed>`"
+" from sender ``Subscription``"
+msgstr ""
+"Auslöser: Auf Signal :ref:`depot_changed <reference-signals-"
+"depot_changed>` vom Sender ``Subscription``"
+
+#: ../../reference/notifications.rst:153 05fdaf0788d44a9c863a7077b67cb260
+msgid "Template: ``juntagrico/mails/admin/depot_changed.txt``"
+msgstr "Template: ``juntagrico/mails/admin/depot_changed.txt``"
+
+#: ../../reference/notifications.rst:155 1439362ec80d494b910100281befb1a1
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_depot_change <reference-permissions-"
+"notified_on_depot_change>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_depot_change <reference-permissions-"
+"notified_on_depot_change>`"
+
+#: ../../reference/notifications.rst:161 2a9b45457e564df092216a41779539cf
+msgid "Change Confirmation"
+msgstr "Änderungsbestätigung"
+
+#: ../../reference/notifications.rst:162 450d3928ac3543caaaaa7897e928c332
+msgid ""
+"Trigger: On signal :ref:`depot_change_confirmed <reference-signals-"
+"depot_change_confirmed>` from sender ``Subscription``"
+msgstr ""
+"Auslöser: Auf Signal :ref:`depot_change_confirmed <reference-signals-"
+"depot_change_confirmed>` vom Sender ``Subscription``"
+
+#: ../../reference/notifications.rst:164 c138e059ff6e49938617d3a0a838bcc8
+msgid "Template: ``mails/member/depot_changed.txt``"
+msgstr "Template: ``mails/member/depot_changed.txt``"
+
+#: ../../reference/notifications.rst:166 811d374984e74fbf92a60271df887583
+msgid "Recipients: Primary member of the subscription with co-members in cc"
+msgstr "Empfänger: Hauptmitglied des Abonnements mit Nebenmitgliedern in CC"
+
+#: ../../reference/notifications.rst:170 2ac646ac4d164d80867fa51ae4405098
+msgid "Share Notifications"
+msgstr "Anteilscheine-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:173 1f6a380f557148888c47a1d12995e381
+msgid "Ordered"
+msgstr "Bestellt"
+
+#: ../../reference/notifications.rst:174 b72acadc63034065895d377185238e3c
+msgid "Trigger: Member orders a share for themselves or their co-members"
+msgstr ""
+"Auslöser: Mitglied bestellt eine Aktie für sich selbst oder seine "
+"Nebenmitglieder"
+
+#: ../../reference/notifications.rst:176 04a2c31667eb4ee9a5979ff695721518
+msgid "Template: ``mails/member/share_created.txt``"
+msgstr "Template: ``mails/member/share_created.txt``"
+
+#: ../../reference/notifications.rst:178 c59ee9fec6454d999d2675848b46e442
+msgid "Recipients: The member that owns the ordered share"
+msgstr "Empfänger: Das Mitglied, das die bestellte Aktie besitzt"
+
+#: ../../reference/notifications.rst:184 e17690574d35482581aa27df9f6c2cbd
+msgid "Trigger: On signal :ref:`share_created <reference-signals-share_created>`"
+msgstr ""
+"Auslöser: Auf Signal :ref:`share_created <reference-signals-"
+"share_created>`"
+
+#: ../../reference/notifications.rst:186 29b234a6e8494b45bead70f613a8a945
+msgid "Template: ``mails/admin/share_created.txt``"
+msgstr "Template: ``mails/admin/share_created.txt``"
+
+#: ../../reference/notifications.rst:188 fe004ebd88374aed91c1e2a08ae83100
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_share_creation <reference-permissions-"
+"notified_on_share_creation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_share_creation <reference-permissions-"
+"notified_on_share_creation>`"
+
+#: ../../reference/notifications.rst:195 afa1936bfde1490782937d6c116d10c8
+msgid ""
+"Trigger: On signal :ref:`share_canceled <reference-signals-"
+"share_canceled>`"
+msgstr ""
+"Auslöser: Auf Signal :ref:`share_canceled <reference-signals-"
+"share_canceled>`"
+
+#: ../../reference/notifications.rst:197 b01ffb230b794eb7b89c61d8204eba64
+msgid "Template: ``mails/admin/share_canceled.txt``"
+msgstr "Template: ``mails/admin/share_canceled.txt``"
+
+#: ../../reference/notifications.rst:199 231f802c526140c8bce0d19f9af1b4d1
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.notified_on_share_cancellation <reference-permissions-"
+"notified_on_share_cancellation>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.notified_on_share_cancellation <reference-permissions-"
+"notified_on_share_cancellation>`"
+
+#: ../../reference/notifications.rst:203 8aa32a0385a84cf08220366703ccf1aa
+msgid "Job Notifications"
+msgstr "Job-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:208 c106f287ffc74fb198b053ed6369d69f
+msgid "Subscribed"
+msgstr "Abonniert"
+
+#: ../../reference/notifications.rst:209 b87a912779f24272b87e570bdc01783e
+msgid ""
+"Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from "
+"sender ``Job`` if member had no assignment in job before"
+msgstr ""
+"Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom"
+" Sender ``Job``, wenn Mitglied zuvor keine Aufgabe im Job hatte"
+
+#: ../../reference/notifications.rst:212 ../../reference/notifications.rst:257
+#: ../../reference/notifications.rst:274 ../../reference/notifications.rst:291
+#: ../../reference/notifications.rst:309 74e35aa7919e46fca09a6f78bf03980d
+#: 7eb57529e4a84aca826fdbf0d900cb58 e51a8ae454aa4c3d862d4d625a27c6be
+#: ef7d5d69acfa4eb298016e299331c9dc f36008c690764a7da970a44e94333cf2
+msgid "Templates:"
+msgstr "Templates:"
+
+#: ../../reference/notifications.rst:214 bdb892298ec54485b67859246f21b94a
+msgid "``mails/admin/share_canceled.txt`` email to member"
+msgstr "``mails/admin/share_canceled.txt`` E-Mail an Mitglied"
+
+#: ../../reference/notifications.rst:215 6be6a51981e0495289cd5b450e58ee7f
+msgid "``juntagrico/mails/admin/job/signup.txt`` email to contact of the job"
+msgstr "``juntagrico/mails/admin/job/signup.txt`` E-Mail an Kontakt des Jobs"
+
+#: ../../reference/notifications.rst:217 ../../reference/notifications.rst:262
+#: ../../reference/notifications.rst:279 ../../reference/notifications.rst:296
+#: ../../reference/notifications.rst:314 4394b81f170f4ab9acef497e69dcfed2
+#: 611b874cd7e349d99540912b79c01c3d 763790fd9f5a4db89fe14b0989575397
+#: c04322cc6aa3467e8acce2a357f9af47 ca3b9b4ae56e4700803a7d4faf95080b
+msgid "Recipients:"
+msgstr "Empfänger:"
+
+#: ../../reference/notifications.rst:219 39efd3d571774ff487467b63251aad78
+msgid "Member that signup up for the job"
+msgstr "Mitglied, das sich für den Job angemeldet hat"
+
+#: ../../reference/notifications.rst:220 ../../reference/notifications.rst:265
+#: ../../reference/notifications.rst:282 010fc99b735f41f395a5955a197052f0
+#: e153da77fa254775bf19bca30b4434dd e7654e59712e4aacba52352d11bb7b81
+msgid ""
+"Contact of the job. Falls back to contact(s) of job type or area that "
+"display their email."
+msgstr ""
+"Kontakt des Jobs. Fällt zurück auf Kontakt(e) des Job-Typs oder Bereichs,"
+" der/die seine/seine E-Mail anzeigen."
+
+#: ../../reference/notifications.rst:223 d056cda69f3d4c2b95cf2df494f22f15
+msgid "Reminder"
+msgstr "Erinnerung"
+
+#: ../../reference/notifications.rst:224 98846fb05dca4a8a89bb9edef79fcc0b
+msgid "Trigger: Via cron job, 2 days before job starts"
+msgstr "Auslöser: Über Cron-Job, 2 Tage bevor Job beginnt"
+
+#: ../../reference/notifications.rst:226 1fa8cbe3e20b4632b9a69948356961bc
+msgid "Template: ``mails/member/job_reminder.txt``"
+msgstr "Template: ``mails/member/job_reminder.txt``"
+
+#: ../../reference/notifications.rst:228 ../../reference/notifications.rst:238
+#: ../../reference/notifications.rst:248 32659c466ad54895bde0cbc6f12e149a
+#: a954bf1318254d62a8b64a277cfbb419 fc1634bf35a0443aaf5208876b150a80
+msgid "Recipient: All member that are signup up for the job"
+msgstr "Empfänger: Alle Mitglieder, die sich für den Job angemeldet haben"
+
+#: ../../reference/notifications.rst:233 db86a60942314dd0880248687214b8ec
+msgid "Job time changed"
+msgstr "Job-Zeit geändert"
+
+#: ../../reference/notifications.rst:234 fb03f5f40a7e4e77813edfe2396cd5c6
+msgid ""
+"Trigger: On signal :ref:`job_time_changed <reference-signals-"
+"job_time_changed>` from sender ``RecuringJob`` or ``OneTimeJob``"
+msgstr ""
+"Auslöser: Auf Signal :ref:`job_time_changed <reference-signals-"
+"job_time_changed>` vom Sender ``RecuringJob`` oder ``OneTimeJob``"
+
+#: ../../reference/notifications.rst:236 e5237667c9d24eaa8b5f00f07b63a9cf
+msgid "Template: ``mails/member/job_time_changed.txt``"
+msgstr "Template: ``mails/member/job_time_changed.txt``"
+
+#: ../../reference/notifications.rst:244 bdf7fb87534f4724bb5a4b223cfa9729
+msgid ""
+"Trigger: On signal :ref:`job_canceled <reference-signals-job_canceled>` "
+"from sender ``RecuringJob`` or ``OneTimeJob``"
+msgstr ""
+"Auslöser: Auf Signal :ref:`job_canceled <reference-signals-job_canceled>`"
+" vom Sender ``RecuringJob`` oder ``OneTimeJob``"
+
+#: ../../reference/notifications.rst:246 fa0a3c8d4b084342ba16aa2c297a6f35
+msgid "Template: ``mails/member/job_canceled.txt``"
+msgstr "Template: ``mails/member/job_canceled.txt``"
+
+#: ../../reference/notifications.rst:253 f5a5a3ead6ee47d3b632f9c690ee86f2
+msgid "Job Subscription changed"
+msgstr "Job-Abonnement geändert"
+
+#: ../../reference/notifications.rst:254 69a8cf567f4e4bafac0f21a04e836ec9
+msgid ""
+"Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from "
+"sender ``Job`` if member had assignment(s) in job before and still has "
+"assignment(s) after the change"
+msgstr ""
+"Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom"
+" Sender ``Job``, wenn Mitglied vorher Aufgaben im Job hatte und nach der "
+"Änderung immer noch Aufgaben hat"
+
+#: ../../reference/notifications.rst:259 3316dacb17974e81a7101d7202df4c8d
+msgid "``juntagrico/mails/member/job/subscription_changed.txt`` email to member"
+msgstr ""
+"``juntagrico/mails/member/job/subscription_changed.txt`` E-Mail an "
+"Mitglied"
+
+#: ../../reference/notifications.rst:260 5169e769db8b4538b7f8f3455254a269
+msgid ""
+"``juntagrico/mails/admin/job/changed_subscription.txt`` email to contact "
+"of the job"
+msgstr ""
+"``juntagrico/mails/admin/job/changed_subscription.txt`` E-Mail an Kontakt"
+" des Jobs"
+
+#: ../../reference/notifications.rst:264 fff7770aaf934b26b20bcc0396962206
+msgid "Member that changed their subscription to the job"
+msgstr "Mitglied, das sein Abonnement zum Job geändert hat"
+
+#: ../../reference/notifications.rst:270 0fba8c52a4f446fdb9acbcb382e8c262
+msgid "Unsubscribed from assignment"
+msgstr "Von Aufgabe abgemeldet"
+
+#: ../../reference/notifications.rst:271 0463589aa98c4f7ca3c891715b5a2838
+msgid ""
+"Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from "
+"sender ``Job`` if member had assignment(s) in job before and has none "
+"now."
+msgstr ""
+"Auslöser: Auf Signal :ref:`subscribed <reference-signals-subscribed>` vom"
+" Sender ``Job``, wenn Mitglied vorher Aufgaben im Job hatte und jetzt "
+"keine hat."
+
+#: ../../reference/notifications.rst:276 865cbc351b564fedaced877e20e37156
+msgid "``juntagrico/mails/member/job/unsubscribed.txt`` email to member"
+msgstr "``juntagrico/mails/member/job/unsubscribed.txt`` E-Mail an Mitglied"
+
+#: ../../reference/notifications.rst:277 8914321699954fee827f6e5727b7ab3d
+msgid ""
+"``juntagrico/mails/admin/job/unsubscribed.txt`` email to contact of the "
+"job"
+msgstr "``juntagrico/mails/admin/job/unsubscribed.txt`` E-Mail an Kontakt des Jobs"
+
+#: ../../reference/notifications.rst:281 cfc26ce6406744c8861e0baac83bcdcd
+msgid "Member that unsubscribed from the job"
+msgstr "Mitglied, das sich vom Job abgemeldet hat"
+
+#: ../../reference/notifications.rst:287 f489495b24bb430dae8e5a4ef3aca7b6
+msgid "Assignment changed"
+msgstr "Aufgabe geändert"
+
+#: ../../reference/notifications.rst:288 444bb196ce4445e58175554ba1e06a46
+msgid ""
+"Trigger: On signal :ref:`assignment_changed <reference-signals-member-"
+"assignment_changed>` from sender ``Member`` if member still has "
+"assignment(s) in job."
+msgstr ""
+"Auslöser: Auf Signal :ref:`assignment_changed <reference-signals-member-"
+"assignment_changed>` vom Sender ``Member``, wenn Mitglied immer noch "
+"Aufgaben im Job hat."
+
+#: ../../reference/notifications.rst:293 e34a445832f045558fd4d57ca2eaa515
+msgid "``juntagrico/mails/member/assignment/changed.txt`` email to member"
+msgstr "``juntagrico/mails/member/assignment/changed.txt`` E-Mail an Mitglied"
+
+#: ../../reference/notifications.rst:294 f28412da98f9465b838e967ddf14b416
+msgid ""
+"``juntagrico/mails/admin/assignment/changed.txt`` email to contact of the"
+" job"
+msgstr ""
+"``juntagrico/mails/admin/assignment/changed.txt`` E-Mail an Kontakt des "
+"Jobs"
+
+#: ../../reference/notifications.rst:298 a6c9f7ca1ad7489795b02d204c6b040e
+msgid ""
+"Member whose job assignment was changed. Not sent, if member changed "
+"their own assignment."
+msgstr ""
+"Mitglied, dessen Job-Aufgabe geändert wurde. Nicht gesendet, wenn "
+"Mitglied seine eigene Aufgabe geändert hat."
+
+#: ../../reference/notifications.rst:299 ../../reference/notifications.rst:317
+#: 0d34a5981e6f411a8be4162ca1c83f9c 88b7a71757ac43d09f66530696a69daa
+msgid ""
+"Contact of the job, that is not the admin who changed the assignment. "
+"Falls back to contact(s) of job type or area that display their email."
+msgstr ""
+"Kontakt des Jobs, der nicht der Admin ist, der die Aufgabe geändert hat. "
+"Fällt zurück auf Kontakt(e) des Job-Typs oder Bereichs, der/die "
+"seine/seine E-Mail anzeigen."
+
+#: ../../reference/notifications.rst:305 020321a20cbf434fac35391d05dd116d
+msgid "Assignment removed"
+msgstr "Aufgabe entfernt"
+
+#: ../../reference/notifications.rst:306 815325fc95694cc6817cdab2f505d463
+msgid ""
+"Trigger: On signal :ref:`assignment_changed <reference-signals-member-"
+"assignment_changed>` from sender ``Member`` if member has no assignments "
+"in job now."
+msgstr ""
+"Auslöser: Auf Signal :ref:`assignment_changed <reference-signals-member-"
+"assignment_changed>` vom Sender ``Member``, wenn Mitglied jetzt keine "
+"Aufgaben im Job hat."
+
+#: ../../reference/notifications.rst:311 32ce63b563b1449694ec6cfc8281f664
+msgid "``juntagrico/mails/member/assignment/removed.txt`` email to member"
+msgstr "``juntagrico/mails/member/assignment/removed.txt`` E-Mail an Mitglied"
+
+#: ../../reference/notifications.rst:312 2d889d9f3277424ab245b743b176e25e
+msgid ""
+"``juntagrico/mails/admin/assignment/removed.txt`` email to contact of the"
+" job"
+msgstr ""
+"``juntagrico/mails/admin/assignment/removed.txt`` E-Mail an Kontakt des "
+"Jobs"
+
+#: ../../reference/notifications.rst:316 90036cc2865b4757876545adf1bb4a26
+msgid ""
+"Member whose job assignment was removed. Not sent, if member removed "
+"their own assignment."
+msgstr ""
+"Mitglied, dessen Job-Aufgabe entfernt wurde. Nicht gesendet, wenn "
+"Mitglied seine eigene Aufgabe entfernt hat."
+
+#: ../../reference/notifications.rst:321 ee32829e2f794de19e0c34105c9b56b9
+msgid "Management Command Notifications"
+msgstr "Verwaltungs-Befehls-Benachrichtigungen"
+
+#: ../../reference/notifications.rst:326 e4eb4fad84c645d586f7e81093d3af7d
+msgid "Depot lists generated"
+msgstr "Depot-Listen erstellt"
+
+#: ../../reference/notifications.rst:327 a6738b4782f04a00b60a8faf67f225da
+msgid ""
+"Trigger: On signal :ref:`called <reference-signals-management-command-"
+"called>` from sender ``generate_depot_list.Command``."
+msgstr ""
+"Auslöser: Auf Signal :ref:`called <reference-signals-management-command-"
+"called>` vom Sender ``generate_depot_list.Command``."
+
+#: ../../reference/notifications.rst:329 e95fdf0b20814221a5854433af7141b1
+msgid "Template: ``mails/admin/depot_list_generated.txt``"
+msgstr "Template: ``mails/admin/depot_list_generated.txt``"
+
+#: ../../reference/notifications.rst:331 0445d41850a34ea89c36ab126c1e34cd
+msgid ""
+"Recipients: Users with the permission "
+":ref:`juntagrico.depot_list_notification <reference-permissions-"
+"depot_list_notification>`"
+msgstr ""
+"Empfänger: Benutzer mit der Berechtigung "
+":ref:`juntagrico.depot_list_notification <reference-permissions-"
+"depot_list_notification>`"
