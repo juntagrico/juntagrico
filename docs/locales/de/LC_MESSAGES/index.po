@@ -21,51 +21,48 @@ msgstr ""
 
 #: ../../index.rst:14
 msgid "Setup"
-msgstr ""
+msgstr "Einrichtung"
 
 #: ../../index.rst:24
 msgid "Release Notes"
-msgstr ""
+msgstr "Versionshinweise"
 
 #: ../../index.rst:24
 msgid "Reference"
-msgstr ""
+msgstr "Referenz"
 
 #: ../../index.rst:40
 msgid "Contribute"
-msgstr ""
+msgstr "Mitwirken"
 
 #: ../../index.rst:2 6faa0339d3bd4f51827ba8e05be7f476
 msgid "Welcome to the juntagrico documentation"
-msgstr ""
+msgstr "Willkommen zur Juntagrico-Dokumentation"
 
 #: ../../index.rst:3 184b813cfca44b39bbd0c8972fada91f
-msgid ""
-"juntagrico is a management platform for community gardens and vegetable "
-"cooperatives."
-msgstr ""
+msgid "juntagrico is a management platform for community gardens and vegetable cooperatives."
+msgstr "Juntagrico ist eine Management-Plattform für Solawi und Gemeinschaftsgärten."
 
 #: ../../index.rst:5 33bf40b13b8845579d8d31b1e7b7106c
 msgid "It provides the basic functionality like"
-msgstr ""
+msgstr "Es bietet die Grundfunktionen wie"
 
 #: ../../index.rst:7 0f4424c833594e119eff91dbf1dad52b
 msgid "subscription management"
-msgstr ""
+msgstr "Abonnement-Verwaltung"
 
 #: ../../index.rst:8 a0638909704b44c28091699ee61cf982
 msgid "extra subscription management"
-msgstr ""
+msgstr "Zusatz-Abonnement-Verwaltung"
 
 #: ../../index.rst:9 574117693e434ddbb237f3b664ffeddb
 msgid "management of shares"
-msgstr ""
+msgstr "Verwaltung von Anteilscheinen"
 
 #: ../../index.rst:10 002f1c2fc531461abfaf6f8c90a38450
 msgid "delivery management"
-msgstr ""
+msgstr "Lieferungen-Verwaltung"
 
 #: ../../index.rst:11 2a016ccb680d487e81a55dc00b49fd76
 msgid "management of members"
-msgstr ""
-
+msgstr "Mitglieder-Verwaltung"
