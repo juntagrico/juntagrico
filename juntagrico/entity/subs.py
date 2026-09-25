@@ -375,6 +375,8 @@ class SubscriptionSurcharge(JuntagricoBaseModel):
     amount = models.DecimalField(
         _('Betrag'), max_digits=9, decimal_places=2, help_text=_('Verwende negative Beträge für Rabatte.')
     )
+    required_assignments = models.FloatField(_('Anz. benötigter Arbeitseinsätze'), default=0)
+    required_core_assignments = models.FloatField(_('Anz. benötigter Kern-Arbeitseinsätze'), default=0)
     date = models.DateField(_('Verrechnungsdatum'))
 
     objects = SubscriptionSurchargeQuerySet.as_manager()
