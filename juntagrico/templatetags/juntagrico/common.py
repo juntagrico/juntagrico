@@ -21,6 +21,14 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 
+@register.filter
+def get_attr(obj, attr_name):
+    try:
+        return getattr(obj, attr_name, '')
+    except AttributeError:
+        return ''
+
+
 @register.simple_tag
 def has_extra_subscriptions():
     return SubscriptionType.objects.is_extra().exists()

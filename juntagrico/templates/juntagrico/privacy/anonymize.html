@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_account=vocabulary.account %}{{ v_account }} anonymisieren{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    <h2>{{ account }}</h2>
+    <div class="alert alert-warning" role="alert">
+        {% blocktrans trimmed %}
+            Diese Funktion wird ohne Gewährleistung bereitgestellt und bietet keine Garantie
+            für die vollständige Löschung personenbezogener Daten oder die Erfüllung von Anforderungen
+            der DSGVO, des Schweizer Datenschutzgesetzes oder anderer geltender Datenschutzbestimmungen.
+        {% endblocktrans %}
+        <br>
+        {% blocktrans trimmed %}
+            Die Nutzer:innen sind allein verantwortlich für die Einhaltung geltender Datenschutzgesetze
+            und für die Überprüfung der korrekten Funktion dieser Funktion in ihrem spezifischen Anwendungsfall.
+        {% endblocktrans %}
+    </div>
+
+    <div class="alert alert-info" role="alert">
+        {% trans "Personenbezogene Daten können auch in Einsatzbeschreibungen etc. vorkommen." %}<br>
+        {% trans "Verwende die Volltextsuche, um Namen, E-Mail-Adresse etc. an allen Orten zu finden, um sie dort zu entfernen." %}<br>
+        <a href="{% url 'privacy-search' %}" class="btn btn-info">{% trans "Volltextsuche öffnen" %}</a>
+    </div>
+
+    <p>
+        {% trans "Folgende potentiell personenbezogene Daten werden gelöscht, falls vorhanden:" %}
+    </p>
+    <ul>
+        <li>{% trans "Name" %}</li>
+        <li>{% trans "E-Mail-Adresse" %}</li>
+        <li>{% trans "Adresse" %}</li>
+        <li>{% trans "Geburtsdatum" %}</li>
+        <li>{% trans "Telefonnummern" %}</li>
+        <li>{% trans "IBAN" %}</li>
+        <li>{% trans "Mitglieder-Nummer" %}</li>
+        <li>{% trans "Kommentare bei Anmeldung & Abmeldung" %}</li>
+        <li>{% trans "Kommentare bei Einsätzen" %}</li>
+        <li>
+            {% blocktrans with v_accounts=vocabulary.account_pl v_shares=vocabulary.share_pl v_memebrship=vocabulary.membership_pl %}
+                Notizen von der Administration in: {{ v_accounts }}, {{ v_shares }} und {{ v_memberships }}
+            {% endblocktrans %}
+        </li>
+        <li>{% trans "Änderungshistorie (Logeinträge)" %}</li>
+    </ul>
+    <p>
+        {% trans "Zudem erfolgt die Austragung aus den Tätigkeitsbereichen." %}
+    </p>
+    <p>
+        {% blocktrans trimmed with v_accounts=vocabulary.account_pl v_shares=vocabulary.share_pl v_memebrships=vocabulary.membership_pl v_assignments=vocabulary.assignment_pl %}
+            Zugehörige {{ v_accounts }}, {{ v_shares }} und {{ v_memberships }} und {{ v_assignments }}
+            bleiben bestehen, werden jedoch nur noch anonym verknüpft
+        {% endblocktrans %}
+    </p>
+
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        {% if formset|length > 1 %}
+            <h4 class="mt-5">{% blocktrans %}Notizen{% endblocktrans %}</h4>
+            <p>
+                {% blocktrans trimmed with account=account %}
+                    Prüfe, ob diese Notizen personenbezogene Informationen über {{ account }} enhalten und entferne diese.
+                {% endblocktrans %}
+            </p>
+
+                {{ formset.management_form|crispy }}
+
+                {% if formset.non_form_errors %}
+                    <div class="alert alert-danger">
+                        {{ formset.non_form_errors }}
+                    </div>
+                {% endif %}
+
+                <div id="formset-container">
+                    {% for subscription_form in formset %}
+                        <div class="formset-row border rounded p-3 mb-3">
+                            <h4>
+                                {{ vocabulary.subscription }}{% include 'juntagrico/manage/subscription/snippets/display_linked.html' with subscription=subscription_form.instance %}
+                            </h4>
+                            {% crispy subscription_form %}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% endif %}
+
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="form_confirm" name="confirm" class="custom-control-input" required="required" value="confirmed">
+            <label class="custom-control-label form-inline" for="form_confirm">
+                {% blocktrans %}Ich habe verstanden, dass hiermit die oben genannten Daten unwiederruflich gelöscht bzw. anonymisiert werden.{% endblocktrans %}
+            </label>
+        </div>
+        <button type="submit" class="btn btn-warning mt-3">
+            {% blocktrans with account=account %}{{ account }} jetzt anonymisieren{% endblocktrans %}
+        </button>
+    </form>
+{% endblock %}

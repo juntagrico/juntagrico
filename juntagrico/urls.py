@@ -8,7 +8,18 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, membership, account
+from juntagrico.views import (
+    subscription,
+    create_subscription,
+    manage,
+    email,
+    job,
+    api,
+    config,
+    membership,
+    account,
+    privacy,
+)
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -240,6 +251,11 @@ urlpatterns = [
     # /list
     path('list', juntagrico_admin.manage_list, name='lists'),
     path('list/<str:name>', juntagrico_admin.download_list, name='lists-download'),
+
+    # /privacy
+    path('privacy/requests', privacy.DeletionRequestView.as_view(), name='privacy-requests'),
+    path('privacy/account/<int:account_id>/anonymize', privacy.anonymize, name='privacy-anonymize'),
+    path('privacy/search', privacy.global_search, name='privacy-search'),
 
     # /command
     path('command/shifttime', ShiftTimeFormView.as_view(), name='command-shifttime'),
