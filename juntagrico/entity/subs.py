@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import Max
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
-from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
@@ -63,7 +62,7 @@ class Subscription(Billable, SimpleStateModel):
 
     types = models.ManyToManyField('SubscriptionType', through='SubscriptionPart', related_name='subscriptions')
 
-    objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
+    objects = SubscriptionQuerySet.as_manager()
 
     def __str__(self):
         return gettext('{subscription} ({id}) {content}').format(
