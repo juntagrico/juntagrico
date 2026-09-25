@@ -32,7 +32,7 @@
                     <td class="text-right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
                     {% for product in products %}
                         {% for size in product.sizes.on_depot_list.sorted %}
-                            <td class="text-right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                            <td class="text-right">{{ subscriptions|by_tour:tour|parts_by_size:size|served_on:date|count|floatformat }}</td>
                         {% endfor %}
                     {% endfor %}
                 </tr>
@@ -43,7 +43,7 @@
                     <td class="text-right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
                     {% for product in products %}
                         {% for size in product.sizes.on_depot_list.sorted %}
-                            <td class="text-right">{{ subscriptions|by_tour:None|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                            <td class="text-right">{{ subscriptions|by_tour:None|parts_by_size:size|served_on:date|count|floatformat }}</td>
                         {% endfor %}
                     {% endfor %}
                 </tr>
@@ -53,7 +53,7 @@
                 <td class="text-right">{{ subscriptions|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for size in product.sizes.on_depot_list.sorted %}
-                        <td class="text-right">{{ subscriptions|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                        <td class="text-right">{{ subscriptions|parts_by_size:size|served_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
