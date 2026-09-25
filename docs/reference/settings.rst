@@ -659,7 +659,7 @@ DEPOT_LISTS
     def extra_context(context):
         from juntagrico.entity.subs import Subscription
         # pass a custom set to subscriptions
-        return dict(subscriptions=Subscription.objects.active_on(context['date']).filter(...))
+        return dict(subscriptions=Subscription.objects.served_on(context['date']).filter(...))
 
     DEPOT_LISTS = defaults.DEPOT_LISTS | {
         'depotlist': {  # overwrite existing depotlist definition.
