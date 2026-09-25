@@ -46,7 +46,7 @@ class SubscriptionResource(DateRangeResourceMixin, resources.ModelResource):
             'cancellation_date': {'coerce_to_string': False},
             'deactivation_date': {'coerce_to_string': False},
         }
-        export_order = ('id', 'content', 'status', 'nickname')
+        export_order = ('id', 'identifier', 'content', 'status', 'nickname')
         name = Config.vocabulary('subscription_pl')
 
 

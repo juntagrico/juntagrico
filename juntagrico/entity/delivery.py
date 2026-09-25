@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
@@ -13,9 +14,11 @@ class Delivery(JuntagricoBaseModel):
     """
     delivery_date = models.DateField(_('Lieferdatum'))
     tour = models.ForeignKey(Tour, verbose_name=_('Ausfahrt'), on_delete=models.PROTECT, null=True, blank=True, default=None)
-    subscription_bundle = models.ForeignKey(SubscriptionBundle,
-                                            verbose_name=_('{0}-Paket').format(Config.vocabulary('subscription')),
-                                            on_delete=models.PROTECT)
+    subscription_bundle = models.ForeignKey(
+        SubscriptionBundle,
+        verbose_name=format_lazy(_('{0}-Paket'), Config.vocabulary('subscription')),
+        on_delete=models.PROTECT,
+    )
 
     def __str__(self):
         return u"%s - %s - %s" % (self.delivery_date, self.tour or gettext('Keine'), self.subscription_bundle.long_name)

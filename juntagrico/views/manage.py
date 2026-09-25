@@ -1,30 +1,38 @@
 import datetime
+from functools import cached_property
 
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, Exists, OuterRef
+from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch, Sum
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _, gettext
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
 
 from juntagrico.config import Config
-from juntagrico.entity.depot import Depot, DepotCoordinator
+from juntagrico.entity.depot import (
+    Depot,
+    DepotCoordinator,
+    DepotSubscriptionTypeCondition,
+)
 from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription, SubscriptionPart, SubscriptionSurcharge
 from juntagrico import forms
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
+from juntagrico.forms.account import NotesForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
@@ -85,7 +93,7 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
                             'juntagrico.can_filter_members']]
     template_name = 'juntagrico/manage/member/show.html'
     queryset = Member.objects.all
-    title = _('Alle {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Alle {members}'), members=Config.vocabulary('member_pl'))
 
     def get_queryset(self):
         return super().get_queryset()().prefetch_for_list
@@ -93,12 +101,76 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
-    title = _('Aktive {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Aktive {members}'), members=Config.vocabulary('member_pl'))
 
 
 class MemberArchiveView(MemberView):
     queryset = Member.objects.inactive
-    title = _('Inaktive {members}').format(members=Config.vocabulary('member_pl'))
+    title = format_lazy(_('Inaktive {members}'), members=Config.vocabulary('member_pl'))
+
+
+class AccountWithoutMembershipView(MemberView):
+    template_name = 'juntagrico/manage/member/without_membership.html'
+    title = format_lazy(
+        _('Aktive {accounts} ohne {membership}'),
+        accounts=Config.vocabulary('account_pl'),
+        membership=Config.vocabulary('membership'),
+    )
+
+    def get_queryset(self):
+        return Member.objects.active().exclude(memberships__in=Membership.objects.active_or_requested()).annotate(
+            last_membership=Max('memberships__deactivation_date')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shares_enabled'] = Config.enable_shares()
+        return context
+
+
+@permission_required('juntagrico.view_member')
+def account_search(request):
+    account = request.GET.get('account')
+    if account:
+        return HttpResponseRedirect(reverse('manage-account-single', args=[account]))
+    return render(request, 'juntagrico/search.html')
+
+
+@permission_required('juntagrico.view_member')
+def account_single(request, account_id):
+    account = get_object_or_404(Member, pk=account_id)
+
+    relevant_subs = account.subscriptionmembership_set.order_by(F('join_date').desc(nulls_first=True))
+    memberships = account.memberships.order_by(F('activation_date').desc(nulls_first=True))
+    start_of_business_year = temporal.start_of_business_year()
+    assignments = account.assignment_set.filter(job__time__gte=start_of_business_year).order_by('-job__time')
+    has_previous_assignments = account.assignment_set.filter(job__time__lt=start_of_business_year).exists()
+    notes_form = None
+    if request.user.has_perm('juntagrico.change_member'):
+        notes_form = NotesForm(instance=account)
+
+    return render(request, 'juntagrico/manage/member/single.html', {
+        'account': account,
+        'subscription_memberships': relevant_subs,
+        'memberships': memberships,
+        'assignments': assignments,
+        'has_previous_assignments': has_previous_assignments,
+        'can_contact': request.user.member.can_contact(account),
+        'notes_form': notes_form,
+    })
+
+
+@require_POST
+@permission_required('juntagrico.change_member')
+def account_notes_edit(request, account_id):
+    account = get_object_or_404(Member, pk=account_id)
+    notes_form = NotesForm(request.POST, instance=account)
+    if notes_form.is_valid():
+        notes_form.save()
+        messages.success(request, _('Notiz gespeichert'))
+    else:
+        messages.success(request, _('Notiz konnte nicht gespeichert werden.'))
+    return redirect('manage-account-single', account_id=account_id)
 
 
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
@@ -193,7 +265,7 @@ class MembershipArchiveView(MembershipView):
 class AreaMemberView(LoginRequiredMixin, MemberView):
     permission_required = []  # checked in get_queryset
     template_name = 'juntagrico/manage/member/show_for_area.html'
-    title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
+    title = format_lazy(_('Alle aktiven {member} im Tätigkeitsbereich {area_name}'), 
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
 
@@ -267,8 +339,67 @@ def member_deactivate(request, change_date, member_id=None):
     return return_to_previous_location(request)
 
 
-class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
+class ShareView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
+    template_name = 'juntagrico/manage/share/show.html'
+    queryset = Share.objects.active
+
+
+class ShareByAccountView(ShareView):
+    template_name = 'juntagrico/manage/share/by_account.html'
+
+    @cached_property
+    def account(self):
+        return Member.objects.filter(id=self.kwargs['account_id']).first() or self.request.user.member
+
+    def get_queryset(self):
+        return Share.objects.filter(member=self.account).annotate_backpayable()
+
+    def get_context_data(self, **kwargs):
+        kwargs['account'] = self.account
+        return super().get_context_data(**kwargs)
+
+
+@require_POST
+@permission_required('juntagrico.change_share')
+@using_change_date
+def share_cancel(request, change_date):
+    shares = Share.objects.filter(id__in=request.POST['share_id'].split('_'))
+    if change_date:
+        change_date = max(change_date, datetime.date.today())
+
+    canceled_shares = {}
+    for share in shares:
+        if share.cancelled_date:
+            messages.warning(
+                request,
+                gettext('{share} {id} von {account} war bereits gekündigt').format(
+                    share=Config.vocabulary('share'),
+                    id=share.identifier,
+                    account=share.member,
+                ),
+            )
+            continue
+        try:
+            share.cancel(change_date)
+            messages.success(request, gettext('{share} {id} von {account} gekündigt').format(
+                share=Config.vocabulary('share'),
+                id=share.identifier,
+                account=share.member,
+            ))
+            if share.member in canceled_shares:
+                canceled_shares[share.member].append(share)
+            else:
+                canceled_shares[share.member] = [share]
+        except ValidationError as e:
+            messages.error(request, f'{share}: {e.message}')
+
+    for account, shares in canceled_shares.items():
+        membernotification.shares_canceled_for_you(account, shares)
+    return return_to_previous_location(request)
+
+
+class ShareCanceledView(ShareView):
     template_name = 'juntagrico/manage/share/canceled.html'
     queryset = Share.objects.canceled().annotate_backpayable
 
@@ -288,8 +419,7 @@ def share_payout(request, change_date, share_id=None):
     return return_to_previous_location(request)
 
 
-class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
-    permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
+class ShareUnpaidView(ShareView):
     template_name = 'juntagrico/manage/share/unpaid.html'
 
     def get_queryset(self):
@@ -300,12 +430,26 @@ class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
         )
 
 
+class ShareArchiveView(ShareView):
+    template_name = 'juntagrico/manage/share/archive.html'
+
+    def get_queryset(self):
+        return Share.objects.filter(payback_date__isnull=False)
+
+
 class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
                             'juntagrico.can_filter_subscriptions']]
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
-    title = _('Alle aktiven {subscriptions} im Überblick').format(subscriptions=Config.vocabulary('subscription_pl'))
+    title = format_lazy(_('Alle aktiven {subscriptions} im Überblick'), subscriptions=Config.vocabulary('subscription_pl'))
+
+    def get_context_data(self, **kwargs):
+        queryset = self.get_queryset()
+        if callable(queryset):
+            queryset = queryset()
+        kwargs['show_identifier'] = queryset.filter(identifier__isnull=False).exists()
+        return super().get_context_data(**kwargs)
 
 
 class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, TemplateView):
@@ -328,7 +472,50 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
             deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
             joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
             left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
+            show_identifier=Subscription.objects.filter(identifier__isnull=False).exists(),
         ))
+        return super().get_context_data(**kwargs)
+
+
+class SubscriptionPriceView(SubscriptionView):
+    template_name = 'juntagrico/manage/subscription/price.html'
+    title = Config.vocabulary('price')
+
+    def get_queryset(self):
+        start, end = temporal.get_business_date_range(int(self.request.GET.get('year') or datetime.date.today().year))
+        return (
+            Subscription.objects.in_daterange(start, end)
+            .prefetch_related(
+                Prefetch(
+                    'parts',
+                    queryset=SubscriptionPart.objects.in_daterange(start, end)
+                    .annotate_change_in_range(start, end)
+                    .annotate(price=F('type__price'))
+                    .annotate(period_price=Sum('type__periods__price')),
+                    to_attr='relevant_parts',
+                ),
+                Prefetch(
+                    'surcharges',
+                    queryset=SubscriptionSurcharge.objects.in_daterange(start, end),
+                    to_attr='relevant_surcharges',
+                ),
+            )
+            .select_related('depot')
+            .prefetch_related('depot__subscription_type_conditions')
+        )
+
+    def get_context_data(self, **kwargs):
+        # get date range in which subscriptions exist
+        date_range = Subscription.objects.aggregate(
+            min_date=Min('activation_date'), max_date=Max('deactivation_date')
+        )
+        kwargs['year_selection_form'] = forms.BusinessYearForm(
+            date_range['min_date'], date_range['max_date'], self.request.GET
+        )
+        kwargs['show_depot_fee'] = (
+            Depot.objects.exclude(fee=0).exists()
+            or DepotSubscriptionTypeCondition.objects.exclude(fee=0).exists()
+        )
         return super().get_context_data(**kwargs)
 
 
@@ -341,6 +528,10 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
                 Q(parts__activation_date=None, parts__isnull=False)
                 | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
             ).prefetch_related('parts').distinct()
+
+    def get_context_data(self, **kwargs):
+        kwargs['show_identifier'] = self.get_queryset().filter(identifier__isnull=False).exists()
+        return super().get_context_data(**kwargs)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
@@ -428,7 +619,7 @@ def activate_trial(request, change_date, part_id):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def continue_trial(request, part_id):
+def continue_trial(request, part_id, template_name='juntagrico/my/subscription/trial/continue.html'):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     if request.method == 'POST':
         form = SubscriptionPartContinueByAdminForm(part, request.POST)
@@ -437,7 +628,7 @@ def continue_trial(request, part_id):
             return redirect(reverse('manage-sub-trial'))
     else:
         form = SubscriptionPartContinueByAdminForm(part)
-    return render(request, 'juntagrico/my/subscription/trial/continue.html', {
+    return render(request, template_name, {
         'form': form,
     })
 
@@ -482,7 +673,7 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
 
 class DepotSubscriptionView(LoginRequiredMixin, SubscriptionView):
     permission_required = []
-    title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
+    title = format_lazy(_('Alle aktiven {subs} im {depot} {depot_name}'), 
         subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
     )
 
@@ -518,6 +709,19 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     subs = Subscription.objects.filter(id__in=ids)
     subs.activate_future_depots()
     return return_to_previous_location(request)
+
+
+class SubscriptionSharesView(SubscriptionView):
+    permission_required = [
+        ['juntagrico.view_subscription', 'juntagrico.change_subscription', 'juntagrico.can_filter_subscriptions'],
+        ['juntagrico.view_share', 'juntagrico.change_share',]
+    ]
+    queryset = Subscription.objects.waiting_or_active
+    template_name = 'juntagrico/manage/subscription/shares.html'
+    title = _('{subscriptions} und {shares}').format(
+        subscriptions=Config.vocabulary('subscription_pl'),
+        shares=Config.vocabulary('share_pl')
+    )
 
 
 @permission_required('juntagrico.change_subscription')

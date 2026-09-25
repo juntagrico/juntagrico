@@ -2,7 +2,14 @@
 <a href="{% url 'part-continue' part.id %}" class="btn btn-primary">
     {% trans "Ja gerne" %}
 </a>
-<a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
-   onclick="return confirm('{% trans "Bist du sicher, dass du nicht verlängern möchtest?" %}')">
-    {% trans "Nein Danke" %}
-</a>
+
+{% if part.subscription.future_parts.is_normal.count == 1 %}
+    <a href="{% url 'cancel' %}" class="btn btn-danger">
+        {% trans "Nein Danke" %}
+    </a>
+{% else %}
+    <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
+       onclick="return confirm('{% trans "Bist du sicher, dass du nicht verlängern möchtest?" %}')">
+        {% trans "Nein Danke" %}
+    </a>
+{% endif %}

@@ -61,6 +61,11 @@
                 <th class="filter">
                     {% vocabulary "subscription" %}
                 </th>
+                {% if show_identifier %}
+                    <th class="filter">
+                        {% trans "Kennzeichnung" %}
+                    </th>
+                {% endif %}
                 <th class="filter">
                     {% trans "Gekündigt" %}
                 </th>
@@ -88,10 +93,13 @@
                 {% with canceled_parts=subscription.parts.canceled ordered_parts=subscription.parts.ordered %}
                     <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
-                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                                {{ subscription.id }}
-                            </a>
+                            {% include './snippets/display_linked.html' %}
                         </td>
+                        {% if show_identifier %}
+                            <td>
+                                {{ subscription.identifier|default_if_none:'' }}
+                            </td>
+                        {% endif %}
                         <td class="canceled-parts pl-5">
                             {% regroup canceled_parts by cancellation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}

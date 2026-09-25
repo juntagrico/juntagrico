@@ -9,7 +9,7 @@
 {% if message %}
 {% trans "MITTEILUNG:" %} {{ message }}
 {% endif %}
-{% trans "Einsatz:" %}: {{ job.type.get_name }}
+{% trans "Einsatz:" %} {{ job.type.get_name }}
 {% trans "Am:" %} {{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% block count %}{% trans "Anzahl Personen:" %} {{ count }}{% endblock %}
 {% trans "Einsatz ansehen:" %} {{ server_url }}{% url 'job' job.id %}

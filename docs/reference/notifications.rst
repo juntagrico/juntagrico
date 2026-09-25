@@ -293,7 +293,7 @@ Subscribed
 ^^^^^^^^^^
 
 key: ``job_subscribed``
-email to contact is only sent, if member leaves a comment or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
+email to contact is only sent, if member leaves a message or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
 contains this key.
 
 Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job``

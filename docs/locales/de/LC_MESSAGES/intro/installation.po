@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../intro/installation.rst:4 42420868d5bb40dfb7cf10c291903998
+msgid "Installation"
+msgstr "Installation"
+
+#: ../../intro/installation.rst:6 d870dfd7fc3b4709b53eac9c0c7bb2ad
+msgid "If your instance runs on the hosted Juntagrico PaaS this installation is done for you. Continue with the :ref:`basic setup <intro-basic-setup>`."
+msgstr "Falls deine Instanz auf dem gehosteten Juntagrico PaaS läuft, ist diese Installation für dich erledigt. Fahre fort mit der :ref:`Grundkonfiguration <intro-basic-setup>`."
+
+#: ../../intro/installation.rst:11 79f1cf2c05524ce784b1971e57c8dae6
+msgid "Prerequisites"
+msgstr "Voraussetzungen"
+
+#: ../../intro/installation.rst:13 f1ec2d025edc418ebf40dcab3fe9d8f4
+msgid "Make sure `python <https://www.python.org/>`_ is installed on your system."
+msgstr "Stelle sicher, dass `Python <https://www.python.org/>`_ auf deinem System installiert ist."
+
+#: ../../intro/installation.rst:17 145f9d31bdf14a60a9dfe6376b4cfc49
+msgid "Create new Django app using Cookiecutter"
+msgstr "Neue Django-App mit Cookiecutter erstellen"
+
+#: ../../intro/installation.rst:18 225736d88e2b48afba21c22e0ebcb782
+msgid "You may use the `cookiecutter template <https://github.com/juntagrico/juntagrico-science-django-cookiecutter>`_ to create a fresh django app. This will create a django project and app, with all the required settings and urls set up."
+msgstr "Du kannst die `Cookiecutter-Vorlage <https://github.com/juntagrico/juntagrico-science-django-cookiecutter>`_ verwenden, um eine frische Django-App zu erstellen. Dabei werden ein Django-Projekt und eine App mit allen erforderlichen Einstellungen und URLs erstellt."
+
+#: ../../intro/installation.rst:27 a6fc42327a524d39999c2c9fe790936d
+msgid "Check out the `Cookiecutter documentation <https://pypi.org/project/cookiecutter/>`_ on how to install cookiecutter on your system."
+msgstr "Sieh dir die `Cookiecutter-Dokumentation <https://pypi.org/project/cookiecutter/>`_ an, um zu erfahren, wie du Cookiecutter auf deinem System installierst."
+
+#: ../../intro/installation.rst:29 500656701b3b439a8458b8db917a96dd
+msgid "Then install the requirements with :command:`pip`:"
+msgstr "Installiere anschliessend die Anforderungen mit :command:`pip`:"
+
+#: ../../intro/installation.rst:35 47de9934479244c78ba70e4a4e5cb77d
+msgid "The default setup will use a local SQLite database and fails to send out emails. For production you will need to configure the database and email connection using environment variables or directly in the `settings.py`. Refer to the generated `settings.py` and the django documentation."
+msgstr "Die Standardeinstellung verwendet eine lokale SQLite-Datenbank und kann keine E-Mails versenden. Für den Produktionsbetrieb musst du die Datenbank- und E-Mail-Verbindung über Umgebungsvariablen oder direkt in der `settings.py` konfigurieren. Siehe dazu die generierte `settings.py` und die Django-Dokumentation."
+
+#: ../../intro/installation.rst:39 2725522fda0349318e4c4c887074f2af
+msgid "You are now ready to continue with :ref:`Initial Django setup <intro-initial-django-setup>`."
+msgstr "Du bist jetzt bereit, fortzufahren mit :ref:`Erste Django-Einrichtung <intro-initial-django-setup>`."
+
+#: ../../intro/installation.rst:43 a4a4a3d377964206b035b2ddc53d9aee
+msgid "Alternative: Install in an existing Django app"
+msgstr "Alternative: Installation in einer bestehenden Django-App"
+
+#: ../../intro/installation.rst:44 2f1f5094c3704fdeaf0516258d46f729
+msgid "If instead you already have a django project you can add juntagrico as an app to it."
+msgstr "Falls du bereits ein Django-Projekt hast, kannst du Juntagrico als App hinzufügen."
+
+#: ../../intro/installation.rst:46 2e2ee89c80144b8f8a04730f3b70e50b
+msgid "Install juntagrico, e.g. via :command:`pip`:"
+msgstr "Installiere Juntagrico, z.B. via :command:`pip`:"
+
+#: ../../intro/installation.rst:54 7969b956bc3e458d9e708be6bb2314d7
+msgid "Update Django Settings"
+msgstr "Django-Einstellungen aktualisieren"
+
+#: ../../intro/installation.rst:56 e0187628852f43e8abde97aea071da9c
+msgid "Update your projects ``settings.py``."
+msgstr "Aktualisiere die `settings.py` deines Projekts."
+
+#: ../../intro/installation.rst:58 34ae25173d9e4d4a8cd4a098bc4b559e
+msgid "Refer to `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_ for the minimal settings required to run Juntagrico."
+msgstr "Siehe `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_ als Referenz für die Mindesteinstellungen, die zum Betreiben von Juntagrico erforderlich sind."
+
+#: ../../intro/installation.rst:61 9d3f2e874d484b6e9cff071bff346290
+msgid "For sending out emails, the corresponding django settings need to be configured properly. Read the `django documentation <https://docs.djangoproject.com/en/4.2/ref/settings/#email-backend>`_ for more details."
+msgstr "Für das Versenden von E-Mails müssen die entsprechenden Django-Einstellungen korrekt konfiguriert sein. Lies die `Django-Dokumentation <https://docs.djangoproject.com/en/4.2/ref/settings/#email-backend>`_ für weitere Details."
+
+#: ../../intro/installation.rst:64 8bf372bcd8c849508b03d6e6c4f2d0d4
+msgid "In the `demo app <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_ you can find a more complete set of settings, suitable for the production environment."
+msgstr "In der `Demo-App <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_ findest du einen vollständigeren Satz von Einstellungen, geeignet für die Produktionsumgebung."
+
+#: ../../intro/installation.rst:67 bb00736079424cba881165af9020d980
+msgid "Additional settings will be explained in the :ref:`basic setup <intro-basic-setup>` section."
+msgstr "Zusätzliche Einstellungen werden im Abschnitt :ref:`Grundkonfiguration <intro-basic-setup>` erklärt."
+
+#: ../../intro/installation.rst:70 2faefbe16a7b47d79874be4f08491b8e
+msgid "Hook URLs in URLconf"
+msgstr "URLs in URLconf definieren"
+
+#: ../../intro/installation.rst:72 d0c925708baf4027bd7db4660255b4f8
+msgid "Include these urls to your ``urls.py``:"
+msgstr "Füge diese URLs in deine `urls.py` ein:"
+
+#: ../../intro/installation.rst:91 cd419bc0985a4b8d9873a0bce95dbea8
+msgid "Initial Django setup"
+msgstr "Erste Django-Einrichtung"
+
+#: ../../intro/installation.rst:93 8ad31242c1db4084a65f1011492d72aa
+msgid "Use the django commands to set up the database:"
+msgstr "Benutze die Django-Befehle, um die Datenbank einzurichten:"
+
+#: ../../intro/installation.rst:99 93808b39aa87400388ce04f4b9acab09
+msgid "In production (``DEBUG=False``) the static files must be collected:"
+msgstr "Im Produktionsbetrieb (``DEBUG=False``) müssen die statischen Dateien gesammelt werden:"
+
+#: ../../intro/installation.rst:105 d245f067fff44019a4a53aad9ced7180
+msgid "Create a superuser with member to login into your instance:"
+msgstr "Erstelle einen Superuser mit Konto, um dich bei deiner Instanz einzuloggen:"
+
+#: ../../intro/installation.rst:113 8550b1d1e9f84f74be77a3a6048edaba
+msgid "Create Test Data (optional)"
+msgstr "Testdaten erstellen (optional)"
+
+#: ../../intro/installation.rst:115 49fa12a43dee4bc5a487026fdc6b9153
+msgid "If you want to test juntagrico, these commands will populate your new instance with some example data. Do not do this in production!"
+msgstr "Falls du Juntagrico testen möchtest, füllen diese Befehle deine neue Instanz mit einigen Beispieldaten. Führe dies nicht im Produktionsbetrieb aus!"
+
+#: ../../intro/installation.rst:117 593eb84bdbf64f1ea9eeddedd9b8c5b8
+msgid "Simple example data"
+msgstr "Einfache Beispieldaten"
+
+#: ../../intro/installation.rst:123 46e2e5a5638f409eb4832f5cdfe5625e
+msgid "More complex example data"
+msgstr "Komplexere Beispieldaten"
+
+#: ../../intro/installation.rst:131 ba16525ee8954bc7a6d29d425eee6d77
+msgid "Run the Server"
+msgstr "Server starten"
+
+#: ../../intro/installation.rst:133 812ace2728634d06b0777b2251b4782d
+msgid "You should now be able to start the django server and open the instance in the browser e.g.:"
+msgstr "Du solltest jetzt in der Lage sein, den Django-Server zu starten und die Instanz im Browser zu öffnen, z.B.:"

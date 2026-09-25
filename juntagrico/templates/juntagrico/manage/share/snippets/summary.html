@@ -1,0 +1,63 @@
+{% load juntagrico.snippets %}
+{% load i18n %}
+
+<div class="mb-2">
+    <div class="d-flex justify-content-between">
+        <span>{% trans 'Bestellt' %}</span>
+        <strong>{{ ordered_shares.count }}</strong>
+    </div>
+    {% regroup ordered_shares by creation_date as ordered_shares_by_date %}
+    {% for shares in ordered_shares_by_date %}
+        <div class="d-flex justify-content-between text-muted">
+            <span>{{shares.list|length }} ({% sequence shares.list attribute='identifier' prefix='#' %})</span>
+            <span class="pre date" title="{{ grouper_title }}">{{ shares.grouper|date:"SHORT_DATE_FORMAT" }}</span>
+        </div>
+    {% endfor %}
+    {% for share in ordered_shares %}
+        {% if share.notes %}
+            <div class="alert alert-light">
+                <i class="bi bi-sticky mr-2"></i><strong>#{{ share.identifier }}</strong>
+                <span>{{ share.notes|linebreaksbr }}</span>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="mt-2">
+    <div class="d-flex justify-content-between">
+        <span>{% trans 'Bezahlt' %}</span>
+        <strong>{{ active_shares.count }}</strong>
+    </div>
+    {% regroup active_shares by paid_date as active_shares_by_date %}
+    {% for shares in active_shares_by_date %}
+        <div class="d-flex justify-content-between text-muted">
+            <span>{{shares.list|length }} ({% sequence shares.list attribute='identifier' prefix='#' %})</span>
+            <span class="pre date" title="{{ grouper_title }}">{{ shares.grouper|date:"SHORT_DATE_FORMAT" }}</span>
+        </div>
+    {% endfor %}
+    {% for share in active_shares %}
+        {% if share.notes %}
+            <div class="alert alert-light">
+                <i class="bi bi-sticky mr-2"></i>
+                <strong>#{{ share.identifier }}</strong>
+                <span>{{ share.notes|linebreaksbr }}</span>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% if canceled_shares.exists %}
+    <div class="ml-3 mt-2">
+        <div class="d-flex justify-content-between text-danger">
+            <span>{% trans 'Davon gekündigt' %}</span>
+            <strong>{{ canceled_shares.count }}</strong>
+        </div>
+        {% regroup canceled_shares by termination_date as canceled_shares_by_date %}
+        {% for shares in canceled_shares_by_date %}
+            <div class="d-flex justify-content-between text-muted">
+                <span>{% sequence shares.list attribute='identifier' prefix='#' %}</span>
+                <span class="pre date" title="{{ grouper_title }}">{{ shares.grouper|date:"SHORT_DATE_FORMAT" }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

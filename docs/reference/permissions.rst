@@ -104,7 +104,7 @@ Also require at least view permission for members.
 Area and Depot Admins
 ---------------------
 Depot Coordinators
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. warning::
     Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed.
@@ -133,6 +133,9 @@ There you can add a coordinator and distribute the following permissions.
 - Can remove members: Coordinator can remove participants from this area
 - Can manage jobs: Coordinator can create and modify all jobs of this area
 - Can manage assignments: Coordinator can change and remove assignments of jobs in this area
+
+All area coordinators can view and delete the messages left on jobs in their area.
+The permission `juntagrico.manage_job_messages` grants access to view and delete messages on all jobs.
 
 
 .. _reference-permission-notifications:
@@ -324,8 +327,18 @@ If you want to give limited access to send emails, use the area admin or depot a
 Search Hints:
     * German: Emails versenden
 
+juntagrico.can_email_all_with_membership
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person sees the option in the email form to send mass emails to all users with active memberships.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
 juntagrico.can_email_all_with_share
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the option in the email form to send mass emails to all users with active shares.
 
 Requires:
@@ -335,7 +348,7 @@ Search Hints:
     * German: Emails versenden
 
 juntagrico.can_email_all_with_sub
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the option in the email form to send mass emails to all users with active subscription.
 
 Requires:
@@ -445,10 +458,7 @@ juntagrico.is_operations_group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning::
-    Deprecated. This permission will be replaced by more granular permissions in the next releases.
-
-- Download payment file for shares
-- (De)activate subscriptions
+    Removed in Juntagrico 2.1
 
 Search Hints:
     * German: Ist in der BG

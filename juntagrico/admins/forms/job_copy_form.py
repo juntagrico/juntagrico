@@ -118,7 +118,7 @@ class JobMassCopyForm(forms.ModelForm):
             if commit:
                 new_job.save()
             self.new_jobs.append(new_job)
-        return self.new_jobs[0] if self.new_jobs else None
+        return self.instance
 
     def save_related(self, formsets):
         # save and apply contacts

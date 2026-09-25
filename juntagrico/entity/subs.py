@@ -4,6 +4,7 @@ from functools import cached_property
 from django.contrib import admin
 from django.db import models
 from django.db.models import Max
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
@@ -12,26 +13,30 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import adminnotification
-from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet, \
+    SubscriptionSurchargeQuerySet
 from juntagrico.signals import depot_change_confirmed
+from juntagrico.util import temporal
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
-from juntagrico.util.temporal import start_of_next_business_year
 
 
 class Subscription(Billable, SimpleStateModel):
     '''
     One Subscription that may be shared among several people.
     '''
+    identifier = models.CharField(
+        _('Kennzeichnung'), max_length=30, null=True, blank=True, unique=True,
+        help_text=_('Eindeutige Kennzeichnung (optional)')
+    )
     depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
-        verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
+        verbose_name=format_lazy(_('Zukünftiges {}'), Config.vocabulary('depot')),
         help_text='Nur setzen, wenn {} geändert werden soll'.format(Config.vocabulary('depot')))
     primary_member = models.ForeignKey(
         'Member', related_name='subscription_primary', null=True, blank=True, on_delete=models.PROTECT,
@@ -39,13 +44,14 @@ class Subscription(Billable, SimpleStateModel):
     )
     nickname = models.CharField(
         _('Spitzname'), max_length=30, blank=True,
-        help_text=_('Ersetzt die {co_members} auf der {depot}-Liste.').format(
+        help_text=format_lazy(
+            _('Ersetzt die {co_members} auf der {depot}-Liste.'),
             co_members=Config.vocabulary('co_member_pl'),
             depot=Config.vocabulary('depot'),
         )
     )
     start_date = models.DateField(
-        _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
+        _('Gewünschtes Startdatum'), null=False, default=temporal.start_of_next_business_year)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
@@ -91,6 +97,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
+        # DEPRECATED: use parts.active() instead
         return self.parts.filter(q_isactive())
 
     @property
@@ -158,16 +165,17 @@ class Subscription(Billable, SimpleStateModel):
         return ShareDao.all_shares_subscription(self).count()
 
     @property
+    def shares(self):
+        """all shares of members currently in this subscription"""
+        current_members = self.current_members
+        shares = Share.objects.filter(member__in=current_members)
+        shares._bound_members = current_members
+        return shares
+
+    @property
     def available_shares(self):
         """amount of shares dedicated to subscription"""
-        current_members = self.current_members
-        share_count = Share.objects.filter(member__in=current_members).usable().count()
-        if Config.cumulative_shares_for_membership():
-            # if cumulative, subtract shares that are needed for membership
-            share_count -= Membership.objects.filter(
-                account__in=current_members
-            ).not_canceled().count() * Config.membership('required_shares')
-        return share_count
+        return self.shares.count_dedicated(only_total=True)
 
     @property
     def paid_shares(self):
@@ -235,7 +243,12 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def next_size_change_date():
-        return start_of_next_business_year()
+        return temporal.start_of_next_business_year()
+
+    def next_end_date(self):
+        if not self.parts.non_trial().exists() and self.parts.is_trial().exists():
+            return max(trial.end_of_trial_date for trial in self.parts.is_trial())
+        return temporal.end_of_business_year()
 
     def activate_future_depot(self):
         if self.future_depot is not None:
@@ -276,7 +289,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
-                             verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+                             verbose_name=format_lazy(_('{0}-Typ'), Config.vocabulary('subscription')))
 
     objects = SubscriptionPartQuerySet.as_manager()
 
@@ -343,5 +356,25 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @notifiable
     class Meta:
-        verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{} Bestandteil'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{} Bestandteile'), Config.vocabulary('subscription'))
+
+
+class SubscriptionSurcharge(JuntagricoBaseModel):
+    subscription = models.ForeignKey(
+        'Subscription',
+        related_name='surcharges',
+        on_delete=models.CASCADE,
+        verbose_name=Config.vocabulary('subscriptionadmin'),
+    )
+    description = models.CharField(
+        _('Bezeichnung'),
+        max_length=255,
+        blank=True,
+    )
+    amount = models.DecimalField(
+        _('Betrag'), max_digits=9, decimal_places=2, help_text=_('Verwende negative Beträge für Rabatte.')
+    )
+    date = models.DateField(_('Verrechnungsdatum'))
+
+    objects = SubscriptionSurchargeQuerySet.as_manager()

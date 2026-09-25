@@ -1,11 +1,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset, SubscriptionProductQueryset
-from juntagrico.util import temporal
 
 
 class SubscriptionProduct(JuntagricoBaseModel):
@@ -22,8 +22,8 @@ class SubscriptionProduct(JuntagricoBaseModel):
         return self.name
 
     class Meta:
-        verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Produkt'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Produkt'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -69,8 +69,8 @@ class SubscriptionCategory(JuntagricoBaseModel):
         return self.name or gettext('(Ohne Namen)')
 
     class Meta:
-        verbose_name = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Kategorie').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Kategorie'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Kategorie'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -96,8 +96,8 @@ class SubscriptionBundle(JuntagricoBaseModel):
         return str(self.category or _("(Nicht Bestellbar)"))
 
     class Meta:
-        verbose_name = _('{0}-Paket').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Pakete').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Paket'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Pakete'), Config.vocabulary('subscription'))
         ordering = ['sort_order']
 
 
@@ -113,7 +113,12 @@ class SubscriptionType(JuntagricoBaseModel):
         _('Erfordert {membership}').format(membership=Config.vocabulary('membership')),
         default=True
     )
-    shares = models.PositiveIntegerField(_('Anz benötigter Anteilsscheine'), default=0)
+    shares = models.IntegerField(
+        _('Anz benötigter {shares}').format(
+            shares=Config.vocabulary('share_pl')
+        ),
+        default=0,
+    )
     required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)
@@ -139,14 +144,6 @@ class SubscriptionType(JuntagricoBaseModel):
     def has_periods(self):
         return self.periods.count() > 0
 
-    def min_duration_info(self):
-        if self.trial_days:
-            return gettext('Für {num} Tage. Keine automatische Verlängerung.').format(num=self.trial_days)
-        if self.has_periods:
-            return None  # price list already shows end of periods
-        date = temporal.end_of_business_year()
-        return gettext('Bis {day}.{month}. Automatische Verlängerung.').format(day=date.day, month=date.month)
-
     @property
     def display_name(self):
         return '-'.join([str(self.bundle), self.long_name])
@@ -158,6 +155,6 @@ class SubscriptionType(JuntagricoBaseModel):
         return self.pk < other.pk
 
     class Meta:
-        verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{0}-Typ'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{0}-Typen'), Config.vocabulary('subscription'))
         ordering = ['sort_order']

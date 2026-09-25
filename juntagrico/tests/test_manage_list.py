@@ -55,6 +55,18 @@ class ManageListTests(JuntagricoTestCase):
         # member2 has no access
         self.assertGet(reverse('manage-member-archive'), member=self.member2, code=403)
 
+    def testAccountWithoutMembership(self):
+        self.create_membership(self.member)  # should not appear
+        self.create_membership(self.member2, cancellation_date='2026-03-14', deactivation_date='2026-03-14')  # should appear
+        response = self.assertGet(reverse('manage-account-no-membership'))
+        # check that member list is correct
+        objects = list(response.context['object_list'].order_by('id'))
+        self.assertNotIn(self.member, objects)
+        self.assertIn(self.member2, objects)
+        self.assertIn(self.member3, objects)
+        # member2 has no access
+        self.assertGet(reverse('manage-account-no-membership'), member=self.member2, code=403)
+
     def testAreaMember(self):
         url = reverse('manage-area-member', args=[self.area.pk])
         # anonymous has no access

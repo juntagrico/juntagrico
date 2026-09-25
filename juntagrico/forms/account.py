@@ -1,8 +1,12 @@
 import datetime
 
+from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Button
 from django.core.exceptions import ValidationError
 from django.db.models import F, Exists, OuterRef
+from django.forms import ModelChoiceField
+from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _, gettext, ngettext
@@ -25,6 +29,81 @@ from juntagrico.signals import share_canceled
 
 def choice_to_bool(value):
     return value == 'True'
+
+
+class MemberSelect2Mixin:
+    model = Member
+    search_fields = [
+        'first_name__icontains',
+        'last_name__icontains',
+        'email__icontains',
+    ]
+
+    def get_queryset(self):
+        # annotate if another member with the exact same name exists
+        return super().get_queryset().annotate(
+            duplicate=Exists(
+                Member.objects.exclude(pk=OuterRef('pk')).filter(
+                    first_name=OuterRef('first_name'),
+                    last_name=OuterRef('last_name')
+                )
+            )
+        )
+
+    def label_from_instance(self, obj):
+        label = super().label_from_instance(obj)
+        if getattr(obj, 'duplicate', False):
+            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
+        return label
+
+
+class MemberSelect2Widget(MemberSelect2Mixin, InternalModelSelect2Widget):
+    pass
+
+
+class MemberSelect2MultipleWidget(MemberSelect2Mixin, InternalModelSelect2MultipleWidget):
+    pass
+
+
+class SearchForm(forms.Form):
+    account = ModelChoiceField(
+        None, label=_('Person suchen'), widget=MemberSelect2Widget, required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = reverse('manage-account-search')
+        self.helper.form_method = 'get'
+        self.helper.form_class = 'modal-form'
+        self.helper.form_id = 'id_account_search'
+        self.fields['account'].queryset = Member.objects.active()
+
+    class Media:
+        js = [
+            'juntagrico/js/forms/searchForm.js',
+        ]
+
+
+class NotesForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = ['notes']
+        labels = {'notes': ''}
+        help_texts = {'notes': ''}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_action = reverse('manage-account-notes-edit', args=[self.instance.pk])
+        self.helper.layout = Layout(
+            'notes',
+            FormActions(
+                Submit('submit', gettext('Speichern')),
+                Button('cancel', gettext('Abbrechen'), css_class='swapper', data_swap='.notes-swap'),
+            ),
+        )
 
 
 class CancellationForm(forms.ModelForm):
@@ -67,7 +146,9 @@ class CancellationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.primary_subscriptions = self.instance.subscription_primary.not_terminated()
         for subscription in self.primary_subscriptions:
-            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(keep=True)
+            self.fields[f'primary_subscription_{subscription.id}'] = CancellationField(
+                keep=True, end_date=subscription.next_end_date()
+            )
 
         self.co_memberships = (
             self.instance.subscriptionmembership_set
@@ -137,8 +218,11 @@ class CancellationForm(forms.ModelForm):
             self.fields[field].required = payment_details_required
 
         areas = self.instance.areas.all()
-        self.fields['activity_areas'].queryset = areas
-        self.fields['activity_areas'].initial = areas.values_list('id', flat=True)
+        if areas.exists():
+            self.fields['activity_areas'].queryset = areas
+            self.fields['activity_areas'].initial = areas.values_list('id', flat=True)
+        else:
+            del self.fields['activity_areas']
         self.helper = FormHelper()
 
     def get_primary_subscriptions_and_fields(self):
@@ -305,11 +389,12 @@ class CancellationForm(forms.ModelForm):
                 summary['co_membership'].append(co_membership)
 
         # leave activity areas
-        leave_areas = self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas'])
-        for activity_area in leave_areas:
-            activity_area.leave(self.instance)
-        if leave_areas:
-            summary['activity_area'] = leave_areas
+        if 'activity_areas' in self.cleaned_data:
+            leave_areas = self.instance.areas.exclude(pk__in=self.cleaned_data['activity_areas'])
+            for activity_area in leave_areas:
+                activity_area.leave(self.instance)
+            if leave_areas:
+                summary['activity_area'] = leave_areas
 
         # cancel membership
         if Config.membership('enable') and self.cleaned_data.get('membership') is False:
@@ -335,37 +420,3 @@ class CancellationForm(forms.ModelForm):
             summary['account'] = True
 
         return summary
-
-
-class MemberSelect2Mixin:
-    model = Member
-    search_fields = [
-        'first_name__icontains',
-        'last_name__icontains',
-        'email__icontains',
-    ]
-
-    def get_queryset(self):
-        # annotate if another member with the exact same name exists
-        return super().get_queryset().annotate(
-            duplicate=Exists(
-                Member.objects.exclude(pk=OuterRef('pk')).filter(
-                    first_name=OuterRef('first_name'),
-                    last_name=OuterRef('last_name')
-                )
-            )
-        )
-
-    def label_from_instance(self, obj):
-        label = super().label_from_instance(obj)
-        if getattr(obj, 'duplicate', False):
-            label += f' ({date_format(obj.user.date_joined, "SHORT_DATE_FORMAT")})'
-        return label
-
-
-class MemberSelect2Widget(MemberSelect2Mixin, InternalModelSelect2Widget):
-    pass
-
-
-class MemberSelect2MultipleWidget(MemberSelect2Mixin, InternalModelSelect2MultipleWidget):
-    pass

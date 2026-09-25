@@ -258,44 +258,46 @@ class MailerTests(JuntagricoTestCaseWithShares):
         )
 
     def testMemberFromEmailSelection(self):
-        self.assertListEqual(self.member.all_emails(), [('private', 'email1@email.org')])
-        self.assertListEqual(self.member2.all_emails(), [
+        self.assertSetEqual(set(self.member.all_emails()), {('private', 'email1@email.org')})
+        self.assertSetEqual(set(self.member2.all_emails()), {
             ('general', 'info@juntagrico.juntagrico'), ('private', 'email2@email.org')
-        ])
-        self.assertListEqual(self.member3.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member3.all_emails()), {
             ('for_members', 'member@juntagrico.juntagrico'),
             ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
             ('private', 'email3@email.org')
-        ])
-        self.assertListEqual(self.member4.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member4.all_emails()), {
             ('for_shares', 'share@juntagrico.juntagrico'), ('private', 'email4@email.org')
-        ])
-        self.assertListEqual(self.member5.all_emails(), [
+        })
+        self.assertSetEqual(set(self.member5.all_emails()), {
             ('technical', 'it@juntagrico.juntagrico'), ('private', 'email5@email.org')
-        ])
-        self.assertListEqual(self.area_admin.all_emails(), [
+        })
+        self.assertSetEqual(set(self.area_admin.all_emails()), {
             ('area1-m0', 'email_contact@example.org'),
             ('area2-m2', 'email2@email.org'),
             ('private', 'areaadmin@email.org')
-        ])
-        self.assertListEqual(self.area_admin_contact.all_emails(), [
+        })
+        self.assertSetEqual(set(self.area_admin_contact.all_emails()), {
             ('area1-m0', 'email_contact@example.org'),
             ('private', 'area_admin13@email.org')
-        ])
-        self.assertListEqual(self.admin.all_emails(), [
+        })
+        self.assertSetEqual(set(self.admin.all_emails()), {
             ('general', 'info@juntagrico.juntagrico'),
             ('for_members', 'member@juntagrico.juntagrico'),
             ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
             ('for_shares', 'share@juntagrico.juntagrico'),
             ('technical', 'it@juntagrico.juntagrico'),
             ('private', 'admin@email.org')
-        ])
+        })
 
     def testMailSend(self):
+        self.member.last_name += '="ö<>é,@'  # add some forbidden characters (and some allowed non-trivial ones)
+        self.member.save()
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions'],
+                'to_list': ['all_subscriptions', 'all_memberships'],
                 'to_members': [self.member.id],
                 'to_areas': [self.area.id],
                 'to_depots': [self.depot.id],
@@ -310,15 +312,42 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].attachments[0][0], 'test_mailer.py')
         expected = [
-            'first_name1 last_name1 <email1@email.org>',
+            'first_name1 last_name1öé <email1@email.org>',
             'first_name3 last_name3 <email3@email.org>',
             'first_name6 last_name6 <member6@email.org>',
             'first_name7 last_name7 <member7@email.org>',
         ]
         if settings.ENABLE_SHARES:
+            expected.insert(2, 'first_name5 last_name5 <email5@email.org>')
             expected = ['First_name4 Last_name4 <email4@email.org>'] + expected
         self.assertListEqual(sorted(mail.outbox[0].bcc), expected)
         self.assertRedirects(response, reverse('email-sent'))
+
+    def testDepotMailSend(self):
+        self.sub3.depot = self.depot2
+        self.sub3.save()
+        post_data = {
+            'from_email': 'private',
+            'to_depots': [self.depot.id],
+            'subject': 'test',
+        }
+        # to depot has some recipients
+        self.assertPost(reverse('email-write'), post_data, code=302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertListEqual(
+            sorted(mail.outbox[0].bcc),
+            [
+                'first_name1 last_name1 <email1@email.org>',
+                'first_name3 last_name3 <email3@email.org>',
+                'first_name6 last_name6 <member6@email.org>',
+                'first_name7 last_name7 <member7@email.org>',
+            ],
+        )
+        mail.outbox = []
+        # depot 2 has no active subscriptions
+        post_data['to_depots'] = [self.depot2.id]
+        self.assertPost(reverse('email-write'), post_data, code=200)
+        self.assertEqual(len(mail.outbox), 0)
 
     @tag('shares')
     def testAllSharesMailSend(self):

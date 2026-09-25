@@ -6,10 +6,17 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.utils.functional import cached_property
+from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
+from juntagrico.entity import (
+    JuntagricoBaseModel,
+    notifiable,
+    LowercaseEmailField,
+    validate_iban,
+    absolute_url,
+)
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
@@ -27,6 +34,7 @@ def q_left_subscription(asof=None):
     return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
+@absolute_url(name='manage-account-single')
 class AbstractProfile(JuntagricoBaseModel):
     class Meta:
         abstract = True
@@ -128,6 +136,7 @@ class Member(AbstractProfile):
         return (
             (allowed_areas & member.areas.all()).exists()  # member is in contactable area
             or member.assignment_set.in_areas(allowed_areas).exists()  # member participated in job of contactable area
+            or member.job_messages.in_areas(allowed_areas).exists()  # member left message on job in contactable area
             # member is in coordinated depot
             or member.subscription_current and member.subscription_current.depot in allowed_depots
         )
@@ -190,8 +199,8 @@ class Member(AbstractProfile):
     @property
     def usable_shares_for_sub_count(self):
         usable = self.shares.usable().count()
-        if Config.cumulative_shares_for_membership() and self.memberships.not_canceled().exists():
-            usable -= Config.membership('required_shares')
+        if Config.cumulative_shares_for_membership():
+            usable -= self.memberships.not_canceled().required_shares_count()
         return usable
 
     @property
@@ -363,8 +372,8 @@ class Invitee(AbstractProfile):
 class SubscriptionMembership(JuntagricoBaseModel):
     member = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, verbose_name=Config.vocabulary('subscription'))
-    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=_('Erster Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
-    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=_('Letzter Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=format_lazy(_('Erster Tag an dem {0} bezogen wird'), Config.vocabulary('subscription')))
+    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=format_lazy(_('Letzter Tag an dem {0} bezogen wird'), Config.vocabulary('subscription')))
 
     def __str__(self):
         if not self.join_date:
@@ -412,5 +421,5 @@ class SubscriptionMembership(JuntagricoBaseModel):
                 self.delete()
 
     class Meta:
-        verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
-        verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))
+        verbose_name = format_lazy(_('{}-Mitgliedschaft'), Config.vocabulary('subscription'))
+        verbose_name_plural = format_lazy(_('{}-Mitgliedschaften'), Config.vocabulary('subscription'))

@@ -234,19 +234,21 @@ DOCUMENTS
 
   Tags define where the document is shown:
 
-  - 'account': show on profile/membership page
-  - 'account-signup': same as above and additionally show it in the first step of the signup process
-  - 'account-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'membership-signup' show on step "membership" during signup process
-  - 'membership-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'subscription': show on subscription overview page
-  - 'extrasub': show below subscription parts on subscription overview page
-  - 'activityarea': show on activity area overview page
+  - ``'account'``: show on profile/membership page
+  - ``'account-signup'``: same as above and additionally show it in the first step of the signup process
+  - ``'account-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'membership-signup'``: show on step "membership" during signup process
+  - ``'membership-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'subscription'``: show on subscription overview page
+  - ``'extrasub'``: show below subscription parts on subscription overview page
+  - ``'activityarea'``: show on activity area overview page
 
   Type: List of Tuples or Strings
 
   Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and
   adding the same document in DOCUMENTS will show the document twice.
+
+  Default value is ``[]``, but if the other document settings are set, they are applied as follows:
 
   .. code-block:: python
 
@@ -438,11 +440,19 @@ MEMBERSHIP
   Membership configuration
 
   The setting takes a dictionary of key-value pairs:
+
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
-    - [New since version 2.1] ``'cumulative_shares'``: If true shares count either for membership or for subscription, not both (Bool)
-    - ``'required_on_signup'``: whether a membership is mandatory to signup up (Bool)
+    - ``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)
+    - ``'required_on_signup'``: whether a membership is mandatory to signup up
+
+        - True: always require membership on signup
+        - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
+        - False: don't require membership during signup, unless selected subscriptions require it
+
     - ``'fee'``: yearly membership fee (Float, Integer or String)
+    - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
+      and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
 
   default value
 
@@ -452,8 +462,9 @@ MEMBERSHIP
             'enable': True,
             'required_shares': 1,
             'cumulative_shares': False,
-            'required_on_signup': True,
+            'required_on_signup': 'if_no_sub',
             'fee': 0,
+            'sync_shares': True,
         }
 
 
@@ -498,7 +509,7 @@ Shares
 
 ENABLE_SHARES
 ^^^^^^^^^^^^^
-  Enable all share related funtionality
+  Enable all share related functionality
 
   Type: String
 
@@ -542,7 +553,7 @@ Jobs
 
 ASSIGNMENT_UNIT
 ^^^^^^^^^^^^^^^
-  The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
+  The mode how assignments are counted: Valid values are ENTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
 
   Type: String
 
@@ -566,6 +577,7 @@ FIRST_JOB_INFO
   This setting will automatically enable admin notifications for the indicated first jobs.
   Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
   or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+
     - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
     - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
     - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type
@@ -756,7 +768,7 @@ VOCABULARY
         'subscription_pl' : 'Abos',
         'the_subscription': 'das Abo',
         'the_subscription_acc': 'das Abo',  # für ...
-        'no_subscription_acc': 'kein Abo',
+        'no_subscription_acc': 'kein Abo',  # für ...
         'this_subscription_acc': 'dieses Abo',  # für ...
         'this_subscription_dat': 'diesem Abo',  # von ...
         'your_subscription_acc': 'dein Abo',  # für ...

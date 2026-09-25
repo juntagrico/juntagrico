@@ -4,7 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.exceptions import ValidationError
-from django.test import override_settings
+from django.core.management import call_command
+from django.test import override_settings, tag
 from django.urls import reverse
 
 from juntagrico.entity.member import Member
@@ -262,3 +263,21 @@ class MembershipAdminTests(JuntagricoTestCase):
                 deactivation_date='2026-03-16',
             )
         self.assertEqual(validation_error.exception.code, 'overlap')
+
+
+@tag('shares')
+class MembershipSyncTests(MembershipTests):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.member_with_old_membership = cls.create_member(
+            'member_with_old_membership@email.org', {
+                'cancellation_date': '2026-03-19',
+                'deactivation_date': '2026-03-19',
+            }
+        )
+        cls.create_paid_share(cls.member_with_old_membership)
+
+    def testMembershipSync(self):
+        call_command('sync_memberships')
+        self.assertTrue(self.member_with_old_membership.memberships.active_or_requested().exists())

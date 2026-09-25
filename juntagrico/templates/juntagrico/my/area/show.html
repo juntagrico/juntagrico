@@ -31,11 +31,11 @@
             <div class="col-md-3">
                 {% trans "Beschreibung" %}:
             </div>
-            <div class="col-md-9 description-show">
+            <div class="col-md-9 description-swap description-show">
                 {% block description_text %}{{ area.description|richtext|safe }}{% endblock %}
                 {% if edit_form %}
                     <div class="mt-3">
-                        <a href="#" id="edit_description" class="btn btn-primary">
+                        <a href="#" id="edit_description" class="btn btn-primary swapper" data-swap=".description-swap">
                             <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Beschreibung ändern" %}
                         </a>
@@ -43,7 +43,7 @@
                 {% endif %}
             </div>
             {% if edit_form %}
-                <div class="col-md-9 description-edit d-none">
+                <div class="col-md-9 description-swap description-edit d-none">
                     {% crispy edit_form %}
                 </div>
             {% endif %}
@@ -61,8 +61,7 @@
                 {% endfor %}
                 {% if edit_form %}
                     <div class="mt-3">
-                        {# TODO: open popup instead #}
-                        <a href="{% url 'admin:juntagrico_activityarea_change' area.id %}#juntagrico-contact-content_type-object_id-group"
+                        <a href="{% url 'admin:juntagrico_activityarea_change' area.id %}{% querystring next=request.path %}#juntagrico-contact-content_type-object_id-group"
                            target="_blank"
                            id="edit_contacts" class="btn btn-outline-primary">
                             <i class="bi bi-pencil-square mr-1"></i>
@@ -112,14 +111,6 @@
     <script type="text/javascript">
         $(function() {
             $("#filter-table").DataTable({"searching": false});
-
-            $("#edit_description").on("click", function(e) {
-                $(this).hide();
-                $(".description-show").hide();
-                $(".description-edit").removeClass("d-none");
-                e.preventDefault();
-                return false;
-            })
         })
     </script>
     {% include 'snippets/scripts/area_slider.html' %}

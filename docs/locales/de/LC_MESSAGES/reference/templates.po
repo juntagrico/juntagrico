@@ -1,0 +1,425 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Templates"
+msgstr "Templates"
+
+msgid "In django templates can be overwritten and modified by other apps."
+msgstr "In Django können Templates von anderen Apps überschrieben und geändert werden."
+
+msgid "Juntagrico provides template snippets or template blocks, that allow you to modify parts of certain templates, e.g., descriptive text or menu entries."
+msgstr "Juntagrico bietet Template-Schnipsel oder Template-Blöcke, mit denen du Teile bestimmter Templates ändern kannst, z.B. beschreibenden Text oder Menüeinträge."
+
+msgid "Templates or template blocks that are not documented in this reference may change in future versions without notice. Changing undocumented and will increase your maintenance work."
+msgstr "Templates oder Template-Blöcke, die in dieser Referenz nicht dokumentiert sind, können in zukünftigen Versionen ohne Ankündigung geändert werden. Das Ändern von Undokumentiertem wird deinen Wartungsaufwand erhöhen."
+
+msgid "If you think the changes you want to make could also benefit other juntagrico users, consider opening an issue, suggesting your changes to juntagrico directly. If you need your changes quickly, you may still want to override the templates as described here."
+msgstr "Wenn du denkst, dass die Änderungen, die du machen möchtest, auch anderen Juntagrico-Benutzern nützen könnten, erwäge ein Issue zu eröffnen und deine Änderungen direkt an Juntagrico vorzuschlagen. Wenn du deine Änderungen schnell brauchst, kannst du die Templates trotzdem wie hier beschrieben überschreiben."
+
+msgid "Some texts, e.g. of forms, do not appear in the template. To change these :ref:`see below <intro-modify-text-in-code>`"
+msgstr "Einige Texte, z.B. von Formularen, erscheinen nicht im Template. Um diese zu ändern, :ref:`siehe unten <intro-modify-text-in-code>`"
+
+msgid "Set up Template Overrides"
+msgstr "Template-Überschreibungen einrichten"
+
+msgid "The instructions for overriding templates in django can be found in the `the official documentation <https://docs.djangoproject.com/en/4.2/howto/overriding-templates/>`_. Roughly these are the steps:"
+msgstr "Die Anweisungen zum Überschreiben von Templates in Django finden sich in der `offiziellen Dokumentation <https://docs.djangoproject.com/en/4.2/howto/overriding-templates/>`_. Grob gesagt sind dies die Schritte:"
+
+msgid "In the ``settings.py`` either enable the ``app_directories`` template loader or set ``APP_DIRS`` to True on the ``TEMPLATES`` setting. And make sure that the app with the template overrides is somewhere above ``'juntagrico'`` in the ``INSTALLED_APPS``"
+msgstr "In der ``settings.py`` entweder den ``app_directories``-Template-Loader aktivieren oder ``APP_DIRS`` auf True bei der ``TEMPLATES``-Einstellung setzen. Und sicherstellen, dass die App mit den Template-Überschreibungen irgendwo oberhalb von ``'juntagrico'`` in ``INSTALLED_APPS`` steht"
+
+msgid "Alternatively, you can set ``DIRS`` to your ``TEMPLATES`` settings to the folder where you will place the template overrides."
+msgstr "Alternativ kannst du ``DIRS`` in deinen ``TEMPLATES``-Einstellungen auf den Ordner setzen, in dem du die Template-Überschreibungen platzieren wirst."
+
+msgid "Create a template file in your templates folder (in your app or in the project root, depending on the above setting) with the same path as the `template file in juntagrico <https://github.com/juntagrico/juntagrico/tree/main/juntagrico/templates>`_, that you want to override."
+msgstr "Erstelle eine Template-Datei in deinem Templates-Ordner (in deiner App oder im Projektroot, je nach obiger Einstellung) mit demselben Pfad wie die `Template-Datei in Juntagrico <https://github.com/juntagrico/juntagrico/tree/main/juntagrico/templates>`_, die du überschreiben möchtest."
+
+msgid "The project will now use your copy of the template instead of the original. If you only want to modify certain blocks on that template, extend the original template and modify the block(s) like this:"
+msgstr "Das Projekt verwendet nun deine Kopie des Templates statt dem Original. Wenn du nur bestimmte Blöcke in diesem Template ändern möchtest, erweitere das Original-Template und ändere den/die Block(e) wie folgt:"
+
+msgid "Email Templates"
+msgstr "E-Mail-Templates"
+
+msgid "Email Templates can be overridden in the same way as every other template. Read the :ref:`Notification reference <reference-notifications>` to see which email templates exist."
+msgstr "E-Mail-Templates können auf dieselbe Weise wie jedes andere Template überschrieben werden. Lies die :ref:`Benachrichtigungs-Referenz <reference-notifications>`, um zu sehen, welche E-Mail-Templates existieren."
+
+msgid "Menu Templates"
+msgstr "Menü-Templates"
+
+msgid "Make sure to always add ``{{ block.super }}`` to include extensions by addons."
+msgstr "Stelle sicher, dass du immer ``{{ block.super }}`` hinzufügst, um Erweiterungen durch Addons einzuschliessen."
+
+msgid "juntagrico/menu/user.html|extend"
+msgstr "juntagrico/menu/user.html|extend"
+
+msgid "Add entries to the user menu."
+msgstr "Einträge zum Benutzer-Menü hinzufügen."
+
+msgid "Example:"
+msgstr "Beispiel:"
+
+msgid "juntagrico/menu/admin.html|extend"
+msgstr "juntagrico/menu/admin.html|extend"
+
+msgid "Add entries to the admin menu."
+msgstr "Einträge zum Admin-Menü hinzufügen."
+
+msgid "juntagrico/menu/admin/subscriptions.html|extend"
+msgstr "juntagrico/menu/admin/subscriptions.html|extend"
+
+msgid "Add entries to the subscription section in the admin menu."
+msgstr "Einträge zum Abonnement-Abschnitt im Admin-Menü hinzufügen."
+
+msgid "juntagrico/menu/admin/\\*.html|sub"
+msgstr "juntagrico/menu/admin/\\*.html|sub"
+
+msgid "Change admin sub menu entries of:"
+msgstr "Admin-Submenü-Einträge ändern von:"
+
+msgid "``activityareas.html``"
+msgstr "``activityareas.html``"
+
+msgid "``assignments.html``"
+msgstr "``assignments.html``"
+
+msgid "``depots.html``"
+msgstr "``depots.html``"
+
+msgid "``extra_subscriptions.html``"
+msgstr "``extra_subscriptions.html``"
+
+msgid "``lists.html``"
+msgstr "``lists.html``"
+
+msgid "``members.html``"
+msgstr "``members.html``"
+
+msgid "``shares.html``"
+msgstr "``anteilsscheine.html``"
+
+msgid "``subscriptions.html``"
+msgstr "``subscriptions.html``"
+
+msgid "Signup Templates"
+msgstr "Registrierungs-Templates"
+
+msgid "All signup pages have these 2 blocks to override:"
+msgstr "Alle Registrierungsseiten haben diese 2 Blöcke zum Überschreiben:"
+
+msgid "``title``: Text of the title"
+msgstr "``title``: Text der Überschrift"
+
+msgid "``intro``: Text after the title"
+msgstr "``intro``: Text nach der Überschrift"
+
+msgid "The signup templates are located in the folder ``createsubscription``."
+msgstr "Die Registrierungs-Templates befinden sich im Ordner ``createsubscription``."
+
+msgid "Some pages have additional blocks listed below."
+msgstr "Einige Seiten haben zusätzliche Blöcke, die unten aufgelistet sind."
+
+msgid "juntagrico/signup/member.html"
+msgstr "juntagrico/signup/member.html"
+
+msgid "``intro_1``: First part of intro"
+msgstr "``intro_1``: Erster Teil der Einleitung"
+
+msgid "``intro_with_shares``: Part of intro, about shares"
+msgstr "``intro_with_shares``: Teil der Einleitung, über Anteilsscheine"
+
+msgid "``intro_2``  Last part of intro"
+msgstr "``intro_2`` Letzter Teil der Einleitung"
+
+msgid "``read_instructions``: Text on documents that should be read"
+msgstr "``read_instructions``: Text zu Dokumenten, die gelesen werden sollten"
+
+msgid "juntagrico/form/layout/category_container.html"
+msgstr "juntagrico/form/layout/category_container.html"
+
+msgid "Defines the structure to display subscription categories in the subscription/part order and change forms"
+msgstr "Definiert die Struktur zur Anzeige von Abonnement-Kategorien in den Abonnement-/Teil-Bestell- und Änderungsformularen"
+
+msgid "Blocks:"
+msgstr "Blöcke:"
+
+msgid "``head``: Name and description of category"
+msgstr "``head``: Name und Beschreibung der Kategorie"
+
+msgid "``fields``: Nested fields"
+msgstr "``fields``: Verschachtelte Felder"
+
+msgid "juntagrico/form/layout/bundle_container.html"
+msgstr "juntagrico/form/layout/bundle_container.html"
+
+msgid "Defines the structure to display subscription bundles in the subscription/part order and change forms."
+msgstr "Definiert die Struktur zur Anzeige von Abonnement-Bundles in den Abonnement-/Teil-Bestell- und Änderungsformularen."
+
+msgid "Has the same blocks as ``category_container.html``."
+msgstr "Hat dieselben Blöcke wie ``category_container.html``."
+
+msgid "juntagrico/snippets/subscription/type.html"
+msgstr "juntagrico/snippets/subscription/type.html"
+
+msgid "Displays subscription type in any order process and in configuration view."
+msgstr "Zeigt Abonnement-Typ in jedem Bestellprozess und in der Konfigurationsansicht."
+
+msgid "``price``: price display for all cases"
+msgstr "``price``: Preis-Anzeige für alle Fälle"
+
+msgid "``periodic_price``: price display for types that have periods"
+msgstr "``periodic_price``: Preis-Anzeige für Typen, die Perioden haben"
+
+msgid "``price_display``: price display for types without periods"
+msgstr "``price_display``: Preis-Anzeige für Typen ohne Perioden"
+
+msgid "juntagrico/snippets/subscription/type_duration_info.html"
+msgstr "juntagrico/snippets/subscription/type_duration_info.html"
+
+msgid "Displays the runtime of the subscription type."
+msgstr "Zeigt die Laufzeit des Abonnement-Typs."
+
+msgid "juntagrico/subscription/create/form/no_subscription_field.html"
+msgstr "juntagrico/subscription/create/form/no_subscription_field.html"
+
+msgid "``description``: Textlabel on signup option without subscription"
+msgstr "``description``: Beschriftung bei Registrierungsoption ohne Abonnement"
+
+msgid "``base_fee``: Base fee description on signup option without subscription"
+msgstr "``base_fee``: Grundgebühr-Beschreibung bei Registrierungsoption ohne Abonnement"
+
+msgid "juntagrico/subscription/create/select_depot.html"
+msgstr "juntagrico/subscription/create/select_depot.html"
+
+msgid "``label``: of depot selection field"
+msgstr "``label``: von Depot-Auswahlfeld"
+
+msgid "juntagrico/subscription/create/select_start_date.html"
+msgstr "juntagrico/subscription/create/select_start_date.html"
+
+msgid "``label``: Label of date selection field"
+msgstr "``label``: Beschriftung des Datums-Auswahlfelds"
+
+msgid "``hint``: text below selection field"
+msgstr "``hint``: Text unter Auswahlfeld"
+
+msgid "juntagrico/subscription/create/select_shares.html"
+msgstr "juntagrico/subscription/create/select_shares.html"
+
+msgid "``intro_membership``: Explaining required shares for membership"
+msgstr "``intro_membership``: Erklärung der erforderlichen Anteilsscheine für Mitgliedschaft"
+
+msgid "``intro_subscriptions``: Explaining required shares for subscriptions"
+msgstr "``intro_subscriptions``: Erklärung der erforderlichen Anteilsscheine für Abonnements"
+
+msgid "``intro_signup``: Explaining required shares for signup"
+msgstr "``intro_signup``: Erklärung der erforderlichen Anteilsscheine für Registrierung"
+
+msgid "``intro_additional``: Last part of intro"
+msgstr "``intro_additional``: Letzter Teil der Einleitung"
+
+msgid "juntagrico/subscription/create/summary.html"
+msgstr "juntagrico/subscription/create/summary.html"
+
+msgid "Each section has a block:"
+msgstr "Jeder Abschnitt hat einen Block:"
+
+msgid "``profile``"
+msgstr "``profile``"
+
+msgid "``subscription``"
+msgstr "``subscription``"
+
+msgid "``depot``"
+msgstr "``depot``"
+
+msgid "``start_date``"
+msgstr "``start_date``"
+
+msgid "``co_member``"
+msgstr "``co_member``"
+
+msgid "``activity_areas``"
+msgstr "``activity_areas``"
+
+msgid "``shares``"
+msgstr "``anteilsscheine``"
+
+msgid "``comment``"
+msgstr "``comment``"
+
+msgid "juntagrico/subscription/create/summary/snippets/part.html"
+msgstr "juntagrico/subscription/create/summary/snippets/part.html"
+
+msgid "Displays selected subscription part types in signup summary."
+msgstr "Zeigt ausgewählte Abonnement-Teil-Typen in der Registrierungszusammenfassung."
+
+msgid "``trial_price``: price display for trial types without periods"
+msgstr "``trial_price``: Preis-Anzeige für Probetypen ohne Perioden"
+
+msgid "``regular_price``: price display for non-trial types without periods"
+msgstr "``regular_price``: Preis-Anzeige für Nicht-Probetypen ohne Perioden"
+
+msgid "Subscription Templates"
+msgstr "Abonnement-Templates"
+
+msgid "juntagrico/my/subscription/single.html|extend"
+msgstr "juntagrico/my/subscription/single.html|extend"
+
+msgid "Add content to the subscription overview page, for members that have a subscription."
+msgstr "Inhalt zur Abonnement-Übersichtsseite hinzufügen, für Mitglieder, die ein Abonnement haben."
+
+msgid "juntagrico/my/subscription/none.html|extend"
+msgstr "juntagrico/my/subscription/none.html|extend"
+
+msgid "Add content to the subscription overview page, for members that have no subscription."
+msgstr "Inhalt zur Abonnement-Übersichtsseite hinzufügen, für Mitglieder, die kein Abonnement haben."
+
+msgid "Depot Templates"
+msgstr "Depot-Templates"
+
+msgid "juntagrico/my/depot/show.html"
+msgstr "juntagrico/my/depot/show.html"
+
+msgid "Each section has a block to overwrite or extend it:"
+msgstr "Jeder Abschnitt hat einen Block, um ihn zu überschreiben oder zu erweitern:"
+
+msgid "``address``"
+msgstr "``adresse``"
+
+msgid "``pickup``"
+msgstr "``pickup``"
+
+msgid "``contact``"
+msgstr "``kontakt``"
+
+msgid "``description``"
+msgstr "``beschreibung``"
+
+msgid "``access_information``"
+msgstr "``zugangsinformation``"
+
+msgid "``map``"
+msgstr "``karte``"
+
+msgid "Activity Area Templates"
+msgstr "Tätigkeitsbereich-Templates"
+
+msgid "juntagrico/my/area/snippets/intro.html"
+msgstr "juntagrico/my/area/snippets/intro.html"
+
+msgid "Intro text on the activity area overview page"
+msgstr "Einleitungstext auf der Tätigkeitsbereich-Übersichtsseite"
+
+msgid "``all``: Use this block if you want to append or prepend text"
+msgstr "``all``: Verwende diesen Block, wenn du Text anhängen oder voranstellen möchtest"
+
+msgid "juntagrico/my/area/list.html"
+msgstr "juntagrico/my/area/list.html"
+
+msgid "``intro``: Intro including structure. To just change the text, override ``snippets/intro.html``. See above."
+msgstr "``intro``: Einleitung inklusive Struktur. Um nur den Text zu ändern, überschreibe ``snippets/intro.html``. Siehe oben."
+
+msgid "``list``: Entire list of activity areas"
+msgstr "``list``: Gesamte Liste der Tätigkeitsbereiche"
+
+msgid "``section_head``: Title above area list. If core areas exist separate titles are shown for core and non-core areas."
+msgstr "``section_head``: Titel über Bereichsliste. Wenn Kernbereiche existieren, werden separate Titel für Kern- und Nicht-Kernbereiche angezeigt."
+
+msgid "``area_list``: List structure of activity areas"
+msgstr "``area_list``: Listenstruktur der Tätigkeitsbereiche"
+
+msgid "``area``: Display of activity area in list element"
+msgstr "``area``: Anzeige des Tätigkeitsbereichs im Listenelement"
+
+msgid "``coordinated_areas``: List of areas coordinated by this user"
+msgstr "``coordinated_areas``: Liste der Bereiche, die von diesem Benutzer koordiniert werden"
+
+msgid "juntagrico/my/area/show.html"
+msgstr "juntagrico/my/area/show.html"
+
+msgid "``join``: Slider to join activity area"
+msgstr "``join``: Schieberegler zum Beitritt zum Tätigkeitsbereich"
+
+msgid "``description``: Full description structure"
+msgstr "``description``: Vollständige Beschreibungsstruktur"
+
+msgid "``description_text``: Description Text"
+msgstr "``description_text``: Beschreibungstext"
+
+msgid "``contacts``: List of activity area contacts"
+msgstr "``contacts``: Liste der Tätigkeitsbereich-Kontakte"
+
+msgid "``members``: Count and link to member list for admins"
+msgstr "``members``: Anzahl und Link zur Mitgliederliste für Admins"
+
+msgid "``upcoming``: List of upcoming jobs in activity area"
+msgstr "``upcoming``: Liste der kommenden Jobs im Tätigkeitsbereich"
+
+msgid "Membership Templates"
+msgstr "Mitgliedschafts-Templates"
+
+msgid "juntagrico/my/membership/cancel.html"
+msgstr "juntagrico/my/membership/cancel.html"
+
+msgid "``intro``: Text after title"
+msgstr "``intro``: Text nach Überschrift"
+
+msgid "juntagrico/my/membership/profile.html"
+msgstr "juntagrico/my/membership/profile.html"
+
+msgid "Blocks exist for the text in the info banner on top and for the buttons"
+msgstr "Es existieren Blöcke für den Text im Infobanner oben und für die Buttons"
+
+msgid "``info_canceled``"
+msgstr "``info_canceled``"
+
+msgid "``info_active``"
+msgstr "``info_active``"
+
+msgid "``button_change_password``"
+msgstr "``button_change_password``"
+
+msgid "``button_cancel_membership``"
+msgstr "``button_cancel_membership``"
+
+msgid "Widget Templates"
+msgstr "Widget-Templates"
+
+msgid "juntagrico/widgets/assignment_progress.html|progress"
+msgstr "juntagrico/widgets/assignment_progress.html|progress"
+
+msgid "Change appearance of the assignment progress widget in menu."
+msgstr "Aussehen des Einsatz-Fortschritts-Widgets im Menü ändern."
+
+msgid "E.g. to use the bean icon indicators of previous juntagrico versions do:"
+msgstr "Z.B. um die Bohnen-Icon-Indikatoren früherer Juntagrico-Versionen zu verwenden, mache folgendes:"
+
+msgid "The ``future`` argument on ``assignment_progress`` specifies if planned future assignments are counted as well:"
+msgstr "Das ``future``-Argument bei ``assignment_progress`` spezifiziert, ob geplante zukünftige Einsätze ebenfalls gezählt werden:"
+
+msgid "None: Count future assignments"
+msgstr "None: Zukünftige Einsätze zählen"
+
+msgid "False: Don't count future assignments"
+msgstr "False: Zukünftige Einsätze nicht zählen"
+
+msgid "True: Count future assignments separately. This is not supported by the classic assignments widget."
+msgstr "True: Zukünftige Einsätze separat zählen. Dies wird vom klassischen Einsatz-Widget nicht unterstützt."

@@ -99,6 +99,9 @@ class Command(BaseCommand):
                 print('*** mails/admin/subpart_canceled.txt (a_subpart_canceled) ***')
                 adminnotification.subpart_canceled(canceled_part)
 
+                print('*** admin/subscription/part/changed ***')
+                adminnotification.subpart_changed(canceled_part, future_parts[0])
+
                 print('*** mails/member/subscription/part/canceled.txt ***')
                 membernotification.part_canceled_for_you(canceled_part)
 
@@ -182,6 +185,11 @@ class Command(BaseCommand):
                 print('*** admin/job/unsubscribed ***')
                 adminnotification.member_unsubscribed_from_job(
                     job, member=member, initial_count=1, message=_('[Nachricht des Mitglieds]')
+                )
+
+                print('*** admin/job/message ***')
+                adminnotification.job_message(
+                    job, member=member, message=_('[Nachricht des Mitglieds]')
                 )
 
                 assignment_context = dict(

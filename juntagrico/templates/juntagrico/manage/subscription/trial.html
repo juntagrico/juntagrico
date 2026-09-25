@@ -67,7 +67,7 @@
                 {% with remaining=trial_part.remaining_trial_days %}
                     <tr class="{% if trial_part.is_extra %}show-extra{% else %}show-normal{% endif %}">
                         <td>
-                            <a href="{% url 'admin:juntagrico_subscription_change' trial_part.subscription.id %}">
+                            <a href="{% url 'admin:juntagrico_subscription_change' trial_part.subscription.id %}{% querystring next=request.path %}">
                                 {{ trial_part.type }}
                             </a>
                         </td>
@@ -151,8 +151,7 @@
                                             </a>
                                             <a data-url="{% url 'manage-part-cancel' trial_part.id %}"
                                                data-toggle="modal" data-target="#cancel_part_modal"
-                                               class="btn btn-outline-danger mb-1"
-                                               title="{% trans "Lässt die Probe noch für die verbleibende Laufzeit laufen" %}">
+                                               class="btn btn-outline-danger mb-1">
                                                 {% trans "Nicht verlängern" %}
                                             </a>
                                         </div>

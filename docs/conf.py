@@ -26,3 +26,6 @@ intersphinx_disabled_domains = ["std"]
 templates_path = ["_templates"]
 
 html_theme = "sphinx_rtd_theme"
+
+gettext_uuid = True
+gettext_compact = False

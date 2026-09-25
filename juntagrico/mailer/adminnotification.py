@@ -2,7 +2,7 @@ from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import EmailBuilder
+from juntagrico.mailer import EmailBuilder, recipients_by_permission
 
 """
 Admin notification emails
@@ -88,6 +88,20 @@ def subpart_canceled(part):
         {
             'part': part,
             'subscription': part.subscription
+        },
+    ).send()
+
+
+def subpart_changed(old_part, new_part):
+    EmailBuilder(
+        recipients_by_permission('notified_on_subscriptionpart_creation')
+        | recipients_by_permission('notified_on_subscriptionpart_cancellation'),
+        _('Bestandteil geändert'),
+        'juntagrico/mails/admin/subscription/part/changed.txt',
+        {
+            'old_part': old_part,
+            'new_part': new_part,
+            'subscription': new_part.subscription,
         },
     ).send()
 
@@ -242,6 +256,16 @@ def member_changed_job_subscription(job, **kwargs):
 def member_unsubscribed_from_job(job, **kwargs):
     if Config.notifications('job_unsubscribed') or kwargs.get('message'):
         _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)
+
+
+def job_message(job, member, message):
+    _template_member_in_job(
+        job,
+        _('Mitteilung zum Einsatz'),
+        'message',
+        member=member,
+        message=message,
+    )
 
 
 def _template_assignment_changed(job, subject, template_name, **kwargs):

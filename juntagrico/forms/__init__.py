@@ -3,7 +3,7 @@ from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit, Div
+from crispy_forms.layout import Field, HTML, Layout, Submit, Div, Button
 from crispy_forms.utils import TEMPLATE_PACK
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -417,6 +417,9 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def type_filter(self, qs):
         return qs.filter(visible=True, is_extra=self.extra)
 
+    def available_types(self):
+        return self.type_filter(SubscriptionType.objects.all())
+
     def _get_initial(self, subscription_type):
         return 0
 
@@ -425,6 +428,19 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
             for sub_type in SubscriptionType.objects.all()
         }
+    
+    def _get_share_error_message(self):
+        return mark_safe(
+            _('Es werden mehr {shares} benötigt.').format(
+                shares=Config.vocabulary('share_pl'),
+            )
+            + '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                reverse('manage-shares'),
+                _('&rarr; Bestelle hier mehr {shares}').format(
+                    shares=Config.vocabulary('share_pl')
+                ),
+            )
+        )
 
 
 class SubscriptionPartSelectRequiredForm(SubscriptionPartBaseForm):
@@ -512,28 +528,11 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
             existing_required_shares = self.subscription.required_shares
             if available_shares < new_required_shares + existing_required_shares:
-                share_error_message = mark_safe(
-                    _('Es werden mehr {shares} benötigt.').format(
-                        shares=Config.vocabulary('share_pl')
-                    ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('manage-shares'),
-                        _('&rarr; Bestelle hier mehr {shares}').format(shares=Config.vocabulary('share_pl'))
-                    )
-                )
-                raise ValidationError(share_error_message, code='share_error')
+                raise ValidationError(self._get_share_error_message(), code='share_error')
         # check that at least one subscription was selected
         if sum(selected.values()) == 0:
-            amount_error_message = mark_safe(
-                _('Wähle mindestens 1 {subscription} aus.').format(
-                    subscription=Config.vocabulary('subscription')
-                ) + (
-                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('sub-cancel', args=[self.subscription.id]),
-                        _('&rarr; Oder {subscription} komplett künden').format(
-                            subscription=Config.vocabulary('subscription')
-                        )
-                    )
-                )
+            amount_error_message = _('Wähle mindestens 1 {subscription} aus.').format(
+                subscription=Config.vocabulary('subscription')
             )
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
@@ -543,25 +542,31 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     part_type = ChoiceField()
 
     def __init__(self, part=None, *args, **kwargs):
-        self.pre_check(part)
-        super().__init__(*args, **kwargs)
         self.part = part
+        self.pre_check()
+        kwargs['extra'] = part.is_extra  # extra parts can only be changed to another extra part
+        super().__init__(*args, **kwargs)
         self.fields['part_type'].choices = self.get_choices
         self.helper.label_class = ''
         self.helper.field_class = 'col-md-12'
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Ändern'), css_class='btn-success')
+        if self.available_types().exists():
+            self.helper.layout = Layout(
+                *self._collect_type_fields(),
+                FormActions(
+                    self.get_submit_button()
+                )
             )
-        )
+        else:
+            self.helper.layout = Layout(
+                HTML(f'<p>{_("Es sind keine Optionen verfügbar.")}</p>')
+            )
 
-    @staticmethod
-    def pre_check(part):
-        if part.subscription.canceled or part.subscription.inactive:
+    def pre_check(self):
+        if self.part.subscription.canceled or self.part.subscription.inactive:
             raise Http404("Can't change subscription part of canceled subscription")
-        if not SubscriptionType.objects.can_change():
-            raise Http404("Can't change subscription part if there is only one subscription type")
+
+    def get_submit_button(self):
+        return Submit('submit', _('Ändern'), css_class='btn-success')
 
     def get_type_field(self, subscription_type):
         return SubscriptionTypeOption('part_type', instance=subscription_type)
@@ -570,7 +575,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         return super().type_filter(qs).exclude(pk=self.part.type.pk)
 
     def get_choices(self):
-        for subscription_type in self.type_filter(SubscriptionType.objects.normal().visible()):
+        for subscription_type in self.available_types():
             yield subscription_type.id, subscription_type.name
 
     def clean(self):
@@ -582,15 +587,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 additional_available_shares = self.part.subscription.available_shares - self.part.subscription.required_shares
                 additional_required_shares = sub_type.shares - self.part.type.shares
                 if additional_available_shares < additional_required_shares:
-                    share_error_message = mark_safe(
-                        _('Es werden mehr {shares} benötigt.').format(
-                            shares=Config.vocabulary('share_pl'),
-                        ) + '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                            reverse('manage-shares'),
-                            _('&rarr; Bestelle hier mehr {shares}').format(shares=Config.vocabulary('share_pl'))
-                        )
-                    )
-                    raise ValidationError(share_error_message, code='share_error')
+                    raise ValidationError(self._get_share_error_message(), code='share_error')
         else:
             # re-raise field error as form error
             for error_code, error in self.errors.items():
@@ -613,19 +610,12 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
 
     def send_notification(self, new_part):
         # notify admin
-        adminnotification.subpart_canceled(self.part)
-        adminnotification.subparts_created([new_part], self.part.subscription)
+        adminnotification.subpart_changed(self.part, new_part)
 
 
 class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
-    def __init__(self, part=None, *args, **kwargs):
-        super().__init__(part, *args, **kwargs)
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Bestellen'), css_class='btn-success')
-            )
-        )
+    def get_submit_button(self):
+        return Submit('submit', _('Bestellen'), css_class='btn-success')
 
     def type_filter(self, qs):
         return super().type_filter(qs).exclude(trial_days__gt=0)
@@ -635,6 +625,11 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
     def send_notification(self, new_part):
         membernotification.trial_continued_for_you(self.part, new_part)
         pass
+
+    def _get_share_error_message(self):
+        return _('Es werden mehr {shares} benötigt.').format(
+            shares=Config.vocabulary('share_pl'),
+        )
 
 
 class TrialCloseoutForm(Form):
@@ -847,6 +842,7 @@ class AreaDescriptionForm(ModelForm):
             'description',
             FormActions(
                 Submit('submit', _('Speichern')),
+                Button('cancel', _('Abbrechen'), css_class='swapper', data_swap='.description-swap'),
             ),
         )
 

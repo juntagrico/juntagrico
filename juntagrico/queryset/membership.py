@@ -2,6 +2,8 @@ import datetime
 
 from django.db.models import QuerySet
 
+from juntagrico.config import Config
+
 
 class MembershipQueryset(QuerySet):
     def active(self, on_date=None):
@@ -26,3 +28,8 @@ class MembershipQueryset(QuerySet):
     def inactive(self, on_date=None):
         on_date = on_date or datetime.date.today()
         return self.filter(deactivation_date__lte=on_date)
+
+    def required_shares_count(self):
+        if Config.membership('enable'):
+            return self.count() * Config.membership('required_shares')
+        return 0

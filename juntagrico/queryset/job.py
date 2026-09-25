@@ -73,3 +73,9 @@ class AssignmentQuerySet(QuerySet):
     def in_areas(self, areas):
         from juntagrico.entity.jobs import Job
         return self.filter(job__in=Job.objects.in_areas(areas))
+
+
+class JobMessageQuerySet(QuerySet):
+    def in_areas(self, areas):
+        from juntagrico.entity.jobs import Job
+        return self.filter(job__in=Job.objects.in_areas(areas))

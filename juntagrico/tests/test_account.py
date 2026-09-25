@@ -1,11 +1,17 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.formats import date_format
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from . import JuntagricoTestCase
+from . import JuntagricoTestCase, JuntagricoTestCaseWithShares
+from ..entity.jobs import RecuringJob, Assignment
+from ..forms.account import MemberSelect2Widget
 
 
 class AccountTests(JuntagricoTestCase):
@@ -62,6 +68,123 @@ class AccountTests(JuntagricoTestCase):
         )
         account.refresh_from_db()
         self.assertTrue(account.inactive, f'{account} {account.email}')
+
+
+class AccountOverviewTests(JuntagricoTestCaseWithShares):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        day_after_tomorrow = datetime.date.today() + datetime.timedelta(days=2)
+        cls.member.notes = 'notes on member'
+        cls.member.confirmed = True
+        cls.member.save()
+        cls.create_membership(cls.member, notes='notes on membership')
+        if settings.ENABLE_SHARES:
+            # add 3 shares in sequence to fully test sequence template tag
+            for _ in range(3):
+                Share.objects.create(
+                    member=cls.member,
+                    notes='notes on ordered share'
+                )
+            cls.create_paid_share(cls.member, notes='notes on paid share')
+        cls.sub.future_depot = cls.depot2
+        cls.sub.save()
+        # add job from last season to display link to all jobs of member
+        cls.old_job = RecuringJob.objects.create(
+            slots=2, time='2025-06-06', type=cls.job_type
+        )
+        Assignment.objects.create(job=cls.old_job, member=cls.member, amount=1)
+        # add job after today to show progress bar with future jobs
+        cls.future_job = RecuringJob.objects.create(
+            slots=2, time=timezone.now() + datetime.timedelta(days=2), type=cls.job_type
+        )
+        Assignment.objects.create(job=cls.future_job, member=cls.member, amount=1)
+        Assignment.objects.create(job=cls.future_job, member=cls.member3, amount=1)
+        # create all membership states
+        cls.create_membership(cls.member2, activation_date=day_after_tomorrow)
+        cls.member2.cancellation_date = '2026-04-12'
+        cls.member2.save()
+        cls.create_membership(cls.member3, cancellation_date='2026-04-12')
+        cls.create_membership(cls.member4, cancellation_date='2026-04-12', deactivation_date='2026-04-12')
+        cls.create_membership(cls.member5, activation_date=None)
+        cls.area.members.add(cls.area_admin)
+        cls.create_membership(cls.area_admin, activation_date=day_after_tomorrow)
+        cls.future_inactive_member = cls.create_member(
+            email='future_inactive@example.com',
+            cancellation_date=day_after_tomorrow,
+            deactivation_date=day_after_tomorrow,
+        )
+
+    def testAccountOverview(self):
+        self.assertGet(reverse('manage-account-single', args=[self.member.id]), code=302)
+        self.assertGet(reverse('manage-account-single', args=[self.member.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member2.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member3.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member4.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.member5.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.inactive_member.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.future_inactive_member.id]), member=self.admin)
+        self.assertGet(reverse('manage-account-single', args=[self.area_admin.id]), member=self.admin)
+
+    def testAccountNoteEdit(self):
+        data = {'notes': 'New note'}
+        self.assertPost(
+            reverse('manage-account-notes-edit', args=[self.member.id]),
+            data=data,
+            code=302,
+            member=self.member2,
+        )
+        self.member.refresh_from_db()
+        self.assertNotEqual(self.member.notes, 'New note')
+        self.assertPost(
+            reverse('manage-account-notes-edit', args=[self.member.id]),
+            data=data,
+            code=302,
+            member=self.admin,
+        )
+        self.member.refresh_from_db()
+        self.assertEqual(self.member.notes, 'New note')
+
+
+class SearchTest(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # create account with the same name to test display of search results.
+        cls.another_member = cls.create_member(
+            'another_one@email.org',
+            first_name=cls.member2.first_name,
+            last_name=cls.member2.last_name,
+        )
+
+    def testAccountSearch(self):
+        response = self.assertGet(
+            reverse('manage-account-search') + f'?account={self.member2.id}',
+            code=302,
+            member=self.admin,
+        )
+        self.assertRedirects(response, reverse('manage-account-single', args=[self.member2.id]))
+
+    def testNoResults(self):
+        self.assertGet(
+            reverse('manage-account-search'),
+            code=200,
+            member=self.admin,
+        )
+
+    def testDuplicateMemberDisplay(self):
+        # note: join date will not show when rendering the field with initial data.
+        ids = [self.member2.id, self.another_member.id]
+        widget = MemberSelect2Widget(
+            queryset=Member.objects.filter(id__in=ids)
+        )
+        today = datetime.date.today()
+        for option in widget.get_queryset():
+            label = widget.label_from_instance(option)
+            self.assertEqual(
+                label,
+                f'{option.first_name} {option.last_name} ({date_format(today, "SHORT_DATE_FORMAT")})',
+            )
 
 
 class AdminTest(JuntagricoTestCase):

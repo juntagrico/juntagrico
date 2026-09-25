@@ -1,0 +1,1037 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 12:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../reference/settings.rst:2 174e7b56075340d395323a9bc5936a94
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ../../reference/settings.rst:4 41bfa740b2064fa1880e1bbd7fd264ad
+msgid "You can use the following settings to configure juntagrico"
+msgstr "Du kannst folgende Einstellungen verwenden, um Juntagrico zu konfigurieren"
+
+#: ../../reference/settings.rst:7 5c2405f3af5e4eeb899d396290701ec8
+msgid "Contact Information"
+msgstr "Kontaktinformationen"
+
+#: ../../reference/settings.rst:10 bdc1ef30811a4ea0906382b10275f98d
+msgid "ORGANISATION_NAME"
+msgstr "ORGANISATION_NAME"
+
+#: ../../reference/settings.rst:11 6800c848a0d144b9b312c10bf789ba6a
+msgid "The short name of your organisation"
+msgstr "Der Name deiner Organisation"
+
+#: ../../reference/settings.rst:13 ../../reference/settings.rst:46
+#: ../../reference/settings.rst:115 ../../reference/settings.rst:164
+#: ../../reference/settings.rst:209 ../../reference/settings.rst:269
+#: ../../reference/settings.rst:281 ../../reference/settings.rst:293
+#: ../../reference/settings.rst:305 ../../reference/settings.rst:317
+#: ../../reference/settings.rst:415 ../../reference/settings.rst:514
+#: ../../reference/settings.rst:558 ../../reference/settings.rst:847
+#: ../../reference/settings.rst:877 ../../reference/settings.rst:932
+#: ../../reference/settings.rst:1049 ../../reference/settings.rst:1078
+#: 0b0b72f0617d45d79dc0263c64ccb7b4 3ee5a0914114422d8e3aca4e53c14b27
+#: 5975c252fb7e45efb909d083b39062ab 5f771e4d21c147d99d0cd79da0e66660
+#: 68abf872dc7844489d15239c09fcc3b6 6ea7fa3271a340608a14aee8f0eb2779
+#: 886463fcbd74421998c6062dff0f1de5 91c6e379c9f545dd9ad912f0828134d6
+#: 9ac3858b8b174489a3acd8f0e3ce108c a319c66c6f574588a724ff3e2c7d60a9
+#: ad4801f3f55042c6b3f65870bae20f28 ae8271fe20c9426d95dc5adcce672d59
+#: b24ba0dcf99b4c94b67831af39933c30 b988087648a040c3b0b27aef98eadf87
+#: c803fd5e4933491386905b10de007dfd db1d322d25984ece9bf2fd60b1068459
+#: dc91236002ef4f60b51e8366195ed1a6 f9a183ba2e45463492cb8c989d71ceb3
+msgid "Type: String"
+msgstr "Typ: String"
+
+#: ../../reference/settings.rst:15 ../../reference/settings.rst:36
+#: ../../reference/settings.rst:48 ../../reference/settings.rst:67
+#: ../../reference/settings.rst:84 ../../reference/settings.rst:96
+#: ../../reference/settings.rst:117 ../../reference/settings.rst:147
+#: ../../reference/settings.rst:173 ../../reference/settings.rst:193
+#: ../../reference/settings.rst:211 ../../reference/settings.rst:271
+#: ../../reference/settings.rst:283 ../../reference/settings.rst:295
+#: ../../reference/settings.rst:307 ../../reference/settings.rst:319
+#: ../../reference/settings.rst:338 ../../reference/settings.rst:351
+#: ../../reference/settings.rst:367 ../../reference/settings.rst:380
+#: ../../reference/settings.rst:400 ../../reference/settings.rst:417
+#: ../../reference/settings.rst:429 ../../reference/settings.rst:457
+#: ../../reference/settings.rst:477 ../../reference/settings.rst:489
+#: ../../reference/settings.rst:501 ../../reference/settings.rst:516
+#: ../../reference/settings.rst:532 ../../reference/settings.rst:544
+#: ../../reference/settings.rst:560 ../../reference/settings.rst:587
+#: ../../reference/settings.rst:606 ../../reference/settings.rst:625
+#: ../../reference/settings.rst:674 ../../reference/settings.rst:693
+#: ../../reference/settings.rst:715 ../../reference/settings.rst:740
+#: ../../reference/settings.rst:800 ../../reference/settings.rst:818
+#: ../../reference/settings.rst:834 ../../reference/settings.rst:849
+#: ../../reference/settings.rst:859 ../../reference/settings.rst:879
+#: ../../reference/settings.rst:896 ../../reference/settings.rst:934
+#: ../../reference/settings.rst:955 ../../reference/settings.rst:970
+#: ../../reference/settings.rst:983 ../../reference/settings.rst:1051
+#: ../../reference/settings.rst:1061 ../../reference/settings.rst:1080
+#: ../../reference/settings.rst:1090 05e4be7240cf41519def1a3409cd3431
+#: 07d89dc3d65547de8775925462a314cf 08a5db184a094ce0948698cc53c458b0
+#: 11f7cab70d884546ab248e0cf0400daa 1466075bc38246f6a785c5df197eb045
+#: 147181f77b114ddcbab0c99c444ee519 17aadaf0848041ac9045fe41b61ce4d9
+#: 38d7b30a261e4b7fa1bdc22b9ddbd781 3a91947866e34a5aa1290ce4692c6247
+#: 3cd24763d281471babaeb2dba21e87b6 4066b2f039414503b68e95104c1b838a
+#: 42f198add4714e7d9facc7fffec36792 46612cd15a774e7c9ea8081a1ace5f4b
+#: 4e507e01fe3244a09df97dc5f3a0de4f 4f04d399cfaa4ad19a569c0b3a976883
+#: 52278924c30c436387b846b57823ac71 61b05b6488814190a66e1053387085bf
+#: 635da17a474447388cbb9feba06d20fc 63c8a60b480841b9af3997813dfac36c
+#: 6b4010f98168409e8c0122db33b88fbc 73e961e0e1a043e9a25bf24d1cb72343
+#: 74fd0dbc924c4c11879b0217e667e6c9 75173e5abdd04f459e9ddd7d836ea967
+#: 78e2c5399bd34126b98f487875508d11 7925e362c88f4cc79ad2ef1337f2329b
+#: 7d18cb224ccd428e95cec0b0cf3c0a9d 7eb6f08783fd415c8f87ede7248127ea
+#: 8c15927c36494e62ac1f1bd93aabc178 9085c6c2b35a4ec9bd4be8bd1d16577c
+#: 928d45bba0c44759b93466425a028e6f 94212f04d72a42af8ab72154f0adbefe
+#: 95b111b098fb44d89287ebb4818fef36 9e5661f68b594cffba10a59569883ac2
+#: a4c8fe8a4fb34e61aba2146ec8457cae a5c4bde264a64e4f8ee11ce972da6af0
+#: aada45acaf9843598fc95d46f2ecf309 ae8b5be4ffbb4beeac07718b43bc052e
+#: bc9b017ebcaa4308857039e54b65039f bd9d9834373a4cea9b3373835543876c
+#: c00f801b0412453f960bf26eedccfc58 cd00791aba7b4c0b9f35a50612409c53
+#: cdf10b3e7a384f5c94f76cf9829cea3a cff7af6f2d864bf398ec6dcd68a83cd0
+#: d63b38e098984eeea8c97c4295a23870 d9b14cf456c74aadbcd4b137b45975a1
+#: dad1b72ceb8c48a5a6f02932a9432e0e e78ae0f0732744b6a962b008cc0d5703
+#: e8a58c4e2a31469597d12a2e8a77b0f2 ee03117084c2478eb99693491972731d
+#: f6e15b351fbe411f8c6cd370e20fe762 fb43304f77744e71a8aa926395619829
+#: fbc757bb114742538c7c406f0fff2726 fe66d68900544b7db12e004e36f9db9b
+msgid "default value"
+msgstr "Standardwert"
+
+#: ../../reference/settings.rst:22 7871664bf6894f71b1bab287d6883718
+msgid "ORGANISATION_NAME_CONFIG"
+msgstr "ORGANISATION_NAME_CONFIG"
+
+#: ../../reference/settings.rst:23 d01831f99d234685aa75e83f9c64aa3b
+msgid "Additional information to adjust the language around the organisation name:"
+msgstr "Zusätzliche Informationen, um die Sprache rund um den Organisationsnamen anzupassen:"
+
+#: ../../reference/settings.rst:25 d6e4a32b853540be8b44bc7361dea544
+msgid "the type of the organisation e.g. \"Genossenschaft\" or \"Verein\""
+msgstr "die Art der Organisation, z.B. \"Genossenschaft\" oder \"Verein\""
+
+#: ../../reference/settings.rst:26 49ddd441108649d296c5a7ff1cdfbb71
+msgid "the gender i.e. \"f\", \"m\" or \"n\""
+msgstr "das Geschlecht, also \"f\", \"m\" oder \"n\""
+
+#: ../../reference/settings.rst:28 9a3e3a1ff3af4276829f0416cd83fb45
+msgid "E.g."
+msgstr "Z.B."
+
+#: ../../reference/settings.rst:34 ../../reference/settings.rst:738
+#: 013b72424c6444eb9246b0827ced3a9a 801a1af1736e4c8fbbcfb46ef1f3be0e
+msgid "Type: Dictionary"
+msgstr "Typ: Dictionary"
+
+#: ../../reference/settings.rst:43 b33a505234144a5bbfc7471adc39e66c
+msgid "ORGANISATION_LONG_NAME"
+msgstr "ORGANISATION_LONG_NAME"
+
+#: ../../reference/settings.rst:44 00178b74237443c89a3c43f31173aa58
+msgid "The long version of your organisation, if you have one otherwise also use the short one"
+msgstr "Die Langversion deiner Organisation, falls vorhanden, andernfalls verwende auch nochmal den Namen"
+
+#: ../../reference/settings.rst:55 0f8c7ad3b8f5423f9c8a4756ca9fe814
+msgid "ORGANISATION_ADDRESS"
+msgstr "ORGANISATION_ADDRESS"
+
+#: ../../reference/settings.rst:56 e85b8fdaa3c944e2ba1971b4a5fb42a3
+msgid "The address of your organisation"
+msgstr "Die Adresse deiner Organisation"
+
+#: ../../reference/settings.rst:58 ../../reference/settings.rst:186
+#: ../../reference/settings.rst:333 9276f82e90064037ad084f23704ce918
+#: c1503409a5b74a79a3489ff49a3e90c2 f3ee618d792840fd85021cb65dec74e2
+msgid "Type: dict with the keys"
+msgstr "Typ: dict mit den Keys"
+
+#: ../../reference/settings.rst:60 dd9757ab134641e7b16edfff53d8e9eb
+msgid "name"
+msgstr "name: Anschrift"
+
+#: ../../reference/settings.rst:61 ba12e1b9025d45f4acc92ae6cbd15d2e
+msgid "street"
+msgstr "street: Strasse"
+
+#: ../../reference/settings.rst:62 ff1292d58eba4b49bab7607c20905ca9
+msgid "number"
+msgstr "number: Hausnummer"
+
+#: ../../reference/settings.rst:63 1b290b56065b415a8e5b8686925d1f10
+msgid "zip"
+msgstr "zip: Postleitzahl"
+
+#: ../../reference/settings.rst:64 41efe8ff46f24ea7b4fc20a584b3faf9
+msgid "city"
+msgstr "city: Ort"
+
+#: ../../reference/settings.rst:65 51b14b9b30794b21b988fb18750477d9
+msgid "extra"
+msgstr "extra: Adresszusatz"
+
+#: ../../reference/settings.rst:79 185230a040284e47b802ccf985b28957
+msgid "ORGANISATION_PHONE"
+msgstr "ORGANISATION_PHONE"
+
+#: ../../reference/settings.rst:80 1991a62f5d194d3485f52793261f8ed9
+msgid "The phone number for your organisation"
+msgstr "Die Telefonnummer deiner Organisation"
+
+#: ../../reference/settings.rst:82 b7478f9f94ad45dd9d273389258ffaa2
+msgid "Type: string"
+msgstr "Typ: string"
+
+#: ../../reference/settings.rst:93 618f16b097604c2eb794dafd9736aecd
+msgid "ORGANISATION_WEBSITE"
+msgstr "ORGANISATION_WEBSITE"
+
+#: ../../reference/settings.rst:94 1c2f29939e714345bf8eb6b0a6f318f3
+msgid "The website of your organisation (not the one where you run juntagrico)"
+msgstr "Die Website deiner Organisation (NICHT jene, auf der du Juntagrico betreibst)"
+
+#: ../../reference/settings.rst:109 15340cbfc20f417a88eb77d013617cb2
+msgid "INFO_EMAIL"
+msgstr "INFO_EMAIL"
+
+#: ../../reference/settings.rst:111 8ae03b2c71ce48ba9759f3157298e164
+msgid "Deprecated since version 1.6.0. Use :ref:`CONTACTS <reference-settings-contacts>` instead."
+msgstr "Seit Version 1.6.0 veraltet. Verwende stattdessen :ref:`CONTACTS <reference-settings-contacts>`."
+
+#: ../../reference/settings.rst:113 e44f6b55093446bca3bf72929d71b9f0
+msgid "The general email of your organisation"
+msgstr "Die allgemeine E-Mail-Adresse deiner Organisation"
+
+#: ../../reference/settings.rst:127 8ef84dcecdf948fc8629230fcd351816
+msgid "CONTACTS"
+msgstr "CONTACTS"
+
+#: ../../reference/settings.rst:129 b793b76c4b144afdb5a5bf150296ca8c
+msgid "Specifies the email addresses at which members can contact your organisation."
+msgstr "Gibt die E-Mail-Adressen an, über welche Mitglieder deine Organisation kontaktieren können."
+
+#: ../../reference/settings.rst:131 ffcc64296d1d4320af7c68eb9959641f
+msgid "The setting takes a dictionary of key email pairs, where each key represents the topic for which the email is shown. e.g. the email address in ``'for_members'`` is used in places that regard the membership. For keys without a specified email address, the ``'general'`` email address is shown."
+msgstr "Die Einstellung nimmt ein Dictionary von Key-E-Mail-Paaren auf, wobei jeder Key das Thema repräsentiert, für das die E-Mail angezeigt wird. Z.B. wird die E-Mail-Adresse in ``'for_members'`` an Stellen verwendet, die die Mitgliedschaft betreffen. Für Keys ohne spezifizierte E-Mail-Adresse wird die ``'general'`` E-Mail-Adresse angezeigt."
+
+#: ../../reference/settings.rst:135 5191a379668743f8988446e470505808
+msgid "example value"
+msgstr "Beispielwert"
+
+#: ../../reference/settings.rst:157 0e47238cb9ba4830a8fb103aef5d51d4
+msgid "SERVER_URL"
+msgstr "SERVER_URL"
+
+#: ../../reference/settings.rst:160 5cf843789fea43bda33fbded32e21c9f
+msgid "Deprecated since version 1.6.0. Use :ref:`ORGANISATION_WEBSITE <reference-settings-organisation-website>` instead."
+msgstr "Seit Version 1.6.0 veraltet. Verwende stattdessen :ref:`ORGANISATION_WEBSITE <reference-settings-organisation-website>`."
+
+#: ../../reference/settings.rst:162 a50f6ab7d4164d40a39cdfd3436b6f6a
+msgid "The base url of your organisation (not the one where you run juntagrico)"
+msgstr "Die Basis-URL deiner Organisation (NICHT jene, auf der du Juntagrico betreibst)"
+
+#: ../../reference/settings.rst:166 9fdfedbe0cd84e5591c5e9e44cab51c1
+msgid "\"www.juntagrico.juntagrico\""
+msgstr "\"www.juntagrico.juntagrico\""
+
+#: ../../reference/settings.rst:170 6f0d8ad0e4e34f04bbc09e59ee5797d8
+msgid "URL_PROTOCOL"
+msgstr "URL_PROTOCOL"
+
+#: ../../reference/settings.rst:171 b0017115c0574a1b996b58e67016aeb7
+msgid "The protocol used for urls written in emails and exports."
+msgstr "Das Protokoll, das für URLs in E-Mails und Exporten verwendet wird."
+
+#: ../../reference/settings.rst:180 b81491f968084e2d8a098f2e748804d0
+msgid "Accounting"
+msgstr "Buchhaltung"
+
+#: ../../reference/settings.rst:183 3e2b396dd3ff46eba8d9a63b8db7e1ff
+msgid "ORGANISATION_BANK_CONNECTION"
+msgstr "ORGANISATION_BANK_CONNECTION"
+
+#: ../../reference/settings.rst:184 94679c721d6a4d21939f16da655bec4b
+msgid "the bank connection information of your organisation"
+msgstr "die Bankverbindungsinformationen deiner Organisation"
+
+#: ../../reference/settings.rst:188 0e4e61f3b7ec4201b57a65d4cf0dc44b
+msgid "PC (postkonto)"
+msgstr "PC (Postkonto)"
+
+#: ../../reference/settings.rst:189 b06e9e7600a147339add9e1fa47111e9
+msgid "BIC"
+msgstr "BIC"
+
+#: ../../reference/settings.rst:190 c6551a1c5fed454084645af5d3ab0d95
+msgid "IBAN"
+msgstr "IBAN"
+
+#: ../../reference/settings.rst:191 8935c12628654ba8b93c1828347d3ef1
+msgid "NAME"
+msgstr "NAME"
+
+#: ../../reference/settings.rst:203 830edae2238842bf9ca92076063309e6
+msgid "CURRENCY"
+msgstr "CURRENCY"
+
+#: ../../reference/settings.rst:204 241f3adbb45b41d49ba53693a146578a
+msgid "The default currency used within the system."
+msgstr "Die Standardwährung, die im System verwendet wird."
+
+#: ../../reference/settings.rst:207 786c9835628e4a67a82c3ec23ae6a629
+#, python-brace-format
+msgid "Changed in version 2.1.0: use ``{}`` to control where the numeric value is placed."
+msgstr "Geändert in Version 2.1.0: Verwende ``{}`` um zu steuern, wo der numerische Wert platziert wird."
+
+#: ../../reference/settings.rst:219 6beb5afb9dd9435bbce4bd221885c2b7
+msgid "External Documents"
+msgstr "Externe Dokumente"
+
+#: ../../reference/settings.rst:222 667779a94baf4fdbb812e6a1c61a7474
+msgid "DOCUMENTS"
+msgstr "DOCUMENTS"
+
+#: ../../reference/settings.rst:224 147adbee9c9646a69f121c7fddc4e2bf
+msgid "Define name and url of external documents and where they are displayed. Some urls can instead be defined with the respective settings (e.g. BUSINESS_REGULATIONS). However this setting gives more flexibility and allows naming the documents and adding custom documents."
+msgstr "Definiere Name und URL externer Dokumente und wo sie angezeigt werden. Einige URLs können stattdessen mit den jeweiligen Einstellungen definiert werden (z.B. BUSINESS_REGULATIONS). Diese Einstellung bietet jedoch mehr Flexibilität und erlaubt das Benennen der Dokumente sowie das Hinzufügen benutzerdefinierter Dokumente."
+
+#: ../../reference/settings.rst:228 9391a567863f4680a3649cc5edf28696
+msgid "DOCUMENTS is a list that contains tuples with the following 3 entries"
+msgstr "DOCUMENTS ist eine Liste, die Tupel mit den folgenden 3 Einträgen enthält"
+
+#: ../../reference/settings.rst:230 bd96bbf2a623470d8339c7a8b89d8a12
+msgid "Name of the document. If the document should be used in a sentence the name should be a tuple with 2 entries: The name as such and the name with the article (e.g. \"the document\")."
+msgstr "Name des Dokuments. Falls das Dokument in einem Satz verwendet werden soll, sollte der Name ein Tupel mit 2 Einträgen sein: Der Name als solcher und der Name mit Artikel (z.B. \"das Dokument\")."
+
+#: ../../reference/settings.rst:232 86efc065a2f0474c9b53f6c9d5c5879a
+msgid "URL of the document or Website."
+msgstr "URL des Dokuments oder der Website."
+
+#: ../../reference/settings.rst:233 9ff1b38a6d1e4ca3aec1c1eb15f3f86f
+msgid "One or more space separated tags defining where the document should be displayed. See below."
+msgstr "Ein oder mehrere durch Leerzeichen getrennte Tags, die definieren, wo das Dokument angezeigt werden soll. Siehe unten."
+
+#: ../../reference/settings.rst:235 fd05e4acebce421185e6aedb284bb0d6
+msgid "Tags define where the document is shown:"
+msgstr "Tags definieren, wo das Dokument angezeigt wird:"
+
+#: ../../reference/settings.rst:237 ef19310f1e77465d9ca7852b43065f65
+msgid "``'account'``: show on profile/membership page"
+msgstr "``'account'``: auf Profil-/Mitgliedsseite anzeigen"
+
+#: ../../reference/settings.rst:238 05a02574cb85402e84a81bc0c515dbfc
+msgid "``'account-signup'``: same as above and additionally show it in the first step of the signup process"
+msgstr "``'account-signup'``: wie oben und zusätzlich im ersten Schritt des Anmeldeprozesses anzeigen"
+
+#: ../../reference/settings.rst:239 9c89b55a544d443d830d9c66cdb65960
+msgid "``'account-signup-accept'``: same as above and must confirm checkbox that it has been read"
+msgstr "``'account-signup-accept'``: wie oben und Bestätigung erforderlich, dass es gelesen wurde"
+
+#: ../../reference/settings.rst:240 fb01b1bc32f9474ab902b07918333428
+msgid "``'membership-signup'``: show on step \"membership\" during signup process"
+msgstr "``'membership-signup'``: im Schritt \"Mitgliedschaft\" während des Anmeldeprozesses anzeigen"
+
+#: ../../reference/settings.rst:241 bfe272b7ff484a258081f55f2c1f39b6
+msgid "``'membership-signup-accept'``: same as above and must confirm checkbox that it has been read"
+msgstr "``'membership-signup-accept'``: wie oben und Bestätigung erforderlich, dass es gelesen wurde"
+
+#: ../../reference/settings.rst:242 547889f50d91470cbad3876d6dbdfcf1
+msgid "``'subscription'``: show on subscription overview page"
+msgstr "``'subscription'``: auf Abonnement-Übersichtsseite anzeigen"
+
+#: ../../reference/settings.rst:243 c6923efd27a7451683e67c0e34d258de
+msgid "``'extrasub'``: show below subscription parts on subscription overview page"
+msgstr "``'extrasub'``: unter \"Bestanteile\" auf Abonnement-Übersichtsseite anzeigen"
+
+#: ../../reference/settings.rst:244 9eb0d0d592e344cf8d9cd2497606c275
+msgid "``'activityarea'``: show on activity area overview page"
+msgstr "``'activityarea'``: auf Tätigkeitsbereich-Übersichtsseite anzeigen"
+
+#: ../../reference/settings.rst:246 bb947d388c4b4a4494f38d00f18b5000
+msgid "Type: List of Tuples or Strings"
+msgstr "Typ: Liste von Tupeln oder Strings"
+
+#: ../../reference/settings.rst:248 6c53ac41d17d488d84846c94f8a99df5
+msgid "Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and adding the same document in DOCUMENTS will show the document twice."
+msgstr "Standardwerte werden immer angewendet, wenn die entsprechenden Einstellungen definiert sind. Z.B. wenn BUSINESS_REGULATIONS gesetzt ist und das dasselbe Dokument in DOCUMENTS hinzugefügt wird, wird das Dokument doppelt angezeigt."
+
+#: ../../reference/settings.rst:251 f3096942f6b2464a835006c1ec6537e0
+msgid "Default value is ``[]``, but if the other document settings are set, they are applied as follows:"
+msgstr "Standardwert ist ``[]``, aber wenn andere Dokument-Einstellungen gesetzt sind, werden sie wie folgt angewendet:"
+
+#: ../../reference/settings.rst:266 a4cc6623b39044fa96a2bd93da601b7f
+msgid "BUSINESS_REGULATIONS"
+msgstr "BUSINESS_REGULATIONS"
+
+#: ../../reference/settings.rst:267 c9a873b7ff984525a3310ac510bb86c8
+msgid "URL to your business regulations document. The link will be displayed in the signup form and in the welcome mail after a successful registration."
+msgstr "URL von deinem Betriebsreglement. Der Link wird im Anmeldeformular und in der Willkommens-E-Mail nach erfolgreicher Registrierung angezeigt."
+
+#: ../../reference/settings.rst:278 9f6bc398b8ec4238a5b320d8b97519f0
+msgid "BYLAWS"
+msgstr "BYLAWS"
+
+#: ../../reference/settings.rst:279 addc373898b64b7db16b33eb3c123a3d
+msgid "URL to your bylaws document. The link will be displayed in the signup form and in the welcome mail after a successful registration."
+msgstr "URL deiner Statuten. Der Link wird im Anmeldeformular und in der Willkommens-E-Mail nach erfolgreicher Registrierung angezeigt."
+
+#: ../../reference/settings.rst:290 d73c0f0cb4af4c6ca901f3980d20ede1
+msgid "FAQ_DOC"
+msgstr "FAQ_DOC"
+
+#: ../../reference/settings.rst:291 96190f45290e4ac784707ff94c178fae
+msgid "URL to your FAQ document. The link will be displayed in the welcome mail after a successful registration."
+msgstr "URL deiner FAQ. Der Link wird in der Willkommens-E-Mail nach erfolgreicher Registrierung angezeigt."
+
+#: ../../reference/settings.rst:302 c31751f08408499eb96d44b13f2c248f
+msgid "EXTRA_SUB_INFO"
+msgstr "EXTRA_SUB_INFO"
+
+#: ../../reference/settings.rst:303 5a5b5bb1eccd409db02f7f4347f52999
+msgid "If you use extra subscriptions this describes the URL to the document describing them"
+msgstr "Falls du Zusatz-Abos verwendest, ist dies die URL zum Dokument, das diese erklärt"
+
+#: ../../reference/settings.rst:314 1a0c0f740d9b4834aacf2976866bedd7
+msgid "ACTIVITY_AREA_INFO"
+msgstr "ACTIVITY_AREA_INFO"
+
+#: ../../reference/settings.rst:315 147a432ccd654b7b9b7ef7ac60921230
+msgid "URL to your document describing your activity areas"
+msgstr "URL zum Dokument, das deine Aktivitätsbereiche beschreibt"
+
+#: ../../reference/settings.rst:327 39e364fa7a4a420196b289071a334e0b
+msgid "Business Year"
+msgstr "Geschäftsjahr"
+
+#: ../../reference/settings.rst:330 ac01233265b34978a449545bb180f13b
+msgid "BUSINESS_YEAR_START"
+msgstr "BUSINESS_YEAR_START"
+
+#: ../../reference/settings.rst:331 4cc5954472e743e0ab337ea125c5b9af
+msgid "Defining the start of the business year"
+msgstr "Definition des Beginns des Geschäftsjahrs"
+
+#: ../../reference/settings.rst:335 554e79aa17794927a54a9f5632f5df0f
+msgid "day"
+msgstr "day: Tag"
+
+#: ../../reference/settings.rst:336 1dce472198ea4aac857c60c7d0524e88
+msgid "month"
+msgstr "month: Monat"
+
+#: ../../reference/settings.rst:346 d7ca1c3430604136a1c330078c1246a4
+msgid "BUSINESS_YEAR_CANCELATION_MONTH"
+msgstr "BUSINESS_YEAR_CANCELATION_MONTH"
+
+#: ../../reference/settings.rst:347 92848449cad84355a158585e3f4ad846
+msgid "The date until you can cancel your subscriptions"
+msgstr "Das Datum bis wann du deine Abonnements kündigen kannst"
+
+#: ../../reference/settings.rst:349 ../../reference/settings.rst:487
+#: ../../reference/settings.rst:499 ../../reference/settings.rst:530
+#: 26e62ce91c53416fb89fce979f6d433c 2940e6ab4f444316bf08c6e3b9f8e5bf
+#: 5e856b6a59554835adf1bc8fed9dd813 bcb7c54153194f7394c0a011ff6a677c
+msgid "Type: Integer"
+msgstr "Typ: Integer"
+
+#: ../../reference/settings.rst:359 8160194404fb45ef8dc3067e2f3935a3
+msgid "Sign-up"
+msgstr "Registrierung"
+
+#: ../../reference/settings.rst:362 33234823a63043888b081954ec4fb7ac
+msgid "ENABLE_REGISTRATION"
+msgstr "ENABLE_REGISTRATION"
+
+#: ../../reference/settings.rst:363 fd091c385b8a4264804586c06fe63ce4
+msgid "Decides if new members can sign up"
+msgstr "Entscheidet, ob neue Mitglieder sich registrieren können"
+
+#: ../../reference/settings.rst:365 ../../reference/settings.rst:378
+#: ../../reference/settings.rst:398 ../../reference/settings.rst:427
+#: 19127a70ac35488f929cc0125850ccf0 a54852fcfdd2411c87c6dd260defe693
+#: eb0ce4446192434794c9bb4d66b3d952 ff4214a646114cebb6ca99ba0f618c29
+msgid "Type: Boolean"
+msgstr "Typ: Boolean"
+
+#: ../../reference/settings.rst:375 3687bc47b3ba4d61b47722bacd7a4bd9
+msgid "REQUIRE_SUBSCRIPTION"
+msgstr "REQUIRE_SUBSCRIPTION"
+
+#: ../../reference/settings.rst:376 7501564b27014d0898622c8f840237b7
+msgid "Requires selection of a subscription during signup. The option to sign up without subscription is removed."
+msgstr "Erfordert die Auswahl eines Abonnements während der Registrierung. Die Option zur Registrierung ohne Abonnement wird entfernt."
+
+#: ../../reference/settings.rst:388 4c0b87224b5c4305babdfbd47f75260b
+msgid "ENABLE_EXTERNAL_SIGNUP"
+msgstr "ENABLE_EXTERNAL_SIGNUP"
+
+#: ../../reference/settings.rst:390 510c1b91492d4f23a1c50469c48e626f
+msgid "Enabling external signups with publicly expose some information about your **invisible** depots: name, description, weekday and location."
+msgstr "Aktivierung externer Registrierungen mit öffentlicher Exposition einiger Informationen über deine **unsichtbaren** Depots: Name, Beschreibung, Wochentag und Standort."
+
+#: ../../reference/settings.rst:392 88c8347468a8480296195f87b8ef076c
+msgid "Activates the external signup API and exposes internal depot and subscription info as json."
+msgstr "Aktiviert die externe Registrierungs-API und exponiert interne Depot- und Abonnement-Informationen als JSON."
+
+#: ../../reference/settings.rst:394 1739b8b335c44a56862cc1ab45b041ba
+#, python-format
+msgid "Usage: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'"
+msgstr "Verwendung: curl -k -L -b -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'first_name=John&family_name=Doe&street=Bahnhofstrasse&house_number=42&postal_code=8001&city=Z%C3%BCrich&phone=078%2012345678&email=john.doe@invalid.com&comment=Ich%20freue%20mich%20auf%20den%20Start!&by_laws_accepted=TRUE&subscription_1=1&subscription_2=2&depot_id=1&start_date=2025-12-01&shares=4' 'http://example.com/signup/external'"
+
+#: ../../reference/settings.rst:396 b3f2563ffad949d481ff0485224c1975
+msgid "Will redirect to signup summary page for final confirmation or redirect to correction of main member details (if mail address exists), subscription selection (on missing main subscription) or number of shares (if requirements not met)."
+msgstr "Leitet zur Zusammenfassungs-Seite für die finale Bestätigung weiter oder zur Korrektur der Hauptmitgliederdaten (falls E-Mail-Adresse existiert), Abomentenauswahl (bei fehlendem Hauptabonnement) oder Anteilscheinanzahl (wenn Anforderungen nicht erfüllt sind)."
+
+#: ../../reference/settings.rst:410 f1140802f5bd4d51bf419db9d43fc159
+msgid "SIGNUP_MANAGER"
+msgstr "SIGNUP_MANAGER"
+
+#: ../../reference/settings.rst:412 4750bf1678a34bbd85436ca8270dcc48
+msgid "Overrides the sign-up manager class. Change this to modify the sign-up process or when an addon instructs to do so."
+msgstr "Überschreibt die Registrierungs-Manager-Klasse. Ändere dies, um den Registrierungsprozess zu modifizieren oder wenn ein Addon dazu anweist."
+
+#: ../../reference/settings.rst:424 6a24d9a75f474302baec9940404b2250
+msgid "ENFORCE_MAIL_CONFIRMATION"
+msgstr "ENFORCE_MAIL_CONFIRMATION"
+
+#: ../../reference/settings.rst:425 13e168dcbc164a6aab98f5e609f73e8c
+msgid "At login, check if mail address was confirmed. If not, prevent login but show error with instruction and send mail with confirmation link."
+msgstr "Beim Login prüfen, ob E-Mail-Adresse bestätigt wurde. Falls nicht, Login verhindern aber Fehler mit Anleitung anzeigen und E-Mail mit Bestätigungslink senden."
+
+#: ../../reference/settings.rst:436 cf9a9031e1604a059d4294058e749235
+msgid "Membership"
+msgstr "Mitgliedschaft"
+
+#: ../../reference/settings.rst:439 e0e8030e7d424971b5e9533edd20c270
+msgid "MEMBERSHIP"
+msgstr "MEMBERSHIP"
+
+#: ../../reference/settings.rst:440 a65c4f3308c24265b182d81182281cbf
+msgid "Membership configuration"
+msgstr "Mitgliedschaftskonfiguration"
+
+#: ../../reference/settings.rst:442 ../../reference/settings.rst:623
+#: 2f423f7ac1224e3fb38d43a7c19961b5 f947c2c4cf9041f69f7679264ca813c3
+msgid "The setting takes a dictionary of key-value pairs:"
+msgstr "Die Einstellung nimmt ein Dictionary von Schlüssel-Wert-Paaren auf:"
+
+#: ../../reference/settings.rst:444 86f6b07de57746748f50c9a1557b96ee
+msgid "``'enable'``: enable all membership related functions (Bool)"
+msgstr "``'enable'``: alle mitgliedschaftsbezogenen Funktionen aktivieren (Bool)"
+
+#: ../../reference/settings.rst:445 cd4b6c5bd8834972977791440bdf3e31
+msgid "``'required_shares'``: amount of shares required for a membership (Integer)"
+msgstr "``'required_shares'``: Anzahl Anteilscheine, die für eine Mitgliedschaft erforderlich ist (Integer)"
+
+#: ../../reference/settings.rst:446 7ba9bb7faaea46f6b5fc8bbf041008e8
+msgid "``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)"
+msgstr "``'cumulative_shares'``: Wenn wahr, zählen Anteilscheine entweder für die Mitgliedschaft oder für das Abonnement, nicht beide (Bool)"
+
+#: ../../reference/settings.rst:447 4b84f1f647ae424eb4bdc752b273aabb
+msgid "``'required_on_signup'``: whether a membership is mandatory to signup up"
+msgstr "``'required_on_signup'``: ob eine Mitgliedschaft für die Registrierung obligatorisch ist"
+
+#: ../../reference/settings.rst:449 90257dd45ac443fe82c7f2e9a85bd8c5
+msgid "True: always require membership on signup"
+msgstr "True: Mitgliedschaft bei Registrierung immer erforderlich"
+
+#: ../../reference/settings.rst:450 7a463c2dbe56447394a1de4f7f4d90f0
+msgid "'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)"
+msgstr "'if_no_sub': Mitgliedschaft erforderlich bei Registrierung ohne Abonnement oder wenn ausgewählte Abonnements dies erfordern (Standard)"
+
+#: ../../reference/settings.rst:451 77a1814bbbe94d65a9d021287e686e94
+msgid "False: don't require membership during signup, unless selected subscriptions require it"
+msgstr "False: Mitgliedschaft bei Registrierung nicht erforderlich, es sei denn, ausgewählte Abonnements verlangen es"
+
+#: ../../reference/settings.rst:453 904ae557c78c48eab3a329c015ce4f44
+msgid "``'fee'``: yearly membership fee (Float, Integer or String)"
+msgstr "``'fee'``: jährliche Mitgliedsgebühr (Float, Integer oder String)"
+
+#: ../../reference/settings.rst:454 d8100a4819414cc1b16dc1b31b3eb386
+msgid "``'sync_shares'``: If true, membership will activate automatically when enough shares are paid and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)"
+msgstr "``'sync_shares'``: Wenn wahr, aktiviert sich die Mitgliedschaft automatisch, wenn genug Anteilscheine bezahlt wurden, und deaktiviert sich, wenn Anteilscheine zurückbezahlt werden. Hat keine Wirkung, wenn required_shares 0 ist. (Bool)"
+
+#: ../../reference/settings.rst:472 87f64d7cefa943558b15de99aaa896ca
+msgid "BASE_FEE"
+msgstr "BASE_FEE"
+
+#: ../../reference/settings.rst:473 154af72ce2484bcf842970fcf1b26ca9
+msgid "Yearly fee for anybody without a subscription, regardless of membership status."
+msgstr "Jährliche Gebühr für jeden ohne Abonnement, unabhängig vom Mitgliedschaftsstatus."
+
+#: ../../reference/settings.rst:475 ../../reference/settings.rst:542
+#: 8c166e543ed9485bab4be4f33dca2db1 ccc2ea94d80647ddace41e2d4aa17f60
+msgid "Type: Integer, Float or String"
+msgstr "Typ: Integer, Float oder String"
+
+#: ../../reference/settings.rst:484 bbea5a4687ca46aabcca09fbe9572466
+msgid "MEMBERSHIP_END_MONTH"
+msgstr "MEMBERSHIP_END_MONTH"
+
+#: ../../reference/settings.rst:485 bc07db297f424994aeb8d2c54ad798ea
+msgid "The month at which end the members can leave the organisation"
+msgstr "Der Monat, zu dessen Ende Mitglieder die Organisation verlassen können"
+
+#: ../../reference/settings.rst:496 ff5ffd00f7ba41aeb58fb0baf44fd5eb
+msgid "MEMBERSHIP_END_NOTICE_PERIOD"
+msgstr "MEMBERSHIP_END_NOTICE_PERIOD"
+
+#: ../../reference/settings.rst:497 6180914537474af6be5acf7728b964a3
+msgid "The notice period in months a member needs to account for when cancelling the membership"
+msgstr "Die Kündigungsfrist in Monaten, die ein Mitglied bei Kündigung der Mitgliedschaft berücksichtigen muss"
+
+#: ../../reference/settings.rst:508 e948f4dea258406d8ce4d9612aa5957c
+msgid "Shares"
+msgstr "Anteilscheine"
+
+#: ../../reference/settings.rst:511 0664c99f7bc44c099c51ecf1015c6356
+msgid "ENABLE_SHARES"
+msgstr "ENABLE_SHARES"
+
+#: ../../reference/settings.rst:512 ef5a600b821f43f7bab3765ba863e59f
+msgid "Enable all share related functionality"
+msgstr "Alle Funktionen bezüglich Anteilscheinen aktivieren"
+
+#: ../../reference/settings.rst:523 bb1c6742ffa445be9a268ff5107f2cb9
+msgid "REQUIRED_SHARES"
+msgstr "REQUIRED_SHARES"
+
+#: ../../reference/settings.rst:525 808cd9f47237474ab397d868902b023e
+msgid "Added in version 1.7.0."
+msgstr "Hinzugefügt in Version 1.7.0."
+
+#: ../../reference/settings.rst:527 5fd84213fc914087bb43bf2470d7e212
+msgid "Specifies the minimum amount of shares that the main member must order during registration regardless of the subscription requirements."
+msgstr "Gibt die Mindestanzahl von Anteilscheinen an, die das Hauptmitglied bei der Registrierung bestellen muss, unabhängig von den Abonnement-Anforderungen."
+
+#: ../../reference/settings.rst:539 940cdf7b273f4523bdb5b07e9938ba05
+msgid "SHARE_PRICE"
+msgstr "SHARE_PRICE"
+
+#: ../../reference/settings.rst:540 3d2517bf540d40039e0fcde0b54bb541
+msgid "Price of one share"
+msgstr "Preis einer Aktie"
+
+#: ../../reference/settings.rst:552 c6dbcdbd6fd1469f8a77a2e5672e279b
+msgid "Jobs"
+msgstr "Jobs"
+
+#: ../../reference/settings.rst:555 0ea74abd518b4cf6926911e764eb919f
+msgid "ASSIGNMENT_UNIT"
+msgstr "ASSIGNMENT_UNIT"
+
+#: ../../reference/settings.rst:556 75e3dc278b374efaa1e0f942a9219798
+msgid "The mode how assignments are counted: Valid values are ENTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job."
+msgstr "Der Modus, wie Aufgaben gezählt werden: Gültige Werte sind ENTITY und HOURS. Bei ENTITY werden Aufgaben nach Auftritt gezählt, bei HOURS der Wert der Aufgaben nach der tatsächlichen Zeit, die der Nutzer auf einem Job verbracht hat."
+
+#: ../../reference/settings.rst:568 5d76ed43757f4668b7fdfb282d386e12
+msgid "FIRST_JOB_INFO"
+msgstr "FIRST_JOB_INFO"
+
+#: ../../reference/settings.rst:569 5bf2d9afd0314ad08a725bb725f2c0f0
+msgid "Defines if participants list of job indicates if this is the first job of member. If multiple cases apply for one member, only the most generic case is shown."
+msgstr "Definiert, ob die Teilnehmerliste eines Jobs anzeigt, ob dies der erste Job des Mitglieds ist. Wenn mehrere Fälle für ein Mitglied gelten, wird nur der allgemeinste Fall angezeigt."
+
+#: ../../reference/settings.rst:575 d8582f88cb45414d8c13636da241deef
+msgid "Multiple options can be combined:"
+msgstr "Mehrere Optionen können kombiniert werden:"
+
+#: ../../reference/settings.rst:573 32571f2555334640b97831ab0a795d80
+msgid "``'overall'``: show if this is the first job of this member ever"
+msgstr "``'overall'``: anzeigen, ob dies der erste Job dieses Mitglieds überhaupt ist"
+
+#: ../../reference/settings.rst:574 43393c67840b43c6aa48339027d5975c
+msgid "``'per_area'``: show if this is the first job of this member in this area"
+msgstr "``'per_area'``: anzeigen, ob dies der erste Job dieses Mitglieds in diesem Bereich ist"
+
+#: ../../reference/settings.rst:575 eee1bc08313c494994676dfb7f453583
+msgid "``'per_type'``: show if this is the first job of this member in this job type"
+msgstr "``'per_type'``: anzeigen, ob dies der erste Job dieses Mitglieds in diesem Auftrags-Typ ist"
+
+#: ../../reference/settings.rst:577 799a594a432044fca855424eeb237aad
+msgid "This setting will automatically enable admin notifications for the indicated first jobs. Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>` or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:"
+msgstr "Diese Einstellung aktiviert automatisch Admin-Benachrichtigungen für die angegebenen ersten Jobs. Füge folgende Einträge zu :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>` oder :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` hinzu, um die Benachrichtigungen zu überschreiben:"
+
+#: ../../reference/settings.rst:581 c6db6ba0cc2442fdb66eaaa87dbc2f2a
+msgid "``'first_job_subscribed'``: notify admin if member subscribes to their first job"
+msgstr "``'first_job_subscribed'``: Admin benachrichtigen, wenn Mitglied seinen ersten Job abonniert"
+
+#: ../../reference/settings.rst:582 589546d9f9d54b3a89b5a4bc94d5b007
+msgid "``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area"
+msgstr "``'first_job_in_area_subscribed'``: Admin benachrichtigen, wenn Mitglied seinen ersten Job in diesem Bereich abonniert"
+
+#: ../../reference/settings.rst:583 d283b3dd2f1743c09216684c540f4ff1
+msgid "``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type"
+msgstr "``'first_job_in_type_subscribed'``: Admin benachrichtigen, wenn Mitglied seinen ersten Job in diesem Auftrags-Typ abonniert"
+
+#: ../../reference/settings.rst:585 b1e1caec6ee441a09f20280fe5692c77
+msgid "Type: List of strings"
+msgstr "Typ: Liste von Strings"
+
+#: ../../reference/settings.rst:595 159e0e564ebb458491d06aed74732f2e
+msgid "ALLOW_JOB_UNSUBSCRIBE"
+msgstr "ALLOW_JOB_UNSUBSCRIBE"
+
+#: ../../reference/settings.rst:596 67bce01915ab4b13ab7bd7cc93e492a2
+msgid "If set to true, members can unsubscribe themselves (or reduce the slots they reserved) from a job they signed up to previously by filling out a form."
+msgstr "Wenn auf true gesetzt, können Mitglieder sich selbst von einem Job, für den sie sich zuvor angemeldet haben, abmelden (oder die reservierten Slots reduzieren) durch Ausfüllen eines Formulars."
+
+#: ../../reference/settings.rst:599 ee2b6f808268484da793397db44ed36a
+msgid "Job contacts will be notified."
+msgstr "Job-Kontakte werden benachrichtigt."
+
+#: ../../reference/settings.rst:601 ca3c6569132e4ef0b0327c91d20f9950
+msgid "If the value is a string, unsubscribing will be allowed and the string will be displayed to the member, when they try to unsubscribe from a job."
+msgstr "Wenn der Wert ein String ist, wird die Abmeldung erlaubt und der String wird dem Mitglied angezeigt, wenn es versucht, sich von einem Job abzumelden."
+
+#: ../../reference/settings.rst:604 59fa4828c75c4219b9ae4c93e0c55487
+msgid "Type: Boolean or String"
+msgstr "Typ: Boolean oder String"
+
+#: ../../reference/settings.rst:614 bbeeb90d84ca450d9059ea7fbfd1daf1
+msgid "JOBS_FRONTPAGE"
+msgstr "JOBS_FRONTPAGE"
+
+#: ../../reference/settings.rst:616 26222aa2d4cd43a48112b311674c7e6a
+msgid "Specifies the settings for the front page open jobs list consisting of pinned jobs, promoted jobs and next jobs."
+msgstr "Gibt die Einstellungen für die offene Job-Liste der Startseite an, bestehend aus angehefteten Jobs, beworbenen Jobs und nächsten Jobs."
+
+#: ../../reference/settings.rst:619 1f4fe5e4b6e840a5a9942b1e03456f9f
+msgid "``'days'``: date range in days into the future for next jobs"
+msgstr "``'days'``: Datumsbereich in Tagen in die Zukunft für nächste Jobs"
+
+#: ../../reference/settings.rst:620 29a6d76e1b4847ceab4129d2aa3087f3
+msgid "``'promoted_types'``: types of jobs (list of strings) to promote"
+msgstr "``'promoted_types'``: Job-Typen (Liste von Strings), die beworben werden sollen"
+
+#: ../../reference/settings.rst:621 26bca03815df4472998330eff803eda0
+msgid "``'promoted_count'``: number of promoted jobs to show"
+msgstr "``'promoted_count'``: Anzahl zu zeigender beworbener Jobs"
+
+#: ../../reference/settings.rst:622 5f2df49981454c869e3bb993cd8d691f
+msgid "``'min'``: minimal number of jobs in list to reach by filling in more next jobs"
+msgstr "``'min'``: minimale Anzahl von Jobs in der Liste, die durch Hinzufügen weiterer nächster Jobs erreicht werden soll"
+
+#: ../../reference/settings.rst:623 2e65519142b64529a183358cfd179483
+msgid "``'max'``: maximal number of jobs in list to limit next jobs"
+msgstr "``'max'``: maximale Anzahl von Jobs in der Liste, um nächste Jobs zu begrenzen"
+
+#: ../../reference/settings.rst:641 a246a02274024b98aab96e652181c29d
+msgid "Depot"
+msgstr "Depot"
+
+#: ../../reference/settings.rst:647 1fb1a54b55f34029ada8186ee1154575
+msgid "DEPOT_LISTS"
+msgstr "DEPOT_LISTS"
+
+#: ../../reference/settings.rst:649 d11203b03e5640b291ebac7e10e0de35
+msgid "Define which depot lists should be created and how"
+msgstr "Definiere, welche Depot-Listen erstellt werden sollen und wie"
+
+#: ../../reference/settings.rst:651 e4c7674b572d492ea1c7d3201a650d35
+msgid "Type: Dict of depot lists"
+msgstr "Typ: Dict von Depot-Listen"
+
+#: ../../reference/settings.rst:653 8a8f36812263473cb269669ad06cbf93
+msgid "Example: Generate exiting or new depot list with custom template and context"
+msgstr "Beispiel: Bestehende oder neue Depot-Liste mit benutzerdefiniertem Template und Kontext erstellen"
+
+#: ../../reference/settings.rst:688 67ce159690544b81a9edcbe162fbbb29
+msgid "DEPOT_LIST_GENERATION_DAYS"
+msgstr "DEPOT_LIST_GENERATION_DAYS"
+
+#: ../../reference/settings.rst:689 c2d2e64922c54ba7b0f97b78acfc1883
+msgid "Days on which the delivery list can be generated"
+msgstr "Tage, an denen die Lieferliste erstellt werden kann"
+
+#: ../../reference/settings.rst:691 2e137b62d60842e6b7fccedce60682fa
+msgid "Type: List of Integers representing days of the week, where Monday is 0 and Sunday is 6."
+msgstr "Typ: Liste von Integers, die Wochentage repräsentieren, wobei Montag 0 und Sonntag 6 ist."
+
+#: ../../reference/settings.rst:704 c24bcf6d877646618e633069cebd9603
+msgid "DEFAULT_DEPOTLIST_GENERATORS"
+msgstr "DEFAULT_DEPOTLIST_GENERATORS"
+
+#: ../../reference/settings.rst:706 84f64e2756ea4f95af542dbafcd260b4
+msgid "Deprecated since version 2.0. :ref:`Use DEPOT_LISTS instead <settings-depot-lists>`."
+msgstr "Seit Version 2.0 veraltet. :ref:`Verwende stattdessen DEPOT_LISTS <settings-depot-lists>`."
+
+#: ../../reference/settings.rst:709 803153e17c704d94836301e8c8338d91
+msgid "Changed in version 2.0: Takes ``context`` as argument instead of ``*args, **options``."
+msgstr "Geändert in Version 2.0: Nimmt ``context`` als Argument statt ``*args, **options``."
+
+#: ../../reference/settings.rst:711 a23ddfebff4d42e09bb116e422b6b111
+msgid "Generators used to generate the depot list. Generators need the method signature ``generator_name(context)``"
+msgstr "Generatoren zur Erstellung der Depot-Liste. Generatoren benötigen die Methodensignatur ``generator_name(context)``"
+
+#: ../../reference/settings.rst:713 33c67f209e1640068bc7929d47780932
+msgid "Type: List of Strings which define the different generators to be invoked"
+msgstr "Typ: Liste von Strings, welche die verschiedenen aufzurufenden Generatoren definieren"
+
+#: ../../reference/settings.rst:723 156ebed210af4ed39c3883192f5d7df4
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+#: ../../reference/settings.rst:728 0c10352a0ca64c879af8de3c3feefa30
+msgid "VOCABULARY"
+msgstr "VOCABULARY"
+
+#: ../../reference/settings.rst:729 1ea0c67cedb24f0bbad6db50664581c0
+msgid "Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your organisation form."
+msgstr "Vokabular-Dictionary für organisationsspezifische Begriffe. _pl bezeichnet den Plural eines Wortes. Der member-Key beschreibt den eigenen Namen, den du deinen Mitgliedern gibst. Der member_type-Key beschreibt, wie du dein Mitglied gemäss deiner Organisationsform nennst."
+
+#: ../../reference/settings.rst:733 4d82eb74a52a47c89cf0802a019bc1a0
+#, python-brace-format
+msgid "The entry 'from' is used to define the binding word between \"{somebody} from {organisation_name}\" to your own organisation name."
+msgstr "Der Eintrag 'from' wird verwendet, um das verbindende Wort zwischen \"{somebody} aus {organisation_name}\" und deinem eigenen Organisationsnamen zu definieren."
+
+#: ../../reference/settings.rst:735 6b7592dada0944a9ade8a0a7a409a4a4
+msgid "If you use vocabulary with a different gender than the default you will also have to adjust the related fragments. When using the same gender it is sufficient to only change the singular and plural form of your vocabulary."
+msgstr "Falls du Vokabular mit einem anderen Geschlecht als dem Standard verwendest, musst du auch die zugehörigen Fragmente anpassen. Bei gleichem Geschlecht genügt es, nur die Singular- und Pluralform deines Vokabulars zu ändern."
+
+#: ../../reference/settings.rst:797 9c7a73c165d643feba0c6fddf9563745
+msgid "SUB_OVERVIEW_FORMAT"
+msgstr "SUB_OVERVIEW_FORMAT"
+
+#: ../../reference/settings.rst:798 ebc252123bf74c3f86312683eecfe74d
+msgid "Templates and delimiter for formatting the subscription overview."
+msgstr "Templates und Trennzeichen zur Formatierung der Abonnement-Übersicht."
+
+#: ../../reference/settings.rst:810 88c81b55e2df4f34a4ebb0296707e813
+msgid "STYLES"
+msgstr "STYLES"
+
+#: ../../reference/settings.rst:811 dd786c49477741039ffd5ec0f71d5dd2
+msgid "Define styles to be included on all pages. The setting takes a dictionary with two keys:"
+msgstr "Definiere Styles, die auf allen Seiten eingebunden werden. Die Einstellung nimmt ein Dictionary mit zwei Keys auf:"
+
+#: ../../reference/settings.rst:813 5fbfb8376be34a04b44e797266016baa
+#, python-brace-format
+msgid "``static``: A list of css files to be included. These are included using the ``static`` template tag, i.e. the path to the css files must be given, omitting the ``{app}/static/`` part."
+msgstr "``static``: Eine Liste von CSS-Dateien, die eingebunden werden sollen. Diese werden mit dem ``static``-Template-Tag eingebunden, d.h. der Pfad zu den CSS-Dateien muss angegeben werden, wobei der Teil ``{app}/static/`` weggelassen wird."
+
+#: ../../reference/settings.rst:814 72e92fc14ca24f8598021f9e54d855bc
+msgid "``template``: The path to a template file that will be included in the ``<head>`` section on all pages. This can be used to create dynamic css."
+msgstr "``template``: Der Pfad zu einer Template-Datei, die im ``<head>``-Bereich aller Seiten eingebunden wird. Dies kann zur Erstellung von dynamischem CSS verwendet werden."
+
+#: ../../reference/settings.rst:816 e1d9d519d88a43108ac7608634801a71
+msgid "If both keys are defined the template is included before the static css files."
+msgstr "Wenn beide Keys definiert sind, wird das Template vor den statischen CSS-Dateien eingebunden."
+
+#: ../../reference/settings.rst:828 14383e93e28040d294c70e1fb43cd6da
+msgid "SCRIPTS"
+msgstr "SCRIPTS"
+
+#: ../../reference/settings.rst:829 c5983a32b73b406aa9a572c15ba3b033
+msgid "Define scripts to be included on all pages. If the template key is set, the specified template will be loaded in the scripts part of the page. In the static key a list of javascript files can be defined to be included. If both keys are defined the template is included before the static javascript files."
+msgstr "Definiere Skripte, die auf allen Seiten eingebunden werden. Wenn der template-Key gesetzt ist, wird das angegebene Template im Skript-Bereich der Seite geladen. Im static-Key kann eine Liste von JavaScript-Dateien definiert werden, die eingebunden werden sollen. Wenn beide Keys definiert sind, wird das Template vor den statischen JavaScript-Dateien eingebunden."
+
+#: ../../reference/settings.rst:844 baf5669707d4426c884317392a47169c
+msgid "FAVICON"
+msgstr "FAVICON"
+
+#: ../../reference/settings.rst:845 25c80857bce546fab253406b09b9ab35
+msgid "If you want to use a custom favicon this specifies the path for your favicon"
+msgstr "Falls du ein benutzerdefiniertes Favicon verwenden möchtest, gibt dies den Pfad zu deinem Favicon an"
+
+#: ../../reference/settings.rst:856 18d24d831c674fa3a3d1a6cd5a9c649f
+msgid "IMAGES"
+msgstr "IMAGES"
+
+#: ../../reference/settings.rst:857 9730f220efe948f8a043c72b9c31d4ad
+msgid "Defining the different images for core and job assignments etc"
+msgstr "Definition der verschiedenen Bilder für Kern- und Job-Aufgaben etc."
+
+#: ../../reference/settings.rst:874 1fca924096ce4a968ec50de2afd2ab0f
+msgid "BOOTSTRAP"
+msgstr "BOOTSTRAP"
+
+#: ../../reference/settings.rst:875 0543d14f3cbe4463b5a0ea77c7e44784
+msgid "If you want to use a customized version of bootstrap this specifies the corresponding path for it"
+msgstr "Falls du eine angepasste Version von Bootstrap verwenden möchtest, gibt dies den entsprechenden Pfad dafür an"
+
+#: ../../reference/settings.rst:887 9e06f5ef5b3d4e92ab072fb51bd5e7ab
+msgid "Email"
+msgstr "E-Mail"
+
+#: ../../reference/settings.rst:890 313f18c98bd344b9b5b83a323602cf3d
+msgid "EMAILS"
+msgstr "EMAILS"
+
+#: ../../reference/settings.rst:892 9181f26c36d84e15a259ddc86acc2884
+msgid "Deprecated since version 1.6.0. :ref:`Override template directly instead <reference-templates>`."
+msgstr "Seit Version 1.6.0 veraltet. :ref:`Überschreibe stattdessen das Template direkt <reference-templates>`."
+
+#: ../../reference/settings.rst:894 6bfdd3abb45246fdba34c521cbab6c96
+msgid "Defining the different email templates"
+msgstr "Definition der verschiedenen E-Mail-Vorlagen"
+
+#: ../../reference/settings.rst:925 13027ec397e94950a36ee6e0663c1d0d
+msgid "MAIL_TEMPLATE"
+msgstr "MAIL_TEMPLATE"
+
+#: ../../reference/settings.rst:927 655d9d7953044d50b97f614e768bd3d9
+msgid "Deprecated since version 2.0. :ref:`Override template directly instead <reference-templates>`, i.e., place your html template in ``templates/mails/email.html``."
+msgstr "Seit Version 2.0 veraltet. :ref:`Überschreibe stattdessen das Template direkt <reference-templates>`, d.h. lege dein HTML-Template in ``templates/mails/email.html`` ab."
+
+#: ../../reference/settings.rst:930 26726c38bcd040f7beb27f0e471cc093
+msgid "Path to your custom html email template if you want to overwrite the look and feel of the html emails"
+msgstr "Pfad zu deiner benutzerdefinierten HTML-E-Mail-Vorlage, falls du das Erscheinungsbild der HTML-E-Mails überschreiben möchtest"
+
+#: ../../reference/settings.rst:941 3478ff940622437b9c939f5ee8229c20
+msgid "DEFAULT_MAILER"
+msgstr "DEFAULT_MAILER"
+
+#: ../../reference/settings.rst:943 5d3945bedb354174844b9fe80de3299d
+msgid "Removed in version 2.0. Instead extend ``juntagrico.backends.email.BaseEmailBackend`` and set the EMAIL_BACKEND to customize how your emails are sent. See ``juntagrico.backends.email.BaseBatchEmailBackend`` for reference."
+msgstr "Entfernt in Version 2.0. Erweitere stattdessen ``juntagrico.backends.email.BaseEmailBackend`` und setze EMAIL_BACKEND, um anzupassen, wie deine E-Mails gesendet werden. Siehe ``juntagrico.backends.email.BaseBatchEmailBackend`` als Referenz."
+
+#: ../../reference/settings.rst:948 6db6c249ffd143338d95b75ebfab66ad
+msgid "BATCH_MAILER"
+msgstr "BATCH_MAILER"
+
+#: ../../reference/settings.rst:949 f260c3740a0c4de0a33e1522471a1613
+msgid "Configuration for the batch mailer. These are only effective, if EMAIL_BACKEND is set to ``'juntagrico.backends.email.BatchEmailBackend'``. ``batch_size`` is the number of emails, that is sent in one batch. When set to 1, all emails are sent using \"to\" instead of \"bcc\". ``wait_time`` is the interval in which the batches are sent."
+msgstr "Konfiguration für den Batch-Mailer. Diese sind nur wirksam, wenn EMAIL_BACKEND auf ``'juntagrico.backends.email.BatchEmailBackend'`` gesetzt ist. ``batch_size`` ist die Anzahl E-Mails, die in einem Batch gesendet werden. Bei 1 werden alle E-Mails mit \"to\" statt \"bcc\" gesendet. ``wait_time`` ist das Intervall, in dem die Batches gesendet werden."
+
+#: ../../reference/settings.rst:966 8a0cd8671bc84dc9a96cab5134c86356
+msgid "FROM_FILTER"
+msgstr "FROM_FILTER"
+
+#: ../../reference/settings.rst:967 0be9c59dc2ef490f8cf43c7436bc2e47
+msgid "Allows overriding the \"from\" field of outgoing emails. This can be used to prevent sending emails with a sender of different domain than the SMTP server, which triggers most spam filters. The setting consists of a regular expression (``filter_expression``) and a default replacement (``replacement_from``). If the regular expression does NOT match, the default replacement is used as \"from\", and the original \"from\" is set as \"reply to\"."
+msgstr "Erlaubt das Überschreiben des \"from\"-Feldes ausgehender E-Mails. Dies kann verwendet werden, um das Senden von E-Mails mit einem Absender einer anderen Domain als der SMTP-Server zu verhindern, was die meisten Spam-Filter auslöst. Die Einstellung besteht aus einem regulären Ausdruck (``filter_expression``) und einem Standard-Ersatz (``replacement_from``). Wenn der reguläre Ausdruck NICHT übereinstimmt, wird der Standard-Ersatz als \"from\" verwendet und das ursprüngliche \"from\" als \"reply to\" gesetzt."
+
+#: ../../reference/settings.rst:980 84525c7fb61e4f12b4aba11edcd88ad2
+msgid "WHITELIST_EMAILS"
+msgstr "WHITELIST_EMAILS"
+
+#: ../../reference/settings.rst:981 e837bb705fdd49ae9b87c0c4e64b96f6
+msgid "List of regular expression to determine which email addresses should receive emails while DEBUG mode is enabled"
+msgstr "Liste von regulären Ausdrücken, um zu bestimmen, welche E-Mail-Adressen E-Mails erhalten sollen, solange der DEBUG-Modus aktiviert ist"
+
+#: ../../reference/settings.rst:991 4976299e976142629512e84adb771ef7
+msgid "MAILER_RICHTEXT_OPTIONS"
+msgstr "MAILER_RICHTEXT_OPTIONS"
+
+#: ../../reference/settings.rst:993 a41a440c10bf4f9fb7e9a98ce9d6ce1a
+msgid "Removed in version 2.0. Configure using `DJRICHTEXTFIELD_CONFIG` instead. See :ref:`Richtext in Mailer <intro-richtext-mailer>`."
+msgstr "Entfernt in Version 2.0. Konfiguriere stattdessen über `DJRICHTEXTFIELD_CONFIG`. Siehe :ref:`Rich-Text im Mailer <intro-richtext-mailer>`."
+
+#: ../../reference/settings.rst:996 792b51d748074aaca4a3d77a1d32424f
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+#: ../../reference/settings.rst:1001 b14d917f8a434348915832e5d5a1bf52
+msgid "ENABLE_NOTIFICATIONS"
+msgstr "ENABLE_NOTIFICATIONS"
+
+#: ../../reference/settings.rst:1002 46b69aa7ceb04bdd9c879d0fd1660e3e
+msgid "List of strings, of notifications that should be enabled:"
+msgstr "Liste von Strings mit Benachrichtigungen, die aktiviert werden sollen:"
+
+#: ../../reference/settings.rst:1004 1731bcdc66244642b32ba13f460417ff
+msgid "`'job_subscribed'`: Send an email to the job admin, if a member signs up to a job without leaving a message."
+msgstr "`'job_subscribed'`: Sende eine E-Mail an den Job-Admin, wenn sich ein Mitglied ohne Nachricht zu einem Job anmeldet."
+
+#: ../../reference/settings.rst:1006 806c434ba9904232bd5e57c2fb2208a7
+msgid "example:"
+msgstr "Beispiel:"
+
+#: ../../reference/settings.rst:1012 ../../reference/settings.rst:1036
+#: 466141e94a174817b7830697a05d7994 7d96528c619349e494a8a01ebb828eef
+msgid "default value:"
+msgstr "Standardwert:"
+
+#: ../../reference/settings.rst:1022 69ac020fac7c4d70b13676cbc273d117
+msgid "DISABLE_NOTIFICATIONS"
+msgstr "DISABLE_NOTIFICATIONS"
+
+#: ../../reference/settings.rst:1024 efb4833bae534d41b01aa4eaf61598c6
+msgid "List of strings, of notifications that should be disabled:"
+msgstr "Liste von Strings mit Benachrichtigungen, die deaktiviert werden sollen:"
+
+#: ../../reference/settings.rst:1026 9f5f28605dc74f8ebaab4aba2de7a747
+msgid "`'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message."
+msgstr "`'job_subscription_changed'`: Keine E-Mail an den Job-Admin senden, wenn ein Mitglied seine Job-Anmeldung ohne Nachricht ändert."
+
+#: ../../reference/settings.rst:1027 ab267f14781b4d499f24c39f7879c57a
+msgid "`'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message."
+msgstr "`'job_unsubscribed'`: Keine E-Mail an den Job-Admin senden, wenn sich ein Mitglied ohne Nachricht von einem Job abmeldet."
+
+#: ../../reference/settings.rst:1028 712e8cbecf574dd68d41e72a17c540ff
+msgid "`'membership_activated'`: Don't notify new members when their membership is activated."
+msgstr "`'membership_activated'`: Neue Mitglieder nicht benachrichtigen, wenn ihre Mitgliedschaft aktiviert wird."
+
+#: ../../reference/settings.rst:1029 f5d4c8ef35a64666b661151cf92e1bf4
+msgid "`'membership_deactivated'`: Don't notify leaving members when their membership is deactivated."
+msgstr "`'membership_deactivated'`: Austretende Mitglieder nicht benachrichtigen, wenn ihre Mitgliedschaft deaktiviert wird."
+
+#: ../../reference/settings.rst:1030 66e0f934a7da48ff98f1b8de6d3b34b8
+msgid "`'subscription_activated'`: Don't notify members when their subscription (parts) are activated."
+msgstr "`'subscription_activated'`: Mitglieder nicht benachrichtigen, wenn ihr Abonnement (oder Teile davon) aktiviert wird."
+
+#: ../../reference/settings.rst:1031 2ce29d36a91f4b7686ba303cecf36dc2
+msgid "`'subscription_deactivated'`: Don't notify members when their subscription (parts) are deactivated."
+msgstr "`'subscription_deactivated'`: Mitglieder nicht benachrichtigen, wenn ihr Abonnement (oder Teile davon) deaktiviert wird."
+
+#: ../../reference/settings.rst:1034 b6c83f4d75d04f98a277dde15f603a8f
+msgid "Notifications on job subscription are always sent, when the member leaves a message, because the message is not stored outside of the email."
+msgstr "Benachrichtigungen bei Job-Anmeldungen werden immer gesendet, wenn das Mitglied eine Nachricht hinterlässt, da die Nachricht nicht ausserhalb der E-Mail gespeichert wird."
+
+#: ../../reference/settings.rst:1043 f8760fb642b3477c848f14d0d446e0de
+msgid "GDPR"
+msgstr "DSGVO"
+
+#: ../../reference/settings.rst:1046 5e6e85434c3a477f8e687dca0805dd80
+msgid "GDPR_INFO"
+msgstr "GDPR_INFO"
+
+#: ../../reference/settings.rst:1047 bf36539345ec4ab28cc5e24873cf5855
+msgid "URL to your gdpr document"
+msgstr "URL zu deiner Datenschutzerklärung"
+
+#: ../../reference/settings.rst:1058 2bbf307cd59d41c6b2af60b71b69ebf1
+msgid "COOKIE_CONSENT"
+msgstr "COOKIE_CONSENT"
+
+#: ../../reference/settings.rst:1059 c6a51a70e47b48ffb2f834c96cddb1af
+msgid "The text, confirm text, link text and url of the cookie consent"
+msgstr "Der Text, Bestätigungstext, Linktext und die URL der Cookie-Einwilligung"
+
+#: ../../reference/settings.rst:1072 c66ff022c6fa429b83b5bb979f7f7412
+msgid "Demo Settings"
+msgstr "Demo-Einstellungen"
+
+#: ../../reference/settings.rst:1075 1d91b75217eb49099d3ccba6ace08e4a
+msgid "DEMO_USER"
+msgstr "DEMO_USER"
+
+#: ../../reference/settings.rst:1076 d04814cc779e4f2aa390fa8071775cfd
+msgid "If you run a demo setup and want to display the login name on the login page"
+msgstr "Falls du ein Demo-Setup betreibst und den Login-Namen auf der Login-Seite anzeigen möchtest"
+
+#: ../../reference/settings.rst:1087 79ca8873d2824166a6a471ea289d495c
+msgid "DEMO_PWD"
+msgstr "DEMO_PWD"
+
+#: ../../reference/settings.rst:1088 3bcbdc47ae144214bd40a0187327895b
+msgid "If you run a demo setup and want to display the password on the login page"
+msgstr "Falls du ein Demo-Setup betreibst und das Passwort auf der Login-Seite anzeigen möchtest"

@@ -42,21 +42,7 @@
         {{ membership.creation_date|date:"Y-m-d" }}
     </td>
     <td>
-        {% if membership.activation_date %}
-            <span>
-                {% blocktrans trimmed with activation_date=membership.activation_date|date:"Y-m-d" %}
-                    Wird am {{ activation_date }} aktiviert
-                {% endblocktrans %}
-            </span>
-        {% elif perms.juntagrico.change_membership %}
-            <span class="membership_id d-none">{{ membership.id }} {# space is required #}</span>
-            <form action="{% url 'manage-membership-activate' %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success" name="membership_ids" value="{{ membership.id }}">
-                    {% trans "aktivieren" %}
-                </button>
-            </form>
-        {% endif %}
+        {% include "juntagrico/manage/membership/snippets/button_activate.html" %}
     </td>
 {% endblock %}
 
