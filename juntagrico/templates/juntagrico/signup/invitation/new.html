@@ -45,7 +45,9 @@
 
 {% block content %}
     <form action="" method="post">
-        {% crispy account_form %}
+        {% block account %}
+            {% crispy account_form %}
+        {% endblock %}
 
         {% if membership_form %}
             <h4 class="mt-5">{% vocabulary "membership" %} erwerben</h4>
@@ -60,8 +62,9 @@
             </p>
 
             {% if membership_fee %}
-                <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag:
-                    {{ fee }}{% endblocktrans %}</strong></p>
+                <p><strong>{% blocktrans trimmed with fee=membership_fee|price %}
+                    Jahresbeitrag: {{ fee }}
+                {% endblocktrans %}</strong></p>
             {% endif %}
 
             {% include "juntagrico/my/membership/snippets/documents.html" %}

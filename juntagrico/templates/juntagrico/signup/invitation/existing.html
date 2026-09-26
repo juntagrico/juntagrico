@@ -1,0 +1,23 @@
+{% extends "juntagrico/signup/invitation/new.html" %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% blocktrans %}Einladung{% endblocktrans %}
+{% endblock %}
+
+{% block intro %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    {% block intro_1 %}
+        <p class="capfirst">
+            {% blocktrans with inviter=invitee.invited_by %}{{ inviter }} hat dich bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
+        </p>
+    {% endblock %}
+{% endblock %}
+
+{% block account %}
+    {% csrf_token %}
+{% endblock %}
