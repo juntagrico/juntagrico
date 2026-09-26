@@ -193,12 +193,13 @@ class SignupManager(SessionManager):
             membership_form.save(member, comment)
         return MemberDetails(member, password)
 
-    def apply_co_member(self, subscription):
+    def apply_co_member(self, invited_by, subscription):
         invitees = []
         shares = self.get('shares')
         for i, co_member_data in enumerate(self.get('co_members', [])):
             # create invite for co-member
             form = CoMemberBaseForm(co_member_data)
+            form.instance.invited_by = invited_by
             form.instance.subscription = subscription
             form.instance.shares = int(shares[f'of_co_member[{i}]'])
             invitees.append(form.save())
@@ -247,7 +248,7 @@ class SignupManager(SessionManager):
         # create subscription
         subscription = self.apply_subscriptions(member)
         # create invites for co-members
-        co_members = self.apply_co_member(subscription)
+        co_members = self.apply_co_member(member, subscription)
         # send emails and notifications
         self.send_emails(member, co_members, subscription)
 

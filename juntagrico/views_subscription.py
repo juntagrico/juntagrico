@@ -190,6 +190,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
     def form_valid(self, form):
         # invite co-member
         form.instance.subscription = self.subscription
+        form.instance.invited_by = self.request.user.member
         invitee = form.save()
         membernotification.invite_co_member(invitee)
         return self._done()

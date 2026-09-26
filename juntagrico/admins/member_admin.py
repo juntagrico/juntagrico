@@ -118,3 +118,9 @@ class MembershipInline(admin.TabularInline):
 
 if Config.membership('enable'):
     MemberAdmin.inlines.append(MembershipInline)
+
+
+class InviteeAdmin(BaseAdmin):
+    list_display = ['email', 'first_name', 'last_name', 'invited_by']
+    search_fields = ['first_name', 'last_name', 'email']
+    fields = ['first_name', 'last_name', 'email', 'shares', 'subscription', 'invited_by']
