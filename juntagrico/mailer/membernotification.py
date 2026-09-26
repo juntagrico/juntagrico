@@ -35,6 +35,19 @@ def welcome_co_member(co_member, password, new_shares, new=True):
     ).send()
 
 
+def invite_co_member(invitee):
+    # sends invitation mail to invited co-member
+    EmailBuilder(
+        invitee,
+        _('Einladung zu {0}').format(enriched_organisation('D')),
+        'juntagrico/mails/member/subscription/invite.txt',
+        {
+            'invitee': invitee,
+        },
+        'for_members',
+    ).send()
+
+
 def shares_created(member, shares):
     EmailBuilder(
         member,

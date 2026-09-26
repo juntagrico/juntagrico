@@ -8,7 +8,7 @@ from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
-from ..entity.member import SubscriptionMembership
+from ..entity.member import SubscriptionMembership, Invitee
 from ..entity.membership import Membership
 from ..entity.subs import SubscriptionPart
 from ..entity.subtypes import SubscriptionType
@@ -139,24 +139,25 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.cancelPart(part)
         self.assertLess(part.cancellation_date, part.activation_date)
 
-    def testJoin(self):
+    def testInvite(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
+        post_data = {
+            'email': self.member4.email,
+            # fields are required even with existing email
+            'first_name': '-', 'last_name': '-', 'phone': '-',
+            'addr_street': '-', 'addr_zipcode': '-', 'addr_location': '-',
+        }
+        if settings.ENABLE_SHARES:
+            post_data['shares'] = 0
         self.assertPost(
             reverse('add-member', args=[self.sub.pk]),
             member=self.member, code=302,
-            data={
-                'email': self.member4.email,
-                # fields are required even with existing email
-                'first_name': '-', 'last_name': '-', 'phone': '-',
-                'addr_street': '-', 'addr_zipcode': '-', 'addr_location': '-',
-            }
+            data=post_data
         )
-        self.sub.refresh_from_db()
-        self.assertTrue(self.member4 in self.sub.current_members.all())
-        self.assertTrue(self.member4 in self.area.members.all())
+        self.assertTrue(Invitee.objects.filter(email=self.member4.email).exists())
 
     def testJoinLeaveRejoin(self):
-        # leaving on the same day should delete the subscription membership again
+        # rejoining subscription on the same day should be possible
         post_data = {
             'email': self.member4.email,
             'first_name': self.member4.first_name,
@@ -166,13 +167,16 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             'addr_location': self.member4.addr_location,
             'phone': self.member4.phone
         }
+        if settings.ENABLE_SHARES:
+            post_data['shares'] = 0
         self.create_paid_share(self.member4)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.member4.join_subscription(self.sub)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
             'leave_date': datetime.date.today(),
         }, code=302, member=self.member4)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.member4.join_subscription(self.sub)
         self.sub.refresh_from_db()
+        self.assertEqual(self.sub.subscriptionmembership_set.count(), 3)
         self.assertEqual(self.sub.current_members.count(), 3)
 
     def testRejoinPreviousSub(self):
