@@ -1,0 +1,14 @@
+{% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% blocktrans %}Einladung{% endblocktrans %}
+{% endblock %}
+
+{% block intro %}
+    <h4>{% trans "Die Einladung ist ungültig." %}</h4>
+{% endblock %}

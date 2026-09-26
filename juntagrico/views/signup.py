@@ -1,6 +1,5 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
 from django.shortcuts import render, redirect
 
 from juntagrico.config import Config
@@ -11,11 +10,14 @@ from juntagrico.mailer import membernotification
 from juntagrico.views.share import ShareInvitationForm
 
 
+def invitation_invalid(request, template_name='juntagrico/signup/invitation/invalid.html'):
+    return render(request, template_name)
+
+
 def invitation(request, key, template_name='juntagrico/signup/invitation/landing.html'):
     invitee = Invitee.objects.filter(key=key).first()
     if invitee is None:
-        # TODO: forward to "invitation invalid" page
-        pass
+        return invitation_invalid(request)
     return render(request, template_name, {'key': key, 'invitee': invitee})
 
 
@@ -23,8 +25,7 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
     logout(request)
     invitee = Invitee.objects.filter(key=key).first()
     if invitee is None:
-        # TODO: forward to "invitation invalid" page
-        pass
+        return invitation_invalid(request)
 
     subscription = invitee.subscription
 
@@ -47,15 +48,7 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
 
     if Config.enable_shares():
         # count share underflow, assuming all other invitees order as suggested
-        required_shares = -(
-            subscription.share_overflow
-            + (
-                subscription.invitees.exclude(pk=invitee.pk).aggregate(
-                    share_sum=Sum('shares')
-                )['share_sum']
-                or 0
-            )
-        )
+        required_shares = invitee.required_shares()
         if request.method == 'POST':
             share_form = ShareInvitationForm(required_shares, data=request.POST)
         else:
@@ -104,6 +97,66 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
 
 
 @login_required
-def invitation_to_existing(request, key):
-    # TODO: implement
-    pass
+def invitation_to_existing(request, key, template_name='juntagrico/signup/invitation/existing.html'):
+    invitee = Invitee.objects.filter(key=key).first()
+    if invitee is None:
+        return invitation_invalid(request)
+
+    account = request.user.member
+    # TODO: handle case, where account already has a subscription
+
+    # if account has fewer shares than needed, show share order form
+    share_form = None
+    if Config.enable_shares():
+        existing_shares = account.usable_shares.count()
+        required_shares = invitee.required_shares()
+        if required_shares > existing_shares:
+            required = {
+                'total': required_shares, 'for_primary': required_shares - existing_shares
+            }
+            if request.method == 'POST':
+                share_form = ShareInvitationForm(required, existing_shares, data=request.POST)
+            else:
+                share_form = ShareInvitationForm(required, existing_shares)
+
+    membership_form = None
+    if Config.enable_membership():
+        if share_form and not account.memberships.not_canceled().exists():
+            if request.method == 'POST':
+                membership_form = MembershipInvitationForm(request.POST)
+            else:
+                membership_form = MembershipInvitationForm()
+
+    if request.method == 'POST':
+        valid = True
+        if membership_form:
+            valid = membership_form.is_valid()
+        if valid and share_form:
+            valid = share_form.is_valid()
+        if valid:
+            account.join_subscription(invitee.subscription)
+            share_count = 0
+            if share_form:
+                share_count = share_form.save(account)
+            if membership_form:
+                membership_form.save(account)
+            invitee.delete()
+            membernotification.welcome_co_member(
+                account,
+                None,
+                share_count,
+                False
+            )
+            return redirect('subscription-landing')
+
+    return render(
+        request,
+        template_name,
+        {
+            'invitee': invitee,
+            'membership_form': membership_form,
+            'membership_fee': Config.membership('fee'),
+            'share_form': share_form,
+            'required_shares_for_membership': Config.membership('required_shares') if share_form else 0,
+        },
+    )

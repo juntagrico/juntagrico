@@ -155,9 +155,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             data=post_data
         )
         self.assertTrue(Invitee.objects.filter(email=self.member4.email).exists())
-        # TODO: test this when invitee completes signup
-        # self.assertTrue(self.member4 in self.sub.current_members.all())
-        # self.assertTrue(self.member4 in self.area.members.all())
 
     def testJoinLeaveRejoin(self):
         # rejoining subscription on the same day should be possible
