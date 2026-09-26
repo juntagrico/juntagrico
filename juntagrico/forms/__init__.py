@@ -288,6 +288,8 @@ class AddCoMemberForm(CoMemberBaseForm):
         fields = list(self.base_layout)  # keep first 9 fields
         if Config.enable_shares():
             fields.append(Field('shares', css_class='col-md-2'))
+        else:
+            del self.fields['shares']
         self.helper.layout = Layout(
             *fields,
             FormActions(
