@@ -201,7 +201,8 @@ class SignupManager(SessionManager):
             form = CoMemberBaseForm(co_member_data)
             form.instance.invited_by = invited_by
             form.instance.subscription = subscription
-            form.instance.shares = int(shares[f'of_co_member[{i}]'])
+            if Config.enable_shares():
+                form.instance.shares = int(shares[f'of_co_member[{i}]'])
             invitees.append(form.save())
         return invitees
 
