@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from juntagrico.models import Share, SubscriptionMembership
 from . import JuntagricoTestCase
+from .test_cs import CreateSubscriptionTestCase
 from ..entity.member import Invitee
 
 
@@ -70,3 +71,47 @@ class CoMemberTests(JuntagricoTestCase):
         self.assertEqual(Share.objects.filter(member=self.co_member).count(), 0)
         # invitation created
         self.assertTrue(Invitee.objects.filter(email=co_member_before['email']).exists())
+
+
+class InvitationTests(CreateSubscriptionTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.invitee = Invitee.objects.create(
+            email='invitee@juntagrico.invalid',
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.sub.primary_member,
+        )
+
+    def testAcceptInvitationNew(self):
+        self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
+        self.assertGet(reverse('invitation-new', args=[self.invitee.key]), 200)
+
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        if settings.ENABLE_SHARES:
+            data.update({'of_member': 1})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            302,
+        )
+        self.assertTrue(self.sub.current_members.filter(email='new_member@juntagrico.invalid').exists())
+
+    def testAcceptInvitationExisting(self):
+        self.client.force_login(self.member2.user)
+        self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
+        self.assertGet(reverse('invitation-existing', args=[self.invitee.key]), 200)
+
+        data = {}
+        if settings.ENABLE_SHARES:
+            data.update({'of_member': 1})
+        self.assertPost(
+            reverse('invitation-existing', args=[self.invitee.key]),
+            data,
+            302,
+        )
+        self.assertTrue(
+            self.member2 in self.sub.current_members.all()
+        )

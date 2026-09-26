@@ -4,7 +4,7 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils.functional import cached_property
 from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
@@ -368,6 +368,18 @@ class Invitee(AbstractProfile):
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
     shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
     key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def required_shares(self):
+        # calculate share underflow, assuming all other invitees order as suggested
+        return -(
+            self.subscription.share_overflow
+            + (
+                self.subscription.invitees.exclude(pk=self.pk).aggregate(
+                    share_sum=Sum('shares')
+                )['share_sum']
+                or 0
+            )
+        )
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
