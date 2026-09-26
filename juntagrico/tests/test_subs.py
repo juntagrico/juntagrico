@@ -160,8 +160,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         # self.assertTrue(self.member4 in self.area.members.all())
 
     def testJoinLeaveRejoin(self):
-        # TODO: obsolete
-        # leaving on the same day should delete the subscription membership again
+        # rejoining subscription on the same day should be possible
         post_data = {
             'email': self.member4.email,
             'first_name': self.member4.first_name,
@@ -174,12 +173,13 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         if settings.ENABLE_SHARES:
             post_data['shares'] = 0
         self.create_paid_share(self.member4)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.member4.join_subscription(self.sub)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
             'leave_date': datetime.date.today(),
         }, code=302, member=self.member4)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.member4.join_subscription(self.sub)
         self.sub.refresh_from_db()
+        self.assertEqual(self.sub.subscriptionmembership_set.count(), 3)
         self.assertEqual(self.sub.current_members.count(), 3)
 
     def testRejoinPreviousSub(self):

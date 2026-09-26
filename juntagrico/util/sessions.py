@@ -248,7 +248,7 @@ class SignupManager(SessionManager):
         # create subscription
         subscription = self.apply_subscriptions(member)
         # create invites for co-members
-        co_members = self.apply_co_member(member, subscription)
+        co_members = self.apply_co_member(member.member, subscription)
         # send emails and notifications
         self.send_emails(member, co_members, subscription)
 
