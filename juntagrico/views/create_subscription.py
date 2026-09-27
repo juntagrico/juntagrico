@@ -213,7 +213,7 @@ class AddMemberView(SignupView, FormView):
         self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
         self.mod = self.request.GET.get('mod') is not None
         if request.user.is_authenticated:
-            self.member_data = model_to_dict(request.user.member, ['email', 'addr_street', 'addr_zipcode', 'addr_location'])
+            self.member_data = model_to_dict(request.user.member, ['email'])
         else:
             self.member_data = self.signup_manager.get('main_member')
 
@@ -247,11 +247,7 @@ class AddMemberView(SignupView, FormView):
         )
 
     def get_initial(self):
-        # use address from main member as default
         return {
-            'addr_street': self.member_data['addr_street'],
-            'addr_zipcode': self.member_data['addr_zipcode'],
-            'addr_location': self.member_data['addr_location'],
             'edit': str(self.edit)
         }
 

@@ -41,24 +41,11 @@ class AbstractProfile(JuntagricoBaseModel):
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
 
-    addr_street = models.CharField(_('Strasse'), max_length=100)
-    addr_zipcode = models.CharField(_('PLZ'), max_length=10)
-    addr_location = models.CharField(_('Ort'), max_length=50)
-    birthday = models.DateField(_('Geburtsdatum'), null=True, blank=True)
-    phone = models.CharField(_('Telefonnr'), max_length=50)
-    mobile_phone = models.CharField(
-        _('Mobile'), max_length=50, null=True, blank=True)
-
     def __str__(self):
         return self.get_name()
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)
-
-    def get_phone(self):
-        if self.mobile_phone and self.mobile_phone.strip('0- '):
-            return self.mobile_phone
-        return self.phone
 
 
 @absolute_url(name='manage-account-single')
@@ -72,6 +59,13 @@ class Member(AbstractProfile):
         User, related_name='member', on_delete=models.CASCADE)
 
     email = LowercaseEmailField(unique=True)
+
+    addr_street = models.CharField(_('Strasse'), max_length=100)
+    addr_zipcode = models.CharField(_('PLZ'), max_length=10)
+    addr_location = models.CharField(_('Ort'), max_length=50)
+    birthday = models.DateField(_('Geburtsdatum'), null=True, blank=True)
+    phone = models.CharField(_('Telefonnr'), max_length=50)
+    mobile_phone = models.CharField(_('Mobile'), max_length=50, null=True, blank=True)
 
     iban = models.CharField('IBAN', max_length=100, blank=True, default='', validators=[validate_iban])
 
@@ -297,6 +291,11 @@ class Member(AbstractProfile):
         future = self.subscription_future is not None
         current = self.subscription_current is not None and not self.subscription_current.inactive
         return future or current
+
+    def get_phone(self):
+        if self.mobile_phone and self.mobile_phone.strip('0- '):
+            return self.mobile_phone
+        return self.phone
 
     def all_emails(self):
         """

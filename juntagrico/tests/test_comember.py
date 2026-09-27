@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.conf import settings
 from django.core import mail
@@ -84,6 +85,16 @@ class InvitationTests(CreateSubscriptionTestCase):
             subscription=cls.sub,
             invited_by=cls.sub.primary_member,
         )
+        if settings.ENABLE_SHARES:
+            cls.invitee.shares = 2
+            cls.invitee.save()
+
+    def testInvalidInvitation(self):
+        invalid_key = uuid.uuid4()
+        self.assertGet(reverse('invitation', args=[invalid_key]), 200)
+        self.assertGet(reverse('invitation-new', args=[invalid_key]), 200)
+        self.client.force_login(self.member2.user)
+        self.assertGet(reverse('invitation-existing', args=[invalid_key]), 200)
 
     def testAcceptInvitationNew(self):
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
