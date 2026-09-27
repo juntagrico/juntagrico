@@ -173,15 +173,6 @@ class AddCoMemberView(FormView, ModelFormMixin):
         form_kwargs['existing_emails'] = self.subscription.current_members.values_list('email', flat=True)
         return form_kwargs
 
-    def get_initial(self):
-        # use address from main member as default
-        mm = self.request.user.member
-        return {
-            'addr_street': mm.addr_street,
-            'addr_zipcode': mm.addr_zipcode,
-            'addr_location': mm.addr_location
-        }
-
     @method_decorator(primary_member_of_subscription)
     def dispatch(self, request, subscription_id, *args, **kwargs):
         self.subscription = get_object_or_404(Subscription, id=subscription_id)

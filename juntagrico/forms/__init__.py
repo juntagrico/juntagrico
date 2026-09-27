@@ -254,10 +254,16 @@ class EditMemberForm(RegisterMemberForm):
 class CoMemberBaseForm(MemberBaseForm):
     class Meta(MemberBaseForm.Meta):
         model = Invitee
+        fields = ('first_name', 'last_name', 'email',)
 
     def __init__(self, *args, existing_emails=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.existing_emails = existing_emails or []  # list of emails that can not be used
+        self.base_layout = (
+            'first_name',
+            'last_name',
+            'email',
+        )
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
@@ -281,7 +287,7 @@ class CoMemberBaseForm(MemberBaseForm):
 
 class AddCoMemberForm(CoMemberBaseForm):
     class Meta(CoMemberBaseForm.Meta):
-        fields = (*MemberBaseForm.Meta.fields, 'shares')
+        fields = (*CoMemberBaseForm.Meta.fields, 'shares')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
