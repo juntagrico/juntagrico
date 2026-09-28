@@ -92,6 +92,7 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
                 share_count = share_form.save(member)
             if membership_form:
                 membership_form.save(member, member.signup_comment)
+            membernotification.invitation_accepted(invitee)
             invitee.delete()
             membernotification.welcome_co_member(
                 member,
@@ -177,6 +178,7 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
                 share_count = share_form.save(account)
             if membership_form:
                 membership_form.save(account)
+            membernotification.invitation_accepted(invitee)
             invitee.delete()
             membernotification.welcome_co_member(
                 account,
@@ -203,7 +205,7 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
 
 def invitation_reject(request):
     invitee = get_object_or_404(Invitee, key=request.POST.get('key'))
-    # TODO: inform inviter
+    membernotification.invitation_rejected(invitee)
     invitee.delete()
     messages.success(request, _('Einladung abgelehnt.'))
     return redirect('home')
