@@ -3,6 +3,7 @@ import uuid
 
 from django.conf import settings
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from juntagrico.models import Share, SubscriptionMembership
@@ -96,6 +97,19 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.client.force_login(self.member2.user)
         self.assertGet(reverse('invitation-existing', args=[invalid_key]), 200)
 
+    def testInvitationInvalidation(self):
+        expired_invitation = Invitee.objects.create(
+            email='invitee@juntagrico.invalid',
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=self.sub,
+            invited_by=self.member4,
+        )
+        # if inviter is not in subscription (anymore) invitation becomes invalid
+        self.assertGet(reverse('invitation', args=[expired_invitation.key]), 200)
+        with self.assertRaises(Invitee.DoesNotExist):
+            expired_invitation.refresh_from_db()
+
     def testAcceptInvitationNew(self):
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
         self.assertGet(reverse('invitation-new', args=[self.invitee.key]), 200)
@@ -110,8 +124,7 @@ class InvitationTests(CreateSubscriptionTestCase):
         )
         self.assertTrue(self.sub.current_members.filter(email='new_member@juntagrico.invalid').exists())
 
-    def testAcceptInvitationExisting(self):
-        self.client.force_login(self.member4.user)
+    def _acceptInvitationExisting(self, result=302):
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
         self.assertGet(reverse('invitation-existing', args=[self.invitee.key]), 200)
 
@@ -121,8 +134,68 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.assertPost(
             reverse('invitation-existing', args=[self.invitee.key]),
             data,
-            302,
+            result,
         )
+
+    def testAcceptInvitationExisting(self):
+        self.client.force_login(self.member4.user)
+        self._acceptInvitationExisting()
         self.assertTrue(
             self.member4 in self.sub.current_members.all()
         )
+        # notification to inviter + welcome + share: admin and member notify
+        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+
+    def testAcceptInvitationExistingWithOtherPendingSubscription(self):
+        self.client.force_login(self.member2.user)
+        self._acceptInvitationExisting(200)
+
+    def testAcceptInvitationExistingWithActiveSubscription(self):
+        self.client.force_login(self.member3.user)
+        self._acceptInvitationExisting(200)
+        
+    def testAcceptInvitationExistingWithSubscriptionLeavingInFuture(self):
+        self.client.force_login(self.member3.user)
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        self.member3.subscriptionmembership_set.filter(subscription=self.sub).update(leave_date=tomorrow)
+        self._acceptInvitationExisting()
+        self.assertTrue(self.member3 in self.sub.future_members)
+        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+
+    def testRejectInvitation(self):
+        self.assertGet(reverse('invitation-reject'), 405)
+        self.assertPost(reverse('invitation-reject'), {
+            'key': self.invitee.key,
+        }, 302)
+        self.assertEqual(len(mail.outbox), 1)  # reject notification
+
+    def testInviteeList(self):
+        self.client.force_login(self.member.user)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]), 200)
+
+    def testModifyInvitation(self):
+        self.assertGet(reverse('invitation-modify'), 405)
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'resend'},
+            302,
+        )
+        self.assertEqual(len(mail.outbox), 1)  # invitation resent
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'resend'},
+            302,
+        )
+        self.assertEqual(len(mail.outbox), 1)  # no additional invitation sent shortly after
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'withdraw'},
+            302,
+        )
+        with self.assertRaises(Invitee.DoesNotExist):
+            self.invitee.refresh_from_db()
+
+
+@override_settings(MEMBERSHIP={'enable': False})
+class InvitationTestsWithoutMembership(InvitationTests):
+    pass
