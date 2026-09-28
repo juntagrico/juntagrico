@@ -1,8 +1,10 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity.member import Invitee
@@ -182,3 +184,11 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
             'required_shares_for_membership': Config.membership('required_shares') if share_form else 0,
         },
     )
+
+
+def invitation_reject(request):
+    invitee = get_object_or_404(Invitee, key=request.POST.get('key'))
+    # TODO: inform inviter
+    invitee.delete()
+    messages.success(request, _('Einladung abgelehnt.'))
+    return redirect('home')

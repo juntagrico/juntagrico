@@ -47,4 +47,11 @@
             {% trans "ich bin neu hier" %}
         </a>
     </div>
+
+    <div class="text-center mt-2">
+        <button type="button" class="btn btn-danger btn-lg m-2" data-toggle="modal" data-target="#reject_modal">
+            {% trans "Einladung ablehnen" %}
+        </button>
+        {% include './modals/reject.html' with name='reject' %}
+    </div>
 {% endblock %}
