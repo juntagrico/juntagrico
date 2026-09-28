@@ -263,18 +263,21 @@ class Member(AbstractProfile):
         )['last_leave_date'] + datetime.timedelta(days=1)
 
     def join_subscription(self, subscription, primary=False):
-        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         today = datetime.date.today()
+        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).exclude(leave_date__lt=today).first()
         # rejoining before leaving
-        if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
+        if sub_membership:
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            if subscription.waiting:
+            if subscription.activation_date is None:
                 join_date = None
             else:
-                # join when previous subscription is left.
+                # join once previous subscription is left.
                 join_date = self.next_possible_join_date()
+                if join_date is not None and join_date < subscription.activation_date:
+                    # can't join earlier than subscription start date
+                    join_date = subscription.activation_date
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
@@ -443,6 +446,12 @@ class SubscriptionMembership(JuntagricoBaseModel):
                 self.save()
             else:
                 self.delete()
+        # if has other pending subscription membership on active subscription, join there now.
+        follow_up = self.member.subscriptionmembership_set.filter(
+            join_date=None, subscription__activation_date__isnull=False
+        ).first()
+        if follow_up:
+            self.member.join_subscription(follow_up.subscription)
 
     class Meta:
         verbose_name = format_lazy(_('{}-Mitgliedschaft'), Config.vocabulary('subscription'))

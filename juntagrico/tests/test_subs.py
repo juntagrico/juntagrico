@@ -3,7 +3,6 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
-from django.core.exceptions import ValidationError
 from django.test import tag
 from django.urls import reverse
 
@@ -190,11 +189,13 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.member4.join_subscription(old_sub)
         self.assertEqual(old_sub.current_members.count(), 1)
         self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
-        # joining again should fail
-        with self.assertRaises(ValidationError):
-            self.member4.join_subscription(old_sub)
-        with self.assertRaises(ValidationError):
-            self.member4.join_subscription(self.sub)
+        # joining again is idempotent
+        self.member4.join_subscription(old_sub)
+        self.assertEqual(old_sub.current_members.count(), 1)
+        self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
+        # joining other will create waiting subscription membership there
+        self.member4.join_subscription(self.sub)
+        self.assertEqual(self.sub.subscriptionmembership_set.filter(member=self.member4).count(), 1)
 
     def testPartDeActivation(self):
         new_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
