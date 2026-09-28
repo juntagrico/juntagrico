@@ -2,9 +2,9 @@
 {% load i18n %}
 {% vocabulary "co_member_pl" as v_co_member_pl %}
 {% vocabulary "subscription" as v_subscription %}
-<div>
+<div class="co-members-container">
     {% for co_member in co_members %}
-        <span class="co-member">
+        <span class="comma-sep">
             {{ co_member }}<!--
             {% if subscription.primary_member == co_member %}
                 --> <span class="badge badge-dark">{% blocktrans %}{{ v_subscription }}-VerwalterIn{% endblocktrans %}</span><!--
