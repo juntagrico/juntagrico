@@ -100,6 +100,11 @@ function timed_text_class_change(new_text, new_class, duration) {
     }
 }
 
+function with_count(text, count) {
+    // show the number of affected entries, so it is clear on how many entries the button acts
+    return text + ' (' + count + ')'
+}
+
 function email_copy_button() {
     let copied_text = '<i class="bi bi-check"></i> ' + email_copied_string
     return {
@@ -107,7 +112,9 @@ function email_copy_button() {
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
-                that.enable(get_emails(dt).size > 0)
+                const count = get_emails(dt).size
+                that.enable(count > 0)
+                that.text(with_count('<i class="bi bi-clipboard"></i> ' + email_copy_string, count))
             })
             this.node().on('click', timed_text_class_change(copied_text, 'btn-success'))
         },
@@ -124,7 +131,9 @@ function id_action_button(text, action, csrf_token, selector, field='ids', confi
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
-                that.enable(get_selected_or_all(dt).to$().find(selector).length > 0)
+                const count = fetch_unique_from_table(get_selected_or_all(dt), selector).size
+                that.enable(count > 0)
+                that.text(with_count(text, count))
             })
             that.disable()
         },
@@ -152,11 +161,11 @@ function get_emails(dt) {
 }
 
 function fetch_unique_from_table(node, selector) {
-    // TODO make more robust for case, where there is no space around the node texts.
-    let entries = $(selector, node).text().trim().replace(/[\s,]+/gm, ',');
-    if (entries !== "")
-        return new Set(entries.split(','))
-    return new Set()
+    // split each node text separately, so that entries of adjacent nodes can not merge
+    let entries = $(selector, node).map(function () {
+        return $(this).text().trim().split(/[\s,]+/)
+    }).get()
+    return new Set(entries.filter(entry => entry !== ''))
 }
 
 function get_selected_or_all(dt) {
