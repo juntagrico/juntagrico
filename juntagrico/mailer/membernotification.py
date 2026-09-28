@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
@@ -22,6 +23,8 @@ def welcome(member, password):
 
 def invite_co_member(invitee):
     # sends invitation mail to invited co-member
+    invitee.sent_at = timezone.now()
+    invitee.save()
     EmailBuilder(
         invitee,
         _('Einladung zu {0}').format(enriched_organisation('D')),

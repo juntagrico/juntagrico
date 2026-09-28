@@ -4,14 +4,29 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity.member import Invitee
+from juntagrico.entity.member import Invitee, SubscriptionMembership
 from juntagrico.forms.account import AccountInvitationForm
 from juntagrico.forms.membership import MembershipInvitationForm
 from juntagrico.mailer import membernotification
+from juntagrico.util import return_to_previous_location
 from juntagrico.views.share import ShareInvitationForm
+
+
+def get_clean_invitee(key):
+    invitee = Invitee.objects.filter(key=key).first()
+    if invitee is None:
+        return None
+    # invalidate invitation if inviter has left the subscription in the meantime
+    if not SubscriptionMembership.objects.filter(
+        member=invitee.invited_by, subscription=invitee.subscription, leave_date=None
+    ).exists():
+        invitee.delete()
+        return None
+    return invitee
 
 
 def invitation_invalid(request, template_name='juntagrico/signup/invitation/invalid.html'):
@@ -19,18 +34,18 @@ def invitation_invalid(request, template_name='juntagrico/signup/invitation/inva
 
 
 def invitation(request, key, template_name='juntagrico/signup/invitation/landing.html'):
-    invitee = Invitee.objects.filter(key=key).first()
+    invitee = get_clean_invitee(key)
     if invitee is None:
         return invitation_invalid(request)
     return render(request, template_name, {'key': key, 'invitee': invitee})
 
 
 def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/new.html'):
-    logout(request)
-    invitee = Invitee.objects.filter(key=key).first()
+    invitee = get_clean_invitee(key)
     if invitee is None:
         return invitation_invalid(request)
 
+    logout(request)
     subscription = invitee.subscription
 
     if request.method == 'POST':
@@ -102,7 +117,7 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
 
 @login_required
 def invitation_to_existing(request, key, template_name='juntagrico/signup/invitation/existing.html'):
-    invitee = Invitee.objects.filter(key=key).first()
+    invitee = get_clean_invitee(key)
     if invitee is None:
         return invitation_invalid(request)
 
@@ -192,3 +207,18 @@ def invitation_reject(request):
     invitee.delete()
     messages.success(request, _('Einladung abgelehnt.'))
     return redirect('home')
+
+
+def invitation_modify(request):
+    invitee = get_object_or_404(Invitee, key=request.POST.get('key'))
+    action = request.POST.get('action')
+    if action == 'withdraw':
+        messages.success(request, _('Einladung zurückgezogen.'))
+        invitee.delete()
+    if action == 'resend':
+        if invitee.sent_at is not None and invitee.sent_at > timezone.now() - datetime.timedelta(minutes=1):
+            messages.warning(request, _('Die Einladung wurde vor kurzem verschickt. Warte einen Moment.'))
+        else:
+            messages.success(request, _('Einladung erneut gesendet.'))
+            membernotification.invite_co_member(invitee)
+    return return_to_previous_location(request)

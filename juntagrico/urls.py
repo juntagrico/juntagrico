@@ -21,6 +21,7 @@ urlpatterns = [
     path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
     path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
     path('signup/invitation/reject', signup.invitation_reject, name='invitation-reject'),
+    path('signup/invitation/modify', signup.invitation_modify, name='invitation-modify'),
     path('signup/invitation/<str:key>', signup.invitation, name='invitation'),
     path('signup/invitation/new/<str:key>', signup.invitation_to_new, name='invitation-new'),
     path('signup/invitation/existing/<str:key>', signup.invitation_to_existing, name='invitation-existing'),
