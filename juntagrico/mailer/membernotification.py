@@ -28,7 +28,33 @@ def invite_co_member(invitee):
     EmailBuilder(
         invitee,
         _('Einladung zu {0}').format(enriched_organisation('D')),
-        'juntagrico/mails/member/subscription/invite.txt',
+        'juntagrico/mails/member/subscription/invitation/invite.txt',
+        {
+            'invitee': invitee,
+        },
+        'for_members',
+    ).send()
+
+
+def invitation_accepted(invitee):
+    # sends notification mail to inviter
+    EmailBuilder(
+        invitee.invited_by,
+        _('Einladung angenommen'),
+        'juntagrico/mails/member/subscription/invitation/accepted.txt',
+        {
+            'invitee': invitee,
+        },
+        'for_members',
+    ).send()
+
+
+def invitation_rejected(invitee):
+    # sends notification mail to inviter
+    EmailBuilder(
+        invitee.invited_by,
+        _('Einladung abgelehnt'),
+        'juntagrico/mails/member/subscription/invitation/rejected.txt',
         {
             'invitee': invitee,
         },
