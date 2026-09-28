@@ -741,7 +741,7 @@ class ShareOrderForm(Form):
         if isinstance(required, dict):
             self.required = required
         else:
-            self.required = {'total': required, 'for_primary': existing}
+            self.required = {'total': required, 'for_primary': required}
         self.existing = existing
         self.co_members = co_members or []
 

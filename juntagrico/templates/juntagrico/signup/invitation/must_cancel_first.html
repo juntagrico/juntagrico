@@ -1,0 +1,20 @@
+{% extends "juntagrico/signup/invitation/existing.html" %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block intro %}
+    {{ block.super }}
+    <div class="alert alert-danger">
+        {% blocktrans trimmed with v_your_subscription_acc=vocabulary.your_subscription_acc %}
+            Bevor du diese Einladung annehmen kannst musst du {{ v_your_subscription_acc }} zuerst kündigen bzw. verlassen.
+        {% endblocktrans %}
+        <br>
+        <a href="{% url 'cancel' %}">{% trans "Zur Kündigung" %}</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

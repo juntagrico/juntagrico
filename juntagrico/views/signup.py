@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -103,7 +105,28 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
         return invitation_invalid(request)
 
     account = request.user.member
-    # TODO: handle case, where account already has a subscription
+    # if already has not yet started/joined subscription that they can't leave: Can't join this subscription at all
+    for submem in account.subscriptionmembership_set.filter(join_date=None):
+        if submem.subscription.primary_member == account or not submem.can_leave():
+            return render(
+                request,
+                'juntagrico/signup/invitation/cant_join.html',
+                {
+                    'invitee': invitee,
+                },
+            )
+    # if has another uncanceled/unleft subscription: link to cancellation form.
+    if account.subscriptions.not_terminated().exists():
+        return render(
+            request,
+            'juntagrico/signup/invitation/must_cancel_first.html',
+            {
+                'invitee': invitee,
+            },
+        )
+    # if has another canceled but not yet inactive subscription:
+    # inform that joining can only take effect once current subscription ends
+    next_possible_join_date = account.next_possible_join_date()
 
     # if account has fewer shares than needed, show share order form
     share_form = None
@@ -111,13 +134,10 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
         existing_shares = account.usable_shares.count()
         required_shares = invitee.required_shares()
         if required_shares > existing_shares:
-            required = {
-                'total': required_shares, 'for_primary': required_shares - existing_shares
-            }
             if request.method == 'POST':
-                share_form = ShareInvitationForm(required, existing_shares, data=request.POST)
+                share_form = ShareInvitationForm(required_shares, existing_shares, data=request.POST)
             else:
-                share_form = ShareInvitationForm(required, existing_shares)
+                share_form = ShareInvitationForm(required_shares, existing_shares)
 
     membership_form = None
     if Config.enable_membership():
@@ -154,6 +174,8 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
         template_name,
         {
             'invitee': invitee,
+            'must_wait': next_possible_join_date is None or next_possible_join_date > datetime.date.today(),
+            'next_possible_join_date': next_possible_join_date,
             'membership_form': membership_form,
             'membership_fee': Config.membership('fee'),
             'share_form': share_form,
