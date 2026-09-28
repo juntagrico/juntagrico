@@ -154,6 +154,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             data=post_data
         )
         self.assertTrue(Invitee.objects.filter(email=self.member4.email).exists())
+        self.assertEqual(len(mail.outbox), 1)  # invitation email
 
     def testJoinLeaveRejoin(self):
         # rejoining subscription on the same day should be possible
@@ -300,6 +301,15 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
         }, code=302, member=self.member3)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.current_members.count(), 1)
+
+    def testLeaveWithNewActiveSubscription(self):
+        new_sub = self.create_sub_now(self.depot)
+        self.member4.join_subscription(new_sub, True)
+        self.member3.join_subscription(new_sub)
+        self.sub.subscriptionmembership_set.filter(member=self.member3).first().leave()
+        # leaving old sub should join active sub, where join was pending
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        self.assertEqual(new_sub.subscriptionmembership_set.filter(member=self.member3).first().join_date, tomorrow)
 
     def testUnifiedLeave(self):
         self.assertGet(reverse('cancel'), 200, self.member3)

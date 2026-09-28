@@ -249,11 +249,13 @@ class Member(AbstractProfile):
         return [sm.subscription for sm in
                 self.subscriptionmembership_set.filter(q_left_subscription())]
 
-    def next_possible_join_date(self):
+    def next_possible_join_date(self, exclude=None):
         today = datetime.date.today()
         active_subscriptions = self.subscriptionmembership_set.exclude(
             leave_date__lt=today
         )
+        if exclude:
+            active_subscriptions = active_subscriptions.exclude(pk=exclude.pk)
         if not active_subscriptions.exists():
             return today
         if active_subscriptions.filter(leave_date=None).exists():
@@ -269,16 +271,21 @@ class Member(AbstractProfile):
         if sub_membership:
             sub_membership.leave_date = None
             sub_membership.save()
-        else:
+        # join if hasn't joined yet.
+        if sub_membership is None or sub_membership.join_date is None:
             if subscription.activation_date is None:
                 join_date = None
             else:
                 # join once previous subscription is left.
-                join_date = self.next_possible_join_date()
+                join_date = self.next_possible_join_date(sub_membership)
                 if join_date is not None and join_date < subscription.activation_date:
                     # can't join earlier than subscription start date
                     join_date = subscription.activation_date
-            SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
+            if sub_membership:
+                sub_membership.join_date = join_date
+                sub_membership.save()
+            else:
+                SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
             subscription.save()

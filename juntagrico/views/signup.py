@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from juntagrico.config import Config
 from juntagrico.entity.member import Invitee, SubscriptionMembership
@@ -203,6 +204,7 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
     )
 
 
+@require_POST
 def invitation_reject(request):
     invitee = get_object_or_404(Invitee, key=request.POST.get('key'))
     membernotification.invitation_rejected(invitee)
@@ -211,6 +213,7 @@ def invitation_reject(request):
     return redirect('home')
 
 
+@require_POST
 def invitation_modify(request):
     invitee = get_object_or_404(Invitee, key=request.POST.get('key'))
     action = request.POST.get('action')
