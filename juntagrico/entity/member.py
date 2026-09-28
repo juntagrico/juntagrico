@@ -381,6 +381,7 @@ class Invitee(AbstractProfile):
     invited_by = models.ForeignKey('Member', related_name='invitees', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
     shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
     key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def required_shares(self):

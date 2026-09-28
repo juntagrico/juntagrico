@@ -123,4 +123,5 @@ if Config.membership('enable'):
 class InviteeAdmin(BaseAdmin):
     list_display = ['email', 'first_name', 'last_name', 'invited_by']
     search_fields = ['first_name', 'last_name', 'email']
-    fields = ['first_name', 'last_name', 'email', 'shares', 'subscription', 'invited_by']
+    fields = ['key', 'created_at', 'first_name', 'last_name', 'email', 'shares', 'subscription', 'invited_by']
+    readonly_fields = ['key', 'created_at']
