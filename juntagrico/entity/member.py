@@ -4,7 +4,7 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Max
 from django.utils.functional import cached_property
 from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
@@ -249,20 +249,32 @@ class Member(AbstractProfile):
         return [sm.subscription for sm in
                 self.subscriptionmembership_set.filter(q_left_subscription())]
 
+    def next_possible_join_date(self):
+        today = datetime.date.today()
+        active_subscriptions = self.subscriptionmembership_set.exclude(
+            leave_date__lt=today
+        )
+        if not active_subscriptions.exists():
+            return today
+        if active_subscriptions.filter(leave_date=None).exists():
+            return None
+        return active_subscriptions.aggregate(
+            last_leave_date=Max('leave_date')
+        )['last_leave_date'] + datetime.timedelta(days=1)
+
     def join_subscription(self, subscription, primary=False):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         today = datetime.date.today()
+        # rejoining before leaving
         if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
             if subscription.waiting:
                 join_date = None
-            # allow common corner case, where co-member just left another subscription on the same day
-            elif self.subscriptionmembership_set.filter(leave_date=today).exists():
-                join_date = today + datetime.timedelta(days=1)
             else:
-                join_date = today
+                # join when previous subscription is left.
+                join_date = self.next_possible_join_date()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
