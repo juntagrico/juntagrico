@@ -133,29 +133,30 @@
                         <ul>
                             {% for sharee in co_members %}
                                 <li>
-                                    {{ sharee.first_name }} {{ sharee.last_name }}
+                                    {{ sharee }}
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
                         {% for sharee in co_members %}
-                            {{ sharee.first_name }} {{ sharee.last_name }}
+                            {{ sharee }}
                         {% endfor %}
-                        <br/>
                     {% endif %}
                 {% else %}
-                    {% blocktrans %}Du hast noch keine {{ v_co_member_pl }} eingetragen.{% endblocktrans %}
-                    <br/>
+                    {% blocktrans %}Du hast noch keine {{ v_co_member_pl }}.{% endblocktrans %}
                 {% endif %}
-                {% if primary %}
-                    <a href="{% url 'add-member' subscription.id %}">
-                        {% blocktrans %}Hier {{ v_co_member_pl }} eintragen{% endblocktrans %}
-                    </a>
-                {% else %}
-                    {% blocktrans trimmed %}
-                    Nur Haupt-{{ v_subscription }}-BeziehierIn kann weitere {{ v_co_member_pl }} hinzufügen.
-                    {% endblocktrans %}
-                {% endif %}
+
+                <div class="mt-3">
+                    {% if primary %}
+                        <a href="{% url 'add-member' subscription.id %}">
+                            {% blocktrans %}Hier {{ v_co_member_pl }} einladen{% endblocktrans %}
+                        </a>
+                    {% else %}
+                        {% blocktrans trimmed %}
+                        Nur Haupt-{{ v_subscription }}-BeziehierIn kann weitere {{ v_co_member_pl }} einladen.
+                        {% endblocktrans %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% if subscription.nickname %}

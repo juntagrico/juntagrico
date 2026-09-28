@@ -382,6 +382,7 @@ class Invitee(AbstractProfile):
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
     shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
     key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def required_shares(self):
@@ -436,6 +437,9 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def co_members(self):
         return self.subscription.co_members(self.member)
+
+    def invitees(self):
+        return Invitee.objects.filter(subscription=self.subscription, invited_by=self.member)
 
     def leave(self, on_date=None):
         on_date = on_date or datetime.date.today()
