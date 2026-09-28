@@ -111,7 +111,7 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.assertTrue(self.sub.current_members.filter(email='new_member@juntagrico.invalid').exists())
 
     def testAcceptInvitationExisting(self):
-        self.client.force_login(self.member2.user)
+        self.client.force_login(self.member4.user)
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
         self.assertGet(reverse('invitation-existing', args=[self.invitee.key]), 200)
 
@@ -124,5 +124,5 @@ class InvitationTests(CreateSubscriptionTestCase):
             302,
         )
         self.assertTrue(
-            self.member2 in self.sub.current_members.all()
+            self.member4 in self.sub.current_members.all()
         )
