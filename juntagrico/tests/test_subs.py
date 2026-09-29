@@ -196,7 +196,18 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
         # joining other will create waiting subscription membership there
         self.member4.join_subscription(self.sub)
-        self.assertEqual(self.sub.subscriptionmembership_set.filter(member=self.member4).count(), 1)
+        sub_membership = self.sub.subscriptionmembership_set.filter(member=self.member4)
+        self.assertEqual(sub_membership.count(), 1)
+        self.assertEqual(sub_membership.first().join_date, None)
+
+    def testJoinFutureSub(self):
+        # joining subscription with future activation date should set the join date to that same activation date.
+        next_week = datetime.date.today() + datetime.timedelta(days=7)
+        self.sub2.activate(next_week)
+        self.member4.join_subscription(self.sub2)
+        sub_membership = self.sub2.subscriptionmembership_set.filter(member=self.member4)
+        self.assertEqual(sub_membership.count(), 1)
+        self.assertEqual(sub_membership.first().join_date, next_week)
 
     def testPartDeActivation(self):
         new_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
