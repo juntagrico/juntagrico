@@ -58,3 +58,97 @@ DEPOT_LISTS = {
     'depot_overview': 'exports/depot_overview.html',
     'amount_overview': 'exports/amount_overview.html',
 }
+
+
+# vocabulary helpers
+
+def german(**keys):
+    gender = {'m': 0, 'f': 1, 'n': 2, 's': 2}
+    this = ['dieser', 'diese', 'dieses']
+    your = ['dein', 'deine', 'dein']
+    the_acc = ['den', 'die', 'das']
+    no = ['kein', 'keine', 'kein']
+    if 'account' in keys:
+        account, accounts, g = keys['share']
+        keys.update(
+            {
+                'account': account,
+                'account_pl': accounts,
+                'this_account': this[g] + ' ' + account,
+            }
+        )
+    if 'assignment' in keys:
+        assignment, assignments, g = keys['share']
+        g = gender[g]
+        keys.update(
+            {
+                'assignment': assignment,
+                'assignment_pl': assignments,
+                'the_assignment_acc': the_acc[g] + ' ' + assignment,
+            }
+        )
+    if 'member_type' in keys:
+        member_type, member_types, g = keys['share']
+        g = gender[g]
+        keys.update(
+            {
+                'member_type': member_type,
+                'member_type_pl': member_types,
+                'not_a_member_type': no[g] + ' ' + member_type,
+            }
+        )
+    if 'membership' in keys:
+        membership, memberships, g = keys['share']
+        g = gender[g]
+        keys.update(
+            {
+                'membership': membership,
+                'membership_pl': memberships,
+                'your_membership_acc': your[g] + ' ' + membership,
+            }
+        )
+    if 'share' in keys:
+        share, shares, g = keys['share']
+        g = gender[g]
+        keys.update(
+            {
+                'share': share,
+                'share_pl': shares,
+                'this_share': this[g] + ' ' + share,
+                'this_share_acc': ['diesen', 'diese', 'dieses'][g] + ' ' + share,
+                'no_share': no[g] + ' ' + share,
+            }
+        )
+    if 'depot' in keys:
+        depot, depots, g = keys['depot']
+        g = gender[g]
+        keys.update(
+            {
+                'depot': depot,
+                'depot_pl': depots,
+                'the_depot_acc': the_acc[g] + ' ' + depot,
+                'the_depot_dat': ['dem', 'der', 'dem'][g] + ' ' + depot,
+                'to_the_depot': ['zum', 'zur', 'zum'][g] + ' ' + depot,
+                'your_depot': your[g] + ' ' + depot,
+            }
+        )
+    if 'subscription' in keys:
+        subscription, subscriptions, g = keys['subscription']
+        g = gender[g]
+        keys.update(
+            {
+                'subscription': subscription,
+                'subscription_pl': subscriptions,
+                'the_subscription': ['der', 'die', 'das'][g] + ' ' + subscription,
+                'the_subscription_acc': the_acc[g] + ' ' + subscription,
+                'no_subscription_acc': no[g] + ' ' + subscription,
+                'this_subscription_acc': ['diesen', 'diese', 'dieses'][g] + ' ' + subscription,
+                'this_subscription_dat': ['diesem', 'dieser', 'diesem'][g] + ' ' + subscription,
+                'your_subscription': your[g] + ' ' + subscription,
+                'your_subscription_acc': ['deinen', 'deine', 'dein'][g] + ' ' + subscription,
+                'your_subscription_dat': ['deinem', 'deiner', 'deinem'][g] + ' ' + subscription,
+                'another_subscription_dat': ['einem anderen', 'einer anderen', 'einem anderen'][g] + ' ' + subscription,
+                'with_active_subscription': ['mit aktivem', 'mit aktiver', 'mit aktivem'][g] + ' ' + subscription,
+            }
+        )
+    return keys

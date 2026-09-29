@@ -727,13 +727,25 @@ Appearance
 VOCABULARY
 ^^^^^^^^^^
   Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word.
-  the member key describes the custom name you give your members.
+
   the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
 
   If you use vocabulary with a different gender than the default you will also have to adjust the related fragments.
   When using the same gender it is sufficient to only change the singular and plural form of your vocabulary.
+
+  There are helpers for some languages, that will adjust the fragments for you:
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.german(
+        subscription=('Ernteanteil', 'Ernteanteile', 'm'),  # m = masculine
+        assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
+        package='Korb',  # pass other vocabulary items as arguments
+    )
 
   Type: Dictionary
 

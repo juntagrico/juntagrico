@@ -4,7 +4,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _, get_language
 
 from juntagrico import defaults
 
@@ -30,6 +30,22 @@ def _get_setting_with_key(setting_key, default):
     return inner
 
 
+def _get_setting_with_key_localized(setting_key, default):
+    def inner(key, fallback=None):
+        if hasattr(settings, setting_key):
+            setting = getattr(settings, setting_key)
+            lang_code = get_language()
+            for locale in [lang_code, lang_code[:2]]:
+                if locale in setting and key in setting[locale]:
+                    return getattr(settings, setting_key)[locale][key]
+            if key in getattr(settings, setting_key):
+                return getattr(settings, setting_key)[key]
+        d = default.get(key, fallback)
+        return d() if callable(d) else d
+
+    return inner
+
+
 def fallback_static(path):
     try:
         return static(path)
@@ -43,7 +59,7 @@ def v_format(text, key):
 
 class Config:
     # organisation settings
-    vocabulary = _get_setting_with_key(
+    vocabulary = _get_setting_with_key_localized(
         'VOCABULARY',
         {
             'account': _('Konto'),
