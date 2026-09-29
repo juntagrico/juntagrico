@@ -94,7 +94,7 @@ class SignupManager(SessionManager):
     def co_members(self):
         co_members = []
         for c in self.get('co_members', []):
-            existing_shares = 0  # TODO: existing shares of invited is always assumed to be 0.
+            existing_shares = 0  # existing shares of invited is always assumed to be 0.
             co_members.append((c['first_name'] + ' ' + c['last_name'], existing_shares))
         return co_members
 
