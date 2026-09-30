@@ -57,7 +57,7 @@
     </td>
     {% with required=subscription.required_shares %}
         <td>
-            {{ subscription.required_shares }}
+            {{ required }}
         </td>
         {% with counted=subscription.shares.count_dedicated %}
             <td>
