@@ -299,7 +299,7 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 Subquery(
                     SubscriptionPart.objects.filter(subscription=OuterRef('pk'))
                     .not_canceled()
-                    .values('type')
+                    .values('subscription')
                     .annotate(total=Sum('type__shares'))
                     .values('total')
                 ),
