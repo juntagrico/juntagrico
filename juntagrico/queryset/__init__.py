@@ -8,7 +8,7 @@ def q_joined(on_date):
 
 
 def q_not_left(on_date):
-    return Q(subscriptionmembership__leave_date__gt=on_date) | Q(subscriptionmembership__leave_date=None)
+    return Q(subscriptionmembership__leave_date__gte=on_date) | Q(subscriptionmembership__leave_date=None)
 
 
 class SubscriptionMembershipQuerySetMixin:

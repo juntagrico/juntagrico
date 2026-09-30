@@ -308,7 +308,7 @@ class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
         # co-member can leave
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), data={
-            'leave_date': datetime.date.today(),
+            'leave_date': datetime.date.today() - datetime.timedelta(days=1),
         }, code=302, member=self.member3)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.current_members.count(), 1)

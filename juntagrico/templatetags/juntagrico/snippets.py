@@ -3,7 +3,7 @@ import datetime
 from django import template
 from django.db.models import Q, Sum
 from django.utils import timezone
-from impersonate.helpers import check_allow_for_user
+from impersonate.helpers import users_impersonable
 
 from juntagrico.config import Config
 from juntagrico.context_processors import Vocabulary
@@ -18,9 +18,12 @@ register = template.Library()
 
 @register.inclusion_tag('snippets/impersonation_link.html')
 def impersonate_start(request, member):
+    if not hasattr(request, 'users_impersonable'):
+        request.users_impersonable = users_impersonable(request)
+    
     user = member.user
     return {
-        'can_impersonate': check_allow_for_user(request, user),
+        'can_impersonate': user in request.users_impersonable,
         'user': user
     }
 

@@ -114,6 +114,8 @@ class Subscription(Billable, SimpleStateModel):
         """
         :return: list of parts annotated with bundle_name, category_name and amount
         """
+        if hasattr(self, 'cached_content'):
+            return self.cached_content
         return self.types.with_active_or_future_parts().annotate_content()
 
     def content_strings(self, sformat=None):
@@ -178,17 +180,15 @@ class Subscription(Billable, SimpleStateModel):
         return self.shares.count_dedicated(only_total=True)
 
     @property
-    def paid_shares(self):
-        return ShareDao.paid_shares(self).count()
-
-    @property
     def share_overflow(self):
         return self.available_shares - self.required_shares
 
     @property
     def required_shares(self):
+        if hasattr(self, 'cached_required_shares'):
+            return self.cached_required_shares
         result = 0
-        for part in self.future_parts.all():
+        for part in self.parts.not_canceled():
             result += part.type.shares
         return result
 
