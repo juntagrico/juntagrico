@@ -15,13 +15,15 @@ from django.db.models import (
     OuterRef,
     PositiveIntegerField,
     QuerySet,
+    Prefetch,
+    Count,
 )
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
 
 from juntagrico.entity import SimpleStateModelQuerySet
-from juntagrico.entity.member import SubscriptionMembership
+from juntagrico.entity.member import SubscriptionMembership, Member
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
 
@@ -255,6 +257,56 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
     def on_depot_list(self):
         return self.filter(parts__type__bundle__product_sizes__show_on_depot_list=True)
 
+    def cache_content(self):
+        from juntagrico.entity.subtypes import SubscriptionType
+        return self.prefetch_related(
+            Prefetch(
+                'types',
+                queryset=SubscriptionType.objects.with_active_or_future_parts().annotate_content(),
+                to_attr='cached_content',
+            )
+        )
+
+    def cache_current_members(self):
+        return self.prefetch_related(
+            Prefetch(
+                'members',
+                queryset=Member.objects.has_not_left().select_user(),
+                to_attr='cached_current_members',
+            )
+        )
+
+    def annotate_paid_shares(self):
+        from juntagrico.entity.share import Share
+        return self.annotate(
+            paid_shares=Coalesce(
+                Subquery(
+                    Share.objects.active()
+                    .usable()
+                    .filter(member__subscriptions=OuterRef('pk'))
+                    .values('member__subscriptions')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            )
+        )
+    
+    def annotate_required_shares(self):
+        from juntagrico.entity.subs import SubscriptionPart
+        return self.annotate(
+            cached_required_shares=Coalesce(
+                Subquery(
+                    SubscriptionPart.objects.filter(subscription=OuterRef('pk'))
+                    .not_canceled()
+                    .values('type')
+                    .annotate(total=Sum('type__shares'))
+                    .values('total')
+                ),
+                0,
+            )
+        )
+
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
@@ -324,6 +376,17 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
 
     def count_units(self):
         return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']
+
+    def prefetch_for_list(self):
+        from ..entity.subs import Subscription
+        return self.select_related('type__bundle__category').prefetch_related(
+            Prefetch(
+                'subscription',
+                queryset=Subscription.objects.cache_current_members()
+                .cache_content()
+                .select_related('primary_member__user', 'depot'),
+            )
+        )
 
 
 class SubscriptionSurchargeQuerySet(QuerySet):

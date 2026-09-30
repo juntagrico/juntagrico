@@ -100,6 +100,10 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             ),
         )
 
+    def has_not_left(self):
+        today = datetime.date.today()
+        return self.exclude(subscriptionmembership__leave_date__lt=today)
+
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):
         """
@@ -140,3 +144,6 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def by_permission(self, permission_codename):
         perm = Permission.objects.get(codename=permission_codename)
         return self.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()
+
+    def select_user(self):
+        return self.select_related('user')

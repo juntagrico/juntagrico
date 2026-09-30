@@ -426,6 +426,13 @@ class ShareUnpaidView(ShareView):
         return (
             Share.objects.filter(paid_date__isnull=True)
             .exclude(termination_date__lt=datetime.date.today())
+            .select_related('member')
+            .prefetch_related(
+                Prefetch(
+                    'member__subscriptions',
+                    queryset=Subscription.objects.joining().annotate_paid_shares().annotate_required_shares(),
+                ),
+            )
             .order_by('member')
         )
 
@@ -441,8 +448,16 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
                             'juntagrico.can_filter_subscriptions']]
     template_name = 'juntagrico/manage/subscription/show.html'
-    queryset = Subscription.objects.active
     title = format_lazy(_('Alle aktiven {subscriptions} im Überblick'), subscriptions=Config.vocabulary('subscription_pl'))
+
+    def get_queryset(self):
+        return (
+            Subscription.objects
+            .cache_current_members()
+            .cache_content()
+            .select_related('primary_member__user', 'depot')
+            .active
+        )
 
     def get_context_data(self, **kwargs):
         queryset = self.get_queryset()
@@ -465,15 +480,31 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
 
     def get_context_data(self, **kwargs):
         date_range = (self.start, self.end)
-        kwargs.update(dict(
-            ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
-            activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
-            canceled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
-            deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
-            joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
-            left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
-            show_identifier=Subscription.objects.filter(identifier__isnull=False).exists(),
-        ))
+        kwargs.update(
+            dict(
+                ordered_parts=SubscriptionPart.objects.filter(
+                    creation_date__range=date_range
+                ).prefetch_for_list(),
+                activated_parts=SubscriptionPart.objects.filter(
+                    activation_date__range=date_range
+                ).prefetch_for_list(),
+                canceled_parts=SubscriptionPart.objects.filter(
+                    cancellation_date__range=date_range
+                ).prefetch_for_list(),
+                deactivated_parts=SubscriptionPart.objects.filter(
+                    deactivation_date__range=date_range
+                ).prefetch_for_list(),
+                joined_memberships=SubscriptionMembership.objects.filter(
+                    join_date__range=date_range
+                ).select_related('member__user', 'subscription'),
+                left_memberships=SubscriptionMembership.objects.filter(
+                    leave_date__range=date_range
+                ).select_related('member__user', 'subscription'),
+                show_identifier=Subscription.objects.filter(
+                    identifier__isnull=False
+                ).exists(),
+            )
+        )
         return super().get_context_data(**kwargs)
 
 
@@ -485,10 +516,13 @@ class SubscriptionPriceView(SubscriptionView):
         start, end = temporal.get_business_date_range(int(self.request.GET.get('year') or datetime.date.today().year))
         return (
             Subscription.objects.in_daterange(start, end)
+            .cache_content()
+            .cache_current_members()
             .prefetch_related(
                 Prefetch(
                     'parts',
                     queryset=SubscriptionPart.objects.in_daterange(start, end)
+                    .select_related('type', 'type__bundle__category')
                     .annotate_change_in_range(start, end)
                     .annotate(price=F('type__price'))
                     .annotate(period_price=Sum('type__periods__price')),
@@ -500,7 +534,7 @@ class SubscriptionPriceView(SubscriptionView):
                     to_attr='relevant_surcharges',
                 ),
             )
-            .select_related('depot')
+            .select_related('depot', 'primary_member__user')
             .prefetch_related('depot__subscription_type_conditions')
         )
 
@@ -524,10 +558,28 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
     template_name = 'juntagrico/manage/subscription/pending.html'
 
     def get_queryset(self):
-        return Subscription.objects.filter(
-                Q(parts__activation_date=None, parts__isnull=False)
-                | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
-            ).prefetch_related('parts').distinct()
+        q_ordered = Q(activation_date=None)
+        q_canceled = Q(cancellation_date__isnull=False, deactivation_date=None)
+        parts = SubscriptionPart.objects.filter(q_ordered | q_canceled)
+        return (
+            Subscription.objects.prefetch_related(
+                Prefetch(
+                    'parts',
+                    queryset=SubscriptionPart.objects.filter(q_ordered).prefetch_for_list(),
+                    to_attr='ordered_parts',
+                ),
+                Prefetch(
+                    'parts',
+                    queryset=SubscriptionPart.objects.filter(q_canceled).prefetch_for_list(),
+                    to_attr='canceled_parts',
+                ),
+            )
+            .annotate_paid_shares()
+            .filter(parts__in=parts)
+            .select_related('primary_member__user')
+            .cache_current_members()
+            .distinct()
+        )
 
     def get_context_data(self, **kwargs):
         kwargs['show_identifier'] = self.get_queryset().filter(identifier__isnull=False).exists()
@@ -700,7 +752,11 @@ class DepotSubscriptionView(LoginRequiredMixin, SubscriptionView):
 class SubscriptionDepotChangesView(PermissionRequiredMixin, ListView):
     permission_required = 'juntagrico.change_subscription'
     template_name = 'juntagrico/manage/subscription/depot/changes.html'
-    queryset = Subscription.objects.exclude(future_depot__isnull=True)
+
+    def get_queryset(self):
+        return Subscription.objects.exclude(future_depot__isnull=True).select_related(
+            'depot', 'future_depot', 'primary_member__user'
+        ).cache_content()
 
 
 @permission_required('juntagrico.change_subscription')
@@ -716,12 +772,16 @@ class SubscriptionSharesView(SubscriptionView):
         ['juntagrico.view_subscription', 'juntagrico.change_subscription', 'juntagrico.can_filter_subscriptions'],
         ['juntagrico.view_share', 'juntagrico.change_share',]
     ]
-    queryset = Subscription.objects.waiting_or_active
     template_name = 'juntagrico/manage/subscription/shares.html'
     title = _('{subscriptions} und {shares}').format(
         subscriptions=Config.vocabulary('subscription_pl'),
         shares=Config.vocabulary('share_pl')
     )
+
+    def get_queryset(self):
+        return Subscription.objects.waiting_or_active().select_related(
+            'depot', 'future_depot', 'primary_member__user'
+        ).cache_content().annotate_required_shares()
 
 
 @permission_required('juntagrico.change_subscription')
