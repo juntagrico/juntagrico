@@ -102,7 +102,7 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
 
     def has_not_left(self):
         today = datetime.date.today()
-        return self.exclude(subscriptionmembership__leave_date__lt=today)
+        return self.exclude(subscriptionmembership__leave_date__lte=today)
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):
