@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import BaseAdmin, DateRangeExportMixin
 from juntagrico.admins.filters import SimpleStateModelFilter
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
+from juntagrico.admins.inlines.subscription_inlines import SubscriptionAbsenceInline
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInlineWithShareCount
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.admins.inlines.subscription_surcharge_inlines import SubscriptionSurchargeInline
@@ -28,7 +29,12 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
                      'depot__name', 'nickname', 'id', 'identifier']
     autocomplete_fields = ['depot', 'future_depot']
 
-    inlines = [SubscriptionMembershipInlineWithShareCount, SubscriptionPartInline, SubscriptionSurchargeInline]
+    inlines = [
+        SubscriptionMembershipInlineWithShareCount,
+        SubscriptionPartInline,
+        SubscriptionSurchargeInline,
+        SubscriptionAbsenceInline,
+    ]
 
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),

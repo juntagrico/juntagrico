@@ -3,7 +3,7 @@ from functools import cached_property
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, CheckConstraint, Q, F
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
@@ -378,3 +378,21 @@ class SubscriptionSurcharge(JuntagricoBaseModel):
     date = models.DateField(_('Verrechnungsdatum'))
 
     objects = SubscriptionSurchargeQuerySet.as_manager()
+
+
+class SubscriptionAbsence(JuntagricoBaseModel):
+    subscription = models.ForeignKey(
+        'Subscription',
+        related_name='absences',
+        on_delete=models.CASCADE,
+    )
+    start_date = models.DateField(_('Von'))
+    end_date = models.DateField(_('Bis'))
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                condition=Q(start_date__lte=F('end_date')),
+                name=_('Startdatum muss vor Enddatum liegen.'),
+            )
+        ]

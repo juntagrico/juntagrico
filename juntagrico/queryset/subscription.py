@@ -64,10 +64,23 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         """
         Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
         :param on_date: defaults to today
-        :return: a queryset of subscriptions active on the given date.
+        :return: a queryset of subscriptions active on the given date (regardless of absences)
         """
         on_date = on_date or datetime.date.today()
-        return self.in_date_range(on_date, on_date).exclude(activation_date=None)
+        return self.in_daterange(on_date, on_date)
+
+    def served_on(self, date=None):
+        """ includes subscriptions that should receive products on the specified date
+        """
+        date = date or datetime.date.today()
+        return super().active_on(date).exclude(
+            absences__start_date__lte=date,
+            absences__end_date__gte=date,
+        )
+
+    def active_on(self, date=None):
+        print('Subscription.objects.active_on is deprecated: Use served_on instead')
+        return self.served_on(date)
 
     def waiting_or_active(self, on_date=None):
         """
@@ -261,7 +274,9 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def not_canceled(self):
         return self.filter(cancellation_date=None)
 
-    def active_on(self, date=None):
+    def served_on(self, date=None):
+        """ includes parts that should receive products on the specified date
+        """
         date = date or datetime.date.today()
         current_week_number = date.isocalendar()[1] - 1
         return (
@@ -275,6 +290,10 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
             )
             .filter(week_mod=0)
         )
+
+    def active_on(self, date=None):
+        print('SubscriptionPart.objects.active_on is deprecated: Use served_on instead')
+        return self.served_on(date)
 
     def sorted(self):
         return self.order_by('type__is_extra', 'type__bundle__category',
