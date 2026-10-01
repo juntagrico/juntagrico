@@ -40,7 +40,7 @@
         {% include './snippets/display_linked.html' %}
     </td>
     <td>
-        {% if member.last_membership %}{
+        {% if member.last_membership %}
             {% blocktrans trimmed with date=member.last_membership|date:"Y-m-d" %}
                 bis {{ date }}
             {% endblocktrans %}

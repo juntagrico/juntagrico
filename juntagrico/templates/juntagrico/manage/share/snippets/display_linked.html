@@ -1,6 +1,6 @@
 <a href="{% url 'admin:juntagrico_share_change' share.id %}{% querystring next=request.path %}">
     {% if share.number %}
-        {{ share.numer }}
+        {{ share.number }}
     {% else %}
         [{{ share.pk }}]
     {% endif %}
