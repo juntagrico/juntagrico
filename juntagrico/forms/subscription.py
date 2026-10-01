@@ -5,6 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
 from django import forms
 from django.db.models import Exists, OuterRef
+from django.forms import modelformset_factory
 from django.utils.formats import date_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _, gettext
@@ -150,3 +151,28 @@ class LeaveForm(forms.ModelForm):
         member = self.instance.member
         self.instance.leave(on_date=self.cleaned_data['leave_date'])
         membernotification.co_member_left_subscription(primary_member, member, self.cleaned_data.get('comment'))
+
+
+class NotesForm(forms.ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['notes']
+        widgets = {'notes': forms.Textarea(attrs={'rows': 5})}
+        help_texts = {'notes': ''}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'notes',
+        )
+
+
+NotesFormSet = modelformset_factory(
+    Subscription,
+    form=NotesForm,
+    extra=0,
+    max_num=0,
+    can_delete=False
+)

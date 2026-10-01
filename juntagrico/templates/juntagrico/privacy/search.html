@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load juntagrico.common %}
+{% load juntagrico.search %}
+{% load i18n %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans %}Alles Durchsuchen{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <form method="get" class="form-inline w-100">
+                <div class="input-group w-100">
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control form-control-lg"
+                        placeholder="{% trans 'überall suchen...' %}"
+                        value="{{ query }}"
+                        autofocus
+                    >
+                    <div class="input-group-append">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            <i class="bi bi-search"></i> {% trans "suchen" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    {% if query %}
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            {% if results %}
+                <h5>
+                    <span class="badge badge-info">
+                        {% blocktrans count counter=total_matches %}
+                            {{ counter }} Ergebnis
+                        {% plural %}
+                            {{ counter }} Ergebnisse
+                        {% endblocktrans %}
+                    </span>
+                    {% blocktrans count counter=results|length %}
+                        gefunden in {{ counter }} Modell
+                    {% plural %}
+                        gefunden in {{ counter }} Modellen
+                    {% endblocktrans %}
+                </h5>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    {% blocktrans with search_query=query %}
+                        Nichts gefunden für "<strong>{{ search_query }}</strong>"
+                    {% endblocktrans %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Results by Model -->
+    {% if results %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for result in results %}
+            <div class="card mb-4 shadow-sm">
+                <!-- Card Header -->
+                <div class="card-header bg-light border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">
+                                <strong>{{ result.app|upper }}</strong> → {{ result.model_name }}
+                            </h6>
+                        </div>
+                        <span class="badge badge-success badge-lg">
+                            {% blocktrans count counter=result.count %}
+                                {{ counter }} Ergebnis
+                            {% plural %}
+                                {{ counter }} Ergebnisse
+                            {% endblocktrans %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card Body with Matches -->
+                <div class="list-group list-group-flush">
+                    {% for obj in result.matches %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-2">
+                                    {% if obj.get_absolute_url %}
+                                        <a href="{{ obj.get_absolute_url }}" class="text-dark">
+                                            {{ obj }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-dark">{{ obj }}</span>
+                                    {% endif %}
+                                </h6>
+
+                                <!-- Display matching field values -->
+                                <div class="small text-muted">
+                                    {% for field_name in result.searched_fields %}
+                                        {% with field_value=obj|get_attr:field_name %}
+                                            {% if query|lower in field_value|lower %}
+                                                <div class="mb-1">
+                                                    <strong>{{ field_name }}:</strong>
+                                                    {{ field_value|highlight_search_term:query }}
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="ml-3 flex-shrink-0">
+                                {% if obj.get_absolute_url %}
+                                <a href="{{ obj.get_absolute_url }}" class="btn btn-sm btn-outline-primary" title="{% trans 'anzeigen' %}">
+                                    <i class="bi bi-eye"></i> {% trans "anzeigen" %}
+                                </a>
+                                {% endif %}
+
+                                {% with admin_url=obj.get_admin_url %}
+                                    {% if admin_url or result.admin_url_template %}
+                                        <a href="{% if admin_url %}{{ admin_url }}{% else %}{% url result.admin_url_template obj.pk %}{% endif %}"
+                                           class="btn btn-sm btn-outline-warning" title="{% trans 'in Admin bearbeiten' %}">
+                                            <i class="bi bi-pen"></i> {% trans "bearbeiten" %}
+                                        </a>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

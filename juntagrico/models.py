@@ -74,6 +74,7 @@ class SpecialRoles(models.Model):
             ('can_view_exports', _('Kann Exporte öffnen')),
             ('can_view_lists', _('Kann Listen öffnen')),
             ('can_generate_lists', _('Kann Listen erzeugen')),
+            ('can_anonymize', _('Kann anonymisieren')),
         )
 
 

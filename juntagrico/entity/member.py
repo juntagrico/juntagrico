@@ -1,7 +1,9 @@
 import datetime
 import hashlib
 
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Q
 from django.utils.functional import cached_property
@@ -348,6 +350,46 @@ class Member(JuntagricoBaseModel):
         self.user.set_password(password)
         self.user.save()
         return password
+
+    def anonymize(self):
+        anonymous_email = '{}@juntagrico.invalid'
+        today = datetime.date.today()
+        anonymous = Member.objects.create(
+            first_name='-',
+            last_name='-',
+            email=anonymous_email,
+            addr_street='-',
+            addr_zipcode='-',
+            addr_location='-',
+            phone='-',
+            cancellation_date=self.cancellation_date,
+            end_date=self.end_date,
+            deactivation_date=min(self.cancellation_date, today)  # deactivate to prevent sending emails this way.
+        )
+        # make email unique
+        anonymous.email = anonymous_email.format(anonymous.id)
+        anonymous.save()
+        # remove irrelevant relations
+        self.areas.clear()
+        self.job_messages.all().delete()
+        self.membercontact_set.all().delete()
+        # transfer all relevant related objects
+        self.subscription_primary.update(primary_member=anonymous)
+        self.subscriptionmembership_set.update(member=anonymous)
+        self.share_set.update(member=anonymous, notes='')
+        self.memberships.update(account=anonymous, notes='')
+        self.assignment_set.update(member=anonymous)
+        self.area_access.update(member=anonymous)  # TODO: should rather remove this coordinator, but then area may have no more coordinator (is that a problem?)
+        self.depot_access.update(member=anonymous)  # TODO: Same as area_access
+        # delete admin logs
+        content_type = ContentType.objects.get_for_model(self)
+        LogEntry.objects.filter(
+            content_type=content_type, object_id=str(self.pk)
+        ).delete()
+        # todo: call hook for addons etc. They should delete or move their relations accordingly
+        # delete the original account
+        self.delete()
+        return anonymous
 
     @notifiable
     class Meta:

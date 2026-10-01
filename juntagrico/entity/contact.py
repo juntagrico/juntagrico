@@ -1,7 +1,9 @@
+from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -45,6 +47,15 @@ class Contact(JuntagricoBasePoly):
 
     def _inner_html(self):
         raise NotImplementedError
+
+    def get_admin_url(self):
+        model = self.content_type.model_class()
+        if model in admin.site._registry:
+            return reverse(
+                f'admin:{model._meta.app_label}_{model._meta.model_name}_change',
+                args=[self.object_id],
+            )
+        return None
 
     class Meta:
         verbose_name = _('Kontakt')

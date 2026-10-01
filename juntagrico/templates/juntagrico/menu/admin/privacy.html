@@ -1,0 +1,29 @@
+{% load juntagrico.config %}
+{% load i18n %}
+
+{% if request.user.is_superuser %}
+    <li class="nav-item">
+        <a class="nav-link{% if 'privacy-' not in request.resolver_match.url_name %} collapsed{% endif %}" data-toggle="collapse" href="#privacyman">
+            <i class="bi bi-caret-down turn"></i>
+            {% blocktrans %}Datenschutz{% endblocktrans %}
+        </a>
+        <div class="collapse{% if 'privacy-' in request.resolver_match.url_name %} show{% endif %}" id="privacyman">
+            <ul class="nav flex-column subadmin-menu">
+                {% block sub %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'privacy-requests' %}">
+                            {% blocktrans trimmed with v_accounts=vocabulary.account_pl %}
+                                Deaktivierte {{ v_accounts }}
+                            {% endblocktrans %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'privacy-search' %}">
+                            {% trans "Volltextsuche" %}
+                        </a>
+                    </li>
+                {% endblock %}
+            </ul>
+        </div>
+    </li>
+{% endif %}
