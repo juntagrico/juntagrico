@@ -1,8 +1,21 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
-    OuterRef, PositiveIntegerField
+from django.db.models import (
+    When,
+    Q,
+    F,
+    ExpressionWrapper,
+    DurationField,
+    Case,
+    DateField,
+    FloatField,
+    Sum,
+    Subquery,
+    OuterRef,
+    PositiveIntegerField,
+    QuerySet,
+)
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
@@ -56,11 +69,26 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         on_date = on_date or datetime.date.today()
         return self.in_date_range(on_date, on_date).exclude(activation_date=None)
 
+    def waiting_or_active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions waiting or active on the given date.
+        """
+        on_date = on_date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=on_date)
+
     def in_date_range(self, start, end):
         """
-        subscriptions that were active in the given period
+        subscriptions that were active or waiting in the given period
         """
         return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
+    def not_terminated(self):
+        """
+        subscriptions that have no foreseeable end
+        """
+        return self.exclude(cancellation_date__isnull=False).exclude(subscriptionmembership__leave_date__isnull=False)
 
     def activate_future_depots(self):
         for subscription in self.exclude(future_depot__isnull=True):
@@ -220,22 +248,33 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         date = date or datetime.date.today()
         return self.exclude(activation_date__lte=date)
 
+    def active(self, date=None):
+        return super().active_on(date)
+
+    def waiting_or_active(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=date)
+
     def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
 
     def not_canceled(self):
         return self.filter(cancellation_date=None)
 
-    def waiting_or_active(self, date=None):
-        date = date or datetime.date.today()
-        return self.exclude(deactivation_date__lte=date)
-
     def active_on(self, date=None):
         date = date or datetime.date.today()
         current_week_number = date.isocalendar()[1] - 1
-        return (super().active_on(date)
-                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
-                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
+        return (
+            super()
+            .active_on(date)
+            .annotate(
+                week_mod=ExpressionWrapper(
+                    (current_week_number + F('type__offset')) % (F('type__interval')),
+                    output_field=PositiveIntegerField(),
+                )
+            )
+            .filter(week_mod=0)
+        )
 
     def sorted(self):
         return self.order_by('type__is_extra', 'type__bundle__category',
@@ -251,3 +290,10 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
 
     def count_units(self):
         return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']
+
+
+class SubscriptionSurchargeQuerySet(QuerySet):
+    def in_daterange(self, from_date, till_date):
+        """select surcharges/discounts within the given date range
+        """
+        return self.filter(date__gte=from_date, date__lte=till_date)

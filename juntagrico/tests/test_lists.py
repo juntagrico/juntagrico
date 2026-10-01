@@ -9,6 +9,7 @@ from django.core.management import call_command
 
 from ..config import Config
 from ..entity.depot import Tour
+from ..entity.subs import Subscription
 from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
 
@@ -49,6 +50,7 @@ class DepotlistGenerationTests(DepotlistTestCase):
         self.assertEqual(mail.outbox[0].subject, 'Juntagrico - Neue Depot-Liste generiert')  # admin notification email
 
     def testDepotListData(self):
+        Subscription.objects.update(identifier=None)
         data = depot_list_data()
         self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub])
         # test depot list numbers
@@ -105,6 +107,36 @@ class DepotlistGenerationTests(DepotlistTestCase):
                 <td class="text-right">8</td>
                 <td class="text-right">8</td>
             </tr>
+        """, rendered_html)
+
+    def testDepotListDataWithIdentifiers(self):
+        result = [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub]
+        for i, sub in enumerate(result):
+            sub.identifier = f'B{i}'
+            sub.save()
+        data = depot_list_data()
+        self.assertListEqual(list(data['subscriptions']), result)
+        # test depot list numbers
+        rendered_html = get_template('exports/depotlist.html').render(data)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B0 - first_name2 last_name2</td>
+            <td class="top-border left-border">3</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B1 - first_name3 last_name3, first_name1 last_name1</td>
+            <td class="top-border left-border">2</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B2 - First_name4 Last_name4</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B3 - first_name6 last_name6</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B4 - first_name7 last_name7</td>
+            <td class="top-border left-border">1</td>
         """, rendered_html)
 
     def testManualDepotListGeneration(self):

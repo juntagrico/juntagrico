@@ -1,7 +1,6 @@
 import datetime
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from . import JuntagricoTestCase
@@ -9,10 +8,10 @@ from . import JuntagricoTestCase
 
 class LifeCycleTests(JuntagricoTestCase):
 
-    def testSubDeactivation(self):
+    def testSubDeactivation(self, days_ago=0):
         today = datetime.date.today()
         start = today - datetime.timedelta(days=10)
-        end = today - datetime.timedelta(days=5)
+        end = today - datetime.timedelta(days=days_ago)
         member = self.create_member('email@email.email')
         if settings.ENABLE_SHARES:
             self.create_paid_share(member)
@@ -25,22 +24,16 @@ class LifeCycleTests(JuntagricoTestCase):
                     'start_date': '2018-01-01',
                     }
         sub = Subscription.objects.create(**sub_data)
-        member.join_subscription(sub)
-        sub.primary_member = member
-        sub.save()
+        member.join_subscription(sub, True)
         partone = SubscriptionPart.objects.create(subscription=sub, type=self.sub_type, activation_date=start)
         SubscriptionPart.objects.create(subscription=sub, type=self.sub_type, activation_date=start,
                                         cancellation_date=today, deactivation_date=today)
-        try:
-            sub.deactivate(end)
-        except ValidationError:
-            pass
+        sub.deactivate(end)
+        # deactivation is today in any case, because primary member joined today.
         sub.refresh_from_db()
-        self.assertIsNone(sub.deactivation_date)
+        self.assertEqual(sub.deactivation_date, today)
         partone.refresh_from_db()
-        self.assertIsNone(partone.deactivation_date)
-        sub.deactivate(today)
-        sub.refresh_from_db()
-        self.assertIsNotNone(sub.deactivation_date)
-        partone.refresh_from_db()
-        self.assertIsNotNone(partone.deactivation_date)
+        self.assertEqual(partone.deactivation_date, today)
+
+    def testSubRetroDeactivation(self):
+        self.testSubDeactivation(5)

@@ -3,9 +3,11 @@ from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from . import JuntagricoTestCase, JuntagricoJobTestCase
-from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob
+from ..entity.contact import MemberContact
+from ..entity.jobs import Job, Assignment, OneTimeJob, JobType, RecuringJob, JobMessage
 from ..entity.member import Member
 from ..signals import subscribed, assignment_changed
 
@@ -19,11 +21,16 @@ class JobTests(JuntagricoTestCase):
         self.assertGet(reverse('jobs-all'))
 
     def testJob(self):
-        self.assertGet(reverse('job', args=[self.job1.pk]))
+        job1_url = reverse('job', args=[self.job1.pk])
+        self.assertGet(job1_url)
+        self.assertGet(job1_url, member=self.area_admin)
+        self.assertGet(job1_url, member=self.admin)
         self.assertGet(reverse('job', args=[self.one_time_job1.pk]))
-
+        self.assertGet(reverse('job', args=[self.canceled_job.pk]))
+        
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
+        self.assertGet(reverse('job', args=[self.past_job.pk]))
 
     def testJobExtras(self):
         self.assertPost(reverse('job', args=[self.job3.pk]), {'slots': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id), 'subscribe': True}, 302)
@@ -56,6 +63,7 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job', args=[self.infinite_job.pk]), {'slots': 3, 'subscribe': True}, 302)
         self.assertEqual(self.infinite_job.assignment_set.count(), 3)
         self.assertGet(reverse('job', args=[self.infinite_job.pk]))
+        self.assertGet(reverse('job', args=[self.infinite_job.pk]), member=self.member2)
 
     def testOverassignement(self):
         assignment = Assignment.objects.create(job=self.job4, member=self.member, amount=2)
@@ -100,6 +108,17 @@ class JobTests(JuntagricoTestCase):
         self.assertTrue(self.job1.canceled)
         # can save canceled job even when it has 0 slots
         self.job1.save()
+
+    def testJobTimeChange(self):
+        self.job2.time = timezone.now()
+        self.job2.save()
+        self.assertEqual(len(mail.outbox), 1)  # member notification
+
+    def testJobByAccount(self):
+        self.assertGet(reverse('job-by-account', args=[self.member.id]))
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.member2, code=403)
+        self.assertGet(reverse('job-by-account', args=[self.member2.id]), member=self.member2)
+        self.assertGet(reverse('job-by-account', args=[self.member.id]), member=self.admin)
 
 
 class JobSignupAndNotificationTests(JuntagricoTestCase):
@@ -325,8 +344,51 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), {'slots': 2},
                         403, self.member2)
         self.assertEqual(self.job2.occupied_slots, 1)
+        self.assertPost(
+            reverse('assignment-add', args=[self.job2.pk]),
+            {'account': self.member3.pk, 'slots': 1},
+            403,
+            self.member2,
+        )
 
-    def testAssignmentEdit(self, admin=None):
+    def testAssignmentAdd(self, admin=None, participant=None):
+        admin = admin or self.member  # has general permission to change assignments
+        participant = participant or self.member3
+        self.signal_called = False
+
+        @receiver(assignment_changed, sender=Member)
+        def handler(instance, job, count, *args, **kwargs):
+            self.signal_called = True
+            self.assertEqual(count, 1)
+            self.assertEqual(job, self.job2)
+            self.assertEqual(instance.pk, participant.pk)
+
+        self.assertGet(reverse('job', args=[self.job2.pk]), member=admin)
+        # test add participant
+        self.assertPost(reverse('assignment-add', args=[self.job2.pk]),
+                        {'add-account': participant.pk, 'add-slots': 1}, 302, admin)
+        self.assertEqual(self.job2.occupied_slots, 2)
+        self.assertSetEqual(self.job2.participant_emails, {self.member.email, participant.email})
+        self.assertTrue(self.signal_called)
+        self.assertEqual(len(mail.outbox), 2 if admin != participant else 1)  # (member notification +) admin notification
+        if admin != participant:
+            # if member edits their own assignment, no notification is sent to them
+            self.assertEqual(mail.outbox[0].recipients(), [participant.email])
+        self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+        self.assertIn(participant.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
+        mail.outbox.clear()
+        self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
+
+    def testAssignmentAddBySelf(self):
+        self.testAssignmentAdd(self.area_admin, self.area_admin)
+
+    def testAssignmentAddByCoordinator(self):
+        self.testAssignmentAdd(self.area_admin)
+
+    def testAssignmentAddByAssignmentModifier(self):
+        self.testAssignmentAdd(self.area_admin_assignment_modifier)
+
+    def testAssignmentEdit(self, admin=None, admin_notification=True):
         admin = admin or self.member  # has general permission to change assignments
         self.signal_called = False
 
@@ -343,12 +405,14 @@ class AssignmentTests(JuntagricoTestCase):
                         {'edit-slots': 2}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
-        self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification
+        # (member notification +) admin notification
+        self.assertEqual(len(mail.outbox), admin_notification + (admin != self.member))
         if admin != self.member:
             # if member edits their own assignment, no notification is sent to them
             self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
-        self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
-        self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
+        if admin_notification:
+            self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+            self.assertIn(self.member.email, mail.outbox[-1].body, 'Admin notification must contain members email address')
         mail.outbox.clear()
         self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
 
@@ -359,14 +423,15 @@ class AssignmentTests(JuntagricoTestCase):
         # test that slots are unchanged
         self.assertEqual(self.job2.occupied_slots, 1)
 
-    def testAssignmentDelete(self, admin=None):
+    def testAssignmentDelete(self, admin=None, admin_notification=True):
         admin = admin or self.admin
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
                         {'edit-slots': 0}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 0)
-        self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
+        self.assertEqual(len(mail.outbox), 1 + admin_notification)  # member notification and coordinator notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
-        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        if admin_notification:
+            self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
         mail.outbox.clear()
 
     def testAssignmentEditByCoordinator(self):
@@ -374,6 +439,12 @@ class AssignmentTests(JuntagricoTestCase):
         self.testAssignmentDelete(self.area_admin)
         self.testAssignmentEdit(self.area_admin_assignment_modifier)
         self.testAssignmentDelete(self.area_admin_assignment_modifier)
+
+    def testAssignmentEditBySoleCoordinator(self):
+        self.job2.contact_set.add(MemberContact(member=self.area_admin), bulk=False)
+        # only member is notified as editor is sole coordinator
+        self.testAssignmentEdit(self.area_admin, False)
+        self.testAssignmentDelete(self.area_admin, False)
 
 
 class JobValidationTests(JuntagricoTestCase):
@@ -458,3 +529,55 @@ class JobValidationTests(JuntagricoTestCase):
         self.assertEqual(job.slots, 0)
         self.assertTrue(job.infinite_slots)
 
+
+class JobMessageTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.job_message = JobMessage.objects.create(
+            job=cls.job2,
+            account=cls.member,
+            message='Test message',
+        )
+        JobMessage.objects.create(
+            job=cls.past_job,
+            account=cls.member2,
+            message='old message',
+        )
+
+    def testJobMessage(self):
+        job2_url = reverse('job', args=[self.job2.pk])
+        self.assertGet(job2_url)
+        self.assertGet(job2_url, member=self.area_admin)
+        self.assertGet(job2_url, member=self.admin)
+
+    def testAddJobMessage(self):
+        data = {
+            'message': 'new message',
+        }
+        # non-participant can't message
+        self.assertPost(
+            reverse('job-message-add', args=[self.job2.pk]), data, 403, member=self.member2
+        )
+        # participant can message
+        self.assertPost(reverse('job-message-add', args=[self.job2.pk]), data, 302, member=self.member)
+        self.assertEqual(self.job2.messages.count(), 2)
+
+    def testDeleteJobMessage(self):
+        # can't delete others messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.member2)
+        self.assertEqual(self.job2.messages.count(), 1)
+        # can delete own messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.member)
+        self.assertEqual(self.job2.messages.count(), 0)
+
+    def testAdminDeleteJobMessage(self):
+        # area admin can delete messages
+        self.assertPost(reverse('job-message-remove', args=[self.job_message.pk]), code=302, member=self.area_admin)
+        self.assertEqual(self.job2.messages.count(), 0)
+
+    def testJobMessagesPurge(self):
+        JobMessage.KEEP_HOURS = 1
+        self.assertEqual(self.past_job.messages.count(), 1)
+        self.assertGet(reverse('job', args=[self.past_job.pk]), member=self.area_admin)
+        self.assertEqual(self.past_job.messages.count(), 0)

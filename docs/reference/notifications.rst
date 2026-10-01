@@ -10,6 +10,10 @@ See :ref:`template overrides <reference-templates>` on how to set it up.
 
 For some notifications recipients can be configured :ref:`using permissions <reference-permission-notifications>`.
 
+Some notifications can be disabled or need to be enabled using their "key" in
+:ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>`
+or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`.
+
 You can preview the emails using the manage.py :ref:`mailtexts command <reference-commands-mailtexts>`.
 
 Email Header & Footer
@@ -81,11 +85,59 @@ Recipients: Users with the permission :ref:`juntagrico.notified_on_member_creati
 Member Canceled
 ^^^^^^^^^^^^^^^
 
-Trigger: On signal :ref:`canceled <reference-signals-canceled>` from sender ``Member``
+Trigger: Member requests closure of their account
 
 Template: ``mails/admin/member_canceled.txt``
 
 Recipients: Users with the permission :ref:`juntagrico.notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>`
+
+
+.. _reference-notifications-membership-created:
+
+Membership Created
+^^^^^^^^^^^^^^^^^^
+
+Trigger: A membership is requested during signup or from an existing account
+
+Template: ``juntagrico/mails/admin/membership/created.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_creation <reference-permissions-notified_on_membership_creation>`
+
+
+Membership Activated
+^^^^^^^^^^^^^^^^^^^^
+
+key: ``membership_activated``
+
+Trigger: Admin activates a membership on the management list
+
+Template: ``juntagrico/mails/admin/membership/activated.txt``
+
+Recipients: Member of the activated Membership
+
+
+.. _reference-notifications-membership-canceled:
+
+Membership Canceled
+^^^^^^^^^^^^^^^^^^^
+
+Trigger: Member cancels their membership
+
+Template: ``juntagrico/mails/admin/membership/canceled.txt``
+
+Recipients: Users with the permission :ref:`juntagrico.notified_on_membership_cancellation <reference-permissions-notified_on_membership_cancellation>`
+
+
+Membership Deactivated
+^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``membership_deactivated``
+
+Trigger: Admin deactivates a membership on the management list
+
+Template: ``juntagrico/mails/admin/membership/deactivated.txt``
+
+Recipients: Former member of the deactivated Membership
 
 
 Subscription Notifications
@@ -112,6 +164,39 @@ Template: ``mails/admin/subpart_created.txt``
 Recipients: Users with the permission :ref:`juntagrico.notified_on_subscriptionpart_creation <reference-permissions-notified_on_subscriptionpart_creation>`
 
 .. _reference-notifications-subscription-part-canceled:
+
+Subscription or Part Activated
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``subscription_activated``
+
+Trigger: Admin activates a subscription or part on the pending changes management view
+
+Template: ``juntagrico/mails/member/subscription/activated.txt``
+
+Recipients: Member of the activated subscription/part
+
+Subscription or Part Changed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``subscription_activated`` or ``subscription_deactivated``
+
+Trigger: Admin activates some parts and deactivates other parts on the same subscription on the pending changes management view
+
+Template: ``juntagrico/mails/member/subscription/changed.txt``
+
+Recipients: Member of the changed parts
+
+Subscription or Part Deactivated
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``subscription_deactivated``
+
+Trigger: Admin deactivates a subscription or part on the pending changes management view
+
+Template: ``juntagrico/mails/member/subscription/deactivated.txt``
+
+Recipients: Member of the deactivated subscription/part
 
 Part Canceled
 ^^^^^^^^^^^^^
@@ -206,6 +291,11 @@ Job Notifications
 
 Subscribed
 ^^^^^^^^^^
+
+key: ``job_subscribed``
+email to contact is only sent, if member leaves a message or :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
+contains this key.
+
 Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job``
 if member had no assignment in job before
 
@@ -251,6 +341,9 @@ Recipient: All member that are signup up for the job
 
 Job Subscription changed
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``job_subscription_changed`` for job contact notification
+
 Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job``
 if member had assignment(s) in job before and still has assignment(s) after the change
 
@@ -268,6 +361,9 @@ Recipients:
 
 Unsubscribed from assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+key: ``job_unsubscribed`` for job contact notification
+
 Trigger: On signal :ref:`subscribed <reference-signals-subscribed>` from sender ``Job``
 if member had assignment(s) in job before and has none now.
 

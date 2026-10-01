@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: juntagrico \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_CH\n"
@@ -19,621 +19,329 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../reference/signals.rst:4 c84e1cb625e2467595671a751904d427
 msgid "Signals"
 msgstr "Signale"
 
-#: ../../reference/signals.rst:6 ebb6664138a647ba8dd28909d6d9048c
-msgid ""
-"Django includes a `signal dispatcher "
-"<https://docs.djangoproject.com/en/4.2/topics/signals/>`_ that allows "
-"adding reactions on certain actions easily. Besides `djangos built-in "
-"signals <https://docs.djangoproject.com/en/4.2/ref/signals/>`_ juntagrico"
-" sends the signals below."
-msgstr ""
-"Django beinhaltet einen `Signal-Dispatcher "
-"<https://docs.djangoproject.com/en/4.2/topics/signals/>`_, der das "
-"Hinzufügen von Reaktionen auf bestimmte Aktionen einfach macht. Neben "
-"`Djangos integrierten Signalen "
-"<https://docs.djangoproject.com/en/4.2/ref/signals/>`_ sendet Juntagrico "
-"die unten stehenden Signale."
+msgid "Django includes a `signal dispatcher <https://docs.djangoproject.com/en/4.2/topics/signals/>`_ that allows adding reactions on certain actions easily. Besides `djangos built-in signals <https://docs.djangoproject.com/en/4.2/ref/signals/>`_ juntagrico sends the signals below."
+msgstr "Django beinhaltet einen `Signal-Dispatcher <https://docs.djangoproject.com/en/4.2/topics/signals/>`_, der das Hinzufügen von Reaktionen auf bestimmte Aktionen einfach macht. Neben `Djangos integrierten Signalen <https://docs.djangoproject.com/en/4.2/ref/signals/>`_ sendet Juntagrico die unten stehenden Signale."
 
-#: ../../reference/signals.rst:10 59710e1422584e47a760521361520ba5
 msgid "Job signals"
 msgstr "Job-Signale"
 
-#: ../../reference/signals.rst:15 deeb9ff66fa54848b75db423cfa9db62
 msgid "job_canceled"
 msgstr "job_canceled"
 
-#: ../../reference/signals.rst:17 ae413cef7fdb483998ef852ea8a87c15
-msgid ""
-"Trigger: Job is saved with the canceled flag set (and the flag wasn't set"
-" before)."
-msgstr ""
-"Auslöser: Job wird mit gesetztem Stornierungs-Flag gespeichert (und das "
-"Flag war vorher nicht gesetzt)."
+msgid "Trigger: Job is saved with the canceled flag set (and the flag wasn't set before)."
+msgstr "Auslöser: Job wird mit gesetztem Stornierungs-Flag gespeichert (und das Flag war vorher nicht gesetzt)."
 
-#: ../../reference/signals.rst:19 ../../reference/signals.rst:35
-#: ../../reference/signals.rst:52 ../../reference/signals.rst:73
-#: ../../reference/signals.rst:87 ../../reference/signals.rst:102
-#: ../../reference/signals.rst:117 ../../reference/signals.rst:133
-#: ../../reference/signals.rst:157 ../../reference/signals.rst:188
-#: ../../reference/signals.rst:200 ../../reference/signals.rst:217
-#: ../../reference/signals.rst:231 ../../reference/signals.rst:249
-#: ../../reference/signals.rst:268 ../../reference/signals.rst:283
-#: ../../reference/signals.rst:298 ../../reference/signals.rst:313
-#: 00557b0a989d4ed1a161a992c4b74219 30d22c04f2f149049e208230cffebc5f
-#: 371a5f72db984852ab8f78c253c5f3f7 417d77377d7f4fc9aa96290ffe96ccf2
-#: 46214c628d7b4d7f95c233e3e5521411 69291aab574f4e6f9c68af511fb1f043
-#: 80d2f30fc3954324b3d559d1e06505db 8aedf5accd2d439080b1b42a3640e1a1
-#: 8fed62f4166f4e78b74b3de3b3157b05 9ec8e3722218414e97cea7f221271a62
-#: ba8cb9d06b75472f9edd95f4c8514b69 cca158bf896e4aab9c350d38ce3a979b
-#: e7629f0782764c31b154f4d9077c5334 ed75ed1e4871423e9f7834a4adb2f2d6
-#: f13a34064a9944eaa49a34d19d4729cd f73fde9fde3d48fdaeee0e4db6d428b3
-#: f9e1d5ca19ad4cc4836edf42f9669c7c fed67e9542d94f9499e46ef3bf7603ce
 msgid "Arguments:"
 msgstr "Argumente:"
 
-#: ../../reference/signals.rst:21 a830b1653ba74ca9a4be7f7de687b2b2
 msgid "instance: The job instance that was canceled"
 msgstr "instance: Die Job-Instanz, die storniert wurde"
 
-#: ../../reference/signals.rst:23 ../../reference/signals.rst:39
-#: ../../reference/signals.rst:60 ../../reference/signals.rst:77
-#: ../../reference/signals.rst:91 ../../reference/signals.rst:106
-#: ../../reference/signals.rst:121 ../../reference/signals.rst:141
-#: ../../reference/signals.rst:161 ../../reference/signals.rst:221
-#: ../../reference/signals.rst:253 ../../reference/signals.rst:288
-#: ../../reference/signals.rst:302 ../../reference/signals.rst:322
-#: ../../reference/signals.rst:341 00eea8afe7dc44abbad62659a9188508
-#: 17c3eb07059e4b3ba2af4599cd7e7f6e 1affa98663b94601b2b6f3c3cb2cc597
-#: 1f8362708d7848509f0bd3f845fa3220 504786659c884af9a1d4e1c97bb9a9c8
-#: 55558f627a424df191f32108101626bb 5cd8cad2c54e4eaa92dd9cac41a38d88
-#: 61ffca7f9d77409699b7471bbbe52f41 a3b5abde6f50427fbee6e609630a5ad0
-#: b2e03448bde847838820f5231f23dcd9 b2f3e949dec447c1b5b8daf41a9c1dd6
-#: c61ca96d77644ac986b13a2864ca3484 cabec8d93d284daeb1c0944dab0867ce
-#: ef67138074d649eba3992fdbe379fec2 fc320c9a0b9948b780790963281aff31
 msgid "Default receivers:"
 msgstr "Standard-Empfänger:"
 
-#: ../../reference/signals.rst:25 f6a19d4a20734facbb572aad52c9ca85
-msgid ""
-"handle_job_canceled: :ref:`Sends notification email <reference-"
-"notifications-job-canceled>` to members that were signed up to that job "
-"and remove them from the job."
-msgstr ""
-"handle_job_canceled: :ref:`Sendet Benachrichtigungs-E-Mail <reference-"
-"notifications-job-canceled>` an Mitglieder, die für diesen Job angemeldet"
-" waren, und entfernt sie vom Job."
+msgid "handle_job_canceled: :ref:`Sends notification email <reference-notifications-job-canceled>` to members that were signed up to that job and remove them from the job."
+msgstr "handle_job_canceled: :ref:`Sendet Benachrichtigungs-E-Mail <reference-notifications-job-canceled>` an Mitglieder, die für diesen Job angemeldet waren, und entfernt sie vom Job."
 
-#: ../../reference/signals.rst:31 dd11803c027d43bb82aad671adc969be
 msgid "job_time_changed"
 msgstr "job_time_changed"
 
-#: ../../reference/signals.rst:33 f0e58907b0ad4a9697a0ea2965e39e37
 msgid "Trigger: Existing job is saved with a changed time field"
 msgstr "Auslöser: Bestehender Job wird mit geändertem Zeit-Feld gespeichert"
 
-#: ../../reference/signals.rst:37 4fe02a1f29414977b678e2bc4344b591
 msgid "instance: The job instance whose time was changed"
 msgstr "instance: Die Job-Instanz, deren Zeit geändert wurde"
 
-#: ../../reference/signals.rst:41 9fe25c5d3d2d4f398203973dcb845506
-msgid ""
-"handle_job_time_changed: :ref:`Sends notification email <reference-"
-"notifications-job-time-changed>` to members that are signed up to that "
-"job."
-msgstr ""
-"handle_job_time_changed: :ref:`Sendet Benachrichtigungs-E-Mail "
-"<reference-notifications-job-time-changed>` an Mitglieder, die für diesen"
-" Job angemeldet sind."
+msgid "handle_job_time_changed: :ref:`Sends notification email <reference-notifications-job-time-changed>` to members that are signed up to that job."
+msgstr "handle_job_time_changed: :ref:`Sendet Benachrichtigungs-E-Mail <reference-notifications-job-time-changed>` an Mitglieder, die für diesen Job angemeldet sind."
 
-#: ../../reference/signals.rst:46 abcfb45e6ad14db4b5475da68b51c073
 msgid "subscribed"
 msgstr "subscribed"
 
-#: ../../reference/signals.rst:48 45f0bec2010a4075995bbfcc29a499ad
 msgid "Sender: Job"
 msgstr "Sender: Job"
 
-#: ../../reference/signals.rst:50 732e09db40ef463da4d24a6975067d92
 msgid "Trigger: Member subscribes to a job or unsubscribed from it."
 msgstr "Auslöser: Mitglied abonniert einen Job oder meldet sich davon ab."
 
-#: ../../reference/signals.rst:54 f1f31ff833be4a29aa52108dcb7ad1b3
 msgid "instance: The job instance that the member subscribed to"
 msgstr "instance: Die Job-Instanz, für die das Mitglied abonniert hat"
 
-#: ../../reference/signals.rst:55 a26a59de196b4626b5744f3a7c848b52
 msgid "member: Member that subscribed to the job"
 msgstr "member: Mitglied, das den Job abonniert hat"
 
-#: ../../reference/signals.rst:56 431b3f5f441343ceb0d84e9b23f17113
-msgid ""
-"count: The number of assignments. Is 0 if the member unsubscribes "
-"completely"
-msgstr ""
-"count: Anzahl der Einsätze. Ist 0, wenn sich das Mitglied vollständig "
-"abmeldet"
+msgid "count: The number of assignments. Is 0 if the member unsubscribes completely"
+msgstr "count: Anzahl der Einsätze. Ist 0, wenn sich das Mitglied vollständig abmeldet"
 
-#: ../../reference/signals.rst:57 4a6d1aaf1e2b49ddb584b732c7347867
-msgid ""
-"initial_count: The previous number of assignments. Is 0 if member was not"
-" signed up before"
-msgstr ""
-"initial_count: Vorherige Anzahl der Einsätze. Ist 0, wenn das Mitglied "
-"vorher nicht angemeldet war"
+msgid "initial_count: The previous number of assignments. Is 0 if member was not signed up before"
+msgstr "initial_count: Vorherige Anzahl der Einsätze. Ist 0, wenn das Mitglied vorher nicht angemeldet war"
 
-#: ../../reference/signals.rst:58 68ff3aa7af864c66857aef6c75c8ea66
 msgid "message: A message from the member"
 msgstr "message: Eine Nachricht vom Mitglied"
 
-#: ../../reference/signals.rst:62 f3ca21624b8f4baaba5a35fa0c2295ff
-msgid ""
-"on_job_subscribed: :ref:`Sends confirmation <reference-notifications-job-"
-"subscribed>` to member and notification to admin."
-msgstr ""
-"on_job_subscribed: :ref:`Sendet Bestätigung <reference-notifications-job-"
-"subscribed>` an Mitglied und Benachrichtigung an Admin."
+msgid "on_job_subscribed: :ref:`Sends confirmation <reference-notifications-job-subscribed>` to member and notification to admin."
+msgstr "on_job_subscribed: :ref:`Sendet Bestätigung <reference-notifications-job-subscribed>` an Mitglied und Benachrichtigung an Admin."
 
-#: ../../reference/signals.rst:66 9735c814e1614a74bd6abf8e85e61ad1
 msgid "Subscription signals"
 msgstr "Abonnement-Signale"
 
-#: ../../reference/signals.rst:69 28b5105d9aab44d084ba600aa58508fe
 msgid "sub_created"
 msgstr "sub_created"
 
-#: ../../reference/signals.rst:71 daa97765f9654d7cabc726f61a8b410c
 msgid "Trigger: A new subscription has been saved."
 msgstr "Auslöser: Ein neues Abonnement wurde gespeichert."
 
-#: ../../reference/signals.rst:75 cb7e1f5d43ae4985a244890d00ff55e8
 msgid "instance: The subscription instance that was created"
 msgstr "instance: Die erstellte Abonnement-Instanz"
 
-#: ../../reference/signals.rst:79 4c8c1f7ff9a24f4aae3733ee339c9d0f
 msgid "handle_sub_created: No action."
 msgstr "handle_sub_created: Keine Aktion."
 
-#: ../../reference/signals.rst:83 21620e95a9dd43d6aac24f3c7f9cc0a8
 msgid "sub_activated"
 msgstr "sub_activated"
 
-#: ../../reference/signals.rst:85 56184478be9f4760bc5281653b7e1510
-msgid ""
-"Trigger: A subscription, where deactivation date and activation date was "
-"not set already, is being saved with an activation date."
-msgstr ""
-"Auslöser: Ein Abonnement, bei dem Deaktivierungsdatum und "
-"Aktivierungsdatum noch nicht gesetzt waren, wird mit einem "
-"Aktivierungsdatum gespeichert."
+msgid "Trigger: A subscription, where deactivation date and activation date was not set already, is being saved with an activation date."
+msgstr "Auslöser: Ein Abonnement, bei dem Deaktivierungsdatum und Aktivierungsdatum noch nicht gesetzt waren, wird mit einem Aktivierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:89 ../../reference/signals.rst:104
-#: ../../reference/signals.rst:119 ad50c2e17c334110a7611373f72139e3
-#: b7bb67fd482049ce91b33caa28865e44 f7380d4643a34b179a46830b288616b0
 msgid "instance: The subscription instance that was changed"
 msgstr "instance: Die geänderte Abonnement-Instanz"
 
-#: ../../reference/signals.rst:93 f6e40729513c408b80e460d4acab3460
-msgid ""
-"handle_sub_activated: Checks that none of the members has overlapping "
-"subscriptions when this one is activated, and raises an exception "
-"otherwise. Sets the activation date of the parts and the join date of the"
-" members according to the new activation date."
-msgstr ""
-"handle_sub_activated: Prüft, dass kein Mitglied bei Aktivierung dieses "
-"Abonnements überlappende Abonnements hat und wirft sonst eine Ausnahme. "
-"Setzt das Aktivierungsdatum der Teile und das Beitrittsdatum der "
-"Mitglieder gemäss dem neuen Aktivierungsdatum."
+msgid "handle_sub_activated: Checks that none of the members has overlapping subscriptions when this one is activated, and raises an exception otherwise. Sets the activation date of the parts and the join date of the members according to the new activation date."
+msgstr "handle_sub_activated: Prüft, dass kein Mitglied bei Aktivierung dieses Abonnements überlappende Abonnements hat und wirft sonst eine Ausnahme. Setzt das Aktivierungsdatum der Teile und das Beitrittsdatum der Mitglieder gemäss dem neuen Aktivierungsdatum."
 
-#: ../../reference/signals.rst:98 d1a4a2a1d1e946218a6fc704ce124e3a
 msgid "sub_deactivated"
 msgstr "sub_deactivated"
 
-#: ../../reference/signals.rst:100 d915861c864749319a8da34e8246b8bd
-msgid ""
-"Trigger: A subscription, where deactivation date was not set already, is "
-"being saved with a deactivation date."
-msgstr ""
-"Auslöser: Ein Abonnement, bei dem das Deaktivierungsdatum noch nicht "
-"gesetzt war, wird mit einem Deaktivierungsdatum gespeichert."
+msgid "Trigger: A subscription, where deactivation date was not set already, is being saved with a deactivation date."
+msgstr "Auslöser: Ein Abonnement, bei dem das Deaktivierungsdatum noch nicht gesetzt war, wird mit einem Deaktivierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:108 88d2985b757e45fc9db397e2d4d0a480
-msgid ""
-"handle_sub_deactivated: Sets leave date of all members of subscription to"
-" the deactivation date. Sets the deactivation date of active parts and "
-"deletes parts that have not been active yet."
-msgstr ""
-"handle_sub_deactivated: Setzt Austrittsdatum aller Mitglieder des "
-"Abonnements auf das Deaktivierungsdatum. Setzt das Deaktivierungsdatum "
-"aktiver Teile und löscht Teile, die noch nicht aktiv waren."
+msgid "handle_sub_deactivated: Sets leave date of all members of subscription to the deactivation date. Sets the deactivation date of active parts and deletes parts that have not been active yet."
+msgstr "handle_sub_deactivated: Setzt Austrittsdatum aller Mitglieder des Abonnements auf das Deaktivierungsdatum. Setzt das Deaktivierungsdatum aktiver Teile und löscht Teile, die noch nicht aktiv waren."
 
-#: ../../reference/signals.rst:113 a52d00c9e9f140b9a46bd27876fa3143
 msgid "sub_canceled"
 msgstr "sub_canceled"
 
-#: ../../reference/signals.rst:115 d72a398939654e778ea6eb395a767bf8
-msgid ""
-"Trigger: A subscription, where cancellation date was not set already, is "
-"being saved with a cancellation date."
-msgstr ""
-"Auslöser: Ein Abonnement, bei dem das Stornierungsdatum noch nicht "
-"gesetzt war, wird mit einem Stornierungsdatum gespeichert."
+msgid "Trigger: A subscription, where cancellation date was not set already, is being saved with a cancellation date."
+msgstr "Auslöser: Ein Abonnement, bei dem das Stornierungsdatum noch nicht gesetzt war, wird mit einem Stornierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:123 11842bb5e4eb452da970abbc92b63bdc
-msgid ""
-"handle_sub_canceled: Sets cancellation date of all active parts of "
-"subscription and deletes the not yet active parts."
-msgstr ""
-"handle_sub_canceled: Setzt Stornierungsdatum aller aktiven Teile des "
-"Abonnements und löscht die noch nicht aktiven Teile."
+msgid "handle_sub_canceled: Sets cancellation date of all active parts of subscription and deletes the not yet active parts."
+msgstr "handle_sub_canceled: Setzt Stornierungsdatum aller aktiven Teile des Abonnements und löscht die noch nicht aktiven Teile."
 
-#: ../../reference/signals.rst:129 d855cd2de5a84ebaa4dce257cf7d0336
 msgid "depot_changed"
 msgstr "depot_changed"
 
-#: ../../reference/signals.rst:131 3f04eeb2168646fd9e916cdcfc7fc9da
 msgid "Trigger: A member requests to change their depot"
 msgstr "Auslöser: Ein Mitglied fordert eine Depot-Änderung an"
 
-#: ../../reference/signals.rst:135 aa4b93d469b14046ac5ad650413bf9ba
-msgid ""
-"subscription: The subscription instance on which the depot should be "
-"changed"
-msgstr ""
-"subscription: Die Abonnement-Instanz, auf der das Depot geändert werden "
-"soll"
+msgid "subscription: The subscription instance on which the depot should be changed"
+msgstr "subscription: Die Abonnement-Instanz, auf der das Depot geändert werden soll"
 
-#: ../../reference/signals.rst:136 fefc9f2369b94f9381f324f160de6629
 msgid "member: Member that requested the depot change"
 msgstr "member: Mitglied, das die Depot-Änderung angefordert hat"
 
-#: ../../reference/signals.rst:137 8aa468364fc24259937a0fd744ea9060
 msgid "old_depot: Original depot of the subscription"
 msgstr "old_depot: Ursprüngliches Depot des Abonnements"
 
-#: ../../reference/signals.rst:138 1aa5576b817641e0bc9e1803ad2b3191
 msgid "new_depot: Newly requested depot of the subscription"
 msgstr "new_depot: Neu angefordertes Depot des Abonnements"
 
-#: ../../reference/signals.rst:139 3b6fcdf0d6fc4b218e7d3dfbf65e489f
-msgid ""
-"immediate: True, if the change was performed automatically. This is done,"
-" when the subscription is not yet activated."
-msgstr ""
-"immediate: True, wenn die Änderung automatisch durchgeführt wurde. Dies "
-"geschieht, wenn das Abonnement noch nicht aktiviert ist."
+msgid "immediate: True, if the change was performed automatically. This is done, when the subscription is not yet activated."
+msgstr "immediate: True, wenn die Änderung automatisch durchgeführt wurde. Dies geschieht, wenn das Abonnement noch nicht aktiviert ist."
 
-#: ../../reference/signals.rst:143 a63e91e6b991481e85222320f1a4f57e
-msgid ""
-"on_depot_changed: :ref:`Notify <reference-notifications-depot-change-"
-"request>` users with permission :ref:`notified_on_depot_change "
-"<reference-permissions-notified_on_depot_change>` via email."
-msgstr ""
-"on_depot_changed: :ref:`Benachrichtigt <reference-notifications-depot-"
-"change-request>` Benutzer mit Berechtigung :ref:`notified_on_depot_change"
-" <reference-permissions-notified_on_depot_change>` per E-Mail."
+msgid "on_depot_changed: :ref:`Notify <reference-notifications-depot-change-request>` users with permission :ref:`notified_on_depot_change <reference-permissions-notified_on_depot_change>` via email."
+msgstr "on_depot_changed: :ref:`Benachrichtigt <reference-notifications-depot-change-request>` Benutzer mit Berechtigung :ref:`notified_on_depot_change <reference-permissions-notified_on_depot_change>` per E-Mail."
 
-#: ../../reference/signals.rst:150 1315151f140e48488b7592483988f828
 msgid "depot_change_confirmed"
 msgstr "depot_change_confirmed"
 
-#: ../../reference/signals.rst:152 a4130bce7e314d71b5a9aeb316fc38a6
 msgid "Triggers:"
 msgstr "Auslöser:"
 
-#: ../../reference/signals.rst:154 a39caf0d20ca4e9a95d2f9477fd6274e
-msgid ""
-"Depot lists are generated using the management command "
-"`generate_depot_list` without the `--no-future` flag"
-msgstr ""
-"Depot-Listen werden mit dem Verwaltungs-Befehl `generate_depot_list` ohne"
-" das `--no-future`-Flag erstellt"
+msgid "Depot lists are generated using the management command `generate_depot_list` without the `--no-future` flag"
+msgstr "Depot-Listen werden mit dem Verwaltungs-Befehl `generate_depot_list` ohne das `--no-future`-Flag erstellt"
 
-#: ../../reference/signals.rst:155 b76b4504a0e946d29ea13c04bc08057c
 msgid "Admin confirms the depot change in the management list."
 msgstr "Admin bestätigt die Depot-Änderung in der Verwaltungsliste."
 
-#: ../../reference/signals.rst:159 0d9e33cd2b8141c7aa6d1d341ce5609d
-msgid ""
-"instance: The subscription instance on which the depot change was "
-"confirmed"
-msgstr ""
-"instance: Die Abonnement-Instanz, auf der die Depot-Änderung bestätigt "
-"wurde"
+msgid "instance: The subscription instance on which the depot change was confirmed"
+msgstr "instance: Die Abonnement-Instanz, auf der die Depot-Änderung bestätigt wurde"
 
-#: ../../reference/signals.rst:163 0f2256fb21204746a5146b1bc30b659a
-msgid ""
-"on_depot_change_confirmed: :ref:`Notify <reference-notifications-depot-"
-"change-confirmation>` Member and co-members of the subscription about the"
-" change."
-msgstr ""
-"on_depot_change_confirmed: :ref:`Benachrichtigt <reference-notifications-"
-"depot-change-confirmation>` Mitglied und Nebenmitglieder des Abonnements "
-"über die Änderung."
+msgid "on_depot_change_confirmed: :ref:`Notify <reference-notifications-depot-change-confirmation>` Member and co-members of the subscription about the change."
+msgstr "on_depot_change_confirmed: :ref:`Benachrichtigt <reference-notifications-depot-change-confirmation>` Mitglied und Nebenmitglieder des Abonnements über die Änderung."
 
-#: ../../reference/signals.rst:167 c44d7a683e0e499092e56b44714e4ec8
 msgid "Extra subscription signals"
 msgstr "Zusatz-Abonnement-Signale"
 
-#: ../../reference/signals.rst:170 2c76b0159f2f44efb5a9e99666a69a11
 msgid "extra_sub_activated"
 msgstr "extra_sub_activated"
 
-#: ../../reference/signals.rst:172 ../../reference/signals.rst:177
-#: a7cbcd74acc1412590e89573c1bad00e fbd2d86e48d945538fa39823b7a79ba8
 msgid "Trigger: None"
 msgstr "Auslöser: Keine"
 
-#: ../../reference/signals.rst:175 fcf43c5e6f7549a1acd2dfc6eead13b8
 msgid "extra_sub_deactivated"
 msgstr "extra_sub_deactivated"
 
-#: ../../reference/signals.rst:181 966f3c33911d46eabf7ff4d79629e47f
 msgid "Subscription part signals"
 msgstr "Abonnement-Teil-Signale"
 
-#: ../../reference/signals.rst:184 67cfbf25b3c54cf9917ba5827e5a5503
 msgid "sub_part_activated"
 msgstr "sub_part_activated"
 
-#: ../../reference/signals.rst:186 80fce892d139437e81d288b9b4a1c608
-msgid ""
-"Trigger: A subscription part, where deactivation and activation date were"
-" not set already, is being saved with an activation date."
-msgstr ""
-"Auslöser: Ein Abonnement-Teil, bei dem Deaktivierungs- und "
-"Aktivierungsdatum noch nicht gesetzt waren, wird mit einem "
-"Aktivierungsdatum gespeichert."
+msgid "Trigger: A subscription part, where deactivation and activation date were not set already, is being saved with an activation date."
+msgstr "Auslöser: Ein Abonnement-Teil, bei dem Deaktivierungs- und Aktivierungsdatum noch nicht gesetzt waren, wird mit einem Aktivierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:190 ../../reference/signals.rst:202
-#: 0b56390b7d66482ab3b12412342fbf42 e3cf7526b73249cd909e888659b0bc7a
 msgid "instance: The subscription part instance that was changed"
 msgstr "instance: Die geänderte Abonnement-Teil-Instanz"
 
-#: ../../reference/signals.rst:192 ../../reference/signals.rst:204
-#: ../../reference/signals.rst:272 0c71c6ee882446d4bf7d0125a068d8f9
-#: 0e85d126648849a78295cda4eaf1e984 89659cab59c54e4d8aa3d2c4b5d74733
 msgid "Default receivers: None"
 msgstr "Standard-Empfänger: Keine"
 
-#: ../../reference/signals.rst:196 33bd8139e62143fb8cc7743b52fce040
 msgid "sub_part_deactivated"
 msgstr "sub_part_deactivated"
 
-#: ../../reference/signals.rst:198 2d07f0e5833947fa938473f55a0a00c2
-msgid ""
-"Trigger: A subscription part, where deactivation was not set already, is "
-"being saved with a deactivation date."
-msgstr ""
-"Auslöser: Ein Abonnement-Teil, bei dem Deaktivierung noch nicht gesetzt "
-"war, wird mit einem Deaktivierungsdatum gespeichert."
+msgid "Trigger: A subscription part, where deactivation was not set already, is being saved with a deactivation date."
+msgstr "Auslöser: Ein Abonnement-Teil, bei dem Deaktivierung noch nicht gesetzt war, wird mit einem Deaktivierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:208 946d149152974d9890ddb61d9f782b43
 msgid "Share signals"
 msgstr "Anteilschein-Signale"
 
-#: ../../reference/signals.rst:213 54aaeabda4bf4663a261ccab351d7c18
 msgid "share_created"
 msgstr "share_created"
 
-#: ../../reference/signals.rst:215 0ae4a8f6b232477e86920cb70f3f3670
 msgid "Trigger: A new share has been saved."
 msgstr "Auslöser: Ein neuer Anteilschein wurde gespeichert."
 
-#: ../../reference/signals.rst:219 48b97f362d464d56ba0486412dedabce
 msgid "instance: The share instance that was created"
 msgstr "instance: Die erstellte Anteilschein-Instanz"
 
-#: ../../reference/signals.rst:223 237a2fcfc7ab4f05bcfec82a907f86b8
-msgid ""
-"handle_share_created: :ref:`Notify <reference-notifications-share-"
-"created>` users with permission :ref:`notified_on_share_creation "
-"<reference-permissions-notified_on_share_creation>` via email."
-msgstr ""
-"handle_share_created: :ref:`Benachrichtigt <reference-notifications-"
-"share-created>` Benutzer mit Berechtigung "
-":ref:`notified_on_share_creation <reference-permissions-"
-"notified_on_share_creation>` per E-Mail."
+msgid "handle_share_created: :ref:`Notify <reference-notifications-share-created>` users with permission :ref:`notified_on_share_creation <reference-permissions-notified_on_share_creation>` via email."
+msgstr "handle_share_created: :ref:`Benachrichtigt <reference-notifications-share-created>` Benutzer mit Berechtigung :ref:`notified_on_share_creation <reference-permissions-notified_on_share_creation>` per E-Mail."
 
-#: ../../reference/signals.rst:227 6f609750129248b08b37de4c57b43db2
 msgid "share_canceled"
 msgstr "share_canceled"
 
-#: ../../reference/signals.rst:229 d824e52a58904071a95ee2ecf8eae2eb
 msgid "Trigger: A member cancels one of their shares"
 msgstr "Auslöser: Ein Mitglied kündigt einen Anteilschein"
 
-#: ../../reference/signals.rst:233 3eca5a2a0e7043b9bf202b3483d1a4aa
 msgid "instance: The share instance that was canceled"
 msgstr "instance: Die gekündigte Anteilschein-Instanz"
 
-#: ../../reference/signals.rst:235 6e8856fd1a124854bd372548b230e2a3
-msgid ""
-"on_share_canceled: :ref:`Notify <reference-notifications-share-canceled>`"
-" users with permission :ref:`notified_on_share_cancellation <reference-"
-"permissions-notified_on_share_cancellation>` via email."
-msgstr ""
-"on_share_canceled: :ref:`Benachrichtigt <reference-notifications-share-"
-"canceled>` Benutzer mit Berechtigung :ref:`notified_on_share_cancellation"
-" <reference-permissions-notified_on_share_cancellation>` per E-Mail."
+msgid "on_share_canceled: :ref:`Notify <reference-notifications-share-canceled>` users with permission :ref:`notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>` via email."
+msgstr "on_share_canceled: :ref:`Benachrichtigt <reference-notifications-share-canceled>` Benutzer mit Berechtigung :ref:`notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>` per E-Mail."
 
-#: ../../reference/signals.rst:240 643dd879197e4d9c836411c8f3b2a84c
 msgid "Member signals"
 msgstr "Mitglieder-Signale"
 
-#: ../../reference/signals.rst:245 c6d48ed4ff994f42ace5140d8b498de7
 msgid "member_created"
 msgstr "member_created"
 
-#: ../../reference/signals.rst:247 1b1cdee2c59b4359a6c05b823c1b82f0
 msgid "Trigger: A new member has been saved."
 msgstr "Auslöser: Ein neues Mitglied wurde gespeichert."
 
-#: ../../reference/signals.rst:251 6859ca570e6a446bb753ee6f1dbce886
 msgid "instance: The member instance that was created"
 msgstr "instance: Die erstellte Mitglieder-Instanz"
 
-#: ../../reference/signals.rst:255 082736e821e447f197a8a522c54d0966
-msgid ""
-"handle_member_created: :ref:`Notify <reference-notifications-member-"
-"created>` users with permission :ref:`notified_on_member_creation "
-"<reference-permissions-notified_on_member_creation>` via email."
-msgstr ""
-"handle_member_created: :ref:`Benachrichtigt <reference-notifications-"
-"member-created>` Benutzer mit Berechtigung "
-":ref:`notified_on_member_creation <reference-permissions-"
-"notified_on_member_creation>` per E-Mail."
+msgid "handle_member_created: :ref:`Notify <reference-notifications-member-created>` users with permission :ref:`notified_on_member_creation <reference-permissions-notified_on_member_creation>` via email."
+msgstr "handle_member_created: :ref:`Benachrichtigt <reference-notifications-member-created>` Benutzer mit Berechtigung :ref:`notified_on_member_creation <reference-permissions-notified_on_member_creation>` per E-Mail."
 
-#: ../../reference/signals.rst:260 1a344b2d8ee844ec916bd6c84ef939ab
 msgid "member_canceled"
 msgstr "member_canceled"
 
-#: ../../reference/signals.rst:263 d9e44953652249c8b28df3cc12a0f7c7
-msgid ""
-"Deprecated since version 1.7.0. Use :ref:`canceled <reference-signals-"
-"canceled>` with sender ``Member`` instead."
-msgstr ""
-"Seit Version 1.7.0 veraltet. Verwende stattdessen :ref:`canceled "
-"<reference-signals-canceled>` mit Sender ``Member``."
+msgid "Deprecated since version 1.7.0. Use :ref:`canceled <reference-signals-canceled>` with sender ``Member`` instead."
+msgstr "Seit Version 1.7.0 veraltet. Verwende stattdessen :ref:`canceled <reference-signals-canceled>` mit Sender ``Member``."
 
-#: ../../reference/signals.rst:266 db610db610ec4cb79484226524c0a2ec
-msgid ""
-"Trigger: A member that had no cancellation date set, is saved with a "
-"cancellation date."
-msgstr ""
-"Auslöser: Ein Mitglied, das noch kein Stornierungsdatum hatte, wird mit "
-"einem Stornierungsdatum gespeichert."
+msgid "Trigger: A member that had no cancellation date set, is saved with a cancellation date."
+msgstr "Auslöser: Ein Mitglied, das noch kein Stornierungsdatum hatte, wird mit einem Stornierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:270 ../../reference/signals.rst:300
-#: 755aa4c501b0423ba62b0231a719bf42 962b2ebb6e5140fc9f741ab735f8fb15
 msgid "instance: The member instance that was changed"
 msgstr "instance: Die geänderte Mitglieder-Instanz"
 
-#: ../../reference/signals.rst:277 5b374904c5d84a0885d02c4786eadd76
 msgid "canceled"
 msgstr "canceled"
 
-#: ../../reference/signals.rst:279 7e1571e188d049c7b27ca832a51a00ce
+msgid "Deprecated since version 2.1.0."
+msgstr "Seit Version 2.1.0 veraltet."
+
 msgid "Sender: Member"
 msgstr "Sender: Member"
 
-#: ../../reference/signals.rst:281 6fdf8cdbad0c46b297341aed7d914532
-msgid "Trigger: Member cancels their membership"
-msgstr "Auslöser: Ein Mitglied kündigt die Mitgliedschaft"
+msgid "Trigger: Member closes their account"
+msgstr "Auslöser: Mitglied schliesst seinen Account"
 
-#: ../../reference/signals.rst:285 8b3a1be9e4e94cd29bcdfdd39955cc7a
 msgid "instance: The member instance of the member that canceled"
 msgstr "instance: Die Mitglieder-Instanz des Mitglieds, das storniert hat"
 
-#: ../../reference/signals.rst:286 3f48821c53c24a269bcd11f48ebe7bbd
 msgid "message (optional): The message the member left on cancellation"
-msgstr ""
-"message (optional): Die Nachricht, die das Mitglied bei der Stornierung "
-"hinterlassen hat"
+msgstr "message (optional): Die Nachricht, die das Mitglied bei der Stornierung hinterlassen hat"
 
-#: ../../reference/signals.rst:290 ae5ef0e6e22244c38bb9d514f2fd8c51
-msgid ""
-"on_member_canceled: :ref:`Notify <reference-notifications-member-"
-"canceled>` users with permission :ref:`notified_on_member_cancellation "
-"<reference-permissions-notified_on_member_cancellation>` via email."
-msgstr ""
-"on_member_canceled: :ref:`Benachrichtigt <reference-notifications-"
-"member-canceled>` Benutzer mit Berechtigung "
-":ref:`notified_on_member_cancellation <reference-permissions-"
-"notified_on_member_cancellation>` per E-Mail."
-
-#: ../../reference/signals.rst:294 92f17c958296450b8ac611f527e70caf
 msgid "member_deactivated"
 msgstr "member_deactivated"
 
-#: ../../reference/signals.rst:296 0392a3cce0ef41a08fd6921480f69442
-msgid ""
-"Trigger: A member that had no deactivation date set, is saved with a "
-"deactivation date."
-msgstr ""
-"Auslöser: Ein Mitglied, das noch kein Deaktivierungsdatum hatte, wird mit"
-" einem Deaktivierungsdatum gespeichert."
+msgid "Trigger: A member that had no deactivation date set, is saved with a deactivation date."
+msgstr "Auslöser: Ein Mitglied, das noch kein Deaktivierungsdatum hatte, wird mit einem Deaktivierungsdatum gespeichert."
 
-#: ../../reference/signals.rst:304 580934ac9bf44f55a0c66bd0d4bcd30e
 msgid "handle_member_deactivated: Remove the member from all activity areas."
-msgstr ""
-"handle_member_deactivated: Entfernt das Mitglied aus allen "
-"Tätigkeitsbereichen."
+msgstr "handle_member_deactivated: Entfernt das Mitglied aus allen Tätigkeitsbereichen."
 
-#: ../../reference/signals.rst:309 dd6e733521d94bda971f315a6f523b31
 msgid "assignment_changed"
 msgstr "assignment_changed"
 
-#: ../../reference/signals.rst:311 4f38601a2ed840d0846a9e4336f935ba
-msgid ""
-"Trigger: A user with permission changed the job assignments of a member "
-"on the job page."
-msgstr ""
-"Auslöser: Ein Benutzer mit Berechtigung hat die Job-Einsätze eines "
-"Mitglieds auf der Job-Seite geändert."
+msgid "Trigger: A user with permission changed the job assignments of a member on the job page."
+msgstr "Auslöser: Ein Benutzer mit Berechtigung hat die Job-Einsätze eines Mitglieds auf der Job-Seite geändert."
 
-#: ../../reference/signals.rst:315 fc395aebd3184390a3adbeaa8b573f63
 msgid "instance: The member instance whose assignment was changed"
 msgstr "instance: Die Mitglieder-Instanz, deren Einsatz geändert wurde"
 
-#: ../../reference/signals.rst:316 870a281ce0de466987b5ff24682c4f59
 msgid "job: job of the changed assignments"
 msgstr "job: Job der geänderten Einsätze"
 
-#: ../../reference/signals.rst:317 36233fb6690a4498af3191dc7bf65189
 msgid "editor: User who changed the assignment"
 msgstr "editor: Benutzer, der den Einsatz geändert hat"
 
-#: ../../reference/signals.rst:318 8700e0ee236f428e939e41d0f8b43e9d
 msgid "count: New number of assignments of member on this job"
 msgstr "count: Neue Anzahl der Einsätze des Mitglieds bei diesem Job"
 
-#: ../../reference/signals.rst:319 d12dd3ef7537470c93a28ea0c22bcd25
 msgid "initial_count: Original number of assignments of member on this job"
-msgstr ""
-"initial_count: Ursprüngliche Anzahl der Einsätze des Mitglieds bei diesem"
-" Job"
+msgstr "initial_count: Ursprüngliche Anzahl der Einsätze des Mitglieds bei diesem Job"
 
-#: ../../reference/signals.rst:320 f56c8783cb6242888ea47f017ff47972
 msgid "message: Message entered by the editor."
 msgstr "message: Von Editor eingegebene Nachricht."
 
-#: ../../reference/signals.rst:324 43d80a0749e54a9dac4158bec41b5475
-msgid ""
-"on_assignment_changed: :ref:`Inform member and job contact <reference-"
-"notifications-job-assignment-changed>` about the changed assignments"
-msgstr ""
-"on_assignment_changed: :ref:`Informiert Mitglied und Job-Kontakt "
-"<reference-notifications-job-assignment-changed>` über die geänderten "
-"Einsätze"
+msgid "on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments"
+msgstr "on_assignment_changed: :ref:`Informiert Mitglied und Job-Kontakt <reference-notifications-job-assignment-changed>` über die geänderten Einsätze"
 
-#: ../../reference/signals.rst:328 418651aed3db45eb87df1329559d87f6
+msgid "Email signals"
+msgstr "E-Mail-Signale"
+
+msgid "pre_render"
+msgstr "pre_render"
+
+msgid "Sender: mailer.EmailBuilder"
+msgstr "Sender: mailer.EmailBuilder"
+
+msgid "Trigger: Before email is rendered. This includes all notification emails and emails sent via the contact form."
+msgstr "Auslöser: Bevor E-Mail gerendert wird. Dies umfasst alle Benachrichtigungs-E-Mails und E-Mails, die über das Kontaktformular gesendet werden."
+
+msgid "recipient: The member instance who will receive the email. Is None for recipients that aren't members."
+msgstr "recipient: Die Mitglieder-Instanz, die die E-Mail erhält. Ist None für Empfänger, die keine Mitglieder sind."
+
 msgid "Management Command signals"
 msgstr "Verwaltungs-Befehl-Signale"
 
-#: ../../reference/signals.rst:333 36c0d7e4c501499e97a32f3af5b88edf
 msgid "called"
 msgstr "called"
 
-#: ../../reference/signals.rst:335 6ea864ea3055487ba0ba3da948787b2b
 msgid "Sender: generate_depot_list.Command"
 msgstr "Sender: generate_depot_list.Command"
 
-#: ../../reference/signals.rst:337 79167b14e32b4158915f98d2c65d0bc8
 msgid "Trigger: Management command is called"
 msgstr "Auslöser: Verwaltungs-Befehl wird aufgerufen"
 
-#: ../../reference/signals.rst:339 10cf58b317294216b96544146ece3d42
 msgid "Arguments: None"
 msgstr "Argumente: Keine"
 
-#: ../../reference/signals.rst:343 a32685e95ecd434b981483688931e2fd
-msgid ""
-"on_depot_list_generated: :ref:`Inform admin <reference-notifications-"
-"depot-list-generated>` when Depot list is generated."
-msgstr ""
-"on_depot_list_generated: :ref:`Informiert Admin <reference-notifications-"
-"depot-list-generated>`, wenn Depot-Liste erstellt wird."
+msgid "on_depot_list_generated: :ref:`Inform admin <reference-notifications-depot-list-generated>` when Depot list is generated."
+msgstr "on_depot_list_generated: :ref:`Informiert Admin <reference-notifications-depot-list-generated>`, wenn Depot-Liste erstellt wird."

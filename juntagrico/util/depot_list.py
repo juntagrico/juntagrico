@@ -25,7 +25,7 @@ def depot_list_data(days=0):
         'date': date,
         'subscriptions':
             Subscription.objects.on_depot_list().active_on(date)
-            .order_by(Lower('primary_member__first_name'), Lower('primary_member__last_name'))
+            .order_by('identifier', Lower('primary_member__first_name'), Lower('primary_member__last_name'))
             .distinct(),
         'products': SubscriptionProduct.objects.on_depot_list(),
         'depots': DepotDao.all_depots_for_list(),

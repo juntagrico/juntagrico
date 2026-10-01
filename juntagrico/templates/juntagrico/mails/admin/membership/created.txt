@@ -1,0 +1,14 @@
+{% extends "juntagrico/mails/admin/member/base.txt" %}
+{% load i18n %}
+
+{% block member_message %}
+{% blocktrans trimmed with v_membership=vocabulary.membership %}
+Soeben hat {{ account }} die {{ v_membership }} beantragt.
+{% endblocktrans %}
+
+{% if comment %}
+{% blocktrans trimmed %}
+Kommentar: {{ comment }}
+{% endblocktrans %}
+{% endif %}
+{% endblock %}

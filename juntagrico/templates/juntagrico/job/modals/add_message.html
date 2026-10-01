@@ -1,0 +1,36 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans trimmed %}
+        Mitteilung verfassen
+    {% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <div id="{{ name }}_content">
+        <form action="{% url 'job-message-add' job.id %}" method="post" class="modal-form" id="{{ name }}_form">
+            {% crispy message_form %}
+        </form>
+    </div>
+
+    <p>
+        <strong>
+            {% if other_job_contacts %}
+                {% blocktrans trimmed %}
+                     Folgende Kontaktperson(en) werden automatisch informiert:
+                {% endblocktrans %}
+                <br>
+                {% for email, coordinator in other_job_contacts %}
+                    {{ coordinator|default:email }}<br>
+                {% endfor %}
+            {% endif %}
+        </strong>
+    </p>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="add_message_form" class="btn btn-primary"
+           value="{% trans "Senden" %}">
+{% endblock %}
