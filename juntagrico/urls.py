@@ -21,6 +21,8 @@ urlpatterns = [
     path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
     path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
     path('signup/invitation/<str:key>', signup.invitation, name='invitation'),
+    path('signup/invitation/new/<str:key>', signup.invitation_to_new, name='invitation-new'),
+    path('signup/invitation/existing/<str:key>', signup.invitation_to_existing, name='invitation-existing'),
     path('signup/welcome/', create_subscription.welcome, name='welcome'),
     path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
     path('signup/external', create_subscription.create_external, name='signup-external'),
@@ -41,7 +43,7 @@ urlpatterns = [
     # login/
     path('accounts/login/', JuntagricoLoginView.as_view(), name='login'),
     # logout/
-    path('logout/', juntagrico.logout_view, name='logout'),
+    path('logout/', juntagrico.LogoutView.as_view(), name='logout'),
 
     # /accounts (password reset)
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html',

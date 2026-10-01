@@ -8,7 +8,7 @@
 {% vocabulary "co_member" as v_co_member %}
 {% blocktrans with pm=invitee.subscription.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
 
-Einladung öffnen: {{ serverurl }}{% url 'invitation' invitee.key %}
+Einladung öffnen: {{ server_url }}{% url 'invitation' invitee.key %}
 
 {% blocktrans %}Falls du keine Einladung erwartest, kannst du dieses E-Mail ignorieren.{% endblocktrans %}
 

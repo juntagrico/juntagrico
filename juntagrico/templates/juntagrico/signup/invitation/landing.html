@@ -1,0 +1,50 @@
+{% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% blocktrans %}Einladung{% endblocktrans %}
+{% endblock %}
+
+
+{% block intro %}
+    <div>
+        {% enriched_organisation "D" as v_d_enriched_organisation %}
+        {% block intro_1 %}
+            <p class="capfirst">
+                {% blocktrans with inviter=invitee.invited_by %}{{ inviter }} hat dich bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
+            </p>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        <div class="text-center mt-5">
+            <a href="{% url 'invitation-existing' key %}" class="btn btn-secondary btn-lg m-2">
+                {% blocktrans with account=request.user.member %}als {{ account }} fortfahren{% endblocktrans %}
+            </a>
+        </div>
+        <div class="text-center mt-2">
+            <form id="logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'invitation-existing' key %}">
+                <input type="submit" class="btn btn-secondary btn-lg" value="{% trans 'mit anderem Konto anmelden' %}">
+            </form>
+        </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <a href="{% url 'invitation-existing' key %}" class="btn btn-secondary btn-lg m-2">
+                {% trans "ich habe schon ein Konto" %}
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-2">
+        <a href="{% url 'invitation-new' key %}" class="btn btn-primary btn-lg m-2">
+            {% trans "ich bin neu hier" %}
+        </a>
+    </div>
+{% endblock %}
