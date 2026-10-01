@@ -17,8 +17,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-share' %}">
+                                {% trans "Aktiv" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'manage-share-canceled' %}">
                                 {% trans "Gekündigt" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-share-archive' %}">
+                                {% trans "Ehemalige" %}
                             </a>
                         </li>
                     {% endblock %}

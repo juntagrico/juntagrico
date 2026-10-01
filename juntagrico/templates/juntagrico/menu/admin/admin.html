@@ -4,14 +4,14 @@
         {% block admin %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'admin:index' %}">
-                    {% trans "Datenverwaltung" %}
+                    <i class="bi bi-wrench mr-2"></i>{% trans "Datenverwaltung" %}
                 </a>
             </li>
         {% endblock %}
         {% block config %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'config' %}">
-                    {% trans "Konfiguration" %}
+                    <i class="bi bi-gear mr-2"></i>{% trans "Konfiguration" %}
                 </a>
             </li>
         {% endblock %}

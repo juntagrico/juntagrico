@@ -1,0 +1,19 @@
+{% extends "memberjobs.html" %}
+{% load crispy_forms_tags %}
+{% load juntagrico.common %}
+{% load static %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_assignment_pl=vocabulary.assignment_pl %}{{ v_assignment_pl }} von {{ account }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block intro %}
+    <a href="{% url 'manage-account-single' account.id %}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-return-left"></i>
+        {% blocktrans %}Zum Profil von {{ account }}{% endblocktrans %}
+    </a>
+{% endblock %}

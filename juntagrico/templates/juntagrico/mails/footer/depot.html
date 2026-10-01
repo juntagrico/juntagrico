@@ -1,6 +1,6 @@
 {% load juntagrico.config %}
 {% load i18n %}
 {% vocabulary "depot" as v_depot %}
-{% blocktrans trimmed with depot_name=depot.name %}
-    Du erhältst dieses E-Mail, weil du dem/r {{ v_depot }} "{{ depot_name }}" angehörst.
+{% blocktrans trimmed with v_the_depot_dat=vocabulary.the_depot_dat depot_name=depot.name %}
+    Du erhältst dieses E-Mail, weil du {{ v_the_depot_dat }} "{{ depot_name }}" angehörst.
 {% endblocktrans %}
