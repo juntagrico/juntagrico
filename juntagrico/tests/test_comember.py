@@ -1,11 +1,16 @@
 import datetime
+import uuid
 
 from django.conf import settings
 from django.core import mail
+from django.test import override_settings, tag
 from django.urls import reverse
 
-from juntagrico.models import Member, Share, Subscription, SubscriptionMembership
+from juntagrico.models import Share, SubscriptionMembership
 from . import JuntagricoTestCase
+from .test_cs import CreateSubscriptionTestCase
+from ..entity.member import Invitee
+from ..entity.membership import Membership
 
 
 class CoMemberTests(JuntagricoTestCase):
@@ -47,40 +52,12 @@ class CoMemberTests(JuntagricoTestCase):
     def testAddNewCoMember(self):
         new_co_member_data = self.get_co_member_data('new_comember@juntagrico.org')
         self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
-        self.assertEqual(Member.objects.filter(email=new_co_member_data['email']).count(), 1)
+        self.assertEqual(Invitee.objects.filter(email=new_co_member_data['email']).count(), 1)
         if settings.ENABLE_SHARES:
-            self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
-        self.assertEqual(Subscription.objects.filter(subscriptionmembership__member__email=new_co_member_data['email']).count(), 1)
-        # membership and, if enabled, share order emails to co-member & admin notifications for the same
-        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
-
-    def testAddExistingCoMemberWithSub(self):
-        # existing member with subs can not be added as co members
-        # message to contact admin will show
-        new_co_member_data = self.get_co_member_data(self.member2.email)
-        # response is 200 (form error)
-        response = self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data)
-        self.assertListEqual(
-            ['has_active_subscription'],  # first code 'part_activation_date_mismatch' reaches here as none somehow
-            [e.code for e in response.context_data['form'].errors['email'].as_data()]
-        )
-        # no new shares should be created
-        self.assertEqual(Share.objects.filter(member=self.member2).count(), 0)
-        # member now is not part of subscription
-        self.assertNotEqual(self.member2.subscription_current, self.sub)
-
-    def testAddExistingCoMemberWithSubEndingSameDay(self):
-        # corner case: co-member just left their other subscription today. New subscription will be joined tomorrow
-        new_co_member_data = self.get_co_member_data(self.switching_co_member.email)
-        self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
-        self.switching_co_member.refresh_from_db()
-        self.assertIsNone(self.co_member.subscription_current)
-        self.assertTrue(
-            self.switching_co_member.subscriptionmembership_set.filter(
-                subscription=self.sub,
-                join_date=datetime.date.today() + datetime.timedelta(days=1)
-            ).exists()
-        )
+            # share is not created yet
+            self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 0)
+        # invitation email
+        self.assertEqual(len(mail.outbox), 1)
 
     def testAddExistingCoMember(self):
         co_member_before = self.co_member.__dict__
@@ -95,5 +72,233 @@ class CoMemberTests(JuntagricoTestCase):
         self.assertEqual(self.co_member.first_name, co_member_before['first_name'])
         # no new shares should be created
         self.assertEqual(Share.objects.filter(member=self.co_member).count(), 0)
-        # member now is part of subscription
-        self.assertEqual(self.co_member.subscription_current, self.sub)
+        # invitation created
+        self.assertTrue(Invitee.objects.filter(email=co_member_before['email']).exists())
+
+
+class InvitationTests(CreateSubscriptionTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.invitee = Invitee.objects.create(
+            email='invitee@juntagrico.invalid',
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.sub.primary_member,
+        )
+        if settings.ENABLE_SHARES:
+            cls.invitee.shares = 2
+            cls.invitee.save()
+        cls.existing_invitee = Invitee.objects.create(
+            email=cls.member2.email,
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.sub.primary_member,
+        )
+        cls.expired_invitation = Invitee.objects.create(
+            email='expired@juntagrico.invalid',
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.member4,
+        )
+
+    def assertHasMembership(self, email='new_member@juntagrico.invalid'):
+        self.assertTrue(
+            Membership.objects.filter(
+                account__email=email
+            ).exists()
+        )
+
+    def testInvalidInvitation(self):
+        invalid_key = uuid.uuid4()
+        self.assertGet(reverse('invitation', args=[invalid_key]), 200)
+        self.assertGet(reverse('invitation-new', args=[invalid_key]), 200)
+        self.client.force_login(self.member2.user)
+        self.assertGet(reverse('invitation-existing', args=[invalid_key]), 200)
+
+    def testInvitationBanner(self):
+        self.client.force_login(self.member2.user)
+        response = self.assertGet(reverse('home'), 200, self.member2)
+        self.assertContains(
+            response,
+            f'<a class="btn btn-info" href="{reverse("invitation-existing", args=[self.existing_invitee.key])}">',
+        )
+
+    def testInvitationInvalidation(self):
+        # if inviter is not in subscription (anymore) invitation becomes invalid
+        self.assertGet(reverse('invitation', args=[self.expired_invitation.key]), 200)
+        with self.assertRaises(Invitee.DoesNotExist):
+            self.expired_invitation.refresh_from_db()
+
+    def testAcceptInvitationNew(self):
+        self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
+        self.assertGet(reverse('invitation-new', args=[self.invitee.key]), 200)
+
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        if settings.ENABLE_SHARES:
+            data.update({'of_member': 1})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            302,
+        )
+        self.assertTrue(self.sub.current_members.filter(email='new_member@juntagrico.invalid').exists())
+
+    @tag('shares')
+    def testAcceptInvitationWithoutShares(self):
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        # fails if shares is needed
+        data.update({'of_member': 0})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            200,
+        )
+        self.assertFalse(
+            self.sub.current_members.filter(
+                email='new_member@juntagrico.invalid'
+            ).exists()
+        )
+        # if member has enough shares, invitation can be accepted without shares
+        self.create_paid_share(self.member)
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            302,
+        )
+        self.assertTrue(
+            self.sub.current_members.filter(
+                email='new_member@juntagrico.invalid'
+            ).exists()
+        )
+
+    @tag('shares')
+    def testAcceptInvitationNewWithMembershipInsufficientShares(self):
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        data.update({'membership': True})
+        # ordering with insufficient shares fails
+        self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
+        data.update({'of_member': 0})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            200,
+        )
+        self.assertFalse(
+            Membership.objects.filter(
+                account__email='new_member@juntagrico.invalid'
+            ).exists()
+        )
+
+    def testAcceptInvitationNewWithMembership(self):
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        data.update({'membership': True})
+        if settings.ENABLE_SHARES:
+            # ordering with insufficient shares fails
+            self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
+            data.update({'of_member': 1})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            302,
+        )
+        self.assertHasMembership()
+        self.assertTrue(
+            self.sub.current_members.filter(
+                email='new_member@juntagrico.invalid'
+            ).exists()
+        )
+        
+    def _acceptInvitationExisting(self, result=302):
+        self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
+        self.assertGet(reverse('invitation-existing', args=[self.invitee.key]), 200)
+
+        data = {}
+        if settings.ENABLE_SHARES:
+            data.update({'of_member': 1})
+        self.assertPost(
+            reverse('invitation-existing', args=[self.invitee.key]),
+            data,
+            result,
+        )
+
+    def testAcceptInvitationExisting(self):
+        self.client.force_login(self.member4.user)
+        self._acceptInvitationExisting()
+        self.assertTrue(
+            self.member4 in self.sub.current_members.all()
+        )
+        # notification to inviter + welcome + share: admin and member notify
+        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+
+    def testAcceptInvitationExistingWithOtherPendingSubscription(self):
+        self.client.force_login(self.member2.user)
+        self._acceptInvitationExisting(200)
+
+    def testAcceptInvitationExistingWithActiveSubscription(self):
+        self.client.force_login(self.member3.user)
+        self._acceptInvitationExisting(200)
+        
+    def testAcceptInvitationExistingWithSubscriptionLeavingInFuture(self):
+        self.client.force_login(self.member3.user)
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        self.member3.subscriptionmembership_set.filter(subscription=self.sub).update(leave_date=tomorrow)
+        self._acceptInvitationExisting()
+        self.assertTrue(self.member3 in self.sub.future_members)
+        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+
+    def testRejectInvitation(self):
+        self.assertGet(reverse('invitation-reject'), 405)
+        self.assertPost(reverse('invitation-reject'), {
+            'key': self.invitee.key,
+        }, 302)
+        self.assertEqual(len(mail.outbox), 1)  # reject notification
+
+    def testInviteeList(self):
+        self.client.force_login(self.member.user)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]), 200)
+
+    def testModifyInvitation(self):
+        self.assertGet(reverse('invitation-modify'), 405)
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'resend'},
+            302,
+        )
+        self.assertEqual(len(mail.outbox), 1)  # invitation resent
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'resend'},
+            302,
+        )
+        self.assertEqual(len(mail.outbox), 1)  # no additional invitation sent shortly after
+        self.assertPost(
+            reverse('invitation-modify'),
+            {'key': self.invitee.key, 'action': 'withdraw'},
+            302,
+        )
+        with self.assertRaises(Invitee.DoesNotExist):
+            self.invitee.refresh_from_db()
+
+
+@override_settings(MEMBERSHIP={'enable': False})
+class InvitationTestsWithoutMembership(InvitationTests):
+    def assertHasMembership(self, email='new_member@juntagrico.invalid'):
+        # should not create membership if memberships are inactive.
+        self.assertFalse(
+            Membership.objects.filter(
+                account__email=email
+            ).exists()
+        )
+
+    def testAcceptInvitationNewWithMembershipInsufficientShares(self):
+        pass
+
+
+@tag('shares')
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class InvitationWithCumulativeSharesTest(InvitationTests):
+    pass

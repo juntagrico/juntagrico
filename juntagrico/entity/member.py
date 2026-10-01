@@ -1,9 +1,10 @@
 import datetime
 import hashlib
+import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum, Max
 from django.utils.functional import cached_property
 from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
@@ -33,19 +34,30 @@ def q_left_subscription(asof=None):
     return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
+class AbstractProfile(JuntagricoBaseModel):
+    class Meta:
+        abstract = True
+
+    first_name = models.CharField(_('Vorname'), max_length=30)
+    last_name = models.CharField(_('Nachname'), max_length=30)
+
+    def __str__(self):
+        return self.get_name()
+
+    def get_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+
 @absolute_url(name='manage-account-single')
-class Member(JuntagricoBaseModel):
+class Member(AbstractProfile):
     '''
     Additional fields for Django's default user class.
     '''
-
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Member model
     user = models.OneToOneField(
         User, related_name='member', on_delete=models.CASCADE)
 
-    first_name = models.CharField(_('Vorname'), max_length=30)
-    last_name = models.CharField(_('Nachname'), max_length=30)
     email = LowercaseEmailField(unique=True)
 
     addr_street = models.CharField(_('Strasse'), max_length=100)
@@ -53,8 +65,7 @@ class Member(JuntagricoBaseModel):
     addr_location = models.CharField(_('Ort'), max_length=50)
     birthday = models.DateField(_('Geburtsdatum'), null=True, blank=True)
     phone = models.CharField(_('Telefonnr'), max_length=50)
-    mobile_phone = models.CharField(
-        _('Mobile'), max_length=50, null=True, blank=True)
+    mobile_phone = models.CharField(_('Mobile'), max_length=50, null=True, blank=True)
 
     iban = models.CharField('IBAN', max_length=100, blank=True, default='', validators=[validate_iban])
 
@@ -238,21 +249,43 @@ class Member(JuntagricoBaseModel):
         return [sm.subscription for sm in
                 self.subscriptionmembership_set.filter(q_left_subscription())]
 
-    def join_subscription(self, subscription, primary=False):
-        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
+    def next_possible_join_date(self, exclude=None):
         today = datetime.date.today()
-        if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
+        active_subscriptions = self.subscriptionmembership_set.exclude(
+            leave_date__lt=today
+        )
+        if exclude:
+            active_subscriptions = active_subscriptions.exclude(pk=exclude.pk)
+        if not active_subscriptions.exists():
+            return today
+        if active_subscriptions.filter(leave_date=None).exists():
+            return None
+        return active_subscriptions.aggregate(
+            last_leave_date=Max('leave_date')
+        )['last_leave_date'] + datetime.timedelta(days=1)
+
+    def join_subscription(self, subscription, primary=False):
+        today = datetime.date.today()
+        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).exclude(leave_date__lt=today).first()
+        # rejoining before leaving
+        if sub_membership:
             sub_membership.leave_date = None
             sub_membership.save()
-        else:
-            if subscription.waiting:
+        # join if hasn't joined yet.
+        if sub_membership is None or sub_membership.join_date is None:
+            if subscription.activation_date is None:
                 join_date = None
-            # allow common corner case, where co-member just left another subscription on the same day
-            elif self.subscriptionmembership_set.filter(leave_date=today).exists():
-                join_date = today + datetime.timedelta(days=1)
             else:
-                join_date = today
-            SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
+                # join once previous subscription is left.
+                join_date = self.next_possible_join_date(sub_membership)
+                if join_date is not None and join_date < subscription.activation_date:
+                    # can't join earlier than subscription start date
+                    join_date = subscription.activation_date
+            if sub_membership:
+                sub_membership.join_date = join_date
+                sub_membership.save()
+            else:
+                SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
             subscription.save()
@@ -281,9 +314,6 @@ class Member(JuntagricoBaseModel):
         current = self.subscription_current is not None and not self.subscription_current.inactive
         return future or current
 
-    def get_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
     def get_phone(self):
         if self.mobile_phone and self.mobile_phone.strip('0- '):
             return self.mobile_phone
@@ -309,9 +339,6 @@ class Member(JuntagricoBaseModel):
 
     def get_hash(self):
         return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
-
-    def __str__(self):
-        return self.get_name()
 
     def clean(self):
         check_member_consistency(self)
@@ -356,6 +383,40 @@ class Member(JuntagricoBaseModel):
         permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
 
 
+class Invitee(AbstractProfile):
+    email = LowercaseEmailField()
+    invited_by = models.ForeignKey('Member', related_name='invitees', on_delete=models.CASCADE)
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
+    shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    @cached_property
+    def required_shares_for_subscription(self):
+        return max(
+            0,
+            -(
+                self.subscription.share_overflow
+                + (
+                    self.subscription.invitees.exclude(pk=self.pk).aggregate(
+                        share_sum=Sum('shares')
+                    )['share_sum']
+                    or 0
+                )
+            ),
+        )
+
+    def required_shares(self, with_membership=False):
+        # calculate required shares, assuming all other invitees order as suggested
+        for_subscription = self.required_shares_for_subscription
+        for_membership = Config.membership('required_shares') if with_membership else 0
+        if Config.cumulative_shares_for_membership():
+            return for_subscription + for_membership
+        else:
+            return max(for_subscription, for_membership)
+
+
 class SubscriptionMembership(JuntagricoBaseModel):
     member = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, verbose_name=Config.vocabulary('subscription'))
@@ -396,6 +457,9 @@ class SubscriptionMembership(JuntagricoBaseModel):
     def co_members(self):
         return self.subscription.co_members(self.member)
 
+    def invitees(self):
+        return Invitee.objects.filter(subscription=self.subscription, invited_by=self.member)
+
     def leave(self, on_date=None):
         on_date = on_date or datetime.date.today()
         # if subscription will not have been left at change date already
@@ -406,6 +470,12 @@ class SubscriptionMembership(JuntagricoBaseModel):
                 self.save()
             else:
                 self.delete()
+        # if has other pending subscription membership on active subscription, join there now.
+        follow_up = self.member.subscriptionmembership_set.filter(
+            join_date=None, subscription__activation_date__isnull=False
+        ).first()
+        if follow_up:
+            self.member.join_subscription(follow_up.subscription)
 
     class Meta:
         verbose_name = format_lazy(_('{}-Mitgliedschaft'), Config.vocabulary('subscription'))

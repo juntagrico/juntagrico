@@ -538,3 +538,9 @@ a.phone-number {
 .share-overview {
     max-width: 60em;
 }
+
+/* comma separator */
+
+.comma-sep:not(:last-child)::after {
+    content: ', ';
+}
