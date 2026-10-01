@@ -89,6 +89,20 @@ class InvitationTests(CreateSubscriptionTestCase):
         if settings.ENABLE_SHARES:
             cls.invitee.shares = 2
             cls.invitee.save()
+        cls.existing_invitee = Invitee.objects.create(
+            email=cls.member2.email,
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.sub.primary_member,
+        )
+        cls.expired_invitation = Invitee.objects.create(
+            email='expired@juntagrico.invalid',
+            first_name='Invitee',
+            last_name='Juntagrico',
+            subscription=cls.sub,
+            invited_by=cls.member4,
+        )
 
     def testInvalidInvitation(self):
         invalid_key = uuid.uuid4()
@@ -97,18 +111,19 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.client.force_login(self.member2.user)
         self.assertGet(reverse('invitation-existing', args=[invalid_key]), 200)
 
-    def testInvitationInvalidation(self):
-        expired_invitation = Invitee.objects.create(
-            email='invitee@juntagrico.invalid',
-            first_name='Invitee',
-            last_name='Juntagrico',
-            subscription=self.sub,
-            invited_by=self.member4,
+    def testInvitationBanner(self):
+        self.client.force_login(self.member2.user)
+        response = self.assertGet(reverse('home'), 200, self.member2)
+        self.assertContains(
+            response,
+            f'<a class="btn btn-info" href="{reverse("invitation-existing", args=[self.existing_invitee.key])}">',
         )
+
+    def testInvitationInvalidation(self):
         # if inviter is not in subscription (anymore) invitation becomes invalid
-        self.assertGet(reverse('invitation', args=[expired_invitation.key]), 200)
+        self.assertGet(reverse('invitation', args=[self.expired_invitation.key]), 200)
         with self.assertRaises(Invitee.DoesNotExist):
-            expired_invitation.refresh_from_db()
+            self.expired_invitation.refresh_from_db()
 
     def testAcceptInvitationNew(self):
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
