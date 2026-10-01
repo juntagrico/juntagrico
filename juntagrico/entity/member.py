@@ -392,17 +392,29 @@ class Invitee(AbstractProfile):
     sent_at = models.DateTimeField(null=True, blank=True)
     key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    def required_shares(self):
-        # calculate share underflow, assuming all other invitees order as suggested
-        return -(
-            self.subscription.share_overflow
-            + (
-                self.subscription.invitees.exclude(pk=self.pk).aggregate(
-                    share_sum=Sum('shares')
-                )['share_sum']
-                or 0
-            )
+    @cached_property
+    def required_shares_for_subscription(self):
+        return max(
+            0,
+            -(
+                self.subscription.share_overflow
+                + (
+                    self.subscription.invitees.exclude(pk=self.pk).aggregate(
+                        share_sum=Sum('shares')
+                    )['share_sum']
+                    or 0
+                )
+            ),
         )
+
+    def required_shares(self, with_membership=False):
+        # calculate required shares, assuming all other invitees order as suggested
+        for_subscription = self.required_shares_for_subscription
+        for_membership = Config.membership('required_shares') if with_membership else 0
+        if Config.cumulative_shares_for_membership():
+            return for_subscription + for_membership
+        else:
+            return max(for_subscription, for_membership)
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
