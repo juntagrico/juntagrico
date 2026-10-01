@@ -67,13 +67,23 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
         membership_form = None
 
     if Config.enable_shares():
-        # count share underflow, assuming all other invitees order as suggested
-        required_shares = invitee.required_shares()
+        # count required shares, assuming all other invitees order as suggested
+        initial = {'of_member': invitee.shares}
         if request.method == 'POST':
-            share_form = ShareInvitationForm(required_shares, data=request.POST)
-        else:
+            membership = False
+            if membership_form:
+                membership_form.is_valid()
+                membership = membership_form.cleaned_data['membership']
+            required_shares = invitee.required_shares(membership)
             share_form = ShareInvitationForm(
-                required_shares, initial={'of_member': invitee.shares}
+                required_shares,
+                data=request.POST,
+                initial=initial,
+            )
+        else:
+            required_shares = invitee.required_shares()
+            share_form = ShareInvitationForm(
+                required_shares, initial=initial
             )
     else:
         share_form = None
@@ -147,24 +157,30 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
     # inform that joining can only take effect once current subscription ends
     next_possible_join_date = account.next_possible_join_date()
 
+    membership_form = None
+    if Config.enable_membership():
+        if not account.memberships.not_canceled().exists():
+            if request.method == 'POST':
+                membership_form = MembershipInvitationForm(request.POST)
+            else:
+                membership_form = MembershipInvitationForm()
+
     # if account has fewer shares than needed, show share order form
     share_form = None
     if Config.enable_shares():
         existing_shares = account.usable_shares.count()
-        required_shares = invitee.required_shares()
+
+        membership = False
+        if membership_form and request.method == 'POST':
+            membership_form.is_valid()
+            membership = membership_form.cleaned_data['membership']
+        required_shares = invitee.required_shares(membership)
+
         if required_shares > existing_shares:
             if request.method == 'POST':
                 share_form = ShareInvitationForm(required_shares, existing_shares, data=request.POST)
             else:
                 share_form = ShareInvitationForm(required_shares, existing_shares)
-
-    membership_form = None
-    if Config.enable_membership():
-        if share_form and not account.memberships.not_canceled().exists():
-            if request.method == 'POST':
-                membership_form = MembershipInvitationForm(request.POST)
-            else:
-                membership_form = MembershipInvitationForm()
 
     if request.method == 'POST':
         valid = True

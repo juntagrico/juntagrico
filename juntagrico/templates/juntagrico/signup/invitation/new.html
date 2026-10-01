@@ -50,7 +50,11 @@
         {% endblock %}
 
         {% if membership_form %}
-            <h4 class="mt-5">{% vocabulary "membership" %} erwerben</h4>
+            <h4 class="mt-5 capfirst">
+                {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                    {{ v_membership }} beantraten
+                {% endblocktrans %}
+            </h4>
             <p>
                 {% block optional_membership %}
                     <strong>
@@ -73,23 +77,26 @@
         {% endif %}
 
         {% if share_form %}
-            <h4 class="mt-5">{% vocabulary "share_pl" %} bestellen</h4>
-
+            <h4 class="mt-5 capfirst">
+                {% blocktrans trimmed with v_share_pl=vocabulary.share_pl %}
+                    {{ v_share_pl }} bestellen
+                {% endblocktrans %}
+            </h4>
             <p>
                 {% include "juntagrico/my/share/snippets/intro.html" %}
             </p>
 
             <p>
-                {% if share_form.initial.of_member %}
+                {% if share_form.initial.of_member > 0 %}
                     {% blocktrans trimmed with inviter=invitee.invited_by v_share=vocabulary.share v_shares=vocabulary.share_pl count count=share_form.initial.of_member %}
                         {{ inviter }} hat für dich {{ count }} {{ v_share }} vorgesehen.
                     {% plural %}
                         {{ inviter }} hat für dich {{ count }} {{ v_shares }} vorgesehen.
                     {% endblocktrans %}
                 {% endif %}
-                {% if share_form.required.total > 0 %}
+                {% if invitee.required_shares_for_subscription > 0 %}
                     <br>
-                    {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc v_share=vocabulary.share v_shares=vocabulary.share_pl count count=share_form.required.total %}
+                    {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc v_share=vocabulary.share v_shares=vocabulary.share_pl count count=invitee.required_shares_for_subscription %}
                         Für {{ v_the_subscription_acc }} wird deinerseits mindestens {{ count }} {{ v_share }} benötigt.
                     {% plural %}
                         Für {{ v_the_subscription_acc }} werden deinerseits mindestens {{ count }} {{ v_shares }} benötigt.

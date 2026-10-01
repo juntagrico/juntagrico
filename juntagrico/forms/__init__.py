@@ -280,7 +280,7 @@ class CoMemberBaseForm(MemberBaseForm):
 
     @staticmethod
     def get_submit_button():
-        return Submit('submit', _('{co_member} hinzufügen').format(
+        return Submit('submit', _('{co_member} einladen').format(
             co_member=Config.vocabulary('co_member')
         ), css_class='btn-success')
 
