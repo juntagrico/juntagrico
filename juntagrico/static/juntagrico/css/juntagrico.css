@@ -288,6 +288,16 @@ textarea#recipients[disabled=disabled] {
     background-color: #780fff;
 }
 
+/* img as icon */
+.icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+    object-fit: contain;
+    object-position: center;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;

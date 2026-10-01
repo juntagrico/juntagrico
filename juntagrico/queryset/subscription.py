@@ -133,6 +133,19 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         else:
             raise ValueError('required assignments can not be assigned twice with 2 different date ranges.')
 
+        from ..entity.subs import SubscriptionSurcharge
+        surcharges = (
+            SubscriptionSurcharge.objects.filter(
+                subscription=OuterRef('pk'),
+                date__range=(start, end),
+            )
+            .values('subscription')
+            .annotate(
+                surcharge=Sum('required_assignments', default=0.0),
+                core_surcharge=Sum('required_core_assignments', default=0.0))
+            .values('surcharge', 'core_surcharge')
+        )
+
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
             parts__type__trial_duration=(
@@ -188,9 +201,11 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         ).annotate(  # annotate the final results
             required_core_assignments=Greatest(0.0, self._assignment_rounding(
                 Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
+                + Coalesce(Subquery(surcharges.values('core_surcharge')), 0.0)
             )),
             required_assignments=Greatest(F('required_core_assignments'), self._assignment_rounding(
                 Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+                + Coalesce(Subquery(surcharges.values('surcharge')), 0.0)
             )),
         )
 
