@@ -22,13 +22,15 @@ def welcome(member, password):
 
 def invite_co_member(invitee):
     # sends invitation mail to invited co-member
-    EmailSender.get_sender_for_contact(
-        'for_members',
+    EmailBuilder(
+        invitee,
         _('Einladung zu {0}').format(enriched_organisation('D')),
-        get_template('juntagrico/mails/member/subscription/invite.txt').render({
+        'juntagrico/mails/member/subscription/invite.txt',
+        {
             'invitee': invitee,
-        }),
-    ).send_to(invitee.email)
+        },
+        'for_members',
+    ).send()
 
 
 def shares_created(member, shares):

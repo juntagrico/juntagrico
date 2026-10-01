@@ -111,6 +111,16 @@ class CreateMembershipWithSharesForm(ShareOrderForm, CreateMembershipForm):
         super().save(account)
 
 
+class MembershipInvitationForm(MembershipForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(False, *args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            'membership',
+        )
+
+
 class CancelAndDeactivateForm(forms.ModelForm):
     deactivate = forms.BooleanField(initial=False, required=False, label=gettext_lazy('Deaktivieren?'))
     membership_ids = forms.CharField(required=True, widget=forms.HiddenInput())

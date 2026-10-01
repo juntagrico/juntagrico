@@ -1,0 +1,107 @@
+{% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% blocktrans %}Einladung{% endblocktrans %}
+{% endblock %}
+
+{% block intro %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    {% block intro_1 %}
+        <p class="capfirst">
+            {% blocktrans with inviter=invitee.invited_by %}{{ inviter }} hat dich bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
+        </p>
+    {% endblock %}
+
+    <p>
+        {% block intro_2 %}
+            {% blocktrans trimmed %}
+                Bei {{ v_d_enriched_organisation }} tragen Alle im Rahmen ihrer Motivationen, Prioritäten und
+                Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
+            {% endblocktrans %}
+        {% endblock %}
+    </p>
+
+    {% documents "account-signup" as c_documents %}
+    {% if c_documents %}
+        {% block read_instructions %}
+            <p>
+                {% blocktrans trimmed %}
+                    Bevor du dich anmeldest, lies bitte Folgendes durch:
+                {% endblocktrans %}
+            </p>
+        {% endblock %}
+        <ul>
+            {% for name, link in c_documents %}
+                <li>{% ext_link name link %}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% crispy account_form %}
+
+        {% if membership_form %}
+            <h4 class="mt-5">{% vocabulary "membership" %} erwerben</h4>
+            <p>
+                {% block optional_membership %}
+                    <strong>
+                        {% blocktrans trimmed with v_membership=vocabulary.membership %}
+                            Die {{ v_membership }} ist freiwillig.
+                        {% endblocktrans %}
+                    </strong>
+                {% endblock %}
+            </p>
+
+            {% if membership_fee %}
+                <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag:
+                    {{ fee }}{% endblocktrans %}</strong></p>
+            {% endif %}
+
+            {% include "juntagrico/my/membership/snippets/documents.html" %}
+
+            {% crispy membership_form %}
+        {% endif %}
+
+        {% if share_form %}
+            <h4 class="mt-5">{% vocabulary "share_pl" %} bestellen</h4>
+
+            <p>
+                {% include "juntagrico/my/share/snippets/intro.html" %}
+            </p>
+
+            <p>
+                {% if share_form.initial.of_member %}
+                    {% blocktrans trimmed with inviter=invitee.invited_by v_share=vocabulary.share v_shares=vocabulary.share_pl count count=share_form.initial.of_member %}
+                        {{ inviter }} hat für dich {{ count }} {{ v_share }} vorgesehen.
+                    {% plural %}
+                        {{ inviter }} hat für dich {{ count }} {{ v_shares }} vorgesehen.
+                    {% endblocktrans %}
+                {% endif %}
+                {% if share_form.required.total %}
+                    <br>
+                    {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc v_share=vocabulary.share v_shares=vocabulary.share_pl count count=share_form.required.total %}
+                        Für {{ v_the_subscription_acc }} wird deinerseits mindestens {{ count }} {{ v_share }} benötigt.
+                    {% plural %}
+                        Für {{ v_the_subscription_acc }} werden deinerseits mindestens {{ count }} {{ v_shares }} benötigt.
+                    {% endblocktrans %}
+                {% endif %}
+                {% if required_shares_for_membership %}
+                    <br>
+                    {% block intro_share_membership %}
+                        {% include "juntagrico/my/share/snippets/intro_for_membership.html" with required=required_shares_for_membership %}
+                    {% endblock %}
+                {% endif %}
+            </p>
+
+            {% crispy share_form %}
+        {% endif %}
+        <input type="submit" class="btn btn-lg btn-primary" value="{% trans 'Einladung verbindlich annehmen' %}">
+    </form>
+{% endblock %}

@@ -34,7 +34,6 @@ def q_left_subscription(asof=None):
     return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
-@absolute_url(name='manage-account-single')
 class AbstractProfile(JuntagricoBaseModel):
     class Meta:
         abstract = True
@@ -62,6 +61,7 @@ class AbstractProfile(JuntagricoBaseModel):
         return self.phone
 
 
+@absolute_url(name='manage-account-single')
 class Member(AbstractProfile):
     '''
     Additional fields for Django's default user class.
@@ -364,6 +364,7 @@ class Member(AbstractProfile):
 
 class Invitee(AbstractProfile):
     email = LowercaseEmailField()
+    invited_by = models.ForeignKey('Member', related_name='invitees', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
     shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
     key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

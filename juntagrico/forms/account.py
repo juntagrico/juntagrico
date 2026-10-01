@@ -20,7 +20,7 @@ from juntagrico.entity.share import Share
 from juntagrico.forms import (
     JuntagricoDateWidget,
     InternalModelSelect2MultipleWidget,
-    InternalModelSelect2Widget,
+    InternalModelSelect2Widget, RegisterMemberForm,
 )
 from juntagrico.forms.subscription import CancellationField
 from juntagrico.mailer import adminnotification, membernotification
@@ -63,6 +63,17 @@ class MemberSelect2Widget(MemberSelect2Mixin, InternalModelSelect2Widget):
 
 class MemberSelect2MultipleWidget(MemberSelect2Mixin, InternalModelSelect2MultipleWidget):
     pass
+
+
+class AccountInvitationForm(RegisterMemberForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.form_class = ''
+        self.helper.label_class = ''
+        self.helper.field_class = ''
+        # remove form action
+        del self.helper.layout[-1]
 
 
 class SearchForm(forms.Form):

@@ -22,7 +22,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
 from juntagrico.forms.subscription import PrimaryMemberChangeForm, CancellationForm, LeaveForm
-from juntagrico.mailer import adminnotification
+from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.management import create_share
@@ -190,6 +190,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
     def form_valid(self, form):
         # invite co-member
         form.instance.subscription = self.subscription
+        form.instance.invited_by = self.request.user.member
         invitee = form.save()
         membernotification.invite_co_member(invitee)
         return self._done()
