@@ -296,3 +296,9 @@ class InvitationTestsWithoutMembership(InvitationTests):
 
     def testAcceptInvitationNewWithMembershipInsufficientShares(self):
         pass
+
+
+@tag('shares')
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class InvitationWithCumulativeSharesTest(InvitationTests):
+    pass
