@@ -21,6 +21,19 @@ from . import JuntagricoTestCase
     }
 )
 class DepotlistTestCase(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        depot_data = {
+            'name': 'depot_without_tour',
+            'tour': None,
+            'weekday': 4,
+            'location': cls.depot.location,
+        }
+        cls.depot_without_tour = Depot.objects.create(**depot_data)
+        cls.sub5 = cls.create_sub_now(cls.depot_without_tour)
+        cls.member5.join_subscription(cls.sub5, True)
+    
     def setUp(self):
         super().setUp()
         from ..util.pdf import internal_storage
@@ -36,15 +49,6 @@ class DepotlistGenerationTests(DepotlistTestCase):
         cls.sub.save()
         cls.sub4 = cls.create_sub_now(cls.depot, future_depot=cls.depot2)
         cls.member4.join_subscription(cls.sub4, True)
-        depot_data = {
-            'name': 'depot_without_tour',
-            'tour': None,
-            'weekday': 4,
-            'location': cls.depot.location,
-        }
-        cls.depot_without_tour = Depot.objects.create(**depot_data)
-        cls.sub5 = cls.create_sub_now(cls.depot_without_tour)
-        cls.member5.join_subscription(cls.sub5, True)
 
     def setUp(self):
         super().setUp()
