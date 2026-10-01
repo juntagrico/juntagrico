@@ -227,10 +227,10 @@ class CreateSubscriptionTests(CreateSubscriptionTestCase):
             self.member4.email,
             True,
             'test comment',
-            (2 + self.share_order_count) if settings.ENABLE_SHARES else 1,
+            (1 + self.share_order_count) if settings.ENABLE_SHARES else 0,
         )
         # share mails (if enabled) for member & 1 admin notifications & 1 Invite
-        self.assertEqual(len(mail.outbox), (4 + self.share_order_count) if settings.ENABLE_SHARES else 2)
+        self.assertEqual(len(mail.outbox), (3 + self.share_order_count) if settings.ENABLE_SHARES else 2)
 
     def testAddSubWithoutComember(self):
         """ test order of new sub by existing member without sub
