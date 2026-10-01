@@ -2,38 +2,22 @@
 {
     "model": "juntagrico.billable",
     "pk": 1,
-    "fields": {
-        "polymorphic_ctype_id": [
-            "juntagrico","share"
-        ]
-    }
+    "fields": {}
 },
 {
     "model": "juntagrico.billable",
     "pk": 2,
-    "fields": {
-        "polymorphic_ctype_id": [
-            "juntagrico","share"
-        ]
-    }
+    "fields": {}
 },
 {
     "model": "juntagrico.billable",
     "pk": 3,
-    "fields": {
-        "polymorphic_ctype_id": [
-            "juntagrico","share"
-        ]
-    }
+    "fields": {}
 },
 {
     "model": "juntagrico.billable",
     "pk": 4,
-    "fields": {
-        "polymorphic_ctype_id": [
-            "juntagrico","share"
-        ]
-    }
+    "fields": {}
 },
 {
     "model": "juntagrico.share",
