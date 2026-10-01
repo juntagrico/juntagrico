@@ -87,7 +87,7 @@
                         {{ inviter }} hat für dich {{ count }} {{ v_shares }} vorgesehen.
                     {% endblocktrans %}
                 {% endif %}
-                {% if share_form.required.total %}
+                {% if share_form.required.total > 0 %}
                     <br>
                     {% blocktrans trimmed with v_the_subscription_acc=vocabulary.the_subscription_acc v_share=vocabulary.share v_shares=vocabulary.share_pl count count=share_form.required.total %}
                         Für {{ v_the_subscription_acc }} wird deinerseits mindestens {{ count }} {{ v_share }} benötigt.

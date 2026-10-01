@@ -176,7 +176,7 @@ class MemberBaseForm(ModelForm):
         return mark_safe(
             escape(
                 _('Diese E-Mail-Adresse existiert bereits im System.')
-            ) + f'<a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+            ) + f' <a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
 
