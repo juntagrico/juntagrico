@@ -105,6 +105,13 @@ class InvitationTests(CreateSubscriptionTestCase):
             invited_by=cls.member4,
         )
 
+    def assertHasMembership(self, email='new_member@juntagrico.invalid'):
+        self.assertTrue(
+            Membership.objects.filter(
+                account__email=email
+            ).exists()
+        )
+
     def testInvalidInvitation(self):
         invalid_key = uuid.uuid4()
         self.assertGet(reverse('invitation', args=[invalid_key]), 200)
@@ -168,34 +175,37 @@ class InvitationTests(CreateSubscriptionTestCase):
             ).exists()
         )
 
+    @tag('shares')
+    def testAcceptInvitationNewWithMembershipInsufficientShares(self):
+        data = self.newMemberData('new_member@juntagrico.invalid')
+        data.update({'membership': True})
+        # ordering with insufficient shares fails
+        self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
+        data.update({'of_member': 0})
+        self.assertPost(
+            reverse('invitation-new', args=[self.invitee.key]),
+            data,
+            200,
+        )
+        self.assertFalse(
+            Membership.objects.filter(
+                account__email='new_member@juntagrico.invalid'
+            ).exists()
+        )
+
     def testAcceptInvitationNewWithMembership(self):
         data = self.newMemberData('new_member@juntagrico.invalid')
         data.update({'membership': True})
         if settings.ENABLE_SHARES:
             # ordering with insufficient shares fails
             self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
-            data.update({'of_member': 0})
-            self.assertPost(
-                reverse('invitation-new', args=[self.invitee.key]),
-                data,
-                200,
-            )
-            self.assertFalse(
-                Membership.objects.filter(
-                    account__email='new_member@juntagrico.invalid'
-                ).exists()
-            )
-            data['of_member'] = 1
+            data.update({'of_member': 1})
         self.assertPost(
             reverse('invitation-new', args=[self.invitee.key]),
             data,
             302,
         )
-        self.assertTrue(
-            Membership.objects.filter(
-                account__email='new_member@juntagrico.invalid'
-            ).exists()
-        )
+        self.assertHasMembership()
         self.assertTrue(
             self.sub.current_members.filter(
                 email='new_member@juntagrico.invalid'
@@ -276,4 +286,13 @@ class InvitationTests(CreateSubscriptionTestCase):
 
 @override_settings(MEMBERSHIP={'enable': False})
 class InvitationTestsWithoutMembership(InvitationTests):
-    pass
+    def assertHasMembership(self, email='new_member@juntagrico.invalid'):
+        # should not create membership if memberships are inactive.
+        self.assertFalse(
+            Membership.objects.filter(
+                account__email=email
+            ).exists()
+        )
+
+    def testAcceptInvitationNewWithMembershipInsufficientShares(self):
+        pass
