@@ -153,6 +153,14 @@ def german(**keys):
                 'with_active_subscription': ['mit aktivem ', 'mit aktiver ', 'mit aktivem '][g] + subscription,
             }
         )
+    if 'co_member' in keys:
+        co_member, co_members, _ = keys['co_member']
+        keys.update(
+            {
+                'co_member': co_member,
+                'co_member_pl': co_members,
+            }
+        )
     return keys
 
 
@@ -269,6 +277,14 @@ def french(**keys):
                     f'à un autre {subscription}' if g.lower() == 'm' else f'à une autre {subscription}'
                 ),
                 'with_active_subscription': f'un {subscription} actif' if g.lower() == 'm' else f'une {subscription} active',
+            }
+        )
+    if 'co_member' in keys:
+        co_member, co_members, _ = keys['co_member']
+        keys.update(
+            {
+                'co_member': co_member,
+                'co_member_pl': co_members,
             }
         )
     return keys

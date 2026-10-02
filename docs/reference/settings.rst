@@ -726,16 +726,13 @@ Appearance
 
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word.
+  Vocabulary dictionary for organisation specific words.
 
   the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
 
-  If you use vocabulary with a different gender than the default you will also have to adjust the related fragments.
-  When using the same gender it is sufficient to only change the singular and plural form of your vocabulary.
-
-  There are helpers for some languages, that will adjust the fragments for you:
+  There are helpers for some languages, that will adjust all related fragments:
 
   .. code-block:: python
 
@@ -746,6 +743,22 @@ VOCABULARY
         assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
         package='Korb',  # pass other vocabulary items as arguments
     )
+
+  Other key that can be defined with a tuple: 'account', 'member_type', 'membership', 'share', 'co_member', 'depot'.
+  Keys without tuple: 'price', 'package', 'from'.
+
+  For french, use a capital letter for the gender if your word starts with an "h aspiré".
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.french(
+        subscription=('part de récolte', 'parts de récolte', 'm'),  # m = masculine
+        assignment=('haricot', 'haricots', 'M'),  # M = masculine with a h aspiré
+    )
+
+  For other languages you will have to define all relevant fragments.
 
   Type: Dictionary
 
