@@ -157,30 +157,39 @@ def german(**keys):
 
 
 def french(**keys):
+    """
+    if the word starts with an H it is assumed to be a silent H (h muet).
+    For "h aspiré" use capital a letter for the gender i.e. 'M' or 'F'
+    """
     vowel_sound = 'aeiouhàâäéèêëïîôöœù'
     no = {'m': 'aucun ', 'f': 'aucune '}
-    your = {'m': 'ton ', 'f': 'ta '}
 
-    def starts_with_vowel(word):
-        return word[0].lower() in vowel_sound
+    def starts_with_vowel(word, g):
+        return g.islower() and word[0].lower() in vowel_sound
 
     def get_demonstrative(word, g):
         """Returns 'ce', 'cet', or 'cette'"""
-        if g == 'f':  # feminine
+        if g.lower() == 'f':  # feminine
             return f'cette {word}'
-        return f'cet {word}' if starts_with_vowel(word) else f'ce {word}'
+        return f'cet {word}' if starts_with_vowel(word, g) else f'ce {word}'
 
     def get_definite_article(word, g):
         """Returns 'le', 'la', or 'l\''"""
-        if starts_with_vowel(word):
+        if starts_with_vowel(word, g):
             return f"l'{word}"
-        return f'le {word}' if g == 'm' else f'la {word}'
+        return f'le {word}' if g.lower() == 'm' else f'la {word}'
 
     def get_dative(word, g):
         """Returns 'au', 'à la' or 'à l\''"""
-        if starts_with_vowel(word):
+        if starts_with_vowel(word, g):
             return f"à l'{word}"
-        return f'au {word}' if g == 'm' else f'à la {word}'
+        return f'au {word}' if g.lower() == 'm' else f'à la {word}'
+
+    def get_possessive(word, g):
+        """Returns 'ton' or 'ta'"""
+        if starts_with_vowel(word, g):
+            return f'ton {word}'
+        return f'ton {word}' if g.lower() == 'm' else f'ta {word}'
 
     if 'account' in keys:
         account, accounts, g = keys['account']
@@ -207,7 +216,7 @@ def french(**keys):
                 'member_type': member_type,
                 'member_type_pl': member_types,
                 # 'pas' or 'plus' must be written in the translation of the expression
-                'not_a_member_type': ('un ' if g == 'm' else 'une ') + member_type,
+                'not_a_member_type': ('un ' if g.lower() == 'm' else 'une ') + member_type,
             }
         )
     if 'membership' in keys:
@@ -216,7 +225,7 @@ def french(**keys):
             {
                 'membership': membership,
                 'membership_pl': memberships,
-                'your_membership_acc': your[g] + membership,
+                'your_membership_acc': get_possessive(membership, g),
             }
         )
     if 'share' in keys:
@@ -227,7 +236,7 @@ def french(**keys):
                 'share_pl': shares,
                 'this_share': get_demonstrative(share, g),
                 'this_share_acc': get_demonstrative(share, g),
-                'no_share': no[g] + share,
+                'no_share': no[g.lower()] + share,
             }
         )
     if 'depot' in keys:
@@ -239,7 +248,7 @@ def french(**keys):
                 'the_depot_acc': get_definite_article(depot, g),
                 'the_depot_dat': get_dative(depot, g),
                 'to_the_depot': 'vers ' + get_definite_article(depot, g),
-                'your_depot': your[g] + depot,
+                'your_depot': get_possessive(depot, g),
             }
         )
     if 'subscription' in keys:
@@ -250,16 +259,16 @@ def french(**keys):
                 'subscription_pl': subscriptions,
                 'the_subscription': get_definite_article(subscription, g),
                 'the_subscription_acc': get_definite_article(subscription, g),
-                'no_subscription_acc': no[g] + subscription,
+                'no_subscription_acc': no[g.lower()] + subscription,
                 'this_subscription_acc': get_demonstrative(subscription, g),
                 'this_subscription_dat': get_demonstrative(subscription, g),
-                'your_subscription': your[g] + subscription,
-                'your_subscription_acc': your[g] + subscription,
-                'your_subscription_dat': your[g] + subscription,
+                'your_subscription': get_possessive(subscription, g),
+                'your_subscription_acc': get_possessive(subscription, g),
+                'your_subscription_dat': get_possessive(subscription, g),
                 'another_subscription_dat': (
-                    f'à un autre {subscription}' if g == 'm' else f'à une autre {subscription}'
+                    f'à un autre {subscription}' if g.lower() == 'm' else f'à une autre {subscription}'
                 ),
-                'with_active_subscription': f'un {subscription} actif' if g == 'm' else f'une {subscription} active',
+                'with_active_subscription': f'un {subscription} actif' if g.lower() == 'm' else f'une {subscription} active',
             }
         )
     return keys
