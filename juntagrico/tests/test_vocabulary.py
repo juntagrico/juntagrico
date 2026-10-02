@@ -52,6 +52,7 @@ class VocabularyTests(JuntagricoTestCase):
             share=('A', 'As', 'm'),
             depot=('H', 'Hs', 'f'),
             subscription=('E', 'Es', 'm'),
+            co_member=('C', 'Cs', 'f'),
         )
     }
 )
