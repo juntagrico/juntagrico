@@ -1867,12 +1867,12 @@ msgstr "À toutes les personnes de ces missions"
 #: juntagrico/forms/email.py:158
 #, python-brace-format
 msgid "An alle {with_active_subscription} in diesen {depots}"
-msgstr "À toutes les personnes ayant un·e {} actif·ve dans ces {}"
+msgstr "À toutes les personnes ayant {with_active_subscription} dans ces {depots}"
 
 #: juntagrico/forms/email.py:203
 #, python-brace-format
 msgid "Alle {with_active_subscription}"
-msgstr "Toutes les personnes ayant un·e {} actif·ve"
+msgstr "Toutes les personnes ayant {with_active_subscription}"
 
 #: juntagrico/forms/email.py:210
 #, fuzzy, python-brace-format
@@ -1883,7 +1883,7 @@ msgstr "Nouveau {shares}"
 #: juntagrico/forms/email.py:237
 #, python-brace-format
 msgid "An alle {with_active_subscription} in {depot} {depot_name}"
-msgstr "Toutes les personnes ayant un·e {}"
+msgstr "Toutes les personnes ayant {with_active_subscription} dans {depot} {depot_name}"
 
 #: juntagrico/forms/email.py:252
 msgid "An diese Personen in {}"
@@ -2066,12 +2066,12 @@ msgstr "Un poste doit avoir soit plus de 0 places, soit l'option « Places illim
 #: juntagrico/lifecycle/member.py:33
 #, python-brace-format
 msgid "{this_account} hat noch aktive {shares}"
-msgstr "Ce·tte {} a encore au moins une {} active"
+msgstr "{this_account} a encore des {shares} actives"
 
 #: juntagrico/lifecycle/member.py:41
 #, python-brace-format
 msgid "{this_account} ist noch Verwalter:in von 1 {subscription}"
-msgstr ""
+msgstr "{this_account} est toujours responsable de 1 {subscription}"
 
 #: juntagrico/lifecycle/membership.py:37
 msgid "{} kann nur 1 {} gleichzeitig aktiv oder beantragt haben."
@@ -2480,12 +2480,12 @@ msgstr "Sans %(v_subscription_pl)s"
 msgid ""
 "Hier kannst du %(v_your_subscription_acc)s kündigen. Der nächste reguläre "
 "Kündigungstermin ist der <b>%(ed)s</b>."
-msgstr "Tu peux résilier ici ta %(v_subscription)s. La prochaine date de résiliation ordinaire est le <b>%(ed)s</b>."
+msgstr "Tu peux résilier ici %(v_your_subscription_acc)s. La prochaine date de résiliation ordinaire est le <b>%(ed)s</b>."
 
 #: juntagrico/templates/cancelsubscription.html:22
 #, python-format
 msgid "Möchtest du %(v_your_subscription_acc)s verbindlich künden?"
-msgstr "Veux-tu vraiment résilier cette %(v_subscription)s de manière définitive ?"
+msgstr "Veux-tu vraiment résilier %(v_your_subscription_acc)s de manière définitive ?"
 
 #: juntagrico/templates/cancelsubscription.html:29
 #: juntagrico/templates/contact.html:48
@@ -2606,7 +2606,7 @@ msgstr "Modifier le %(v_depot)s"
 #: juntagrico/templates/depot_change.html:22
 #, python-format
 msgid "%(v_your_depot)s wurde geändert."
-msgstr "Ton %(v_depot)s a été modifié."
+msgstr "%(v_your_depot)s a été modifié."
 
 #: juntagrico/templates/depot_change.html:29
 #: juntagrico/templates/juntagrico/my/subscription/change_primary.html:28
@@ -2633,12 +2633,12 @@ msgstr "Choisir %(v_depot)s"
 msgid ""
 "Achtung! Hiermit sendest du erst eine Anfrage für den Wechsel. Du wirst "
 "darüber informiert wenn %(v_your_depot)s sich ändert."
-msgstr "Choisis 1 %(v_depot)s comme futur lieu de récupération de ta %(v_subscription)s. "
+msgstr "Attention ! Tu n'envoies ici qu'une demande de modification. Tu seras informé·e lorsque %(v_your_depot)s changera."
 
 #: juntagrico/templates/depot_change.html:74
 #, python-format
 msgid "%(v_depot)s ändern"
-msgstr "Attention ! Tu n'envoies ici qu'une demande de modification. Tu seras informé·e lorsque ton %(v_depot)s changera."
+msgstr ""
 
 #: juntagrico/templates/exports/amount_overview.html:7
 #: juntagrico/views_admin.py:80
@@ -3256,7 +3256,7 @@ msgstr "Modification enregistrée"
 #: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:9
 #, python-format
 msgid "Du änderst %(v_the_assignment_acc)s von %(m)s"
-msgstr "Tu modifies la %(v_assignment)s de %(m)s"
+msgstr "Tu modifies %(v_the_assignment_acc)s de %(m)s"
 
 #: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:17
 msgid "Folgende Personen werden automatisch über diese Änderung informiert:"
@@ -3338,14 +3338,14 @@ msgstr "Salut"
 msgid ""
 "Soeben hat %(fn)s %(ln)s für %(subscription)s %(v_the_depot_acc)s geändert "
 "von \"%(old_depot)s\" nach \"%(new_depot)s\"."
-msgstr "%(fn)s %(ln)s vient de modifier le %(v_depot)s pour %(subscription)s, de « %(old_depot)s » à « %(new_depot)s »."
+msgstr "%(fn)s %(ln)s vient de modifier %(v_the_depot_acc)s pour %(subscription)s, de « %(old_depot)s » à « %(new_depot)s »."
 
 #: juntagrico/templates/juntagrico/mails/admin/depot_changed.txt:10
 #, python-format
 msgid ""
 "Die Änderung erfolgt sofort, weil %(v_the_subscription)s noch nicht aktiv "
 "ist."
-msgstr "La modification prend effet immédiatement, car %(v_subscription)s n'est pas encore active."
+msgstr "La modification prend effet immédiatement, car %(v_the_subscription)s n'est pas encore active."
 
 #: juntagrico/templates/juntagrico/mails/admin/depot_changed.txt:11
 msgid ""
@@ -3503,7 +3503,7 @@ msgstr "Tu peux <a href=\"%(server_url)s%(area_url)s\">le régler ici</a>."
 msgid ""
 "Du erhältst dieses E-Mail, weil du %(v_the_depot_dat)s \"%(depot_name)s\" "
 "angehörst."
-msgstr "Tu reçois cet e-mail parce que tu es rattaché·e au %(v_depot)s « %(depot_name)s »."
+msgstr "Tu reçois cet e-mail parce que tu es rattaché·e %(the_depot_dat)s « %(depot_name)s »."
 
 #: juntagrico/templates/juntagrico/mails/footer/job.html:6
 #, python-format
@@ -4540,7 +4540,7 @@ msgstr "Tu trouveras des infos sur les domaines d'activité dans la"
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:11
 #, python-format
 msgid "Benötigt für %(v_the_subscription_acc)s: %(ra)s%(unit)s"
-msgstr "Requis pour cette %(v_subscription)s : %(ra)s%(unit)s"
+msgstr "Requis pour %(v_the_subscription_acc)s : %(ra)s%(unit)s"
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:15
 #, python-format
@@ -4585,13 +4585,13 @@ msgid ""
 "<strong>Achtung:</strong> Dein Wechsel %(v_to_the_depot)s \"%(depot)s\" "
 "wurde beantragt. Wir informieren dich per E-Mail an %(email)s sobald die "
 "Änderung aktiv wird."
-msgstr ""
+msgstr "<strong>Attention :</strong> ta demande de changement %(v_to_the_depot)s \"%(sfe)s\" a été enregistrée. Nous t'informerons par e-mail à %(email)s dès que le changement sera actif. "
 
 #: juntagrico/templates/juntagrico/my/depot/snippets/change_pending_info.html:6
 #, python-format
 msgid ""
 "Bis dahin ist %(v_your_depot)s weiterhin <strong>\"%(depot)s\"</strong>."
-msgstr "<strong>Attention :</strong> ta demande de changement vers le %(v_depot)s \"%(sfe)s\" a été enregistrée. Nous t'informerons par e-mail à %(spe)s dès que le changement sera actif. D'ici là, ton %(v_depot)s reste <strong>\"%(sde)s\"</strong>."
+msgstr "D'ici là, %(v_your_depot)s reste <strong>\"%(depot)s\"</strong>."
 
 #: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:13
 #, python-format
@@ -4991,12 +4991,12 @@ msgstr "Ta %(v_subscription)s est encore sur la liste d'attente."
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/waiting_membership.html:6
 #, python-format
 msgid "Du wirst %(v_this_subscription_dat)s am %(jd)s beitreten."
-msgstr "Tu rejoindras cette %(v_subscription)s le %(jd)s."
+msgstr "Tu rejoindras %(this_subscription_dat)s le %(jd)s."
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/waiting_membership.html:10
 #, python-format
 msgid "Dein Beitritt zu %(v_this_subscription_dat)s ist noch ausstehend."
-msgstr "Ton adhésion à cette %(v_subscription)s est encore en attente."
+msgstr "Ton adhésion à %(v_this_subscription_dat)s est encore en attente."
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/buttons/trial.html:3
 msgid "Ja gerne"
@@ -5745,7 +5745,7 @@ msgstr "Si tu as été inscrit·e ici par erreur, signale-le à %(contact_email)
 msgid ""
 "Soeben hat %(co_member)s %(v_your_subscription_acc)s verlassen und hat "
 "folgende Nachricht hinterlassen:"
-msgstr "%(co_member)s vient de quitter votre %(v_subscription)s commune et a laissé le message suivant :"
+msgstr "%(co_member)s vient de quitter %(v_your_subscription_acc)s commune et a laissé le message suivant :"
 
 #: juntagrico/templates/mails/member/co_member_welcome.txt:15
 #: juntagrico/templates/mails/member/member_welcome.txt:10
@@ -5820,7 +5820,7 @@ msgstr "Pour toute autre question, envoie un e-mail à %(contact_email)s."
 #: juntagrico/templates/mails/member/depot_changed.txt:8
 #, python-format
 msgid "%(v_your_depot)s wurde wie von dir gewünscht gewechselt."
-msgstr "Ton %(v_depot)s %(c_organisation_name)s a changé comme tu l'as souhaité."
+msgstr "%(v_your_depot)s a changé comme tu l'as souhaité."
 
 #: juntagrico/templates/mails/member/depot_changed.txt:16
 #, python-format
@@ -5956,7 +5956,7 @@ msgstr "Devenir %(v_member_type)s"
 #: juntagrico/templates/manage_shares.html:86
 #, python-format
 msgid "%(v_this_share)s wird in 1 %(v_subscription)s benötigt"
-msgstr "Cette %(v_share)s est requise dans une %(v_subscription)s"
+msgstr "%(v_this_share)s est requise dans 1 %(v_subscription)s"
 
 #: juntagrico/templates/manage_shares.html:91
 msgid "Kann gekündigt werden, sobald eine IBAN hinterlegt ist"
@@ -5967,7 +5967,7 @@ msgstr "Peut être résiliée dès qu'un IBAN est enregistré"
 msgid ""
 "Möchtest du %(v_this_share_acc)s verbindlich zum "
 "%(next_membership_end_date)s kündigen?"
-msgstr " Veux-tu résilier cette %(v_share)s de manière ferme au %(next_membership_end_date)s ? "
+msgstr "Veux-tu résilier %(v_this_share_acc)s de manière ferme au %(next_membership_end_date)s ?"
 
 #: juntagrico/templates/manage_shares.html:111
 #, python-format
@@ -5989,7 +5989,7 @@ msgid ""
 "Hier werden nur deine eigenen %(v_assignment_pl)s angezeigt. Eine Übersicht "
 "der %(v_assignment_pl)s für %(v_your_subscription_acc)s findest du im "
 "Abschnitt %(v_assignment_pl)s hier:"
-msgstr "Seules tes propres %(v_assignment_pl)s sont affichées ici. Tu trouveras un aperçu des %(v_assignment_pl)s pour ta %(v_subscription)s dans la section %(v_assignment_pl)s ici :"
+msgstr "Seules tes propres %(v_assignment_pl)s sont affichées ici. Tu trouveras un aperçu des %(v_assignment_pl)s pour %(v_your_subscription_acc)s dans la section %(v_assignment_pl)s ici :"
 
 #: juntagrico/templates/messages/error.html:4
 msgid ""
