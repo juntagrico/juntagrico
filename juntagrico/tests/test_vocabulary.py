@@ -15,6 +15,7 @@ class VocabularyTests(JuntagricoTestCase):
             share=('S', 'Ss', 'f'),
             depot=('D', 'Ds', 'f'),
             subscription=('E', 'Es', 'm'),
+            co_member=('C', 'Cs', 'f'),
         )
     )
     def testGerman(self):
@@ -26,6 +27,7 @@ class VocabularyTests(JuntagricoTestCase):
         self.assertEqual(Config.vocabulary('this_share_acc'), 'diese S')
         self.assertEqual(Config.vocabulary('the_depot_dat'), 'der D')
         self.assertEqual(Config.vocabulary('another_subscription_dat'), 'einem anderen E')
+        self.assertEqual(Config.vocabulary('co_member'), 'C')
 
     @override_settings(
         VOCABULARY=defaults.french(
