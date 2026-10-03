@@ -349,7 +349,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         """
         :return: non-trial parts from the same subscription that are waiting or active after this part.
         """
-        return self.subscription.parts.non_trial().waiting(self.activation_date)
+        # performance shortcut. see SubscriptionTrialPartView
+        if not getattr(self, 'has_no_other_parts', False):
+            return self.subscription.parts.non_trial().waiting(self.activation_date)
+        return SubscriptionPart.objects.none()
 
     def clean(self):
         check_sub_part_consistency(self)

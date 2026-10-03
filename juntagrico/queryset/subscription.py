@@ -17,15 +17,17 @@ from django.db.models import (
     QuerySet,
     Prefetch,
     Count,
+    Value,
 )
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
 
 from juntagrico.entity import SimpleStateModelQuerySet
-from juntagrico.entity.member import SubscriptionMembership, Member
+from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
+from ..config import Config
 
 
 def assignments_in_subscription_membership(start, end, **extra_filters):
@@ -252,12 +254,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             )
         )
 
-    def cache_current_members(self):
+    def cache_members(self):
         return self.prefetch_related(
             Prefetch(
-                'members',
-                queryset=Member.objects.has_not_left().select_user(),
-                to_attr='cached_current_members',
+                'subscriptionmembership_set',
+                queryset=SubscriptionMembership.objects.select_related('member__user'),
+                to_attr='cached_members',
             )
         )
 
@@ -290,6 +292,55 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 ),
                 0,
             )
+        )
+    
+    def annotate_dedicated_shares(self):
+        # annotate share counts
+        today = datetime.date.today()
+        select_relevant_members = (
+            Q(subscriptionmembership__subscription__activation_date__isnull=True)
+            | Q(subscriptionmembership__join_date__lte=today)
+        ) & (
+            Q(subscriptionmembership__leave_date__isnull=True)
+            | Q(subscriptionmembership__leave_date__gt=today)
+        )
+        select_usable_shares = select_relevant_members & Q(
+            subscriptionmembership__member__share__cancelled_date__isnull=True,
+            subscriptionmembership__member__share__payback_date__isnull=True,
+        )
+        qs = self.alias(
+            paid_shares=Count(
+                'subscriptionmembership__member__share',
+                filter=select_usable_shares
+                & Q(subscriptionmembership__member__share__paid_date__isnull=False),
+                distinct=True,
+            ),
+            total_shares=Count(
+                'subscriptionmembership__member__share',
+                filter=select_usable_shares,
+                distinct=True,
+            ),
+        )
+        if Config.cumulative_shares_for_membership():
+            return qs.alias(
+                active_member_count=Count(
+                    'subscriptionmembership__member',
+                    filter=select_relevant_members
+                    & Q(
+                        subscriptionmembership__member__memberships__isnull=False,
+                        subscriptionmembership__member__memberships__cancellation_date__isnull=True,
+                    ),
+                    distinct=True,
+                ),
+                undedicated_shares=F('active_member_count')
+                * Value(Config.membership('required_shares')),
+            ).annotate(
+                dedicated_paid_shares=F('paid_shares') - F('undedicated_shares'),
+                dedicated_total_shares=F('total_shares') - F('undedicated_shares'),
+            )
+        return qs.annotate(
+            dedicated_paid_shares=F('paid_shares'),
+            dedicated_total_shares=F('total_shares'),
         )
 
 
@@ -367,7 +418,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.select_related('type__bundle__category').prefetch_related(
             Prefetch(
                 'subscription',
-                queryset=Subscription.objects.cache_current_members()
+                queryset=Subscription.objects.cache_members()
                 .cache_content()
                 .select_related('primary_member__user', 'depot'),
             )

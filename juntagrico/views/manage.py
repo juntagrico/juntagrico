@@ -6,7 +6,17 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
-from django.db.models import Q, Count, Exists, OuterRef, F, Min, Max, Prefetch, Sum
+from django.db.models import (
+    Q,
+    Count,
+    Exists,
+    OuterRef,
+    F,
+    Min,
+    Max,
+    Prefetch,
+    Sum,
+)
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -457,7 +467,7 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     def get_queryset(self):
         return (
             Subscription.objects
-            .cache_current_members()
+            .cache_members()
             .cache_content()
             .select_related('primary_member__user', 'depot')
             .active
@@ -521,7 +531,7 @@ class SubscriptionPriceView(SubscriptionView):
         return (
             Subscription.objects.in_daterange(start, end)
             .cache_content()
-            .cache_current_members()
+            .cache_members()
             .prefetch_related(
                 Prefetch(
                     'parts',
@@ -581,7 +591,7 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
             .annotate_paid_shares()
             .filter(parts__in=parts)
             .select_related('primary_member__user')
-            .cache_current_members()
+            .cache_members()
             .distinct()
         )
 
@@ -657,7 +667,33 @@ def deactivate_part(request, change_date, part_id):
 class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
     permission_required = ['juntagrico.change_subscriptionpart']
     template_name = 'juntagrico/manage/subscription/trial.html'
-    queryset = SubscriptionPart.objects.is_trial().waiting_or_active
+
+    def get_queryset(self):
+        return (
+            SubscriptionPart.objects.is_trial()
+            .waiting_or_active()
+            .select_related('type__bundle__category')
+            .prefetch_related(
+                Prefetch(
+                    'subscription',
+                    Subscription.objects.cache_members().select_related(
+                        'primary_member__user'
+                    ),
+                ),
+            )
+            .annotate(
+                # performance optimization: will be checked in follow_up_parts to avoid expensive query if not needed
+                has_no_other_parts=~Exists(
+                    SubscriptionPart.objects.non_trial()
+                    .filter(
+                        subscription=OuterRef('subscription'),
+                    )
+                    .exclude(
+                        pk=OuterRef('pk'),
+                    )
+                )
+            )
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -760,7 +796,7 @@ class SubscriptionDepotChangesView(PermissionRequiredMixin, ListView):
     def get_queryset(self):
         return Subscription.objects.exclude(future_depot__isnull=True).select_related(
             'depot', 'future_depot', 'primary_member__user'
-        ).cache_content()
+        ).cache_content().cache_members()
 
 
 @permission_required('juntagrico.change_subscription')
@@ -783,9 +819,14 @@ class SubscriptionSharesView(SubscriptionView):
     )
 
     def get_queryset(self):
-        return Subscription.objects.waiting_or_active().select_related(
-            'depot', 'future_depot', 'primary_member__user'
-        ).cache_content().annotate_required_shares()
+        return (
+            Subscription.objects.waiting_or_active()
+            .select_related('depot', 'future_depot', 'primary_member__user')
+            .cache_content()
+            .cache_members()
+            .annotate_required_shares()
+            .annotate_dedicated_shares()
+        )
 
 
 @permission_required('juntagrico.change_subscription')
