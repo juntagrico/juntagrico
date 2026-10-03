@@ -1,8 +1,16 @@
+{% load i18n %}
 {% include './primary_linked.html' %}
-{% for recipient in subscription.cached_current_members %}
-    {% if recipient != subscription.primary_member %}
+{% for recipient in subscription.cached_members %}
+    {% if recipient.member != subscription.primary_member and not recipient.left %}
         <div class="co-member">
-            {% include '../../member/snippets/display_linked.html' with member=recipient %}
+            {% if recipient.waiting %}
+                {% if recipient.join_date %}
+                    {% blocktrans with date=recipient.join_date %}ab {{ date }}: {% endblocktrans %}
+                {% else %}
+                    {% trans 'künfigt: ' %}
+                {% endif %}
+            {% endif %}
+            {% include '../../member/snippets/display_linked.html' with member=recipient.member %}
         </div>
     {% endif %}
 {% empty %}
