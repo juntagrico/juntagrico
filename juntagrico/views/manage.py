@@ -346,7 +346,7 @@ def member_deactivate(request, change_date, member_id=None):
 class ShareView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
     template_name = 'juntagrico/manage/share/show.html'
-    queryset = Share.objects.active
+    queryset = Share.objects.select_related('member__user').active
 
 
 class ShareByAccountView(ShareView):
@@ -405,7 +405,7 @@ def share_cancel(request, change_date):
 
 class ShareCanceledView(ShareView):
     template_name = 'juntagrico/manage/share/canceled.html'
-    queryset = Share.objects.canceled().annotate_backpayable
+    queryset = Share.objects.canceled().select_related('member__user').annotate_backpayable
 
 
 @permission_required('juntagrico.change_share')
@@ -445,7 +445,7 @@ class ShareArchiveView(ShareView):
     template_name = 'juntagrico/manage/share/archive.html'
 
     def get_queryset(self):
-        return Share.objects.filter(payback_date__isnull=False)
+        return Share.objects.filter(payback_date__isnull=False).select_related('member__user')
 
 
 class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
