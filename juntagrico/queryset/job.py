@@ -79,3 +79,20 @@ class JobMessageQuerySet(QuerySet):
     def in_areas(self, areas):
         from juntagrico.entity.jobs import Job
         return self.filter(job__in=Job.objects.in_areas(areas))
+
+
+def get_prefetched_jobs(**filters):
+    # select_related is not yet supported by polymorphic types.
+    # the below is still significantly more efficient, despite having to resort the jobs.
+    from juntagrico.entity.jobs import RecuringJob, OneTimeJob
+
+    jobs = list(
+        RecuringJob.objects.filter(**filters)
+        .select_related('type__activityarea', 'type__location')
+        .prefetch_related('assignment_set')
+    ) + list(
+        OneTimeJob.objects.filter(**filters)
+        .select_related('activityarea', 'location')
+        .prefetch_related('assignment_set')
+    )
+    return sorted(jobs, key=lambda job: job.time)
