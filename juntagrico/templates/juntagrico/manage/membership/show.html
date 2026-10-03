@@ -49,7 +49,7 @@
                     {% if required_shares %}
                         <th class="filter">
                             {% vocabulary "share_pl" %}
-                            {% trans "(Bezahlt/Bestellt)" %}
+                            {% trans "(bestellt / bezahlt / davon gekündigt)" %}
                         </th>
                     {% endif %}
                     {% block inner_list_head %}
@@ -83,7 +83,7 @@
                     {% if required_shares %}
                         <th>
                             {% vocabulary "share_pl" %}
-                            {% trans "(Bezahlt/Bestellt)" %}
+                            {% trans "(bestellt / bezahlt / davon gekündigt)" %}
                         </th>
                     {% endif %}
                     {% block inner_list_foot %}
@@ -117,7 +117,7 @@
                         </td>
                         {% if required_shares %}
                             <td>
-                                {{ membership.account.share_set.active.count }} / {{ membership.account.share_set.usable.count }}
+                                {{ membership.ordered_shares }} / {{ membership.paid_shares }} / {{ membership.canceled_shares }}
                             </td>
                         {% endif %}
                         {% block inner_list_entry %}
