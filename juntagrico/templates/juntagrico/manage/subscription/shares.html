@@ -59,24 +59,22 @@
         <td>
             {{ required }}
         </td>
-        {% with counted=subscription.shares.count_dedicated %}
-            <td>
-                <span class="badge {% if counted.paid >= required %}badge-success{% else %}badge-danger{% endif %}"
-                      title="{% trans 'Bezahlte Anteilscheine' %}">
-                    {{ counted.paid }}
+        <td>
+            <span class="badge {% if subscription.dedicated_paid_shares >= required %}badge-success{% else %}badge-danger{% endif %}"
+                  title="{% trans 'Bezahlte Anteilscheine' %}">
+                {{ subscription.dedicated_paid_shares }}
+            </span>
+            {% if subscription.dedicated_total_shares > subscription.dedicated_paid_shares %}
+                (
+                <span class="badge {% if subscription.dedicated_total_shares >= required %}badge-success{% else %}badge-danger{% endif %}"
+                      title="{% trans 'Alle Anteilscheine' %}">
+                    {{ subscription.dedicated_total_shares }}
                 </span>
-                {% if counted.total > counted.paid %}
-                    (
-                    <span class="badge {% if counted.total >= required %}badge-success{% else %}badge-danger{% endif %}"
-                          title="{% trans 'Alle Anteilscheine' %}">
-                        {{ counted.total }}
-                    </span>
-                    )
-                {% endif %}
-            </td>
-            <td>
-                {% if counted.paid >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
-            </td>
-        {% endwith %}
+                )
+            {% endif %}
+        </td>
+        <td>
+            {% if subscription.dedicated_paid_shares >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
+        </td>
     {% endwith %}
 {% endblock %}
