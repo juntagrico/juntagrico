@@ -10,8 +10,7 @@ register = template.Library()
 @register.simple_tag
 def required_for_subscription(share, index):
     member = share.member
-    subscription = member.subscription_future or member.subscription_current
-    if subscription:
+    for subscription in member.subscriptions.all():
         remaining = subscription.required_shares - subscription.paid_shares
         if index <= remaining:
             other_unpaid = subscription.co_members(of_member=member).filter(

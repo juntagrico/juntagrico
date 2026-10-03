@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.depot import Depot
@@ -15,6 +14,7 @@ from juntagrico.forms import MemberProfileForm, PasswordForm, AreaDescriptionFor
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
+from juntagrico.queryset.job import get_prefetched_jobs
 from juntagrico.signals import area_joined
 from juntagrico.view_decorators import highlighted_menu
 from juntagrico.config import Config
@@ -31,8 +31,10 @@ def home(request):
     # collect jobs that always show
     # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
     pinned_jobs = jobs_base.filter(pinned=True)
-    promoted_jobs = jobs_base.by_type_name(Config.jobs_frontpage('promoted_types')).next(Config.jobs_frontpage('promoted_count'))
-    show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
+    show_job_ids = set(pinned_jobs.values_list('id', flat=True))
+    if promoted_types := Config.jobs_frontpage('promoted_types'):
+        promoted_jobs = jobs_base.by_type_name(promoted_types).next(Config.jobs_frontpage('promoted_count'))
+        show_job_ids |= set(promoted_jobs.values_list('id', flat=True))
     show_jobs_count = len(show_job_ids)
     # fill with future jobs of next x days or until max
     remaining_to_max = Config.jobs_frontpage('max') - show_jobs_count
@@ -46,9 +48,9 @@ def home(request):
         show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
     return render(request, 'home.html', {
-        'jobs': Job.objects.filter(id__in=show_job_ids).order_by('time'),
+        'jobs': get_prefetched_jobs(id__in=show_job_ids),
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
-        'areas': ActivityAreaDao.all_visible_areas_ordered(),
+        'areas': ActivityArea.objects.filter(hidden=False).order_by('-core', 'name'),
     })
 
 

@@ -2,9 +2,24 @@ import datetime
 import re
 
 from django.contrib.auth.models import Permission
-from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
+from django.db.models import (
+    QuerySet,
+    Sum,
+    Case,
+    When,
+    Prefetch,
+    F,
+    Q,
+    Count,
+    Exists,
+    OuterRef,
+    Value,
+    Subquery,
+)
+from django.db.models.functions import Coalesce
 from django.utils.decorators import method_decorator
 from django.utils.itercompat import is_iterable
+from django.utils.translation import gettext as _
 
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
@@ -89,16 +104,43 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         })
 
     def prefetch_for_list(self):
-        members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
+        members = self.defer('notes').select_user().prefetch_related('areas')
+        today = datetime.date.today()
         # prefetch current subscription. This will be picked up in Member.subscription_current()
         from juntagrico.entity.subs import Subscription
         return members.prefetch_related(
             Prefetch(
                 'subscriptions',
-                queryset=Subscription.objects.joined().annotate(depot_name=F('depot__name')),
-                to_attr='current_subscription'
+                queryset=Subscription.objects.joined().annotate(
+                    depot_name=F('depot__name')
+                ).cache_content(),
+                to_attr='current_subscription',
             ),
+        ).annotate(
+            membership_status=Case(
+                When(
+                    Q(memberships__activation_date__lte=today)
+                    & (
+                        Q(memberships__deactivation_date__gte=today)
+                        | Q(memberships__deactivation_date__isnull=True)
+                    ),
+                    then=Value(_('aktiv')),
+                ),
+                When(
+                    Q(memberships__isnull=False)
+                    & (
+                        Q(memberships__activation_date__gt=today)
+                        | Q(memberships__activation_date__isnull=True)
+                    ),
+                    then=Value(_('wartend')),
+                ),
+                default=Value(_('nein')),
+            )
         )
+
+    def has_not_left(self):
+        today = datetime.date.today()
+        return self.exclude(subscriptionmembership__leave_date__lte=today)
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):
@@ -140,3 +182,43 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def by_permission(self, permission_codename):
         perm = Permission.objects.get(codename=permission_codename)
         return self.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()
+
+    def select_user(self):
+        return self.select_related('user')
+
+    def annotate_shares(self):
+        from juntagrico.entity.share import Share
+        return self.annotate(
+            ordered_shares=Coalesce(
+                Subquery(
+                    Share.objects.unpaid()
+                    .usable()
+                    .filter(member=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+            paid_shares=Coalesce(
+                Subquery(
+                    Share.objects.active()
+                    .filter(member=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+            canceled_shares=Coalesce(
+                Subquery(
+                    Share.objects.active()
+                    .canceled()
+                    .filter(member=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+        )

@@ -443,6 +443,7 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return self.join_date is None or self.join_date > (date or datetime.date.today())
 
     def active(self, date=None):
+        date = date or datetime.date.today()
         return not self.waiting(date) and not self.left(date)
 
     def leaves_before_end(self):
