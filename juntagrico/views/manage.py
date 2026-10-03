@@ -176,7 +176,7 @@ def account_notes_edit(request, account_id):
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
     permission_required = [['juntagrico.view_membership', 'juntagrico.change_membership']]
     template_name = 'juntagrico/manage/membership/show.html'
-    queryset = Membership.objects.active
+    queryset = Membership.objects.select_related('account__user').annotate_shares().active
     title = _('Aktive {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
     def get_context_data(self, **kwargs):
@@ -224,7 +224,7 @@ def membership_cancel_and_deactivate(request):
 
 class MembershipRequestedView(MembershipView):
     template_name = 'juntagrico/manage/membership/requested.html'
-    queryset = Membership.objects.requested
+    queryset = Membership.objects.select_related('account__user').annotate_shares().requested
     title = _('Beantragte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
@@ -241,7 +241,7 @@ def membership_activate(request, change_date):
 
 class MembershipCanceledView(MembershipView):
     template_name = 'juntagrico/manage/membership/canceled.html'
-    queryset = Membership.objects.canceled
+    queryset = Membership.objects.select_related('account__user').annotate_shares().canceled
     title = _('Gekündigte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
@@ -258,7 +258,7 @@ def membership_deactivate(request, change_date):
 
 class MembershipArchiveView(MembershipView):
     template_name = 'juntagrico/manage/membership/archive.html'
-    queryset = Membership.objects.inactive
+    queryset = Membership.objects.select_related('account__user').annotate_shares().inactive
     title = _('Ehemalige {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
