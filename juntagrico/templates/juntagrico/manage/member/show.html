@@ -76,26 +76,26 @@
         </tfoot>
         <tbody>
             {% for member in object_list %}
-                {% with subscription=member.subscription_current %}
-                    <tr>
-                        {% block list_entry %}
+                <tr>
+                    {% block list_entry %}
+                        <td>
+                            {% include './snippets/display_linked.html' %}
+                        </td>
+                        {% if c_enable_membership %}
                             <td>
-                                {% include './snippets/display_linked.html' %}
+                                {{ member.membership_status }}
                             </td>
-                            {% if c_enable_membership %}
-                                <td>
-                                    {{ member.memberships.active_or_requested.first.state_text|default:_('nein') }}
-                                </td>
-                            {% endif %}
-                            {% if not hide_areas %}
-                                <td>
-                                    {% for area in member.areas.all %}
-                                        {{ area.name }},
-                                    {% empty %}
-                                        {% trans "-Kein Tätigkeitsbereich-" %}
-                                    {% endfor %}
-                                </td>
-                            {% endif %}
+                        {% endif %}
+                        {% if not hide_areas %}
+                            <td>
+                                {% for area in member.areas.all %}
+                                    {{ area.name }},
+                                {% empty %}
+                                    {% trans "-Kein Tätigkeitsbereich-" %}
+                                {% endfor %}
+                            </td>
+                        {% endif %}
+                        {% with subscription=member.subscription_current %}
                             <td>
                                 {% if subscription %}
                                     {% include '../subscription/snippets/display_linked.html' %}
@@ -121,9 +121,9 @@
                                     {% trans "-" %}
                                 {% endif %}
                             </td>
-                        {% endblock %}
-                    </tr>
-                {% endwith %}
+                        {% endwith %}
+                    {% endblock %}
+                </tr>
             {% endfor %}
         </tbody>
     </table>
