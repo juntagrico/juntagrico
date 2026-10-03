@@ -118,8 +118,12 @@ class AccountWithoutMembershipView(MemberView):
     )
 
     def get_queryset(self):
-        return Member.objects.active().exclude(memberships__in=Membership.objects.active_or_requested()).annotate(
-            last_membership=Max('memberships__deactivation_date')
+        return (
+            Member.objects.active()
+            .select_user()
+            .exclude(memberships__in=Membership.objects.active_or_requested())
+            .annotate(last_membership=Max('memberships__deactivation_date'))
+            .annotate_shares()
         )
 
     def get_context_data(self, **kwargs):
@@ -313,7 +317,7 @@ class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
     def get_queryset(self):
         today = datetime.date.today()
-        queryset = Member.objects.canceled().annotate(has_subscription=Exists(
+        queryset = Member.objects.canceled().select_user().annotate(has_subscription=Exists(
             SubscriptionMembership.objects.filter(member=OuterRef('pk')).exclude(leave_date__lte=today)
         ))
         if Config.enable_shares():
