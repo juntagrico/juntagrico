@@ -18,7 +18,6 @@ from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
@@ -327,10 +326,9 @@ class Job(JuntagricoBasePoly):
         return self.start_time() < time
 
     def status_percentage(self):
-        assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
             return 100
-        return assignments.count() * 100 / self.slots
+        return self.assignment_set.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core

@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.auth.decorators import login_required
@@ -11,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST, require_GET
 
-from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.jobs import (
     Job,
     Assignment,
@@ -32,6 +33,7 @@ from juntagrico.forms.job import (
     AddJobMessageForm,
 )
 from juntagrico.mailer import adminnotification
+from juntagrico.queryset.job import get_prefetched_jobs
 from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
@@ -42,7 +44,8 @@ def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.get_jobs_for_current_day()
+    today = datetime.date.today()
+    jobs = get_prefetched_jobs(time__date__gte=today)
     renderdict = {
         'jobs': jobs,
         'show_all': True,
@@ -120,16 +123,17 @@ def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.jobs_ordered_by_time()
+    # jobs = JobDao.jobs_ordered_by_time()
     context = {
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
     }
-    if jobs.count() > 1000:
+    if Job.objects.count() > 5000:
         # use server side processing when data set is too large
         return render(request, 'juntagrico/job/list/all.html', {
             'jobs': Job.objects.none(),
             **context
         })
+    jobs = get_prefetched_jobs()
     return render(request, 'jobs.html', {'jobs': jobs, **context})
 
 

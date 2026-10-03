@@ -9,14 +9,17 @@ from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 class JobDao:
     @staticmethod
     def jobs_ordered_by_time():
+        print('JobDao.jobs_ordered_by_time is deprecated. order the jobs yourself')
         return Job.objects.all().order_by('time')
 
     @staticmethod
     def jobs_to_remind(now, end):
+        print('JobDao.jobs_to_remind is deprecated. order the jobs yourself')
         return Job.objects.filter(time__range=(now, end), reminder_sent__exact=False)
 
     @staticmethod
     def get_jobs_for_current_day():
+        print('JobDao.get_jobs_for_current_day is deprecated. Filter the jobs yourself')
         daystart = datetime.combine(date.today(), time.min, tzinfo=gdtz())
         return Job.objects.filter(time__gte=daystart).order_by('time')
 
