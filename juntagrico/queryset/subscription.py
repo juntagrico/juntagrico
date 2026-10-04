@@ -261,7 +261,7 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
 
     def cache_content(self):
         from juntagrico.entity.subtypes import SubscriptionType
-        return self.prefetch_related(
+        return self.select_related('depot').prefetch_related(
             Prefetch(
                 'types',
                 queryset=SubscriptionType.objects.with_active_or_future_parts().annotate_content(),
@@ -270,7 +270,7 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         )
 
     def cache_members(self):
-        return self.prefetch_related(
+        return self.select_related('primary_member__user').prefetch_related(
             Prefetch(
                 'subscriptionmembership_set',
                 queryset=SubscriptionMembership.objects.select_related('member__user'),
@@ -358,6 +358,11 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             dedicated_total_shares=F('total_shares'),
         )
 
+    def prefetch_for_list(self):
+        return (
+            self.cache_members().cache_content()
+        )
+
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
@@ -433,9 +438,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.select_related('type__bundle__category').prefetch_related(
             Prefetch(
                 'subscription',
-                queryset=Subscription.objects.cache_members()
-                .cache_content()
-                .select_related('primary_member__user', 'depot'),
+                queryset=Subscription.objects.prefetch_for_list(),
             )
         )
 

@@ -71,3 +71,6 @@ class MembershipQueryset(QuerySet):
                 0,
             ),
         )
+
+    def prefetch_for_list(self):
+        return self.select_related('account__user').annotate_shares()
