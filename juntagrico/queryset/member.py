@@ -105,43 +105,51 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
 
     def prefetch_for_list(self):
         members = self.defer('notes').select_user().prefetch_related('areas')
-        today = datetime.date.today()
         # prefetch current subscription. This will be picked up in Member.subscription_current()
         from juntagrico.entity.subs import Subscription
         return members.prefetch_related(
             Prefetch(
                 'subscriptions',
                 queryset=Subscription.objects.joined().annotate(
+                    # DEPRECATED: depot is prefetched. use depot.name instead.
                     depot_name=F('depot__name')
                 ).cache_content(),
                 to_attr='current_subscription',
             ),
-        ).annotate(
+        )
+
+    def annotate_membership_status(self):
+        from ..entity.membership import Membership
+        today = datetime.date.today()
+        membership = Membership.objects.filter(
+            account=OuterRef('pk'),
+        )
+        active_membership = membership.active(today)
+        requested_membership = membership.requested(today)
+        return self.annotate(
             membership_status=Case(
                 When(
-                    Q(memberships__activation_date__lte=today)
-                    & (
-                        Q(memberships__deactivation_date__gte=today)
-                        | Q(memberships__deactivation_date__isnull=True)
-                    ),
+                    Exists(active_membership),
                     then=Value(_('aktiv')),
                 ),
                 When(
-                    Q(memberships__isnull=False)
-                    & (
-                        Q(memberships__activation_date__gt=today)
-                        | Q(memberships__activation_date__isnull=True)
-                    ),
+                    Exists(requested_membership),
                     then=Value(_('wartend')),
                 ),
                 default=Value(_('nein')),
             )
         )
 
-    def has_not_left(self):
-        today = datetime.date.today()
-        return self.exclude(subscriptionmembership__leave_date__lte=today)
-
+    def annotate_membership(self):
+        from juntagrico.entity.membership import Membership
+        return self.annotate(
+            has_uncanceled_membership=Exists(
+                Membership.objects.not_canceled().filter(
+                    account=OuterRef('pk'),
+                )
+            )
+        )
+  
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):
         """
@@ -186,39 +194,27 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def select_user(self):
         return self.select_related('user')
 
-    def annotate_shares(self):
+    def annotate_shares(self, **kwargs):
         from juntagrico.entity.share import Share
-        return self.annotate(
-            ordered_shares=Coalesce(
-                Subquery(
-                    Share.objects.unpaid()
-                    .usable()
-                    .filter(member=OuterRef('pk'))
-                    .values('member')
-                    .annotate(count=Count('id'))
-                    .values('count')
-                ),
-                0,
-            ),
-            paid_shares=Coalesce(
-                Subquery(
-                    Share.objects.active()
-                    .filter(member=OuterRef('pk'))
-                    .values('member')
-                    .annotate(count=Count('id'))
-                    .values('count')
-                ),
-                0,
-            ),
-            canceled_shares=Coalesce(
-                Subquery(
-                    Share.objects.active()
-                    .canceled()
-                    .filter(member=OuterRef('pk'))
-                    .values('member')
-                    .annotate(count=Count('id'))
-                    .values('count')
-                ),
-                0,
-            ),
-        )
+        if not kwargs:
+            kwargs = {'ordered_shares': 'unpaid.usable', 'paid_shares': 'active', 'canceled_shares': 'active.canceled'}
+        qs = self
+        for to_attr, filters in kwargs.items():
+            share_qs = Share.objects
+            for f in filters.split('.'):
+                share_qs = getattr(share_qs, f)()
+            qs = qs.annotate(
+                **{
+                    to_attr: Coalesce(
+                        Subquery(
+                            share_qs
+                            .filter(member=OuterRef('pk'))
+                            .values('member')
+                            .annotate(count=Count('id'))
+                            .values('count')
+                        ),
+                        0,
+                    )
+                }
+            )
+        return qs

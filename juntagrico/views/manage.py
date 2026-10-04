@@ -106,7 +106,7 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
     title = format_lazy(_('Alle {members}'), members=Config.vocabulary('member_pl'))
 
     def get_queryset(self):
-        return super().get_queryset()().prefetch_for_list
+        return super().get_queryset()().annotate_membership_status().prefetch_for_list
 
 
 class MemberActiveView(MemberView):
@@ -130,9 +130,9 @@ class AccountWithoutMembershipView(MemberView):
     def get_queryset(self):
         return (
             Member.objects.active()
-            .select_user()
             .exclude(memberships__in=Membership.objects.active_or_requested())
             .annotate(last_membership=Max('memberships__deactivation_date'))
+            .select_user()
             .annotate_shares()
         )
 
@@ -190,7 +190,7 @@ def account_notes_edit(request, account_id):
 class MembershipView(MultiplePermissionsRequiredMixin, TitledListView):
     permission_required = [['juntagrico.view_membership', 'juntagrico.change_membership']]
     template_name = 'juntagrico/manage/membership/show.html'
-    queryset = Membership.objects.select_related('account__user').annotate_shares().active
+    queryset = Membership.objects.prefetch_for_list().active
     title = _('Aktive {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
     def get_context_data(self, **kwargs):
@@ -238,7 +238,7 @@ def membership_cancel_and_deactivate(request):
 
 class MembershipRequestedView(MembershipView):
     template_name = 'juntagrico/manage/membership/requested.html'
-    queryset = Membership.objects.select_related('account__user').annotate_shares().requested
+    queryset = Membership.objects.prefetch_for_list().requested
     title = _('Beantragte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
@@ -255,7 +255,7 @@ def membership_activate(request, change_date):
 
 class MembershipCanceledView(MembershipView):
     template_name = 'juntagrico/manage/membership/canceled.html'
-    queryset = Membership.objects.select_related('account__user').annotate_shares().canceled
+    queryset = Membership.objects.prefetch_for_list().canceled
     title = _('Gekündigte {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
@@ -272,7 +272,7 @@ def membership_deactivate(request, change_date):
 
 class MembershipArchiveView(MembershipView):
     template_name = 'juntagrico/manage/membership/archive.html'
-    queryset = Membership.objects.select_related('account__user').annotate_shares().inactive
+    queryset = Membership.objects.prefetch_for_list().inactive
     title = _('Ehemalige {memberships}').format(memberships=Config.vocabulary('membership_pl'))
 
 
@@ -440,11 +440,16 @@ class ShareUnpaidView(ShareView):
         return (
             Share.objects.filter(paid_date__isnull=True)
             .exclude(termination_date__lt=datetime.date.today())
-            .select_related('member')
             .prefetch_related(
                 Prefetch(
+                    'member',
+                    Member.objects.annotate_membership().annotate_shares(active_usable_shares='active.usable').select_user(),
+                ),
+                Prefetch(
                     'member__subscriptions',
-                    queryset=Subscription.objects.joining().annotate_paid_shares().annotate_required_shares(),
+                    queryset=Subscription.objects.joining()
+                    .annotate_paid_shares()
+                    .annotate_required_shares(),
                 ),
             )
             .order_by('member')
@@ -465,13 +470,7 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     title = format_lazy(_('Alle aktiven {subscriptions} im Überblick'), subscriptions=Config.vocabulary('subscription_pl'))
 
     def get_queryset(self):
-        return (
-            Subscription.objects
-            .cache_members()
-            .cache_content()
-            .select_related('primary_member__user', 'depot')
-            .active
-        )
+        return Subscription.objects.active().prefetch_for_list
 
     def get_context_data(self, **kwargs):
         queryset = self.get_queryset()
@@ -529,10 +528,9 @@ class SubscriptionPriceView(SubscriptionView):
     def get_queryset(self):
         start, end = temporal.get_business_date_range(int(self.request.GET.get('year') or datetime.date.today().year))
         return (
-            Subscription.objects.in_daterange(start, end)
-            .cache_content()
-            .cache_members()
+            Subscription.objects.in_daterange(start, end).prefetch_for_list()
             .prefetch_related(
+                'depot__subscription_type_conditions',
                 Prefetch(
                     'parts',
                     queryset=SubscriptionPart.objects.in_daterange(start, end)
@@ -548,8 +546,6 @@ class SubscriptionPriceView(SubscriptionView):
                     to_attr='relevant_surcharges',
                 ),
             )
-            .select_related('depot', 'primary_member__user')
-            .prefetch_related('depot__subscription_type_conditions')
         )
 
     def get_context_data(self, **kwargs):
@@ -794,9 +790,9 @@ class SubscriptionDepotChangesView(PermissionRequiredMixin, ListView):
     template_name = 'juntagrico/manage/subscription/depot/changes.html'
 
     def get_queryset(self):
-        return Subscription.objects.exclude(future_depot__isnull=True).select_related(
-            'depot', 'future_depot', 'primary_member__user'
-        ).cache_content().cache_members()
+        return Subscription.objects.exclude(future_depot__isnull=True).prefetch_for_list().select_related(
+            'future_depot'
+        )
 
 
 @permission_required('juntagrico.change_subscription')
@@ -821,9 +817,7 @@ class SubscriptionSharesView(SubscriptionView):
     def get_queryset(self):
         return (
             Subscription.objects.waiting_or_active()
-            .select_related('depot', 'future_depot', 'primary_member__user')
-            .cache_content()
-            .cache_members()
+            .prefetch_for_list()
             .annotate_required_shares()
             .annotate_dedicated_shares()
         )
