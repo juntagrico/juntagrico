@@ -3,6 +3,7 @@ import datetime
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.member import SubscriptionMembership
 from ..view_decorators import using_change_date
 
 
@@ -12,9 +13,25 @@ def get_change_date(request, change_date):
 
 
 class ManageListTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        SubscriptionMembership.objects.create(
+            member=cls.create_member('waiting@juntagrico.invalid'),
+            subscription=cls.sub
+        )
+        SubscriptionMembership.objects.create(
+            member=cls.create_member('waiting_with_date@juntagrico.invalid'),
+            subscription=cls.sub,
+            join_date=datetime.date.today() + datetime.timedelta(days=10),
+        )
 
     def testSubscription(self):
-        self.assertGet(reverse('manage-subscription'))
+        response = self.assertGet(reverse('manage-subscription'))
+        self.assertContains(response, 'künftig')
+        self.assertContains(response, 'waiting@juntagrico.invalid')
+        self.assertContains(response, 'ab')
+        self.assertContains(response, 'waiting_with_date@juntagrico.invalid')
         # member2 has no access
         self.assertGet(reverse('manage-subscription'), member=self.member2, code=403)
 
