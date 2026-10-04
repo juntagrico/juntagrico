@@ -857,5 +857,6 @@ class AssignmentsView(MultiplePermissionsRequiredMixin, DateRangeMixin, ListView
         return (
             Subscription.objects.in_date_range(self.start, self.end)
             .annotate_assignments_progress(self.start, self.end)
-            .select_related("primary_member")
+            .select_related("primary_member__user")
+            .cache_members()
         )
