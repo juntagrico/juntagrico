@@ -5,16 +5,16 @@
         <div class="co-member">
             {% if recipient.waiting %}
                 {% if recipient.join_date %}
-                    {% blocktrans with date=recipient.join_date %}ab {{ date }}: {% endblocktrans %}
+                    {% blocktrans with date=recipient.join_date %}ab {{ date }}:{% endblocktrans %}
                 {% else %}
-                    {% trans 'künfigt: ' %}
+                    {% trans 'künftig:' %}
                 {% endif %}
             {% endif %}
             {% include '../../member/snippets/display_linked.html' with member=recipient.member %}
         </div>
     {% endif %}
 {% empty %}
-    {# Falling back to less efficient method #}
+    {# backwards compatibility pre 2.1: Falling back to less efficient loop #}
     {% for recipient in subscription.co_members  %}
         <div class="co-member">
             {% include '../../member/snippets/display_linked.html' with member=recipient %}
