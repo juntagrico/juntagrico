@@ -84,12 +84,31 @@
                                     {% if subscription.surcharges.exists %}
                                         <div class="mt-3">
                                             <small class="text-muted d-block">
-                                                <i class="bi bi-cash mr-2"></i>{% trans 'Aufschläge/Abschläge' %}
+                                                <i class="bi bi-percent mr-2"></i>{% trans 'Aufschläge/Abschläge' %}
                                             </small>
                                             {% for surcharge in subscription.surcharges.all|dictsort:"date" %}
                                                 <div>
                                                     {{ surcharge.date|date:"SHORT_DATE_FORMAT" }}
-                                                    - {{ surcharge.description }}: {{ surcharge.amount|price }}
+                                                    - {{ surcharge.description }}:
+                                                    {% if surcharge.amount %}
+                                                        <span>
+                                                            <i class="bi bi-cash ml-1"></i>
+                                                            {{ surcharge.amount|price }}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if surcharge.required_assignments %}
+                                                        <span title="{% blocktrans with v_assignments=vocabulary.assignment_pl %}zusätzliche {{ v_assignments }}{% endblocktrans %}">
+                                                            <img class="icon ml-1" src="{% images "single_full" %}" alt="{% trans "nicht kern" %}"/>
+                                                            {{ surcharge.required_assignments|floatformat:'-1' }}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if surcharge.required_core_assignments %}
+                                                        <span title="{% blocktrans with v_assignments=vocabulary.assignment_pl %}zusätzliche {{ v_assignments }} in Kernbereichen{% endblocktrans %}">
+                                                            <img class="icon ml-1" src="{% images "single_core" %}" alt="{% trans "kern" %}"/>
+                                                        {{ surcharge.required_core_assignments|floatformat:'-1' }}
+                                                        </span>
+
+                                                    {% endif %}
                                                 </div>
                                             {% endfor %}
                                         </div>

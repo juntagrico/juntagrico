@@ -399,7 +399,14 @@ class JuntagricoTestCase(TestCase):
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
         # create subscription surcharge
-        SubscriptionSurcharge.objects.create(subscription=cls.sub, amount=100, description='surcharge', date=today)
+        SubscriptionSurcharge.objects.create(
+            subscription=cls.sub,
+            amount=100,
+            required_assignments=1,
+            required_core_assignments=1,
+            description='surcharge',
+            date=today,
+        )
 
     @classmethod
     def set_up_extra_sub_types(cls):
