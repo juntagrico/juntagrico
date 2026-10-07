@@ -1,6 +1,9 @@
+{% load juntagrico.menu %}
 {% load i18n %}
+
 {% block all %}
-    {% if request.user.is_staff %}
+    {% can_open_admin as can_access_admin %}
+    {% if can_access_admin %}
         {% block admin %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'admin:index' %}">
@@ -8,6 +11,8 @@
                 </a>
             </li>
         {% endblock %}
+    {% endif %}
+    {% if request.user.is_staff %}
         {% block config %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'config' %}">
