@@ -40,6 +40,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-TOTAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
 
@@ -76,6 +78,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
         # editing that subscription must be possible too
@@ -122,6 +126,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # succeeds
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
@@ -154,6 +160,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # fails, because join date is not set
         response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
@@ -186,6 +194,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-TOTAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
         self.assertListEqual(
@@ -215,6 +225,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         response = self.assertPost(reverse('admin:juntagrico_subscription_add'),
                                    data=data, member=self.admin)
@@ -259,6 +271,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # test deactivation of sub, by setting only deactivation date of sub.
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
@@ -299,6 +313,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # direct reactivation fails with error message explaining how to reactivate the sub
         response = self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
@@ -339,6 +355,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # direct reactivation fails with error message explaining how to reactivate the sub
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
@@ -386,6 +404,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'extra_subscription_set-INITIAL_FORMS': '0',
             'surcharges-TOTAL_FORMS': '0',
             'surcharges-INITIAL_FORMS': '0',
+            'absences-TOTAL_FORMS': '0',
+            'absences-INITIAL_FORMS': '0',
         }
         # direct reactivation fails with error message explaining how to reactivate the sub
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
