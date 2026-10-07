@@ -384,13 +384,19 @@ class Member(AbstractProfile):
 
 
 class Invitee(AbstractProfile):
+    class Meta:
+        verbose_name = _('Einladung')
+        verbose_name_plural = _('Einladungen')
+
     email = LowercaseEmailField()
-    invited_by = models.ForeignKey('Member', related_name='invitees', on_delete=models.CASCADE)
-    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees')
+    invited_by = models.ForeignKey('Member', related_name='invitees', on_delete=models.CASCADE,
+                                   verbose_name=_('Eingeladen von'))
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, related_name='invitees',
+                                     verbose_name=Config.vocabulary('subscription'))
     shares = models.PositiveIntegerField(Config.vocabulary('share_pl'), default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Erstellt am'))
     sent_at = models.DateTimeField(null=True, blank=True)
-    key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name=_('Schlüssel'))
 
     @cached_property
     def required_shares_for_subscription(self):
