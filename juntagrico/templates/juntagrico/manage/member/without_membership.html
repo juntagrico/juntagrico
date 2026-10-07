@@ -1,0 +1,59 @@
+{% extends "./show.html" %}
+{% load i18n %}
+
+{% block list_head %}
+    <th class="filter">
+        {% trans "Kontakt" %}
+    </th>
+    <th class="filter">
+        {% trans "Ehemalig?" %}
+    </th>
+    {% if shares_enabled %}
+        <th class="filter">
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bezahlte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+        <th class="filter">
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bestellte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+    {% endif %}
+{% endblock %}
+
+{% block list_foot %}
+    <th>
+        {% trans "Kontakt" %}
+    </th>
+    <th>
+        {% trans "Ehemalig?" %}
+    </th>
+    {% if shares_enabled %}
+        <th>
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bezahlte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+        <th>
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bestellte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+    {% endif %}
+{% endblock %}
+
+{% block list_entry %}
+    <td>
+        {% include './snippets/display_linked.html' %}
+    </td>
+    <td>
+        {% if member.last_membership %}
+            {% blocktrans trimmed with date=member.last_membership|date:"Y-m-d" %}
+                bis {{ date }}
+            {% endblocktrans %}
+        {% else %}
+            {% trans 'nein' %}
+        {% endif %}
+    </td>
+    {% if shares_enabled %}
+        <td>
+            {{ member.share_set.active.count }}
+        </td>
+        <td>
+            {{ member.share_set.usable.count }}
+        </td>
+    {% endif %}
+{% endblock %}

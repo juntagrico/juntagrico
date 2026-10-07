@@ -4,7 +4,7 @@
 {% if perms.juntagrico.can_view_lists or perms.juntagrico.can_generate_lists %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'lists' %}">
-            {% trans "Listen" %}
+            <i class="bi bi-file-earmark-ruled mr-2"></i>{% trans "Listen" %}
         </a>
     </li>
 {% endif %}

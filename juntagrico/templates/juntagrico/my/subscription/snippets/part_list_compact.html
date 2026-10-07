@@ -1,0 +1,34 @@
+{% load juntagrico.snippets %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% if parts.exists %}
+    <ul class="{{ list_class }}">
+        {% for part in parts.sorted %}
+            {% with remaining=part.remaining_trial_days status=part.state %}
+                <li class="text-nowrap">
+                    <span class="mr-2">{{ part }}</span>
+                    {% if part.is_trial %}
+                        <span class="badge badge-info">{% trans "Probe" %}</span>
+                    {% endif %}
+                    {% if part.canceled %}
+                        <span class="badge badge-danger">{% trans "gekündigt" %}</span>
+                    {% elif remaining <= 0 %}
+                        <span class="badge badge-danger">{% trans "abgelaufen" %}</span>
+                    {% elif status == 'waiting' %}
+                        <span class="badge badge-secondary">{% trans "wartend" %}</span>
+                    {% elif status == 'active' %}
+                        <span class="badge badge-success">{% trans "aktiv" %}</span>
+                    {% elif status == 'inactive' %}
+                        <span class="badge badge-danger">{% trans "inaktiv" %}</span>
+                    {% endif %}
+                </li>
+            {% endwith %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <div>
+        {% trans "Leer" %}
+    </div>
+{% endif %}

@@ -1,0 +1,15 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% block warning %}{% trans "Achtung:" %}{% endblock %}{% block job_message %}{% endblock %}
+
+{% include "./details.txt" %}
+
+{% block outro %}
+{% blocktrans trimmed%}
+Wir freuen uns, dich zu sehen und zählen auf dich!
+{% endblocktrans %}
+{% endblock %}
+{% endblock %}

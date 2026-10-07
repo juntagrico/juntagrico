@@ -12,6 +12,28 @@
 {% endblock %}
 
 {% block content %}
+    {% if perms.juntagrico.change_subscription %}
+        {% if 'subscription_activated'|notified or 'subscription_deactivated'|notified %}
+            <div class="alert alert-secondary">
+                <i class="bi bi-envelope"></i>
+                {% vocabulary 'member_type_pl' as v_member_type_pl %}
+                {% if 'subscription_activated'|notified and 'subscription_deactivated'|notified %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Aktivierung und Deaktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% elif 'subscription_activated'|notified %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Aktivierung, aber NICHT bei Deaktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans trimmed %}
+                        {{ v_member_type_pl }} werden bei Deaktivierung, aber NICHT bei Aktivierung automatisch per E-Mail benachrichtigt.
+                    {% endblocktrans %}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+
     {% action_date request %}
     {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
     {% has_extra_subscriptions as b_has_extra_subscriptions %}
@@ -39,6 +61,11 @@
                 <th class="filter">
                     {% vocabulary "subscription" %}
                 </th>
+                {% if show_identifier %}
+                    <th class="filter">
+                        {% trans "Kennzeichnung" %}
+                    </th>
+                {% endif %}
                 <th class="filter">
                     {% trans "Gekündigt" %}
                 </th>
@@ -66,10 +93,13 @@
                 {% with canceled_parts=subscription.parts.canceled ordered_parts=subscription.parts.ordered %}
                     <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
-                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}?next={{ request.path|urlencode }}">
-                                {{ subscription.id }}
-                            </a>
+                            {% include './snippets/display_linked.html' %}
                         </td>
+                        {% if show_identifier %}
+                            <td>
+                                {{ subscription.identifier|default_if_none:'' }}
+                            </td>
+                        {% endif %}
                         <td class="canceled-parts pl-5">
                             {% regroup canceled_parts by cancellation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}

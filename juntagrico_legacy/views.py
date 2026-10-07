@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import gettext as _
@@ -16,7 +17,8 @@ from juntagrico.util import addons, temporal, return_to_previous_location
 from juntagrico.util.management import create_subscription_parts
 
 from juntagrico.util.management_list import get_changedate
-from juntagrico.view_decorators import primary_member_of_subscription
+from juntagrico.view_decorators import primary_member_of_subscription, using_change_date
+from juntagrico.views_subscription import error_page
 
 from juntagrico_legacy.util.xls import generate_excel
 from juntagrico_legacy.dao.subscriptiondao import SubscriptionDao
@@ -56,6 +58,28 @@ def part_canceledlist(request):
     render_dict = get_changedate(request)
     changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
+
+
+@permission_required('juntagrico.change_subscription')
+@using_change_date
+def activate_subscription(request, change_date, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    try:
+        subscription.activate(change_date)
+    except ValidationError as e:
+        return error_page(request, e.message)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscription')
+@using_change_date
+def deactivate_subscription(request, change_date, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    try:
+        subscription.deactivate(change_date)
+    except ValidationError as e:
+        return error_page(request, e.message)
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
@@ -249,10 +273,10 @@ def subscription(request, subscription_id=None):
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= temporal.next_cancelation_date():
             end_date = temporal.end_of_business_year()
-        asc = member.usable_shares_count
+        asc = member.usable_shares_for_sub_count
         share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
-        can_leave = member.is_cooperation_member and not share_error and not primary
+        can_leave = member.active_shares_count > 0 and not share_error and not primary
         renderdict.update({
             'subscription': subscription,
             'co_members': subscription.co_members(member),

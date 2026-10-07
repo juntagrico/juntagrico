@@ -11,6 +11,13 @@
 {% endblock %}
 
 {% block content %}
+    <div class="alert alert-secondary">
+        <i class="bi bi-envelope"></i>
+        {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+            {{ v_member_type_pl }} werden bei Änderung automatisch per E-Mail benachrichtigt.
+        {% endblocktrans %}
+    </div>
+
     {% include '../../member/snippets/toggle_buttons.html' with co_members=True %}
     {{ block.super }}
 {% endblock %}

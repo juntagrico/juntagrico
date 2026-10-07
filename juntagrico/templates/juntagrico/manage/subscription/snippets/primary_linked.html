@@ -2,5 +2,5 @@
 {% if subscription.primary_member %}
     {% include '../../member/snippets/display_linked.html' with member=subscription.primary_member css_class='primary-member' %}
 {% else %}
-    {% trans "! Haupt-BezieherIn ist nicht definiert" %}
+    {% trans "! Verwalter:in ist nicht definiert" %}
 {% endif %}

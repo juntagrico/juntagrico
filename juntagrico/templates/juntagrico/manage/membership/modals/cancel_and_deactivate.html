@@ -1,0 +1,27 @@
+{% extends "juntagrico/modal.html" %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans %}Kündigen und Deaktivieren{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <form action="{% url 'manage-membership-cancel-deactivate' %}" method="post" class="modal-form" id="{{ name }}_form">
+        {% crispy form %}
+    </form>
+    {% if 'membership_deactivated'|notified %}
+        <div class="alert alert-secondary deactivation-notification-info">
+            <i class="bi bi-envelope"></i>
+            {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                {{ v_member_type }} wird bei Deaktivierung automatisch per E-Mail benachrichtigt.
+            {% endblocktrans %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="submit" form="{{ name }}_form" class="btn btn-primary"
+           value="{% trans "Anwenden" %}">
+{% endblock %}

@@ -16,6 +16,10 @@ urlpatterns = [
     path('manage/subscription/part/waitinglist', views.part_waitinglist, name='sub-mgmt-part-waitinglist'),
     path('manage/subscription/part/canceledlist', views.part_canceledlist,
          name='sub-mgmt-part-canceledlist'),
+    path('my/subscription/activate/<int:subscription_id>/', views.activate_subscription,
+         name='sub-activate'),
+    path('my/subscription/deactivate/<int:subscription_id>/', views.deactivate_subscription,
+         name='sub-deactivate'),
     # /manage/subscription/extra
     path('my/extra/waitinglist', views.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', views.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),

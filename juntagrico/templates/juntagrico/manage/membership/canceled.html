@@ -1,0 +1,50 @@
+{% extends "./show.html" %}
+{% load juntagrico.config %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.snippets %}
+
+{% block inner_list_head %}
+    <th class="filter">
+        {% trans "Gekündigt am" %}
+    </th>
+    <th>
+        {% trans "Aktionen" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_foot %}
+    <th>
+        {% trans "Gekündigt am" %}
+    </th>
+    <th>
+        {% trans "Aktionen" %}
+    </th>
+{% endblock %}
+
+{% block inner_list_entry %}
+    <td>
+        {{ membership.cancellation_date|date:"Y-m-d" }}
+    </td>
+    <td>
+        {% include "juntagrico/manage/membership/snippets/button_deactivate.html" %}
+    </td>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    {% if perms.juntagrico.change_share %}
+        config.layout.topStart.features.buttons.push(
+            id_action_button(
+                '<i class="bi bi-x-square"></i> {% trans "Deaktivieren" %}',
+                '{% url "manage-membership-deactivate" %}',
+                '{% csrf_token %}',
+                '.membership_id', 'membership_ids',
+                [
+                    '{% blocktrans with v_membership=vocabulary.membership %}1 {{ v_membership }} deaktivieren?{% endblocktrans %}',
+                    '{% blocktrans with v_membership_pl=vocabulary.membership_pl %}Diese {count} {{ v_membership_pl }} deaktivieren?{% endblocktrans %}'
+                ]
+            )
+        )
+    {% endif %}
+{% endblock %}
