@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.forms import model_to_dict
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
 from django.views.decorators.csrf import csrf_exempt
@@ -206,16 +205,16 @@ class AddMemberView(SignupView, FormView):
         super().__init__()
         self.edit = False
         self.mod = False
-        self.member_data = {}
+        self.used_emails = set()
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
         self.mod = self.request.GET.get('mod') is not None
         if request.user.is_authenticated:
-            self.member_data = model_to_dict(request.user.member, ['email'])
-        else:
-            self.member_data = self.signup_manager.get('main_member')
+            self.used_emails.add(request.user.member.email.lower())
+        elif main_member := self.signup_manager.get('main_member'):
+            self.used_emails.add(main_member['email'].strip().lower())
 
     def get_form_class(self):
         return EditCoMemberForm if self.edit else RegisterMultiCoMemberForm
@@ -230,12 +229,9 @@ class AddMemberView(SignupView, FormView):
                 form_kwargs['data']['edit'] = self.edit
             own_email = form_kwargs['data']['email'].lower()
         # collect used email addresses to block reusage
-        existing_emails = [self.member_data['email'].strip().lower()]
-        for co_member in self.signup_manager.get('co_members', []):
-            email = co_member['email'].lower()
-            if email != own_email:
-                existing_emails.append(email)
-        form_kwargs['existing_emails'] = existing_emails
+        self.used_emails.update({co_member['email'].lower() for co_member in self.signup_manager.get('co_members', [])})
+        self.used_emails.discard(own_email)
+        form_kwargs['existing_emails'] = self.used_emails
         return form_kwargs
 
     def get_context_data(self, **kwargs):

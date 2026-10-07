@@ -174,7 +174,7 @@ class CreateSubscriptionTests(CreateSubscriptionTestCase):
             mail_count += 1  # Invite to co-member
         if settings.ENABLE_SHARES:
             mail_count += 1 + self.share_order_count  # share email & admin notification(s)
-            # no shares are ordered for co-member, thus no more emails
+            # no shares are ordered for invitees, thus no more emails
         self.assertEqual(len(mail.outbox), mail_count)
 
         # signup with different case email address should return form error

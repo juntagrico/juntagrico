@@ -143,8 +143,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         post_data = {
             'email': self.member4.email,
             # fields are required even with existing email
-            'first_name': '-', 'last_name': '-', 'phone': '-',
-            'addr_street': '-', 'addr_zipcode': '-', 'addr_location': '-',
+            'first_name': '-', 'last_name': '-',
         }
         if settings.ENABLE_SHARES:
             post_data['shares'] = 0
