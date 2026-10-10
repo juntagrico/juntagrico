@@ -109,20 +109,13 @@ Only set the terms you want to override, e.g.:
 
 .. code-block:: python
 
-    VOCABULARY = {
-        'subscription': 'Ernteanteil',
-        'subscription_pl': 'Ernteanteile'
-        # Adjust vocabulary fragments
-        'the_subscription': 'der Ernteanteil',
-        'the_subscription_acc': 'den Ernteanteil',
-        'no_subscription_acc': 'keinen Ernteanteil',
-        'this_subscription_acc': 'diesen Ernteanteil',
-        'this_subscription_dat': 'diesem Ernteanteil',
-        'your_subscription_acc': 'deinen Ernteanteil',
-        'with_active_subscription': 'mit aktivem Ernteanteil',
-    }
+    from juntagrico import defaults
 
-Related fragments need to be adjusted, only if the gender of your vocabulary is different from the default vocabulary.
+    VOCABULARY = defaults.german(
+        subscription=('Ernteanteil', 'Ernteanteile', 'm'),  # m = masculine
+        assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
+        package='Korb',
+    )
 
 See the :ref:`VOCABULARY setting <settings-vocabulary>` for the full list of options.
 
