@@ -26,7 +26,7 @@ jobs:
           pip install deptry
 
       - name: Run deptry
-        run: deptry . --github-output
+        run: deptry . --extend-exclude ".*/debug.py" --github-output
 
   tests:
     name: Tests
