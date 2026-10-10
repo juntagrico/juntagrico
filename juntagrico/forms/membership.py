@@ -62,14 +62,15 @@ class MembershipForm(HorizontalFormMixin, forms.Form):
             return cls.text['accept_wo_docs'].format(organization=Config.organisation_long_name())
 
     def save(self, account, comment=None):
-        # if there is a membership that has not been deactivated yet, keep that one
-        if membership := account.memberships.active_or_requested().first():
-            membership.deactivation_date = None
-            membership.cancellation_date = None
-            membership.save()
-        else:
-            membership = Membership.objects.create(account=account)
-        adminnotification.membership_created(membership, comment)
+        if self.cleaned_data['membership']:
+            # if there is a membership that has not been deactivated yet, keep that one
+            if membership := account.memberships.active_or_requested().first():
+                membership.deactivation_date = None
+                membership.cancellation_date = None
+                membership.save()
+            else:
+                membership = Membership.objects.create(account=account)
+            adminnotification.membership_created(membership, comment)
 
 
 class CreateMembershipForm(MembershipForm):
@@ -109,6 +110,16 @@ class CreateMembershipWithSharesForm(ShareOrderForm, CreateMembershipForm):
         if ordered_shares := self.cleaned_data.get('of_member'):
             create_share(account, ordered_shares)
         super().save(account)
+
+
+class MembershipInvitationForm(MembershipForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(False, *args, **kwargs)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            'membership',
+        )
 
 
 class CancelAndDeactivateForm(forms.ModelForm):

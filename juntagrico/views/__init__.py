@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.contrib import auth
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,7 +15,7 @@ from juntagrico.forms import MemberProfileForm, PasswordForm, AreaDescriptionFor
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left as area_left
+from juntagrico.signals import area_joined
 from juntagrico.view_decorators import highlighted_menu
 from juntagrico.config import Config
 
@@ -237,9 +237,8 @@ def change_password(request):
     return render(request, 'password.html', renderdict)
 
 
-def logout_view(request):
-    auth.logout(request)
-    return redirect('home')
+class LogoutView(auth_views.LogoutView):
+    next_page = 'home'
 
 
 def cookies(request):

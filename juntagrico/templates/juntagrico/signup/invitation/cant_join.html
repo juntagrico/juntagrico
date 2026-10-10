@@ -1,0 +1,22 @@
+{% extends "juntagrico/signup/invitation/existing.html" %}
+{% load juntagrico.config %}
+{% load i18n %}
+
+{% block intro %}
+    {{ block.super }}
+    <div class="alert alert-danger">
+        {% blocktrans trimmed with v_another_subscription_dat=vocabulary.another_subscription_dat %}
+            Du kannst diese Einladung nicht annehmen weil du bereits {{ v_another_subscription_dat }} beitreten wirst.
+        {% endblocktrans %}
+        <br>
+        {% blocktrans trimmed %}
+            Kontaktiere uns, um gemeinsam eine Lösung für diesen Fall zu finden:
+        {% endblocktrans %}
+        <a href="mailto:{% contacts "for_subscriptions" %}">
+            {% contacts "for_subscriptions" %}
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

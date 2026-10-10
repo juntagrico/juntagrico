@@ -3,7 +3,7 @@ import datetime
 from django import template
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, Invitee
 from juntagrico.entity.subs import Subscription
 
 register = template.Library()
@@ -73,3 +73,10 @@ def assignment_progress(member, future=None, start=None, end=None, subscription=
         member=member,
         future=future
     )
+
+
+@register.inclusion_tag('juntagrico/signup/invitation/snippets/banners/invited.html')
+def invitation_banner(account):
+    return {
+        'invitations': Invitee.objects.filter(email=account.email),
+    }
