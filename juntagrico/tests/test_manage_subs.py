@@ -121,4 +121,10 @@ class ManageSubSharesTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('manage-sub-shares'))
         self.assertGet(reverse('manage-sub-shares'), member=self.admin)
         # member 2 has no access
-        self.assertGet(reverse('manage-sub-pending'), member=self.member2, code=403)
+        self.assertGet(reverse('manage-sub-shares'), member=self.member2, code=403)
+
+
+@tag('shares')
+@override_settings(MEMBERSHIP={'cumulative_shares': True})
+class ManageSubCumulativeSharesTests(ManageSubSharesTests):
+    pass
