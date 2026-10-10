@@ -22,9 +22,10 @@ def get_clean_invitee(key):
     if invitee is None:
         return None
     # invalidate invitation if inviter has left the subscription in the meantime
+    today = datetime.date.today()
     if not SubscriptionMembership.objects.filter(
-        member=invitee.invited_by, subscription=invitee.subscription, leave_date=None
-    ).exists():
+        member=invitee.invited_by, subscription=invitee.subscription
+    ).exclude(leave_date__lt=today).exists():
         invitee.delete()
         return None
     return invitee
@@ -67,7 +68,6 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
         membership_form = None
 
     if Config.enable_shares():
-        # count required shares, assuming all other invitees order as suggested
         initial = {'of_member': invitee.shares}
         if request.method == 'POST':
             membership = False
