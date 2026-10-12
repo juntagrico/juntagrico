@@ -16,6 +16,7 @@ from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
+from juntagrico.util.management_list import store_change_date
 from juntagrico.util.pdf import return_pdf_http, internal_storage
 from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
@@ -52,12 +53,8 @@ def future(request):
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404
-    raw_date = request.POST.get('date')
     try:
-        date = datetime.date.fromisoformat(raw_date)
-        if date == datetime.date.today():
-            raw_date = None
-        request.session['changedate'] = raw_date
+        store_change_date(request, datetime.date.fromisoformat(request.POST.get('date')))
     except ValueError:
         return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)

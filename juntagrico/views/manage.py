@@ -26,7 +26,7 @@ from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm,
 from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
-from juntagrico.util.management_list import get_changedate
+from juntagrico.util.management_list import get_changedate, ChangeDateFromUrlMixin
 from juntagrico.util.views_admin import date_from_get
 from juntagrico.view_decorators import using_change_date
 
@@ -139,7 +139,7 @@ def remove_area_member(request, area_id):
     return return_to_previous_location(request)
 
 
-class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
+class MemberCanceledView(MultiplePermissionsRequiredMixin, ChangeDateFromUrlMixin, ListView):
     permission_required = [['juntagrico.view_member', 'juntagrico.change_member']]
     template_name = 'juntagrico/manage/member/canceled.html'
     queryset = Member.objects.canceled
@@ -157,7 +157,7 @@ def member_deactivate(request, change_date, member_id=None):
     return return_to_previous_location(request)
 
 
-class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
+class ShareCanceledView(MultiplePermissionsRequiredMixin, ChangeDateFromUrlMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
     template_name = 'juntagrico/manage/share/canceled.html'
     queryset = Share.objects.canceled().annotate_backpayable
@@ -222,7 +222,7 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
         return super().get_context_data(**kwargs)
 
 
-class SubscriptionPendingView(PermissionRequiredMixin, ListView):
+class SubscriptionPendingView(PermissionRequiredMixin, ChangeDateFromUrlMixin, ListView):
     permission_required = ['juntagrico.change_subscription']
     template_name = 'juntagrico/manage/subscription/pending.html'
 
@@ -279,7 +279,7 @@ def deactivate_part(request, change_date, part_id):
     return return_to_previous_location(request)
 
 
-class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
+class SubscriptionTrialPartView(PermissionRequiredMixin, ChangeDateFromUrlMixin, ListView):
     permission_required = ['juntagrico.change_subscriptionpart']
     template_name = 'juntagrico/manage/subscription/trial.html'
     queryset = SubscriptionPart.objects.is_trial().waiting_or_active

@@ -87,3 +87,18 @@ class ManageListTests(JuntagricoTestCase):
         self.assertPost(reverse('changedate-set'), data={'date': '1999-01-01'}, code=302)
         self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
         self.assertGet(reverse('changedate-unset'), code=302)
+
+    def testChangeDateFromUrl(self):
+        url = reverse('manage-sub-pending')
+        # date is stored in session and parameter removed from url
+        response = self.assertGet(url, data={'changedate': '1999-01-01', 'foo': 'bar'}, code=302)
+        self.assertRedirects(response, url + '?foo=bar', fetch_redirect_response=False)
+        self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
+        response = self.assertGet(url, data={'changedate': '1999-01-01'}, code=302)
+        self.assertRedirects(response, url, fetch_redirect_response=False)
+        # invalid dates are ignored
+        self.assertGet(url, data={'changedate': 'invalid'}, code=302)
+        self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
+        # today resets the change date
+        self.assertGet(url, data={'changedate': datetime.date.today().isoformat()}, code=302)
+        self.assertIsNone(get_change_date(self.client))
