@@ -93,12 +93,6 @@ class Command(BaseCommand):
                 print('*** juntagrico/mails/member/subscription/invitation/rejected.txt ***')
                 membernotification.invitation_rejected(invitation)
 
-                print('*** co_welcome ***')
-                membernotification.welcome_co_member(co_member, 'password', 1)
-
-                print('*** co_added ***')
-                membernotification.welcome_co_member(co_member, 'password', 2, False)
-
                 print('*** confirm ***')
                 membernotification.email_confirmation(member)
 

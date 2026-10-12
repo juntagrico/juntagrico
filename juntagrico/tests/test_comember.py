@@ -146,6 +146,14 @@ class InvitationTests(CreateSubscriptionTestCase):
             302,
         )
         self.assertTrue(self.sub.current_members.filter(email='new_member@juntagrico.invalid').exists())
+        # Notifications:
+        # invitation accepted notification to inviter
+        # welcome email to co-member
+        # member creation notification to admin
+        # if shares:
+        #   share order confirmation
+        #   share order notification to admin
+        self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
 
     @tag('shares')
     def testAcceptInvitationWithoutShares(self):
@@ -164,6 +172,7 @@ class InvitationTests(CreateSubscriptionTestCase):
         )
         # if member has enough shares, invitation can be accepted without shares
         self.create_paid_share(self.member)
+        mail.outbox.clear()
         self.assertPost(
             reverse('invitation-new', args=[self.invitee.key]),
             data,
@@ -174,6 +183,8 @@ class InvitationTests(CreateSubscriptionTestCase):
                 email='new_member@juntagrico.invalid'
             ).exists()
         )
+        # Notifications: Same without share mails
+        self.assertEqual(len(mail.outbox), 3)
 
     @tag('shares')
     def testAcceptInvitationNewWithMembershipInsufficientShares(self):
@@ -181,6 +192,7 @@ class InvitationTests(CreateSubscriptionTestCase):
         data.update({'membership': True})
         # ordering with insufficient shares fails
         self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
+        mail.outbox.clear()
         data.update({'of_member': 0})
         self.assertPost(
             reverse('invitation-new', args=[self.invitee.key]),
@@ -192,6 +204,8 @@ class InvitationTests(CreateSubscriptionTestCase):
                 account__email='new_member@juntagrico.invalid'
             ).exists()
         )
+        # No Notifications
+        self.assertEqual(len(mail.outbox), 0)
 
     def testAcceptInvitationNewWithMembership(self):
         data = self.newMemberData('new_member@juntagrico.invalid')
@@ -200,6 +214,7 @@ class InvitationTests(CreateSubscriptionTestCase):
             # ordering with insufficient shares fails
             self.create_paid_share(self.member)  # subscription has enough shares, but membership requires 1
             data.update({'of_member': 1})
+        mail.outbox.clear()
         self.assertPost(
             reverse('invitation-new', args=[self.invitee.key]),
             data,
@@ -211,6 +226,8 @@ class InvitationTests(CreateSubscriptionTestCase):
                 email='new_member@juntagrico.invalid'
             ).exists()
         )
+        # Notifications: same as base case
+        self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
         
     def _acceptInvitationExisting(self, result=302):
         self.assertGet(reverse('invitation', args=[self.invitee.key]), 200)
@@ -231,8 +248,8 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.assertTrue(
             self.member4 in self.sub.current_members.all()
         )
-        # notification to inviter + welcome + share: admin and member notify
-        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+        # notification to inviter + share: admin and member notify
+        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 1)
 
     def testAcceptInvitationExistingWithOtherPendingSubscription(self):
         self.client.force_login(self.member2.user)
@@ -248,7 +265,7 @@ class InvitationTests(CreateSubscriptionTestCase):
         self.member3.subscriptionmembership_set.filter(subscription=self.sub).update(leave_date=tomorrow)
         self._acceptInvitationExisting()
         self.assertTrue(self.member3 in self.sub.future_members)
-        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
+        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 1)
 
     def testRejectInvitation(self):
         self.assertGet(reverse('invitation-reject'), 405)

@@ -58,10 +58,14 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
             'last_name': invitee.last_name,
             'email': invitee.email,
         })
-    
+
+    membership = False
+    membership_valid = False
     if Config.enable_membership():
         if request.method == 'POST':
             membership_form = MembershipInvitationForm(request.POST)
+            membership_valid = membership_form.is_valid()
+            membership = membership_form.cleaned_data.get('membership', False)
         else:
             membership_form = MembershipInvitationForm()
     else:
@@ -70,10 +74,6 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
     if Config.enable_shares():
         initial = {'of_member': invitee.shares}
         if request.method == 'POST':
-            membership = False
-            if membership_form:
-                membership_form.is_valid()
-                membership = membership_form.cleaned_data['membership']
             required_shares = invitee.required_shares(membership)
             share_form = ShareInvitationForm(
                 required_shares,
@@ -91,25 +91,23 @@ def invitation_to_new(request, key, template_name='juntagrico/signup/invitation/
     if request.method == 'POST':
         valid = account_form.is_valid()
         if valid and membership_form:
-            valid = membership_form.is_valid()
+            valid = membership_valid
         if valid and share_form:
             valid = share_form.is_valid()
         if valid:
             member = account_form.save()
             password = member.set_password()
+            membernotification.welcome(
+                member,
+                password,
+            )
             member.join_subscription(subscription)
-            share_count = 0
             if share_form:
-                share_count = share_form.save(member)
+                share_form.save(member)
             if membership_form:
                 membership_form.save(member, member.signup_comment)
             membernotification.invitation_accepted(invitee)
             invitee.delete()
-            membernotification.welcome_co_member(
-                member,
-                password,
-                share_count
-            )
             return redirect('welcome')
 
     return render(
@@ -158,10 +156,14 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
     next_possible_join_date = account.next_possible_join_date()
 
     membership_form = None
+    membership = False
+    membership_valid = False
     if Config.enable_membership():
         if not account.memberships.not_canceled().exists():
             if request.method == 'POST':
                 membership_form = MembershipInvitationForm(request.POST)
+                membership_valid = membership_form.is_valid()
+                membership = membership_form.cleaned_data.get('membership', False)
             else:
                 membership_form = MembershipInvitationForm()
 
@@ -169,11 +171,6 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
     share_form = None
     if Config.enable_shares():
         existing_shares = account.usable_shares.count()
-
-        membership = False
-        if membership_form and request.method == 'POST':
-            membership_form.is_valid()
-            membership = membership_form.cleaned_data['membership']
         required_shares = invitee.required_shares(membership)
 
         if required_shares > existing_shares:
@@ -185,24 +182,17 @@ def invitation_to_existing(request, key, template_name='juntagrico/signup/invita
     if request.method == 'POST':
         valid = True
         if membership_form:
-            valid = membership_form.is_valid()
+            valid = membership_valid
         if valid and share_form:
             valid = share_form.is_valid()
         if valid:
             account.join_subscription(invitee.subscription)
-            share_count = 0
             if share_form:
-                share_count = share_form.save(account)
+                share_form.save(account)
             if membership_form:
                 membership_form.save(account)
             membernotification.invitation_accepted(invitee)
             invitee.delete()
-            membernotification.welcome_co_member(
-                account,
-                None,
-                share_count,
-                False
-            )
             return redirect('subscription-landing')
 
     return render(

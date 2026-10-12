@@ -891,6 +891,9 @@ EMAILS
   .. warning::
     Deprecated since version 1.6.0. :ref:`Override template directly instead <reference-templates>`.
 
+  .. warning::
+    Removed options ``co_welcome`` and ``co_added`` since version 2.1.0.
+
   Defining the different email templates
 
   default value
@@ -899,8 +902,6 @@ EMAILS
 
     {
         'welcome': 'mails/member/member_welcome.txt',
-        'co_welcome': 'mails/member/co_member_welcome.txt',
-        'co_added': 'mails/member/co_member_added.txt',
         'password': 'mails/member/password_reset.txt',
         'confirm': 'mails/member/email_confirm.txt',
         'j_reminder': 'mails/member/job_reminder.txt',
