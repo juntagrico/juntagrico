@@ -1,0 +1,10 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% blocktrans trimmed with v_membership=vocabulary.membership %}
+Glückwunsch. Soeben wurde deine {{ v_membership }} bei {{ v_d_enriched_organisation }} bestätigt.
+{% endblocktrans %}
+{% endblock %}

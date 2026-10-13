@@ -5,7 +5,6 @@ from django.template.defaultfilters import urlize, linebreaksbr, floatformat
 
 from juntagrico import __version__
 from juntagrico.config import Config
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.entity.jobs import ActivityArea, JobExtra
 from juntagrico.entity.depot import Depot
@@ -33,7 +32,7 @@ def has_trial_subscriptions():
 
 @register.simple_tag
 def show_core():
-    return ActivityAreaDao.all_core_areas().count() > 0
+    return ActivityArea.objects.filter(core=True).exists()
 
 
 @register.simple_tag
@@ -108,7 +107,7 @@ def price(value):
     formats the number as a price.
     """
     value = floatformat(value, '-2u')
-    return value + ' ' + Config.currency()
+    return Config.currency_format().format(value)
 
 
 @register.filter

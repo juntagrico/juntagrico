@@ -1,0 +1,15 @@
+{% extends "../base.txt" %}
+{% load i18n %}
+
+{% block message %}
+{{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} {{ job.type.get_name }}
+
+{% block intro %}{% blocktrans %}Soeben hat {{ member }} eine Mitteilung im Einsatz hinterlassen.{% endblocktrans %}{% endblock %}
+{% block email %}{% trans "Email:" %} {{ member.email }}{% endblock %}
+{% trans "Mitteilung:" %}
+{{ message }}
+
+{% trans "Einsatz:" %} {{ job.type.get_name }}
+{% trans "Am:" %} {{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Einsatz ansehen:" %} {{ server_url }}{% url 'job' job.id %}
+{% endblock %}

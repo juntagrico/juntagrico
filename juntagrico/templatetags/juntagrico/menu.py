@@ -1,6 +1,7 @@
 from django import template
 from django.template import loader
 
+from juntagrico.forms import account
 from juntagrico.util import addons
 
 register = template.Library()
@@ -27,3 +28,11 @@ def widgets_menu(request):
     this allows to store the widgets menu in a variable and reuse it efficiently
     """
     return loader.render_to_string('juntagrico/menu/widgets.html', {}, request)
+
+
+@register.inclusion_tag('juntagrico/menu/modals/account_search.html')
+def account_search():
+    return {
+        'name': 'account_search',
+        'account_search_form': account.SearchForm()
+    }

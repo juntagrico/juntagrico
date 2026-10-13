@@ -1,0 +1,21 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Einladung ablehnen" %}
+{% endblock %}
+
+{% block body %}
+    <p>
+        {% trans "Bist du sicher?" %}
+    </p>
+{% endblock %}
+
+{% block buttons %}
+    <form action="{% url 'invitation-reject' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="modal-submit btn btn-danger mb-1" name="key" value="{{ key }}">
+            {% trans "Einladung ablehnen" %}
+        </button>
+    </form>
+{% endblock %}

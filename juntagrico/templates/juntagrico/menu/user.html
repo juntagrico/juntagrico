@@ -49,7 +49,12 @@
     </li>
     <li class="nav-item">
         <a class="nav-link {{ request|activemenu:"membership" }}" href="{% url 'profile' %}">
-            {% trans "Mitgliedschaft" %}
+            {% config "enable_membership" as c_enable_membership %}
+            {% if c_enable_membership %}
+                {{ vocabulary.membership }}
+            {% else %}
+                {% trans "Konto" %}
+            {% endif %}
         </a>
     </li>
     <li class="nav-item">
@@ -70,8 +75,11 @@
         </a>
     </li>
     <li class=" nav-item main-menu-small">
-        <a class="nav-link yellow" href="{% url 'logout' %}">
-            {% trans "Abmelden" %}
-        </a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-link yellow btn btn-link pl-0 py-1" href="{% url 'logout' %}">
+                {% trans "Abmelden" %}
+            </button>
+        </form>
     </li>
 </ul>

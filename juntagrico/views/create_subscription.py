@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.forms import model_to_dict
 from django.shortcuts import redirect, render
 from django.views.generic import FormView
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +17,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.entity.depot import Depot
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm, SubscriptionPartSelectRequiredForm
+from juntagrico.forms.membership import MembershipForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView
@@ -186,6 +186,7 @@ def create_external(request):
     start_date = post_data['start_date'].strftime('%Y-%m-%d')
     signup_manager.set('start_date', start_date)
     signup_manager.set('co_members_done', True)
+    signup_manager.set('membership', bool(post_data.get('membership', False)))
     shares_amount = post_data['shares']
     signup_manager.set('shares', {'of_member': shares_amount})
     if MemberDao.member_by_email(main_member['email']) or not post_data['by_laws_accepted']:
@@ -204,16 +205,16 @@ class AddMemberView(SignupView, FormView):
         super().__init__()
         self.edit = False
         self.mod = False
-        self.member_data = {}
+        self.used_emails = set()
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
         self.mod = self.request.GET.get('mod') is not None
         if request.user.is_authenticated:
-            self.member_data = model_to_dict(request.user.member, ['email', 'addr_street', 'addr_zipcode', 'addr_location'])
-        else:
-            self.member_data = self.signup_manager.get('main_member')
+            self.used_emails.add(request.user.member.email.lower())
+        elif main_member := self.signup_manager.get('main_member'):
+            self.used_emails.add(main_member['email'].strip().lower())
 
     def get_form_class(self):
         return EditCoMemberForm if self.edit else RegisterMultiCoMemberForm
@@ -228,12 +229,9 @@ class AddMemberView(SignupView, FormView):
                 form_kwargs['data']['edit'] = self.edit
             own_email = form_kwargs['data']['email'].lower()
         # collect used email addresses to block reusage
-        existing_emails = [self.member_data['email'].strip().lower()]
-        for co_member in self.signup_manager.get('co_members', []):
-            email = co_member['email'].lower()
-            if email != own_email:
-                existing_emails.append(email)
-        form_kwargs['existing_emails'] = existing_emails
+        self.used_emails.update({co_member['email'].lower() for co_member in self.signup_manager.get('co_members', [])})
+        self.used_emails.discard(own_email)
+        form_kwargs['existing_emails'] = self.used_emails
         return form_kwargs
 
     def get_context_data(self, **kwargs):
@@ -245,24 +243,13 @@ class AddMemberView(SignupView, FormView):
         )
 
     def get_initial(self):
-        # use address from main member as default
         return {
-            'addr_street': self.member_data['addr_street'],
-            'addr_zipcode': self.member_data['addr_zipcode'],
-            'addr_location': self.member_data['addr_location'],
             'edit': str(self.edit)
         }
-
-    def form_invalid(self, form):
-        if form.existing_member:  # use existing member if found
-            return self.form_valid(form)
-        return super().form_invalid(form)
 
     def form_valid(self, form):
         # create new member from form data
         data = form.data.dict()
-        if form.existing_member:
-            data.update(exists=True)
         return self._add_or_replace_co_member(data)
 
     def _add_or_replace_co_member(self, member):
@@ -289,9 +276,36 @@ class AddMemberView(SignupView, FormView):
         return super().get(request, *args, **kwargs)
 
 
+class SelectMembershipView(SignupView, FormView):
+    template_name = 'juntagrico/subscription/create/select_membership.html'
+    form_class = MembershipForm
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['membership_required'] = self.signup_manager.requires_membership()
+        context_data['membership_fee'] = Config.membership('fee')
+        return context_data
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['required'] = bool(self.signup_manager.requires_membership())
+        if 'data' not in form_kwargs and self.signup_manager.get('membership') is not None:
+            form_kwargs['data'] = {'membership': self.signup_manager.get('membership')}
+        return form_kwargs
+
+    def form_valid(self, form):
+        self.signup_manager.set('membership', form.cleaned_data['membership'])
+        return redirect(self.signup_manager.get_next_page())
+
+
 class SelectSharesView(SignupView, FormView):
     template_name = 'juntagrico/subscription/create/select_shares.html'
     form_class = ShareOrderForm
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs) | {
+            'required_shares': self.signup_manager.required_shares_details()
+        }
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
@@ -324,6 +338,7 @@ class SummaryView(SignupView, FormView):
         args['show_extras'] = self.signup_manager.extras_enabled()
         args['extras'] = self.signup_manager.extras()
         args['depot'] = self.signup_manager.depot()
+        args['membership_fee'] = Config.membership('fee')
         if args['subscriptions']:
             args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return args

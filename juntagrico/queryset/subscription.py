@@ -1,8 +1,21 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
-    OuterRef, PositiveIntegerField
+from django.db.models import (
+    When,
+    Q,
+    F,
+    ExpressionWrapper,
+    DurationField,
+    Case,
+    DateField,
+    FloatField,
+    Sum,
+    Subquery,
+    OuterRef,
+    PositiveIntegerField,
+    QuerySet,
+)
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
@@ -51,16 +64,44 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         """
         Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
         :param on_date: defaults to today
-        :return: a queryset of subscriptions active on the given date.
+        :return: a queryset of subscriptions active on the given date (regardless of absences)
         """
         on_date = on_date or datetime.date.today()
-        return self.in_date_range(on_date, on_date).exclude(activation_date=None)
+        return self.in_daterange(on_date, on_date)
+
+    def served_on(self, date=None):
+        """ includes subscriptions that should receive products on the specified date
+        """
+        date = date or datetime.date.today()
+        return super().active_on(date).exclude(
+            absences__start_date__lte=date,
+            absences__end_date__gte=date,
+        )
+
+    def active_on(self, date=None):
+        print('Subscription.objects.active_on is deprecated: Use served_on instead')
+        return self.served_on(date)
+
+    def waiting_or_active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions waiting or active on the given date.
+        """
+        on_date = on_date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=on_date)
 
     def in_date_range(self, start, end):
         """
-        subscriptions that were active in the given period
+        subscriptions that were active or waiting in the given period
         """
         return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
+    def not_terminated(self):
+        """
+        subscriptions that have no foreseeable end
+        """
+        return self.exclude(cancellation_date__isnull=False).exclude(subscriptionmembership__leave_date__isnull=False)
 
     def activate_future_depots(self):
         for subscription in self.exclude(future_depot__isnull=True):
@@ -104,6 +145,19 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             return self
         else:
             raise ValueError('required assignments can not be assigned twice with 2 different date ranges.')
+
+        from ..entity.subs import SubscriptionSurcharge
+        surcharges = (
+            SubscriptionSurcharge.objects.filter(
+                subscription=OuterRef('pk'),
+                date__range=(start, end),
+            )
+            .values('subscription')
+            .annotate(
+                surcharge=Sum('required_assignments', default=0.0),
+                core_surcharge=Sum('required_core_assignments', default=0.0))
+            .values('surcharge', 'core_surcharge')
+        )
 
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
@@ -160,9 +214,11 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         ).annotate(  # annotate the final results
             required_core_assignments=Greatest(0.0, self._assignment_rounding(
                 Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
+                + Coalesce(Subquery(surcharges.values('core_surcharge')), 0.0)
             )),
             required_assignments=Greatest(F('required_core_assignments'), self._assignment_rounding(
                 Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+                + Coalesce(Subquery(surcharges.values('surcharge')), 0.0)
             )),
         )
 
@@ -220,22 +276,39 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         date = date or datetime.date.today()
         return self.exclude(activation_date__lte=date)
 
+    def active(self, date=None):
+        return super().active_on(date)
+
+    def waiting_or_active(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=date)
+
     def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
 
     def not_canceled(self):
         return self.filter(cancellation_date=None)
 
-    def waiting_or_active(self, date=None):
-        date = date or datetime.date.today()
-        return self.exclude(deactivation_date__lte=date)
-
-    def active_on(self, date=None):
+    def served_on(self, date=None):
+        """ includes parts that should receive products on the specified date
+        """
         date = date or datetime.date.today()
         current_week_number = date.isocalendar()[1] - 1
-        return (super().active_on(date)
-                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
-                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
+        return (
+            super()
+            .active_on(date)
+            .annotate(
+                week_mod=ExpressionWrapper(
+                    (current_week_number + F('type__offset')) % (F('type__interval')),
+                    output_field=PositiveIntegerField(),
+                )
+            )
+            .filter(week_mod=0)
+        )
+
+    def active_on(self, date=None):
+        print('SubscriptionPart.objects.active_on is deprecated: Use served_on instead')
+        return self.served_on(date)
 
     def sorted(self):
         return self.order_by('type__is_extra', 'type__bundle__category',
@@ -251,3 +324,10 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
 
     def count_units(self):
         return self.aggregate(units=Sum('type__bundle__product_sizes__units'))['units']
+
+
+class SubscriptionSurchargeQuerySet(QuerySet):
+    def in_daterange(self, from_date, till_date):
+        """select surcharges/discounts within the given date range
+        """
+        return self.filter(date__gte=from_date, date__lte=till_date)

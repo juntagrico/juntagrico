@@ -65,7 +65,7 @@
                         {{ subscription.activation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}?next={{ request.path|urlencode }}">
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}{% querystring next=request.path %}">
                             {{ subscription.state_text }}
                         </a>
                         {% if subscription.canceled %}

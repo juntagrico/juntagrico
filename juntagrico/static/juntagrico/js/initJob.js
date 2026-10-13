@@ -79,6 +79,42 @@ $(function () {
         return false
     })
 
+    // open modal to add assignment
+    $('.add-assignment').on('click', function (event) {
+        let modal = $('#add_assignment_modal')
+        modal.modal('show')
+        modal.find('.django-select2').not('[name*=__prefix__]').djangoSelect2({
+            dropdownParent: modal
+        })
+        return false
+    })
+
+    // populate participant details modal
+    $('#participant_details_modal').on('show.bs.modal', function (event) {
+        let participant = $(event.relatedTarget)
+        let id = participant.data('id')
+        let name = participant.data('name')
+        let email = participant.data('email')
+        let phone = participant.data('phone')
+        let mobile = participant.data('mobile_phone')
+        let modal = $(this)
+        modal.find('.modal-title').text(name)
+        let body = modal.find('.modal-body')
+        body.find('.participant-email').text(email).attr('href', 'mailto:' + email)
+        let email_link = body.find('.participant-email-link')
+        email_link.attr('href', email_link.data('url').replace('99', id))
+        body.find('.participant-phone').text(phone).attr('href', 'tel:' + phone)
+        body.find('.participant-mobile-container').toggle(mobile !== undefined && mobile.length > 3)
+        body.find('.participant-mobile').text(mobile).attr('href', 'tel:' + mobile)
+    })
+
+    // open modal to write message
+    $('.add-message').on('click', function (event) {
+        let modal = $('#add_message_modal')
+        modal.modal('show')
+        return false
+    })
+
     // apply suggested job types on click
     $('.suggested-job-type').on('click', function (event) {
         let suggestion = $(this)

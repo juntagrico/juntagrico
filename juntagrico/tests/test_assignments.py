@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, timedelta
 
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionSurcharge
 from . import JuntagricoTestCase
 
 
@@ -31,7 +31,26 @@ class AssignmentTests(JuntagricoTestCase):
             cls.create_sub(cls.depot, cls.sub_type),
             # multiple parts
             cls.create_sub(cls.depot, [cls.sub_type, cls.sub_type], cls.activation_date),
+            # with surcharges
+            cls.create_sub(cls.depot, cls.sub_type, cls.activation_date),
         ]
+        SubscriptionSurcharge.objects.create(
+            subscription=cls.subs[9],
+            amount=0,
+            required_assignments=2,
+            required_core_assignments=2,
+            description='surcharge',
+            date=cls.activation_date,
+        )
+        # out of date range surcharge should have no impact 
+        SubscriptionSurcharge.objects.create(
+            subscription=cls.subs[9],
+            amount=0,
+            required_assignments=100,
+            required_core_assignments=100,
+            description='surcharge',
+            date=cls.activation_date - timedelta(days=1),
+        )
 
     def testRequiredAssignments(self):
         # get assignments for entire year.
@@ -64,3 +83,6 @@ class AssignmentTests(JuntagricoTestCase):
         # multiple parts
         self.assertEqual(subs[self.subs[8].id].required_assignments, 20)
         self.assertEqual(subs[self.subs[8].id].required_core_assignments, 6)
+        # with surcharge
+        self.assertEqual(subs[self.subs[9].id].required_assignments, 12)
+        self.assertEqual(subs[self.subs[9].id].required_core_assignments, 5)

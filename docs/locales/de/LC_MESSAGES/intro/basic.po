@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: juntagrico \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"POT-Creation-Date: 2026-09-24 12:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_CH\n"
@@ -19,15 +19,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../intro/basic.rst:4 30fa92578d12466182e1e710a46d886f
+#: ../../intro/basic.rst:4 3e18571014294dcd90dce9e550da927e
 msgid "Basic Setup"
 msgstr "Grundlegende Einrichtung"
 
-#: ../../intro/basic.rst:7 1262b1999c304e799cca10ade774ef69
+#: ../../intro/basic.rst:7 832607c3ad844667876cf5e55a7d2633
 msgid "Recommended Settings"
 msgstr "Empfohlene Einstellungen"
 
-#: ../../intro/basic.rst:9 36776d09e2cb417b912574cef4f29c4b
+#: ../../intro/basic.rst:9 69c0197a29a34e1bad1e004185bae62f
 msgid ""
 "These settings, in the ``settings.py`` are ideally set, before the "
 "instance is used for production, as changing these settings likely "
@@ -38,15 +38,15 @@ msgstr ""
 " Änderungen an diesen Einstellungen wahrscheinlich manuelle Anpassungen "
 "der Produktionsdaten erfordern, wenn sie später vorgenommen werden."
 
-#: ../../intro/basic.rst:13 1bcbce8b695445f395da3a778b4b05a4
+#: ../../intro/basic.rst:13 e9e0a9ec13a04130882eb047cb8ecc59
 msgid "Set the Timezone"
 msgstr "Zeitzone festlegen"
 
-#: ../../intro/basic.rst:15 3017541d6cd348b198f46929445cdc9d
+#: ../../intro/basic.rst:15 f6078d37ff3c48b495336d14f2ac3711
 msgid "Define the timezone, where your organisation is based, e.g.:"
 msgstr "Lege die Zeitzone fest, in der deine Organisation ansässig ist, z.B.:"
 
-#: ../../intro/basic.rst:22 9285f843eae14c80a15f5d4e88d4c6b6
+#: ../../intro/basic.rst:22 4b66769f53b14eefbbedd8bda924f744
 msgid ""
 "If this is added or changed later, all jobs will be shifted in time and "
 "will have to be adjusted."
@@ -54,11 +54,11 @@ msgstr ""
 "Wenn dies später hinzugefügt oder geändert wird, werden alle Jobs "
 "zeitlich verschoben und müssen angepasst werden."
 
-#: ../../intro/basic.rst:25 3ddd5f9c200b4dad986228f1ab0346a3
+#: ../../intro/basic.rst:25 3d4d1ce890e840df8664b973b4605569
 msgid "Count assignments by hour"
 msgstr "Zuordnungen nach Stunden zählen"
 
-#: ../../intro/basic.rst:27 b2faed665a504129ba3a1693bbc24695
+#: ../../intro/basic.rst:27 7bfac7415a40468fa73fef30f841b6c7
 msgid ""
 "If your organization counts the members assignment per hour instead of "
 "per job, use this setting:"
@@ -66,7 +66,7 @@ msgstr ""
 "Wenn deine Organisation die Zuordnungen von Mitgliedern pro Stunde statt "
 "pro Job zählt, verwende diese Einstellung:"
 
-#: ../../intro/basic.rst:33 23239e753ac143d2900be3441c7f7c4c
+#: ../../intro/basic.rst:33 0927fe8842714d74b6d30a5ec5dc7523
 msgid ""
 "If you change this later, the setting will only be applied to all new job"
 " signups. If you need to change it, it is recommended to change it on the"
@@ -76,11 +76,11 @@ msgstr ""
 "Anmeldungen angewendet. Wenn du dies ändern musst, wird empfohlen, es "
 "beim Wechsel deines Geschäftsjahres zu tun."
 
-#: ../../intro/basic.rst:37 a987c790ddf348c09591db90f09c1bde
+#: ../../intro/basic.rst:37 78675816af344617b3aad753fb3bbcfc
 msgid "Initial Configuration"
 msgstr "Anfangskonfiguration"
 
-#: ../../intro/basic.rst:39 f803cf7d819d438db8bb350c9bb71893
+#: ../../intro/basic.rst:39 dfdc5b5db2804d3e99e870af3d7e2878
 msgid ""
 "These configurations are done in the django admin interface inside of "
 "your instance."
@@ -88,11 +88,11 @@ msgstr ""
 "Diese Konfigurationen werden in der Django-Admin-Oberfläche innerhalb "
 "deiner Instanz durchgeführt."
 
-#: ../../intro/basic.rst:45 bd43dbf4a4b54f91bb25f08ccb9e949d
+#: ../../intro/basic.rst:45 deb384b091894dfb9531e63e07956c52
 msgid "Configure the Website Name and Domain"
 msgstr "Website-Namen und Domain konfigurieren"
 
-#: ../../intro/basic.rst:46 4e7fa5fa94b2478baf057633e6b0d9b6
+#: ../../intro/basic.rst:46 bcf4608aecd94cfa95d77fff4bc14f26
 msgid ""
 "The website name and domain are displayed in various places on the "
 "website and in some emails. In the Django-Admin under Websites edit the "
@@ -104,21 +104,21 @@ msgstr ""
 " Websites den Eintrag `example.com` und setze die Namen auf deine "
 "Website-Domain und deinen Anzeigenamen."
 
-#: ../../intro/basic.rst:51 84b6fc77c7c240f3ab6bdde3f38c79aa
+#: ../../intro/basic.rst:51 89cdafc2a402430a9451614204e08b47
 msgid "Custom Logo & Style"
 msgstr "Benutzerdefiniertes Logo & Stil"
 
-#: ../../intro/basic.rst:54 3e89b1167ad644438686c20e5f85e0ca
+#: ../../intro/basic.rst:54 05b0c7fe4ea84c35a9ac6c8936864839
 #, python-brace-format
 msgid "Replace ``{app}`` with the name of your app in the following instructions."
 msgstr "Ersetze ``{app}`` mit dem Namen deiner App in den folgenden Anweisungen."
 
-#: ../../intro/basic.rst:56 2d481f93347544669619f8cecb43e559
+#: ../../intro/basic.rst:56 dceba81933714236b3e8c82d940c96ff
 #, python-brace-format
 msgid "Adjust the file ``{app}/static/{app}/css/customize.css``:"
 msgstr "Bearbeite die Datei ``{app}/static/{app}/css/customize.css``:"
 
-#: ../../intro/basic.rst:69 1b97d49afb44421a9243d33580b2a00a
+#: ../../intro/basic.rst:69 5a334665f60445a49642d384ef060a8f
 #, python-brace-format
 msgid ""
 "Add the image file of the logo to ``{app}/static/{app}/img/logo.png`` or "
@@ -127,19 +127,19 @@ msgstr ""
 "Füge die Bilddatei des Logos zu ``{app}/static/{app}/img/logo.png`` hinzu"
 " oder wie oben im CSS angegeben."
 
-#: ../../intro/basic.rst:71 8beadd35aba84b6ea606cf2620b8768e
+#: ../../intro/basic.rst:71 7b5bca70fd904a958ddd1d0998647e44
 msgid "Other customizations can be added to the same css file."
 msgstr "Andere Anpassungen können derselben CSS-Datei hinzugefügt werden."
 
-#: ../../intro/basic.rst:74 c0715353d93748fca93ee34fde6aa18f
+#: ../../intro/basic.rst:74 6055bb5428ee4238abfa0dfe36837996
 msgid "Depot list setup"
 msgstr "Depotlisten-Einrichtung"
 
-#: ../../intro/basic.rst:76 58a045caae3e4688967bee1b4abe2109
+#: ../../intro/basic.rst:76 4f9adcb10a5a49019a5fc1d8108ea3d9
 msgid "Initial List Generation"
 msgstr "Erste Liste generieren"
 
-#: ../../intro/basic.rst:77 c96acec844df49c9a8aca61907592750
+#: ../../intro/basic.rst:77 2cbda87b478e4bce8ad551be0e2ef98d
 msgid ""
 "The depot lists are created by the following django management command "
 ":ref:`generate_depot_list <reference-generate-depot-list>`. This command "
@@ -149,7 +149,7 @@ msgstr ""
 "erstellt :ref:`generate_depot_list <reference-generate-depot-list>`. "
 "Dieser Befehl kann manuell oder mit einem cronjob aufgerufen werden."
 
-#: ../../intro/basic.rst:80 bdac1f7082cc43548a1080708baa7a9b
+#: ../../intro/basic.rst:80 c5277196de60400e8703d9b2a089a021
 msgid ""
 "Make sure to set the :ref:`depot list settings <settings-depot>` "
 "according to your needs."
@@ -157,11 +157,11 @@ msgstr ""
 "Stelle sicher, dass die :ref:`Depotlisten-Einstellungen <settings-depot>`"
 " entsprechend deiner Bedürfnissen gesetzt sind."
 
-#: ../../intro/basic.rst:84 584d9cd1ae3d4b6d8159c89dede8eef7
+#: ../../intro/basic.rst:84 623ed29899ec447baad7459e5be7aee5
 msgid "Admin Permission Setup"
 msgstr "Administrator-Berechtigungseinrichtung"
 
-#: ../../intro/basic.rst:86 8822e0189a46412699773dc7a11db5b7
+#: ../../intro/basic.rst:86 437d7a6fb9d34fd2849e6a66a3e681d6
 msgid ""
 "It is recommended to limit the access for each person with an "
 "administrative task to only include the relevant access. This will make "
@@ -176,7 +176,7 @@ msgstr ""
 "Vertrauen auszuführen, da das Risiko verringert wird, versehentlich Dinge"
 " zu ändern."
 
-#: ../../intro/basic.rst:90 5b18e03638a442a1b9cee46a3e21d57c
+#: ../../intro/basic.rst:90 4f37d922a8b64373a8d46599049b0e55
 msgid ""
 "Juntagrico does not assume any specific organisation structure. Instead "
 "permissions can be distributed with a high level of granularity. Read "
@@ -187,11 +187,11 @@ msgstr ""
 "werden. Lese :ref:`Berechtigungen <reference-permissions>`, wie "
 "Berechtigungen festgelegt werden."
 
-#: ../../intro/basic.rst:96 35f4d6a8f5b54913aeff4c037bd26e7f
+#: ../../intro/basic.rst:96 5d095212ecb84a699c645f81e963760e
 msgid "Configure Admin Notifications"
 msgstr "Administrator-Benachrichtigungen konfigurieren"
 
-#: ../../intro/basic.rst:98 0b08b483e5d5426d92eacfc00fbe5423
+#: ../../intro/basic.rst:98 b5f0006c5bfd4584a2bbe60fb6ffbb8b
 msgid ""
 "Email notifications for admins are also configured :ref:`using "
 "permissions <reference-permission-notifications>`."
@@ -199,15 +199,15 @@ msgstr ""
 "E-Mail-Benachrichtigungen für Administratoren werden ebenfalls :ref:`über"
 " Berechtigungen <reference-permission-notifications>` konfiguriert."
 
-#: ../../intro/basic.rst:102 ec37aa60d1ef4d74a4d019ec7f3d4d7e
+#: ../../intro/basic.rst:102 54f569ffcd7d459bb8fc55ef00152756
 msgid "Text Adjustments"
 msgstr "Textanpassungen"
 
-#: ../../intro/basic.rst:105 19c80a99f61543799e7571ad71a39bcf
+#: ../../intro/basic.rst:105 221e183289c64e2394edd7ca43734c71
 msgid "Adjust Terminology"
 msgstr "Terminologie anpassen"
 
-#: ../../intro/basic.rst:107 8cf07b1b1bdd4565b132023ac6d158e9
+#: ../../intro/basic.rst:107 170bc16aef0e4457b6a79f02f6cd0372
 msgid ""
 "Common terms, e.g. for shares, subscriptions, members can be overridden "
 "using the ``VOCABULARY`` setting. Only set the terms you want to "
@@ -217,11 +217,27 @@ msgstr ""
 "überschrieben werden mittels der ``VOCABULARY``-Einstellung. Lege nur die"
 " Begriffe fest, die du überschreiben möchtest, z.B.:"
 
-#: ../../intro/basic.rst:118 4f1baee89dca4946aa840011025b723a
+#: ../../intro/basic.rst:125 258726159e634e3a8c4a07d846d2ba5e
+msgid ""
+"Related fragments need to be adjusted, only if the gender of your "
+"vocabulary is different from the default vocabulary."
+msgstr ""
+"Verwandte Fragmente müssen nur angepasst werden, wenn das Geschlecht "
+"deines Vokabulars sich vom Standardvokabular unterscheidet."
+
+#: ../../intro/basic.rst:127 0e0e6a4184d949dc9a63b94a3cd3c050
+msgid ""
+"See the :ref:`VOCABULARY setting <settings-vocabulary>` for the full list"
+" of options."
+msgstr ""
+"Siehe :ref:`VOCABULARY-Einstellung <settings-vocabulary>` für die "
+"vollständige Liste der Optionen."
+
+#: ../../intro/basic.rst:130 7610d273a27c4e90b113cc7b6494d3d7
 msgid "Change Texts"
 msgstr "Texte ändern"
 
-#: ../../intro/basic.rst:120 1e7408b5c7c048559fa9c2388561b712
+#: ../../intro/basic.rst:132 f434b478f01e4234bf144f97ed49cd3b
 msgid ""
 "By default the texts in juntagrico, including in automated emails, are "
 "formulated rather neutral, such that they are applicable to most of the "
@@ -234,7 +250,7 @@ msgstr ""
 "möchtest möglicherweise zusätzliche Hinweise oder eine persönliche Note "
 "zu den Texten hinzufügen."
 
-#: ../../intro/basic.rst:124 e481d613c8134b7891f3a74c117d529a
+#: ../../intro/basic.rst:136 aa53a45faaec4502b454ff49f6425867
 msgid ""
 "Most texts can be modified using :ref:`custom templates <intro-custom-"
 "templates>`. Some texts, e.g. in forms, can be changed with :ref:`custom "
@@ -245,7 +261,7 @@ msgstr ""
 "Formularen, können mit :ref:`benutzerdefiniertem Code <intro-custom-"
 "code>` geändert werden."
 
-#: ../../intro/basic.rst:128 f6d7f75dff7f4ec690b5816bd1b74e9e
+#: ../../intro/basic.rst:140 66fad42f988b4186b468625aa230915c
 msgid ""
 "If you make modifications to the code or templates, you may have to adapt"
 " these, whenever they are updated in juntagrico."
@@ -253,3 +269,4 @@ msgstr ""
 "Wenn du Änderungen am Code oder an Vorlagen vornehmen, musst du diese "
 "möglicherweise anpassen, wann immer sie in Juntagrico aktualisiert "
 "werden."
+
