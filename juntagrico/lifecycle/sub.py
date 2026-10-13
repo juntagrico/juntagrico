@@ -35,6 +35,7 @@ def handle_sub_activated(sender, instance, **kwargs):
         # see https://github.com/juntagrico/juntagrico/pull/641
         return
     activation_date = instance.activation_date or datetime.date.today()
+    # TODO: allow partial activation (with only some members)
     for member in instance.current_members:
         current_sub = member.subscription_current is not None
         sub_deactivated = current_sub and member.subscription_current.deactivation_date is not None

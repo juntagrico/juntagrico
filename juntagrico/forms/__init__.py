@@ -21,9 +21,8 @@ from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.jobs import ActivityArea
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, Invitee
 from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
@@ -164,7 +163,6 @@ class MemberBaseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.existing_member = None
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
@@ -178,7 +176,7 @@ class MemberBaseForm(ModelForm):
         return mark_safe(
             escape(
                 _('Diese E-Mail-Adresse existiert bereits im System.')
-            ) + f'<a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+            ) + f' <a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
 
@@ -254,9 +252,18 @@ class EditMemberForm(RegisterMemberForm):
 
 
 class CoMemberBaseForm(MemberBaseForm):
+    class Meta(MemberBaseForm.Meta):
+        model = Invitee
+        fields = ('first_name', 'last_name', 'email',)
+
     def __init__(self, *args, existing_emails=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.existing_emails = existing_emails or []  # list of emails that can not be used
+        self.base_layout = (
+            'first_name',
+            'last_name',
+            'email',
+        )
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
@@ -265,23 +272,6 @@ class CoMemberBaseForm(MemberBaseForm):
                 escape(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {co_members} verwendet.'))
                 .format(co_members=Config.vocabulary('co_member_pl'))), 'email_exists'
             )
-        existing_member = MemberDao.member_by_email(email)
-        if existing_member:
-            if existing_member.blocked:
-                raise ValidationError(mark_safe(
-                    escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive '
-                             '{subscription}-BezierIn. Bitte meldet euch bei {email}, '
-                             'wenn ihr bestehende {members} als {co_members} hinzufügen möchtet.')).format(
-                        subscription=Config.vocabulary('subscription'),
-                        email='<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
-                        members=Config.vocabulary('member_type_pl'),
-                        co_members=Config.vocabulary('co_member_pl')
-                    )),
-                    'has_active_subscription'
-                )
-            else:
-                # store existing member for reevaluation
-                self.existing_member = existing_member
         return email
 
     def clean(self):
@@ -290,19 +280,22 @@ class CoMemberBaseForm(MemberBaseForm):
 
     @staticmethod
     def get_submit_button():
-        return Submit('submit', _('{co_member} hinzufügen').format(
+        return Submit('submit', _('{co_member} einladen').format(
             co_member=Config.vocabulary('co_member')
         ), css_class='btn-success')
 
 
 class AddCoMemberForm(CoMemberBaseForm):
-    shares = IntegerField(label=Config.vocabulary('share_pl'), required=False, min_value=0, initial=0)
+    class Meta(CoMemberBaseForm.Meta):
+        fields = (*CoMemberBaseForm.Meta.fields, 'shares')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         fields = list(self.base_layout)  # keep first 9 fields
         if Config.enable_shares():
             fields.append(Field('shares', css_class='col-md-2'))
+        else:
+            del self.fields['shares']
         self.helper.layout = Layout(
             *fields,
             FormActions(
@@ -748,7 +741,7 @@ class ShareOrderForm(Form):
         if isinstance(required, dict):
             self.required = required
         else:
-            self.required = {'total': required, 'for_primary': existing}
+            self.required = {'total': required, 'for_primary': required}
         self.existing = existing
         self.co_members = co_members or []
 

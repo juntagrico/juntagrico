@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
@@ -20,16 +21,42 @@ def welcome(member, password):
     ).send()
 
 
-def welcome_co_member(co_member, password, new_shares, new=True):
-    # sends either welcome mail or just information mail to new/added co-member
+def invite_co_member(invitee):
+    # sends invitation mail to invited co-member
+    invitee.sent_at = timezone.now()
+    invitee.save()
     EmailBuilder(
-        co_member,
-        _('Willkommen bei {0}').format(enriched_organisation('D')),
-        'co_welcome' if new else 'co_added',
+        invitee,
+        _('Einladung zu {0}').format(enriched_organisation('D')),
+        'juntagrico/mails/member/subscription/invitation/invite.txt',
         {
-            'password': password,
-            'new_shares': new_shares,
-            'sub': co_member.subscription_future or co_member.subscription_current,
+            'invitee': invitee,
+        },
+        'for_members',
+    ).send()
+
+
+def invitation_accepted(invitee):
+    # sends notification mail to inviter
+    EmailBuilder(
+        invitee.invited_by,
+        _('Einladung angenommen'),
+        'juntagrico/mails/member/subscription/invitation/accepted.txt',
+        {
+            'invitee': invitee,
+        },
+        'for_members',
+    ).send()
+
+
+def invitation_rejected(invitee):
+    # sends notification mail to inviter
+    EmailBuilder(
+        invitee.invited_by,
+        _('Einladung abgelehnt'),
+        'juntagrico/mails/member/subscription/invitation/rejected.txt',
+        {
+            'invitee': invitee,
         },
         'for_members',
     ).send()

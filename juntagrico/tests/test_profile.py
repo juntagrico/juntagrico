@@ -129,4 +129,5 @@ class AuthTests(JuntagricoTestCase):
         self.assertEqual(len(mail.outbox), 0)  # should send no email
 
     def testLogout(self):
-        self.assertGet(reverse('logout'), code=302)
+        self.assertGet(reverse('logout'), code=405)
+        self.assertPost(reverse('logout'), code=302)

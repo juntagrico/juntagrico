@@ -85,10 +85,12 @@ class Config:
             'no_subscription_acc': v_format(_('kein {subscription}'), 'subscription'),
             'this_subscription_acc': v_format(_('dieses {subscription}'), 'subscription'),
             'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
+            'your_subscription': v_format(_('dein {subscription}'), 'subscription'),
             'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
             'your_subscription_dat': v_format(_('deinem {subscription}'), 'subscription'),
+            'another_subscription_dat': v_format(_('einem anderen {subscription}'), 'subscription'),
             'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
-
+            'a_subscription_dat': v_format(_('einem {subscription}'), 'subscription'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -278,8 +280,6 @@ class Config:
         'EMAILS',
         {
             'welcome': 'mails/member/member_welcome.txt',
-            'co_welcome': 'mails/member/co_member_welcome.txt',
-            'co_added': 'mails/member/co_member_added.txt',
             'password': 'mails/member/password_reset.txt',
             'confirm': 'mails/member/email_confirm.txt',
             'j_reminder': 'mails/member/job_reminder.txt',

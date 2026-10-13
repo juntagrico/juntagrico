@@ -14,7 +14,7 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob, ActivityArea
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, Invitee
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -48,6 +48,13 @@ class Command(BaseCommand):
         depot, new_depot = Depot.objects.all()[:2]
         area = ActivityArea.objects.first()
         membership, created = Membership.objects.get_or_create(account=member)
+        invitation = Invitee.objects.create(
+            first_name='Vorname',
+            last_name='Nachname',
+            email='test@juntagrico.invalid',
+            subscription=subscription,
+            invited_by=subscription.primary_member,
+        )
         # ensure there is a recipient for these admin notifications
         member.user.user_permissions.add(
             *Permission.objects.filter(
@@ -77,11 +84,14 @@ class Command(BaseCommand):
                 print('*** welcome  ohne abo***')
                 membernotification.welcome(member_wo_subs, 'password')
 
-                print('*** co_welcome ***')
-                membernotification.welcome_co_member(co_member, 'password', 1)
+                print('*** juntagrico/mails/member/subscription/invitation/invite.txt ***')
+                membernotification.invite_co_member(invitation)
 
-                print('*** co_added ***')
-                membernotification.welcome_co_member(co_member, 'password', 2, False)
+                print('*** juntagrico/mails/member/subscription/invitation/accepted.txt ***')
+                membernotification.invitation_accepted(invitation)
+
+                print('*** juntagrico/mails/member/subscription/invitation/rejected.txt ***')
+                membernotification.invitation_rejected(invitation)
 
                 print('*** confirm ***')
                 membernotification.email_confirmation(member)

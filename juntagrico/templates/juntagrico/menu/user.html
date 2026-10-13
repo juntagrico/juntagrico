@@ -75,8 +75,11 @@
         </a>
     </li>
     <li class=" nav-item main-menu-small">
-        <a class="nav-link yellow" href="{% url 'logout' %}">
-            {% trans "Abmelden" %}
-        </a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="nav-link yellow btn btn-link pl-0 py-1" href="{% url 'logout' %}">
+                {% trans "Abmelden" %}
+            </button>
+        </form>
     </li>
 </ul>
