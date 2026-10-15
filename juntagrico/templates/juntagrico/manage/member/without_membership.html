@@ -6,14 +6,17 @@
         {% trans "Kontakt" %}
     </th>
     <th class="filter">
-        {% trans "Ehemalig?" %}
+        {% trans "ehemalig?" %}
     </th>
     {% if shares_enabled %}
         <th class="filter">
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bezahlte {{ v_share_pl }}{% endblocktrans %}
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}bestellte {{ v_share_pl }}{% endblocktrans %}
         </th>
         <th class="filter">
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bestellte {{ v_share_pl }}{% endblocktrans %}
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}bezahlte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+        <th class="filter">
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}davon gekündigt{% endblocktrans %}
         </th>
     {% endif %}
 {% endblock %}
@@ -23,14 +26,17 @@
         {% trans "Kontakt" %}
     </th>
     <th>
-        {% trans "Ehemalig?" %}
+        {% trans "ehemalig?" %}
     </th>
     {% if shares_enabled %}
         <th>
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bezahlte {{ v_share_pl }}{% endblocktrans %}
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}bestellte {{ v_share_pl }}{% endblocktrans %}
         </th>
         <th>
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}Bestellte {{ v_share_pl }}{% endblocktrans %}
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}bezahlte {{ v_share_pl }}{% endblocktrans %}
+        </th>
+        <th>
+            {% blocktrans with v_share_pl=vocabulary.share_pl %}davon gekündigt{% endblocktrans %}
         </th>
     {% endif %}
 {% endblock %}
@@ -50,10 +56,13 @@
     </td>
     {% if shares_enabled %}
         <td>
-            {{ member.share_set.active.count }}
+            {{ member.ordered_shares }}
         </td>
         <td>
-            {{ member.share_set.usable.count }}
+            {{ member.paid_shares }}
+        </td>
+        <td>
+            {{ member.canceled_shares }}
         </td>
     {% endif %}
 {% endblock %}

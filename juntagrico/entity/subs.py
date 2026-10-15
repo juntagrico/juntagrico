@@ -114,6 +114,8 @@ class Subscription(Billable, SimpleStateModel):
         """
         :return: list of parts annotated with bundle_name, category_name and amount
         """
+        if hasattr(self, 'cached_content'):
+            return self.cached_content
         return self.types.with_active_or_future_parts().annotate_content()
 
     def content_strings(self, sformat=None):
@@ -178,17 +180,15 @@ class Subscription(Billable, SimpleStateModel):
         return self.shares.count_dedicated(only_total=True)
 
     @property
-    def paid_shares(self):
-        return ShareDao.paid_shares(self).count()
-
-    @property
     def share_overflow(self):
         return self.available_shares - self.required_shares
 
     @property
     def required_shares(self):
+        if hasattr(self, 'cached_required_shares'):
+            return self.cached_required_shares
         result = 0
-        for part in self.future_parts.all():
+        for part in self.parts.not_canceled():
             result += part.type.shares
         return result
 
@@ -349,7 +349,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         """
         :return: non-trial parts from the same subscription that are waiting or active after this part.
         """
-        return self.subscription.parts.non_trial().waiting(self.activation_date)
+        # performance shortcut. see SubscriptionTrialPartView
+        if not getattr(self, 'has_no_other_parts', False):
+            return self.subscription.parts.non_trial().waiting(self.activation_date)
+        return SubscriptionPart.objects.none()
 
     def clean(self):
         check_sub_part_consistency(self)

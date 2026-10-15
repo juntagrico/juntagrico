@@ -1,6 +1,7 @@
 import datetime
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Subquery, OuterRef, Count
+from django.db.models.functions import Coalesce
 
 from juntagrico.config import Config
 
@@ -33,3 +34,43 @@ class MembershipQueryset(QuerySet):
         if Config.membership('enable'):
             return self.count() * Config.membership('required_shares')
         return 0
+
+    def annotate_shares(self):
+        from juntagrico.entity.share import Share
+        return self.annotate(
+            ordered_shares=Coalesce(
+                Subquery(
+                    Share.objects.unpaid()
+                    .usable()
+                    .filter(member__memberships=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+            paid_shares=Coalesce(
+                Subquery(
+                    Share.objects.active()
+                    .filter(member__memberships=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+            canceled_shares=Coalesce(
+                Subquery(
+                    Share.objects.active()
+                    .canceled()
+                    .filter(member__memberships=OuterRef('pk'))
+                    .values('member')
+                    .annotate(count=Count('id'))
+                    .values('count')
+                ),
+                0,
+            ),
+        )
+
+    def prefetch_for_list(self):
+        return self.select_related('account__user').annotate_shares()

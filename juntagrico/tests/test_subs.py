@@ -9,7 +9,7 @@ from django.urls import reverse
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership, Invitee
 from ..entity.membership import Membership
-from ..entity.subs import SubscriptionPart
+from ..entity.subs import SubscriptionPart, Subscription
 from ..entity.subtypes import SubscriptionType
 
 
@@ -237,6 +237,13 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(
             reverse('manage-subscription-price'), member=self.member2, code=403
         )
+
+    @tag('shares')
+    def testSubscriptionShares(self):
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type2)
+        sub = Subscription.objects.annotate_required_shares().get(pk=self.sub.pk)
+        self.assertEqual(sub.required_shares, 4)
 
 
 class SubscriptionCancellationTests(JuntagricoTestCaseWithShares):
