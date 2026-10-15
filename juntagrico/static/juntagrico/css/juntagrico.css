@@ -537,3 +537,9 @@ a.phone-number {
     max-height: 15em;
     overflow: scroll;
 }
+
+/* comma separator */
+
+.comma-sep:not(:last-child)::after {
+    content: ', ';
+}
