@@ -6,80 +6,110 @@
 {% user_menus as l_user_menus %}
 {% vocabulary "subscription" as v_subscription %}
 <ul class="main-menu nav flex-column">
-    <li>
-        <h5>
-            {% blocktrans with fn=request.user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}
-        </h5>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request|activemenu:"subscription" }}" href="{% url 'subscription-landing' %}">
-            {{ v_subscription }}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request|activemenu:"jobs" }}" href="{% url 'jobs' %}">
-            {% trans "Einsätze" %}
-        </a>
-        {% if request|activemenu:"jobs" == 'active' %}
-            <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'memberjobs' %}">
-                        {% trans "Meine Einsätze" %}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'jobs-all' %}">
-                        {% trans "Aktuelle und vergangene Einsätze" %}
-                    </a>
-                </li>
-            </ul>
-        {% endif %}
-    </li>
-    {% if b_show_deliveries %}
+    {% block title %}
+        <li>
+            <h5>
+                {% blocktrans with fn=request.user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}
+            </h5>
+        </li>
+    {% endblock %}
+
+    {% block subscription %}
         <li class="nav-item">
-            <a class="nav-link {{ request|activemenu:"deliveries" }}" href="{% url 'deliveries' %}">
-                {% trans "Lieferungen" %}
+            <a class="nav-link {{ request|activemenu:"subscription" }}" href="{% url 'subscription-landing' %}">
+                {{ v_subscription }}
             </a>
         </li>
-    {% endif %}
-    <li class="nav-item">
-        <a class="nav-link {{ request|activemenu:"area" }}" href="{% url 'areas' %}">
-            {% trans "Tätigkeitsbereiche" %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request|activemenu:"membership" }}" href="{% url 'profile' %}">
-            {% config "enable_membership" as c_enable_membership %}
-            {% if c_enable_membership %}
-                {{ vocabulary.membership }}
-            {% else %}
-                {% trans "Konto" %}
+    {% endblock %}
+
+    {% block job %}
+        <li class="nav-item">
+            <a class="nav-link {{ request|activemenu:"jobs" }}" href="{% url 'jobs' %}">
+                {% trans "Einsätze" %}
+            </a>
+            {% if request|activemenu:"jobs" == 'active' %}
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'memberjobs' %}">
+                            {% trans "Meine Einsätze" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'jobs-all' %}">
+                            {% trans "Aktuelle und vergangene Einsätze" %}
+                        </a>
+                    </li>
+                </ul>
             {% endif %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ request|activemenu:"contact" }}" href="{% url 'contact' %}">
-            {% trans "Kontakt" %}
-        </a>
-    </li>
+        </li>
+    {% endblock %}
+
+    {% block delivery %}
+        {% if b_show_deliveries %}
+            <li class="nav-item">
+                <a class="nav-link {{ request|activemenu:"deliveries" }}" href="{% url 'deliveries' %}">
+                    {% trans "Lieferungen" %}
+                </a>
+            </li>
+        {% endif %}
+    {% endblock %}
+
+    {% block area %}
+        <li class="nav-item">
+            <a class="nav-link {{ request|activemenu:"area" }}" href="{% url 'areas' %}">
+                {% trans "Tätigkeitsbereiche" %}
+            </a>
+        </li>
+    {% endblock %}
+
+    {% block membership %}
+        <li class="nav-item">
+            <a class="nav-link {{ request|activemenu:"membership" }}" href="{% url 'profile' %}">
+                {% config "enable_membership" as c_enable_membership %}
+                {% if c_enable_membership %}
+                    {{ vocabulary.membership }}
+                {% else %}
+                    {% trans "Konto" %}
+                {% endif %}
+            </a>
+        </li>
+    {% endblock %}
+
+    {% block contact %}
+        <li class="nav-item">
+            <a class="nav-link {{ request|activemenu:"contact" }}" href="{% url 'contact' %}">
+                {% trans "Kontakt" %}
+            </a>
+        </li>
+    {% endblock %}
+
     {% for user_menu in l_user_menus %}
         {% include user_menu %}
     {% endfor %}
     {% block extend %}
     {% endblock %}
-    <li class="separator">
-    </li>
-    <li class="nav-item main-menu-small">
-        <a class="nav-link yellow" href="{% organisation_website "url" %}">
-            {% organisation_website "name" %}
-        </a>
-    </li>
-    <li class=" nav-item main-menu-small">
-        <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="nav-link yellow btn btn-link pl-0 py-1" href="{% url 'logout' %}">
-                {% trans "Abmelden" %}
-            </button>
-        </form>
-    </li>
+
+    {% block separator %}
+        <li class="separator">
+        </li>
+    {% endblock %}
+
+    {% block website %}
+        <li class="nav-item main-menu-small">
+            <a class="nav-link yellow" href="{% organisation_website "url" %}">
+                {% organisation_website "name" %}
+            </a>
+        </li>
+    {% endblock %}
+
+    {% block logout %}
+        <li class=" nav-item main-menu-small">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="nav-link yellow btn btn-link pl-0 py-1" href="{% url 'logout' %}">
+                    {% trans "Abmelden" %}
+                </button>
+            </form>
+        </li>
+    {% endblock %}
 </ul>
