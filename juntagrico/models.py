@@ -48,6 +48,10 @@ class SpecialRoles(models.Model):
             ),
             ('can_use_technical_email', _('Kann technische E-Mail-Adresse verwenden')),
             (
+                'can_email_all',
+                _('Kann E-Mails an alle senden'),
+            ),
+            (
                 'can_email_all_with_membership',
                 _('Kann E-Mails an alle mit {0} senden').format(
                     Config.vocabulary('membership')
