@@ -77,6 +77,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend'
 )
 
+# Impersonate Settings
+
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True,
+}
+
 # Sites Settings
 
 SITE_ID = 1
