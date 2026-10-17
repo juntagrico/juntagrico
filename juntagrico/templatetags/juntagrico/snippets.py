@@ -1,7 +1,6 @@
 import datetime
 
 from django import template
-from impersonate.helpers import check_allow_for_user
 
 from juntagrico.config import Config
 from juntagrico.entity.jobs import Job, RecuringJob
@@ -11,6 +10,10 @@ register = template.Library()
 
 @register.inclusion_tag('snippets/impersonation_link.html')
 def impersonate_start(request, member):
+    if not Config.allow_impersonate(request):
+        return {'can_impersonate': False}
+
+    from impersonate.helpers import check_allow_for_user
     user = member.user
     return {
         'can_impersonate': check_allow_for_user(request, user),

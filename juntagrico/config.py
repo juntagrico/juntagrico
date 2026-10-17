@@ -256,6 +256,13 @@ class Config:
             return False
 
     @classmethod
+    def allow_impersonate(cls, request):
+        if 'impersonate' in settings.INSTALLED_APPS:
+            from impersonate.helpers import check_allow_impersonate
+            return check_allow_impersonate(request)
+        return False
+
+    @classmethod
     def notifications(cls, name):
         default_notifications = [
             'job_subscription_changed',

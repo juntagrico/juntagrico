@@ -59,6 +59,12 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
         inst, = queryset.all()
         return HttpResponseRedirect(reverse('impersonate-start', args=(inst.user.id,)))
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not Config.allow_impersonate(request):
+            del actions['impersonate_job']
+        return actions
+
 
 class MemberAdminWithShares(MemberAdmin):
     def __init__(self, model, admin_site):

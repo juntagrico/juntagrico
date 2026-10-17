@@ -58,3 +58,23 @@ DEPOT_LISTS = {
     'depot_overview': 'exports/depot_overview.html',
     'amount_overview': 'exports/amount_overview.html',
 }
+
+
+# Impersonation helper
+
+def allow_group(group_name):
+    """
+    Example usage in settings.py:
+    ```
+    from juntagrico import defaults
+
+    allow_impersonate = defaults.allow_group('impersonators')
+
+    IMPERSONATE = {
+        'CUSTOM_ALLOW': 'myapp.settings.allow_impersonate'
+    }
+    ```
+    """
+    def check(request):
+        return request.user.groups.filter(name=group_name).exists()
+    return check
