@@ -78,3 +78,16 @@ def allow_group(group_name):
     def check(request):
         return request.user.groups.filter(name=group_name).exists()
     return check
+
+
+def unprivileged_only(request):
+    """
+    Example usage in settings.py:
+    ```
+    IMPERSONATE = {
+        'CUSTOM_USER_QUERYSET': 'juntagrico.defaults.unprivileged_only'
+    }
+    ```
+    """
+    from django.contrib.auth.models import User
+    return User.objects.filter(is_superuser=False, is_staff=False)
