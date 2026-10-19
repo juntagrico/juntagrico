@@ -26,6 +26,25 @@ RICHTEXTFIELD_DEFAULT_MAILER_PROFILE = {
 }
 
 
+def sanitize_html(value):
+    import nh3
+    return nh3.clean(
+        value or "",
+        tags={
+            "p", "div", "br",
+            "strong", "b", "em", "i",
+            "ul", "ol", "li",
+            "blockquote",
+            "a",
+        },
+        attributes={
+            "a": {"href", "title", "target", "rel"},
+            "*": {"style"},  # needed for text alignment styles
+        },
+        url_schemes={"http", "https", "mailto"},
+    )
+
+
 def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, mailer: dict = None, **profiles):
     """
     :param language: The `LANGUAGE_CODE` specified in django settings
@@ -47,7 +66,8 @@ def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, 
     conf['profiles']['juntagrico.mailer'] = RICHTEXTFIELD_DEFAULT_MAILER_PROFILE | (mailer or {})
     # use richtext in admin if enabled and specify profile
     if use_in_admin or admin is not None:
-        conf['profiles']['juntagrico.admin'] = admin or {}
+        admin = admin or {}
+        conf['profiles']['juntagrico.admin'] = {'sanitizer': sanitize_html} | admin
     return conf
 
 

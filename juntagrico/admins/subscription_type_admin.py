@@ -3,7 +3,7 @@ from adminsortable2.admin import SortableAdminMixin, SortableStackedInline, Sort
 from django.contrib import admin
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, RichTextInlineMixin
 from juntagrico.admins.inlines.depot_subscriptiontype_inline import DepotSubscriptionTypeInline
 from juntagrico.config import Config
 from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionBundleProductSize, SubscriptionType
@@ -52,7 +52,7 @@ class ProductSizeInline(admin.TabularInline):
     extra = 1
 
 
-class SubscriptionTypeInline(SortableStackedInline):
+class SubscriptionTypeInline(RichTextInlineMixin, SortableStackedInline):
     model = SubscriptionType
     extra = 0
     fieldsets = [

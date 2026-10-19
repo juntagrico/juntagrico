@@ -48,13 +48,26 @@ class BaseAdmin(admin.ModelAdmin):
         return response
 
 
-class RichTextAdmin(BaseAdmin):
+def configure_richtext_overrides(admin_class):
+    if Config.using_richtext():
+        admin_class.formfield_overrides = admin_class.formfield_overrides or {}
+        admin_class.formfield_overrides.update({
+            TextField: {
+                "widget": RichTextWidget(field_settings="juntagrico.admin")
+            }
+        })
 
+
+class RichTextAdmin(BaseAdmin):
     def __init__(self, model, admin_site):
-        if Config.using_richtext():
-            self.formfield_overrides = self.formfield_overrides or {}
-            self.formfield_overrides.update({TextField: {'widget': RichTextWidget(field_settings='juntagrico.admin')}})
+        configure_richtext_overrides(self)
         super().__init__(model, admin_site)
+
+
+class RichTextInlineMixin:
+    def __init__(self, parent_model, admin_site):
+        configure_richtext_overrides(self)
+        super().__init__(parent_model, admin_site)
 
 
 class OverrideFieldQuerySetMixin:

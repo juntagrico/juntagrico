@@ -27,6 +27,7 @@ dependencies = [
     "svglib<1.6.0",
     "XlsxWriter~=3.2.3",
     "python-dateutil~=2.9.0",
+    "nh3>=0.3.7",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
