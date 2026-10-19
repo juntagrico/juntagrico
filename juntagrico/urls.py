@@ -7,6 +7,7 @@ from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
+from juntagrico.forms.auth import JuntagricoPasswordChangeForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.views import subscription, create_subscription, manage, email, job, api, config
 from juntagrico.views_admin import ShiftTimeFormView
@@ -56,7 +57,11 @@ urlpatterns = [
 
     # /my (personal stuff)
     # /my/password
-    path('my/password', juntagrico.change_password, name='password'),
+    path('my/password', auth_views.PasswordChangeView.as_view(
+        template_name='password.html',
+        form_class=JuntagricoPasswordChangeForm
+    ), name='password'),
+    path('my/password/done', juntagrico.password_changed, name='password_change_done'),
     # my/email
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
     # /my/membership

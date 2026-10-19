@@ -111,3 +111,28 @@ def unprivileged_only(request):
     """
     from django.contrib.auth.models import User
     return User.objects.filter(is_superuser=False, is_staff=False)
+
+
+# Password validation
+# only validates privileged members passwords
+
+password_validator = {
+    'NAME': 'juntagrico.password_validation.StaffOnlyPasswordValidator',
+    'OPTIONS': {
+        'validators': [
+            {
+                'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator',
+            },
+            {
+                'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+                'OPTIONS': {'min_length': 12},
+            },
+            {
+                'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+            },
+            {
+                'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+            },
+        ],
+    },
+}
