@@ -101,17 +101,39 @@ def allow_group(group_name):
     return check
 
 
-def unprivileged_only(request):
-    """
-    Example usage in settings.py:
-    ```
-    IMPERSONATE = {
-        'CUSTOM_USER_QUERYSET': 'juntagrico.defaults.unprivileged_only'
-    }
-    ```
-    """
-    from django.contrib.auth.models import User
-    return User.objects.filter(is_superuser=False, is_staff=False)
+# CUSTOM_USER_QUERYSET presets
+# Example usage in settings.py:
+# ```
+# IMPERSONATE = {
+#     'CUSTOM_USER_QUERYSET': 'juntagrico.defaults.unprivileged_only'
+# }
+# ```
+def user_queryset(unless_superuser=True, **filters):
+    def check(request):
+        from django.contrib.auth.models import User
+        if unless_superuser and request.user.is_superuser:
+            return User.objects.all()
+        return User.objects.filter(**filters)
+    return check
+
+
+nonstaff_only = user_queryset(is_superuser=False, is_staff=False)
+
+nonpermission_only = user_queryset(
+    is_superuser=False,
+    is_staff=False,
+    groups__isnull=True,
+    user_permissions__isnull=True,
+)
+
+unprivileged_only = user_queryset(
+    is_superuser=False,
+    is_staff=False,
+    groups__isnull=True,
+    user_permissions__isnull=True,
+    member__coordinated_areas__isnull=True,
+    member__coordinated_depots__isnull=True,
+)
 
 
 # Password validation
