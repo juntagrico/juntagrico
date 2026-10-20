@@ -245,6 +245,9 @@ class Config:
         }
     )
 
+    # Security Settings
+    unlock_mailtemplates = _get_setting('UNLOCK_MAILTEMPLATES', False)
+
     @classmethod
     def using_richtext(cls):
         try:
