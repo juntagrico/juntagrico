@@ -1,8 +1,10 @@
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.entity.jobs import RecuringJob
 from . import JuntagricoTestCaseWithShares
+from ..defaults import richtextfield_config
 
 
 class AdminTests(JuntagricoTestCaseWithShares):
@@ -207,3 +209,18 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_change', args=(self.sub_product.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin, data={'q': 'test'})
+
+    @override_settings(DJRICHTEXTFIELD_CONFIG=richtextfield_config('en', True))
+    def testRichTextField(self):
+        location = self.depot.location
+        self.assertPost(
+            reverse('admin:juntagrico_location_change', args=(location.pk,)),
+            data={
+                'name': location.name,
+                'description': '<p onclick="notallowed()">allowed</p><script type="text/javascript">alert("not allowed")</script>',
+            },
+            member=self.admin,
+            code=302,
+        )
+        location.refresh_from_db()
+        self.assertEqual('<p>allowed</p>', location.description)

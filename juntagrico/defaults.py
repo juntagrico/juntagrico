@@ -38,9 +38,10 @@ def sanitize_html(value):
             "a",
         },
         attributes={
-            "a": {"href", "title", "target", "rel"},
-            "*": {"style"},  # needed for text alignment styles
+            "a": {"href", "title", "target"},
+            "*": {"style"},
         },
+        filter_style_properties={"text-align", "padding-left"},
         url_schemes={"http", "https", "mailto"},
     )
 
@@ -66,8 +67,8 @@ def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, 
     conf['profiles']['juntagrico.mailer'] = RICHTEXTFIELD_DEFAULT_MAILER_PROFILE | (mailer or {})
     # use richtext in admin if enabled and specify profile
     if use_in_admin or admin is not None:
-        admin = admin or {}
-        conf['profiles']['juntagrico.admin'] = {'sanitizer': sanitize_html} | admin
+        conf['profiles']['juntagrico.admin'] = admin or {}
+    conf['sanitizer_profiles'] = {'juntagrico.admin': sanitize_html}
     return conf
 
 

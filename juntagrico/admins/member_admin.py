@@ -62,7 +62,7 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
     def get_actions(self, request):
         actions = super().get_actions(request)
         if not Config.allow_impersonate(request):
-            del actions['impersonate_job']
+            actions.pop('impersonate_job', None)
         return actions
 
 
