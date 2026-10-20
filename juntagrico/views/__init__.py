@@ -12,7 +12,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job, JobType
 from juntagrico.entity.member import Member
-from juntagrico.forms import MemberProfileForm, PasswordForm as PasswordForm, NonCoopMemberCancellationForm, \
+from juntagrico.forms import MemberProfileForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails

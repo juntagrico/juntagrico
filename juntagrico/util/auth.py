@@ -3,6 +3,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
@@ -67,6 +68,20 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
 
 class JuntagricoLoginView(LoginView):
     form_class = JuntagricoAuthenticationForm
+
+    def form_valid(self, form):
+        user = form.get_user()
+
+        try:
+            validate_password(form.cleaned_data["password"], user)
+        except ValidationError:
+            # LoginView logs the user in here; middleware will restrict
+            # this session to the password-change flow.
+            response = super().form_valid(form)
+            self.request.session["must_change_password"] = True
+            return response
+
+        return super().form_valid(form)
 
 
 class JuntagricoPasswordResetForm(PasswordResetForm):
