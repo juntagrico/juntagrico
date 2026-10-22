@@ -1,14 +1,14 @@
 from django.contrib import admin
 from django.contrib.admin.options import BaseModelAdmin, InlineModelAdmin
 from django.db.models import TextField
-from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
-from django.urls import resolve, Resolver404
+from django.http import HttpRequest, HttpResponse
 from djrichtextfield.widgets import RichTextWidget
 from import_export.admin import ExportMixin
 
 from juntagrico.admins.forms.import_export_form import ExportAssignmentDateRangeForm
 from juntagrico.config import Config
 from juntagrico.util import addons
+from juntagrico.util.redirect import safe_redirect
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -20,13 +20,7 @@ class BaseAdmin(admin.ModelAdmin):
 
     def _response_post_save(self, request, obj):
         # redirect to previous page if defined
-        if next_page := request.GET.get('next'):
-            try:
-                resolve(next_page)
-                return HttpResponseRedirect(next_page)
-            except Resolver404:
-                pass
-        return super()._response_post_save(request, obj)
+        return safe_redirect(request.GET.get('next')) or super()._response_post_save(request, obj)
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         # hide delete button in change view if we want to redirect to previous page as it would not carry the information.
@@ -39,13 +33,7 @@ class BaseAdmin(admin.ModelAdmin):
     def response_delete(self, request: HttpRequest, obj_display: str, obj_id: int) -> HttpResponse:
         # redirect to previous page if defined
         response = super().response_delete(request, obj_display, obj_id)
-        if next_page := request.GET.get('next'):
-            try:
-                resolve(next_page)
-                return HttpResponseRedirect(next_page)
-            except Resolver404:
-                pass
-        return response
+        return safe_redirect(request.GET.get('next')) or response
 
 
 def configure_richtext_overrides(admin_class):
