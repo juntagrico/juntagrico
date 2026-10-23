@@ -67,40 +67,29 @@ def sync(sender, instance, **kwargs):
     if Config.cumulative_shares_for_membership():
         active_share_count -= account.required_shares_count
 
-    if active_share_count >= Config.membership('required_shares'):
-        # account with active share should have an active membership
-        activation_date = active_shares.aggregate(
-            paid_date=Min('paid_date'),
-        )['paid_date']
-        # if member has previous membership the current one can't start before the previous ended
-        end_of_last_membership = account.memberships.aggregate(
-            deactivation_date=Max('deactivation_date'),
-        )['deactivation_date']
-        if end_of_last_membership and end_of_last_membership > activation_date:
-            activation_date = end_of_last_membership + datetime.timedelta(days=1)
-        if current_membership is not None:
+    # only update requested memberships.
+    if current_membership is not None:
+        if active_share_count >= Config.membership('required_shares'):
+            # account with active share should have an active membership
+            activation_date = active_shares.aggregate(
+                paid_date=Min('paid_date'),
+            )['paid_date']
+            # if member has previous membership the current one can't start before the previous ended
+            end_of_last_membership = account.memberships.aggregate(
+                deactivation_date=Max('deactivation_date'),
+            )['deactivation_date']
+            if end_of_last_membership and end_of_last_membership > activation_date:
+                activation_date = end_of_last_membership + datetime.timedelta(days=1)
             # update existing membership
             current_membership.activation_date = activation_date
             current_membership.save()
-        else:
-            # check if old membership exists that should be extended
-            if old_membership := account.memberships.filter(deactivation_date__isnull=False).order_by('-deactivation_date').first():
-                old_membership.deactivation_date = None
-                old_membership.save()
-            else:
-                # create new membership
-                from juntagrico.entity.membership import Membership
-                Membership.objects.create(
-                    account=account,
-                    activation_date=activation_date
-                )
 
-    elif current_membership is not None:
-        # there are not enough active shares -> deactivate current membership
-        dates = account.shares.aggregate(
-            cancellation_date=Max('cancelled_date'),
-            deactivation_date=Max('payback_date'),
-        )
-        current_membership.cancellation_date = current_membership.cancellation_date or dates['cancellation_date']
-        current_membership.deactivation_date = dates['deactivation_date']
-        current_membership.save()
+        else:
+            # there are not enough active shares -> deactivate current membership
+            dates = account.shares.aggregate(
+                cancellation_date=Max('cancelled_date'),
+                deactivation_date=Max('payback_date'),
+            )
+            current_membership.cancellation_date = current_membership.cancellation_date or dates['cancellation_date']
+            current_membership.deactivation_date = dates['deactivation_date']
+            current_membership.save()

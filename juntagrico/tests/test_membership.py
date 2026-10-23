@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.lifecycle.membership import sync
 from . import JuntagricoTestCase
 from ..entity.membership import Membership
 
@@ -272,12 +273,194 @@ class MembershipSyncTests(MembershipTests):
         super().setUpTestData()
         cls.member_with_old_membership = cls.create_member(
             'member_with_old_membership@email.org', {
+                'activation_date': '2026-03-01',
                 'cancellation_date': '2026-03-19',
                 'deactivation_date': '2026-03-19',
             }
         )
         cls.create_paid_share(cls.member_with_old_membership)
 
+    @staticmethod
+    def create_custom_share(member, paid_date='2017-03-27', **kwargs):
+        data = {
+            'member': member,
+            'paid_date': paid_date,
+            'issue_date': paid_date,
+        }
+        data.update(kwargs)
+        return Share.objects.create(**data)
+
     def testMembershipSync(self):
         call_command('sync_memberships')
-        self.assertTrue(self.member_with_old_membership.memberships.active_or_requested().exists())
+        # old memberships are not affected.
+        self.assertFalse(self.member_with_old_membership.memberships.active_or_requested().exists())
+
+    def testSyncWithoutMembership(self):
+        member = self.member_without_membership
+        self.assertEqual(member.memberships.count(), 0)
+        sync(None, member)
+        self.assertEqual(member.memberships.count(), 0)
+        self.create_custom_share(member)
+        sync(None, member)
+        self.assertEqual(member.memberships.count(), 0)
+
+    def testSyncActivatesRequestedMembership(self):
+        member = self.create_member('sync_req@email.org', {'activation_date': None})
+        membership = member.memberships.first()
+        self.assertIsNone(membership.activation_date)
+        self.create_custom_share(member, paid_date='2026-01-15')
+        membership.refresh_from_db()
+        self.assertEqual(membership.activation_date, datetime.date(2026, 1, 15))
+        self.assertTrue(membership.active)
+
+    def testSyncWithMultiplePaidSharesUsesEarliestPaidDate(self):
+        member = self.create_member('sync_multi_shares@email.org', {'activation_date': None})
+        membership = member.memberships.first()
+        self.create_custom_share(member, paid_date='2026-02-10')
+        self.create_custom_share(member, paid_date='2026-01-05')
+        membership.refresh_from_db()
+        self.assertEqual(membership.activation_date, datetime.date(2026, 1, 5))
+
+    def testSyncActivationDateAdjustedForPreviousMembership(self):
+        member = self.create_member(
+            'sync_prev_membership@email.org',
+            {
+                'activation_date': '2026-02-01',
+                'cancellation_date': '2026-02-15',
+                'deactivation_date': '2026-02-15',
+            }
+        )
+        new_membership = Membership.objects.create(account=member, activation_date=None)
+        self.create_custom_share(member, paid_date='2026-01-01')
+        new_membership.refresh_from_db()
+        self.assertEqual(new_membership.activation_date, datetime.date(2026, 2, 16))
+
+        new_membership.activation_date = None
+        new_membership.save()
+        member.share_set.all().delete()
+        self.create_custom_share(member, paid_date='2026-03-01')
+        new_membership.refresh_from_db()
+        self.assertEqual(new_membership.activation_date, datetime.date(2026, 3, 1))
+
+    def testSyncDeactivatesMembershipWhenSharesInsufficient(self):
+        member = self.create_member('sync_deactivate@email.org', True)
+        membership = member.memberships.first()
+        self.assertTrue(membership.active)
+        self.create_custom_share(
+            member,
+            paid_date='2026-01-01',
+            cancelled_date='2026-03-01',
+            termination_date='2026-03-01',
+            payback_date='2026-03-15',
+        )
+        membership.refresh_from_db()
+        self.assertEqual(membership.cancellation_date, datetime.date(2026, 3, 1))
+        self.assertEqual(membership.deactivation_date, datetime.date(2026, 3, 15))
+
+    def testSyncPreservesExistingCancellationDateWhenDeactivating(self):
+        member = self.create_member(
+            'sync_preserve_cancel@email.org',
+            {'activation_date': '2026-01-01', 'cancellation_date': '2026-02-10'}
+        )
+        membership = member.memberships.first()
+        self.create_custom_share(
+            member,
+            paid_date='2026-01-01',
+            cancelled_date='2026-03-01',
+            termination_date='2026-03-01',
+            payback_date='2026-03-15',
+        )
+        membership.refresh_from_db()
+        self.assertEqual(membership.cancellation_date, datetime.date(2026, 2, 10))
+        self.assertEqual(membership.deactivation_date, datetime.date(2026, 3, 15))
+
+    def testSyncClearsDuplicateMemberships(self):
+        member = self.create_member('sync_duplicates@email.org')
+        Membership.objects.bulk_create([
+            Membership(account=member),
+            Membership(account=member),
+        ])
+        self.assertEqual(member.memberships.active_or_requested().count(), 2)
+        sync(None, member)
+        self.assertEqual(member.memberships.active_or_requested().count(), 1)
+
+    def testSyncPreservesMembershipIfNotAllSharesCancelled(self):
+        member = self.create_member('sync_signals@email.org', {'activation_date': None})
+        self.create_custom_share(member, paid_date='2026-01-10')
+        membership = member.memberships.first()
+        self.assertEqual(membership.activation_date, datetime.date(2026, 1, 10))
+        self.assertTrue(membership.active)
+
+        # 2. Add a canceled/paid-back share for the member
+        self.create_custom_share(
+            member,
+            paid_date='2026-01-01',
+            cancelled_date='2026-03-01',
+            termination_date='2026-03-01',
+            payback_date='2026-03-15',
+        )
+        # Membership is still active because active_share exists
+        membership.refresh_from_db()
+        self.assertIsNone(membership.deactivation_date)
+
+    def testSyncDisabledSettings(self):
+        member = self.create_member('sync_disabled@email.org', {'activation_date': None})
+        membership = member.memberships.first()
+        self.create_custom_share(member, paid_date='2026-01-10')
+        membership.activation_date = None
+        membership.save()
+
+        with override_settings(ENABLE_SHARES=False):
+            sync(None, member)
+            membership.refresh_from_db()
+            self.assertIsNone(membership.activation_date)
+
+        with override_settings(MEMBERSHIP={'enable': False}):
+            sync(None, member)
+            membership.refresh_from_db()
+            self.assertIsNone(membership.activation_date)
+
+        with override_settings(MEMBERSHIP={'sync_shares': False}):
+            sync(None, member)
+            membership.refresh_from_db()
+            self.assertIsNone(membership.activation_date)
+
+        with override_settings(MEMBERSHIP={'required_shares': 0}):
+            sync(None, member)
+            membership.refresh_from_db()
+            self.assertIsNone(membership.activation_date)
+
+    @override_settings(MEMBERSHIP={'enable': True, 'required_shares': 1, 'cumulative_shares': True, 'sync_shares': True})
+    def testSyncCumulativeShares(self):
+        member = self.create_member('sync_cumul@email.org', {'activation_date': None})
+        membership = member.memberships.first()
+        self.set_up_depots()
+        self.set_up_sub_types()
+        sub = self.create_sub_now(self.depot)
+        member.join_subscription(sub, True)
+        self.assertEqual(member.required_shares_count, 1)
+
+        # first share is needed for subscription
+        self.create_custom_share(member, paid_date='2026-01-10')
+        membership.refresh_from_db()
+        self.assertIsNone(membership.activation_date)
+
+        # second share is available for membership
+        self.create_custom_share(member, paid_date='2026-01-20')
+        membership.refresh_from_db()
+        self.assertEqual(membership.activation_date, datetime.date(2026, 1, 10))
+
+    @override_settings(MEMBERSHIP={'enable': True, 'required_shares': 2, 'cumulative_shares': False, 'sync_shares': True})
+    def testSyncMultipleRequiredShares(self):
+        member = self.create_member('sync_multi_req@email.org', {'activation_date': None})
+        membership = member.memberships.first()
+
+        # first share doesn't activate membership
+        self.create_custom_share(member, paid_date='2026-01-10')
+        membership.refresh_from_db()
+        self.assertIsNone(membership.activation_date)
+
+        # second share activates membership
+        self.create_custom_share(member, paid_date='2026-01-20')
+        membership.refresh_from_db()
+        self.assertEqual(membership.activation_date, datetime.date(2026, 1, 10))
