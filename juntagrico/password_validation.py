@@ -7,11 +7,11 @@ class StaffOnlyPasswordValidator:
     def __init__(self, validators):
         self.validators = get_password_validators(validators)
 
-    def is_staff(self, user):
+    def filter(self, user):
         return user.is_staff or user.is_superuser
 
     def validate(self, password, user=None):
-        if user is None or not self.is_staff(user):
+        if user is None or not self.filter(user):
             return
 
         errors = []
@@ -26,6 +26,31 @@ class StaffOnlyPasswordValidator:
 
     def get_help_text(self):
         return _('Für dein Konto ist ein sicheres Passwort pflicht.')
+
+
+class PermittedOnlyPasswordValidator(StaffOnlyPasswordValidator):
+    def filter(self, user):
+        return super().filter(user) or user.permissions.exists() or user.groups.exists()
+
+
+class PrivilegedOnlyPasswordValidator(PermittedOnlyPasswordValidator):
+    def filter(self, user):
+        return (
+            super().filter(user)
+            or user.member.coordinated_areas.exists()
+            or user.member.coordinated_depots.exists()
+        )
+
+
+class GroupOnlyPasswordValidator(StaffOnlyPasswordValidator):
+    GROUP_NAME = 'NeedsStrongPassword'
+
+    def __init__(self, validators, group_name=GROUP_NAME):
+        super().__init__(validators)
+        self.group_name = group_name
+
+    def filter(self, user):
+        return user.groups.filter(self.group_name).exists()
 
 
 class AccountAttributeSimilarityValidator(UserAttributeSimilarityValidator):

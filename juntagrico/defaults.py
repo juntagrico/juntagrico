@@ -119,7 +119,7 @@ def user_queryset(unless_superuser=True, **filters):
 
 nonstaff_only = user_queryset(is_superuser=False, is_staff=False)
 
-nonpermission_only = user_queryset(
+nonpermitted_only = user_queryset(
     is_superuser=False,
     is_staff=False,
     groups__isnull=True,
@@ -137,25 +137,20 @@ unprivileged_only = user_queryset(
 
 
 # Password validation
-# only validates privileged members passwords
+# recommended default validators
 
-password_validator = {
-    'NAME': 'juntagrico.password_validation.StaffOnlyPasswordValidator',
-    'OPTIONS': {
-        'validators': [
-            {
-                'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator',
-            },
-            {
-                'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-                'OPTIONS': {'min_length': 12},
-            },
-            {
-                'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-            },
-            {
-                'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-            },
-        ],
+password_validators = [
+    {
+        'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator',
     },
-}
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 12},
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
