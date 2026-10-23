@@ -220,9 +220,9 @@ def share_overview(account):
 
 @register.inclusion_tag('juntagrico/manage/share/snippets/summary.html')
 def share_summary(account):
-    ordered_shares = account.shares.unpaid().usable()
-    active_shares = account.shares.active()
-    canceled_shares = account.shares.canceled()
+    ordered_shares = account.shares.unpaid().usable().order_by('creation_date')
+    active_shares = account.shares.active().order_by('paid_date')
+    canceled_shares = account.shares.canceled().order_by('termination_date')
     return {
         'ordered_shares': ordered_shares,
         'active_shares': active_shares,

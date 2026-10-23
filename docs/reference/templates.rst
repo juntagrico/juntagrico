@@ -76,10 +76,24 @@ Menu Templates
 
 .. _reference-templates-extend_user_menu:
 
-juntagrico/menu/user.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/menu/user.html
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add entries to the user menu.
+
+You can extend any element to add your menu entry before or after the existing entry:
+
+- ``title``: the menu header
+- ``subscription``
+- ``job``
+- ``delivery``
+- ``area``
+- ``membership``
+- ``contact``
+- ``extend``: normally empty, may be used by addons
+- ``separator``
+- ``website``
+- ``logout``
 
 Example:
 
