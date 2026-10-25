@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import get_user
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.test import override_settings
@@ -142,11 +143,37 @@ class AuthTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.deactivated_member = cls.create_member('deactivated_member@example.com', deactivation_date='2020-01-01')
+        cls.deactivated_member = cls.create_member(
+            'deactivated_member@example.com',
+            deactivation_date='2020-01-01',
+            confirmed=True,
+        )
 
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))
         self.assertEqual(len(mail.outbox), 1)
+
+    def testLoginWithEmail(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+    def testLoginWithUsername(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.user.username,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
 
     @override_settings(ENFORCE_MAIL_CONFIRMATION=False)
     def testUnconfirmedLogin(self):
@@ -219,12 +246,32 @@ class AuthTests(JuntagricoTestCase):
     def testInactiveUserLogin(self):
         self.member.user.is_active = False
         self.member.user.save()
+        self.member.confirmed = True
+        self.member.save()
         response = self.client.post(reverse('login'), {
             'username': self.member.email,
             'password': self.member.set_password(),
         })
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn('_auth_user_id', self.client.session)
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
+    @override_settings(AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend'])
+    def testInactiveMemberLogin(self):
+        # The AuthenticateWithEmail backend will show a generic error message
+        # because deactivated members are excluded earlier
+        # In case another backend is used, the login form will also fail with a more specific error message
+        response = self.client.post(
+            reverse('login'),
+            {
+                'username': self.deactivated_member.user.username,
+                'password': self.deactivated_member.set_password(),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Deine Mitgliedschaft ist deaktiviert')
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
 
     def testLogout(self):
         self.assertGet(reverse('logout'), code=302)
