@@ -163,6 +163,7 @@ class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
     queryset = Share.objects.canceled().annotate_backpayable
 
 
+@require_POST
 @permission_required('juntagrico.change_share')
 @using_change_date
 def share_payout(request, change_date, share_id=None):

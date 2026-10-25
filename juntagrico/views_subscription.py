@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
@@ -352,6 +353,7 @@ def share_certificate(request):
 
 
 @login_required
+@require_POST
 def cancel_share(request, share_id):
     member = request.user.member
     if member.cancellable_shares_count > 0:

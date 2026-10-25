@@ -83,9 +83,12 @@
                     <td>
                         {% if perms.juntagrico.change_share %}
                             {% if share.backpayable %}
-                                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
-                                    {% trans "Ausbuchen" %}
-                                </a>
+                                <form action="{% url 'manage-share-payout-single' share.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary">
+                                        {% trans "Ausbuchen" %}
+                                    </button>
+                                </form>
                             {% else %}
                                 {% trans "Enddatum ausstehend" %}
                             {% endif %}
