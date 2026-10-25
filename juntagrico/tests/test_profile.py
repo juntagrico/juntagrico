@@ -205,5 +205,26 @@ class AuthTests(JuntagricoTestCase):
         self.assertPost(reverse('password_reset'), {'email': 'deactivated_member@example.com'}, code=302)
         self.assertEqual(len(mail.outbox), 0)  # should send no email
 
+    def testDeactivatedUserSessionEnds(self):
+        self.client.force_login(self.member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 200)
+        self.member.user.is_active = False
+        self.member.user.save()
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testDeactivatedMemberSessionEnds(self):
+        self.client.force_login(self.deactivated_member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testInactiveUserLogin(self):
+        self.member.user.is_active = False
+        self.member.user.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
     def testLogout(self):
         self.assertGet(reverse('logout'), code=302)

@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
@@ -18,15 +20,18 @@ class AuthenticateWithEmail(object):
     def authenticate(request, username=None, password=None):
         try:
             user = Member.objects.get(email__iexact=username).user
-            if user.check_password(password):
+            if user.check_password(password) and user.is_active:
                 return user
         except Member.DoesNotExist:
             return None
 
     @staticmethod
     def get_user(user_id):
+        # end existing sessions of deactivated users and members
         try:
-            return User.objects.get(pk=user_id)
+            return User.objects.exclude(
+                member__deactivation_date__lte=datetime.date.today()
+            ).get(pk=user_id, is_active=True)
         except User.DoesNotExist:
             return None
 
