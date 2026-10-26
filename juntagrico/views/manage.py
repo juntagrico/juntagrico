@@ -2,7 +2,7 @@ import datetime
 from functools import cached_property
 
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import BadRequest, ValidationError
 from django.db import transaction
@@ -306,6 +306,7 @@ class AreaMemberView(LoginRequiredMixin, MemberView):
         return context
 
 
+@login_required
 @require_POST
 def remove_area_member(request, area_id):
     member_id = request.POST.get('member_id')
