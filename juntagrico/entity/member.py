@@ -1,9 +1,9 @@
 import datetime
 
 from django.contrib.auth.models import User
+from django.core.signing import BadSignature, Signer
 from django.db import models
 from django.db.models import Q
-from django.utils.crypto import constant_time_compare, salted_hmac
 from django.utils.functional import cached_property
 from django.utils.text import format_lazy
 from django.utils.translation import gettext, gettext_lazy as _
@@ -275,25 +275,30 @@ class Member(JuntagricoBaseModel):
 
     CONFIRMATION_SALT = 'juntagrico.member.confirm'
 
-    def _confirmation_hmac(self):
-        return salted_hmac(self.CONFIRMATION_SALT, f'{self.pk}:{self.email}', algorithm='sha256').hexdigest()
+    def _confirmation_signer(self):
+        # the email address is part of the salt, so the token is bound to it without containing it
+        return Signer(salt=f'{self.CONFIRMATION_SALT}:{self.email}')
 
     def get_hash(self):
         """
         :return: signed token for the email confirmation link. It becomes invalid when the email address changes.
         """
-        return f'{self.pk}-{self._confirmation_hmac()}'
+        return self._confirmation_signer().sign(str(self.pk))
 
     @classmethod
     def from_hash(cls, member_hash):
         """
         :return: the member of a valid confirmation token, or None
         """
-        pk, _, signature = member_hash.partition('-')
+        pk, _, _ = member_hash.rpartition(':')
         if not pk.isdigit():
             return None
         member = cls.objects.filter(pk=pk).first()
-        if member is None or not constant_time_compare(signature, member._confirmation_hmac()):
+        if member is None:
+            return None
+        try:
+            member._confirmation_signer().unsign(member_hash)
+        except BadSignature:
             return None
         return member
 
