@@ -119,21 +119,9 @@ msgstr "Im Produktionsbetrieb (``DEBUG=False``) müssen die statischen Dateien g
 msgid "Create a superuser with member to login into your instance:"
 msgstr "Erstelle einen Superuser mit Konto, um dich bei deiner Instanz einzuloggen:"
 
-#: ../../intro/installation.rst:112
-msgid "Security in production"
-msgstr "Sicherheit im Produktionsbetrieb"
-
-#: ../../intro/installation.rst:115
-msgid "Run the django deployment checks against your production settings and resolve the warnings:"
-msgstr "Führe die Deployment-Checks von Django mit deinen Produktionseinstellungen aus und behebe die Warnungen:"
-
-#: ../../intro/installation.rst:121
-msgid "In particular, enable the security and clickjacking middlewares as in ``settings/minimal.py``. With the django defaults they set the headers ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff`` and ``Referrer-Policy: same-origin``. If your instance is only reachable via HTTPS, also mark the cookies as secure:"
-msgstr "Aktiviere insbesondere die Security- und die Clickjacking-Middleware wie in ``settings/minimal.py``. Mit den Standardwerten von Django setzen sie die Header ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff`` und ``Referrer-Policy: same-origin``. Wenn deine Instanz nur über HTTPS erreichbar ist, markiere auch die Cookies als sicher:"
-
-#: ../../intro/installation.rst:133
-msgid "``Strict-Transport-Security`` (HSTS) can be set either with ``SECURE_HSTS_SECONDS`` or in the web server in front of django. If django runs behind a proxy, ``SECURE_SSL_REDIRECT`` requires ``SECURE_PROXY_SSL_HEADER`` and a proxy that sets this header, otherwise the redirect loops. Refer to the `django deployment checklist <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_ for details."
-msgstr "``Strict-Transport-Security`` (HSTS) kann entweder mit ``SECURE_HSTS_SECONDS`` oder im Webserver vor Django gesetzt werden. Läuft Django hinter einem Proxy, braucht ``SECURE_SSL_REDIRECT`` die Einstellung ``SECURE_PROXY_SSL_HEADER`` und einen Proxy, der diesen Header setzt, sonst entsteht eine Weiterleitungsschleife. Details findest du in der `Deployment-Checkliste von Django <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_."
+#: ../../intro/installation.rst:111
+msgid "Before going live, read the :ref:`deployment <intro-deployment>` section."
+msgstr "Lies vor dem Go-live den Abschnitt :ref:`Deployment <intro-deployment>`."
 
 #: ../../intro/installation.rst:113 8550b1d1e9f84f74be77a3a6048edaba
 msgid "Create Test Data (optional)"

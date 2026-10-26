@@ -1,0 +1,40 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../intro/deployment.rst:4
+msgid "Deployment"
+msgstr "Deployment"
+
+#: ../../intro/deployment.rst:7
+msgid "Security in production"
+msgstr "Sicherheit im Produktionsbetrieb"
+
+#: ../../intro/deployment.rst:9
+msgid "Run the django deployment checks against your production settings and resolve the warnings:"
+msgstr "Führe die Deployment-Checks von Django mit deinen Produktionseinstellungen aus und behebe die Warnungen:"
+
+#: ../../intro/deployment.rst:15
+msgid "In particular, enable the security and clickjacking middlewares as in `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_. With the django defaults they set the headers ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff`` and ``Referrer-Policy: same-origin``. If your instance is only reachable via HTTPS, also mark the cookies as secure:"
+msgstr "Aktiviere insbesondere die Security- und die Clickjacking-Middleware wie in `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_. Mit den Standardwerten von Django setzen sie die Header ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff`` und ``Referrer-Policy: same-origin``. Wenn deine Instanz nur über HTTPS erreichbar ist, markiere auch die Cookies als sicher:"
+
+#: ../../intro/deployment.rst:28
+msgid "``Strict-Transport-Security`` (HSTS) can be set either with ``SECURE_HSTS_SECONDS`` or in the web server in front of django. If django runs behind a proxy, ``SECURE_SSL_REDIRECT`` requires ``SECURE_PROXY_SSL_HEADER`` and a proxy that sets this header, otherwise the redirect loops. Refer to the `django deployment checklist <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_ for details."
+msgstr "``Strict-Transport-Security`` (HSTS) kann entweder mit ``SECURE_HSTS_SECONDS`` oder im Webserver vor Django gesetzt werden. Läuft Django hinter einem Proxy, braucht ``SECURE_SSL_REDIRECT`` die Einstellung ``SECURE_PROXY_SSL_HEADER`` und einen Proxy, der diesen Header setzt, sonst entsteht eine Weiterleitungsschleife. Details findest du in der `Deployment-Checkliste von Django <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_."
