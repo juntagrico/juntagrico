@@ -247,6 +247,7 @@ class Config:
 
     # Security Settings
     unlock_mailtemplates = _get_setting('UNLOCK_MAILTEMPLATES', False)
+    always_allowed_url_names = _get_setting('ALWAYS_ALLOWED_URLNAMES', [])
 
     @classmethod
     def using_richtext(cls):
