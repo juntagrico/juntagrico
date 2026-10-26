@@ -16,6 +16,10 @@ In particular, enable the security and clickjacking middlewares as in
 `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_.
 With the django defaults they set the headers ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff``
 and ``Referrer-Policy: same-origin``.
+Ideally, these headers are set by the web server in front of django instead,
+so that they also apply to responses not served by django, such as static and media files
+(see the `django documentation <https://docs.djangoproject.com/en/5.2/ref/middleware/#module-django.middleware.security>`_).
+In that case make sure the headers are not sent twice with conflicting values.
 If your instance is only reachable via HTTPS, also mark the cookies as secure:
 
 .. code-block:: python
