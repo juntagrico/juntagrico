@@ -25,13 +25,13 @@ def count_units(subs, date=None):
     units = 0.0
     if isinstance(subs, Subscription):
         # case 1: single subscription object is passed
-        units = float(subs.parts.on_depot_list().active_on(date).count_units())
+        units = float(subs.parts.on_depot_list().served_on(date).count_units())
     elif isinstance(subs, QuerySet):
         if subs.model is Subscription:
             # case 2: sum each unit of each subscription type
             units = sum(
                 float(
-                    sub.parts.on_depot_list().active_on(date).count_units() or 0
+                    sub.parts.on_depot_list().served_on(date).count_units() or 0
                 ) for sub in subs.all()
             )
     return units
@@ -76,5 +76,5 @@ def by_depot(subscriptions, depot):
 
 
 @register.filter
-def active_on(parts, date=None):
-    return parts.active_on(date)
+def served_on(parts, date=None):
+    return parts.served_on(date)

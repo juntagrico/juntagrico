@@ -16,10 +16,10 @@
     {% if error %}
         {% include "messages/error.html" %}
     {% endif %}
-    {% if form.current_assignments.count %}
-        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
-    {% elif job.canceled %}
+    {% if job.canceled %}
         {% include "messages/job_canceled.html" %}
+    {% elif form.current_assignments.count %}
+        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
     {% elif job.has_ended %}
         {% include "messages/job_past.html" %}
     {% elif job.has_started %}
@@ -36,7 +36,7 @@
             <div class="row pb-4">
                 <div class="col-12">
                     {% if edit_url.strip %}
-                        <a href="{{ edit_url }}?next={{ request.path|urlencode }}" class="btn btn-primary">
+                        <a href="{{ edit_url }}{% querystring next=request.path %}" class="btn btn-primary mb-1">
                             <i class="bi bi-pencil-square mr-1"></i>
                             {% trans "Einsatz bearbeiten" %}
                         </a>
@@ -44,7 +44,7 @@
 
                     {% if can_copy %}
                         {% if is_recurring %}
-                            <div class="btn-group">
+                            <div class="btn-group mb-1">
                                 <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
                                     <i class="bi bi-copy"></i>
                                     {% trans "Einsatz kopieren" %}
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                         {% else %}
-                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary">
+                            <a href="{% url 'admin:action-copy-onetime-job' job.id %}" class="btn btn-outline-primary mb-1">
                                 <i class="bi bi-copy"></i>
                                 {% trans "Einsatz kopieren" %}
                             </a>
@@ -72,14 +72,14 @@
                             <form action="{% url 'job-convert-to-one-time' %}" method="POST" class="d-inline"
                                   onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz in einen einmaligen Einsatz umwandeln möchtest?" %}')">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-primary" name="job_id" value="{{ job.id }}"
+                                <button type="submit" class="btn btn-outline-primary mb-1" name="job_id" value="{{ job.id }}"
                                         title="{% trans "in einmaligen Einsatz umwandeln" %}">
                                     <i class="bi bi-arrow-repeat"></i>
                                     {% trans "Umwandeln" %}
                                 </button>
                             </form>
                         {% else %}
-                            <a class="convert-to-recurring-job btn btn-outline-primary"
+                            <a class="convert-to-recurring-job btn btn-outline-primary mb-1"
                                title="{% trans "in wiederkehrenden Einsatz umwandeln" %}"
                                data-url="{% url 'job-convert-to-recurring' job.id %}">
                                 <i class="bi bi-arrow-repeat"></i>
@@ -92,7 +92,7 @@
                         <form action="{% url 'job-cancel' %}" method="POST" class="d-inline" id="job_cancel_form">
                             {% csrf_token %}
                             <input type="hidden" name="job_id" value="{{ job.id }}">
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancel_job_modal">
+                            <button type="button" class="btn btn-outline-danger mb-1" data-toggle="modal" data-target="#cancel_job_modal">
                                 <i class="bi bi-ban mr-1"></i>
                                 {% trans "Einsatz absagen" %}
                             </button>
@@ -130,25 +130,23 @@
         </div>
     {% endblock %}
 
-    {% if not job.infinite_slots %}
+    {% if not job.infinite_slots or job.canceled %}
         {% block status %}
             <div class="row pb-4">
                 <div class="col-lg-3">
-                    {% trans "Status" %}:
+                    {% trans "Status:" %}
                 </div>
-                {% with slots_taken=job.occupied_slots %}
-                    <div class="col-lg-9" title="{{ slots_taken }} von {{ job.slots }} gebucht">
-                        {% spaceless %}
-                            {% for _ in ''|ljust:job.slots %}
-                                {% if forloop.counter <= slots_taken %}
-                                    <img src="{% images "single_full" %}" alt="{% trans "Belegter Platz" %}"/>
-                                {% else %}
-                                    <img src="{% images "single_empty" %}" alt="{% trans "Freier Platz" %}"/>
-                                {% endif %}
-                            {% endfor %}
-                        {% endspaceless %}
+                {% if job.canceled %}
+                    <div class="col-lg-9 text-danger">
+                        {% trans "abgesagt" %}
                     </div>
-                {% endwith %}
+                {% else %}
+                    <div class="col-lg-9" title="{% blocktrans with taken=job.occupied_slots total=job.slots%}{{ taken }} von {{ total }} gebucht{% endblocktrans %}">
+                        {% block job_status %}
+                            {{ job.occupied_slots }} / {{ job.slots }}
+                        {% endblock %}
+                    </div>
+                {% endif %}
             </div>
         {% endblock %}
     {% endif %}
@@ -260,14 +258,16 @@
     {% block participants %}
         <div class="row pb-4">
             <div class="col-lg-3">
-                {% trans "Dabei sind" %}:
+                {% if job.canceled %}
+                    {% trans "Dabei wären gewesen:" %}
+                {% elif job.has_ended %}
+                    {% trans "Dabei waren:" %}
+                {% else %}
+                    {% trans "Dabei sind:" %}
+                {% endif %}
             </div>
             <div class="col-lg-9">
-                {% if job.occupied_slots == 0 and job.free_slots != 0 %}
-                    {% trans "Noch niemand" %} 🥺
-                {% else %}
-                    {% job_participant_list request.user job %}
-                {% endif %}
+                {% job_participant_list request.user job %}
             </div>
         </div>
     {% endblock %}
@@ -276,6 +276,10 @@
         {% if form.can_interact %}
             {% crispy form %}
         {% endif %}
+    {% endblock %}
+
+    {% block job_messages %}
+        {% job_messages request.user job %}
     {% endblock %}
 {% endblock %}
 

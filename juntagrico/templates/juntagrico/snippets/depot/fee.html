@@ -1,4 +1,5 @@
+{% load juntagrico.common %}
 {% load juntagrico.config %}
 {% if fee != 0 %}
-{{ prefix|safe }}{% if fee > 0 %}+{% endif %}{{ fee }}{% config "currency" %}/Jahr{{ postfix|safe }}
+{{ prefix|safe }}{% if fee > 0 %}+{% endif %}{{ fee|price }} pro Jahr{{ postfix|safe }}
 {% endif %}

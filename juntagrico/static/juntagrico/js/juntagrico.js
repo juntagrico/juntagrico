@@ -50,6 +50,15 @@ $(function () {
             }
         });
     }
+
+    $('.swapper').Swap()
+    $('.account-search-launcher').on('input', function (e) {
+        let modal = $('#account_search_modal')
+        modal.modal('show')
+        let launcher = $(this);
+        $('#account_search_modal .select2-search__field').val(launcher.val())
+        launcher.val('')
+    })
 });
 
 function email_button(action, default_email_all) {
@@ -85,33 +94,37 @@ function email_button(action, default_email_all) {
     }
 }
 
-function timed_text_class_change(new_text, new_class, duration) {
-    return function() {
-        let elem = $(this)
-        if (!elem.is('.' + new_class)) { // catch double click
-            elem.addClass(new_class)
-            let original_text = elem.html()
-            elem.html(new_text)
-            window.setTimeout(function () {
-                elem.html(original_text)
-                elem.removeClass(new_class)
-            }, duration || 3000)
-        }
+function timed_text_class_change(button, dt, node, new_text, new_class, duration) {
+    if (!node.is('.' + new_class)) { // catch double click
+        node.addClass(new_class)
+        button.text(new_text)
+        window.setTimeout(function () {
+            dt.trigger('draw')  // resets button text
+            node.removeClass(new_class)
+        }, duration || 3000)
     }
 }
 
+function with_count(text, count) {
+    // show the number of affected entries, so it is clear on how many entries the button acts
+    return text + '<span class="badge-pill badge-dark ml-2">' + count + '</span>'
+}
+
 function email_copy_button() {
+    let text = '<i class="bi bi-clipboard"></i> ' + email_copy_string
     let copied_text = '<i class="bi bi-check"></i> ' + email_copied_string
     return {
-        text: '<i class="bi bi-clipboard"></i> ' + email_copy_string,
+        text: text,
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
-                that.enable(get_emails(dt).size > 0)
+                const count = get_emails(dt).size
+                that.enable(count > 0)
+                that.text(with_count(text, count))
             })
-            this.node().on('click', timed_text_class_change(copied_text, 'btn-success'))
         },
         action: function (e, dt, node, config) {
+            timed_text_class_change(this, dt, node, copied_text, 'btn-success')
             let emails = get_emails(dt)
             navigator.clipboard.writeText(Array.from(emails).join("\n"))
         }
@@ -124,7 +137,9 @@ function id_action_button(text, action, csrf_token, selector, field='ids', confi
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
-                that.enable(get_selected_or_all(dt).to$().find(selector).length > 0)
+                const count = fetch_unique_from_table(get_selected_or_all(dt), selector).size
+                that.enable(count > 0)
+                that.text(with_count(text, count))
             })
             that.disable()
         },
@@ -152,11 +167,11 @@ function get_emails(dt) {
 }
 
 function fetch_unique_from_table(node, selector) {
-    // TODO make more robust for case, where there is no space around the node texts.
-    let entries = $(selector, node).text().trim().replace(/[\s,]+/gm, ',');
-    if (entries !== "")
-        return new Set(entries.split(','))
-    return new Set()
+    // split each node text separately, so that entries of adjacent nodes can not merge
+    let entries = $(selector, node).map(function () {
+        return $(this).text().trim().split(/[\s,]+/)
+    }).get()
+    return new Set(entries.filter(entry => entry !== ''))
 }
 
 function get_selected_or_all(dt) {
@@ -238,6 +253,15 @@ $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') 
         } else {
             $.get(disable_url.replace(placeholder, slider.val()));
         }
+    })
+}
+
+
+$.fn.Swap = function (target) {
+    $(this).on("click", function (e) {
+        $($.find(target || $(this).data('swap'))).toggleClass("d-none");
+        e.preventDefault();
+        return false;
     })
 }
 

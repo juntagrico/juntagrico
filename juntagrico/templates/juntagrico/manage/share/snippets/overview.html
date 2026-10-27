@@ -1,0 +1,94 @@
+{% load i18n %}
+<div class="share-overview row mb-4">
+    <div class="col-12 col-lg-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title my-1">{% blocktrans with v_shares=vocabulary.share_pl %}Aktuelle {{ v_shares }}{% endblocktrans %}</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-10">{% trans 'Verfügbar' %} <span class="text-muted small">{% trans '(bezahlte inkl. gekündigte)' %}</span></dt>
+                    <dd class="col-sm-2 text-right font-weight-bolder">{{ current.available }}</dd>
+
+                    {% if membership_enabled %}
+                        <dt class="col-sm-10">{% trans 'Benötigt für Mitgliedschaft' %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ current.for_membership }}</dd>
+                    {% endif %}
+
+                    {% if current.subscription %}
+                        <dt class="col-sm-10">{% blocktrans with id=current.subscription.pk %}Benötigt für Abo (#{{ id }}){% endblocktrans %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ current.for_subscription }}</dd>
+
+                        <dt class="col-sm-10">{% blocktrans with v_co_members=vocabulary.co_member_pl %}Von {{ v_co_members }}{% endblocktrans %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ current.of_co_members }}</dd>
+                    {% endif %}
+
+                    {% if membership_enabled or current.subscription %}
+                        <dt class="col-sm-10">{% trans 'Bilanz' %}
+                            <span class="text-muted small">= {{ current.available }} -
+                                {% if membership_enabled and current.subscription %}
+                                    {% if cumulative %}
+                                        ({{ current.for_membership }} - ({{ current.for_subscription }} - {{ current.of_co_members }}))
+                                    {% else %}
+                                        max({{ current.for_membership }}, ({{ current.for_subscription }} - {{ current.of_co_members }}))
+                                    {% endif %}
+                                {% elif membership_enabled %}
+                                    {{ current.for_membership }}
+                                {% else %}
+                                    ({{ current.for_subscription }} - {{ current.of_co_members }})
+                                {% endif %}
+                            </span>
+                        </dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder {% if current.total < 0 %}text-danger{% endif %}">{{ current.total }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title my-1">{% blocktrans with v_shares=vocabulary.share_pl %}Künftige {{ v_shares }}{% endblocktrans %}</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-10">{% trans 'Verfügbar' %} <span class="text-muted small">(bestellte & bezahlte exkl. gekündigte)</span></dt>
+                    <dd class="col-sm-2 text-right font-weight-bolder">{{ future.available }}</dd>
+
+                    {% if membership_enabled %}
+                        <dt class="col-sm-10">{% trans 'Benötigt für Mitgliedschaft' %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ future.for_membership }}</dd>
+                    {% endif %}
+
+                    {% if future.subscription %}
+                        <dt class="col-sm-10">{% blocktrans with id=future.subscription.pk %}Benötigt für Abo (#{{ id }}){% endblocktrans %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ future.for_subscription }}</dd>
+
+                        <dt class="col-sm-10">{% blocktrans with v_co_members=vocabulary.co_member_pl %}Von {{ v_co_members }}{% endblocktrans %}</dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder">{{ future.of_co_members }}</dd>
+                    {% endif %}
+
+                    {% if membership_enabled or future.subscription %}
+                        <dt class="col-sm-10">{% trans 'Bilanz' %}
+                            <span class="text-muted small">= {{ future.available }} -
+                                {% if membership_enabled and future.subscription %}
+                                    {% if cumulative %}
+                                        ({{ future.for_membership }} - ({{ future.for_subscription }} - {{ future.of_co_members }}))
+                                    {% else %}
+                                        max({{ future.for_membership }}, ({{ future.for_subscription }} - {{ future.of_co_members }}))
+                                    {% endif %}
+                                {% elif membership_enabled %}
+                                    {{ future.for_membership }}
+                                {% else %}
+                                    ({{ future.for_subscription }} - {{ future.of_co_members }})
+                                {% endif %}
+                            </span>
+                        </dt>
+                        <dd class="col-sm-2 text-right font-weight-bolder {% if future.total < 0 %}text-danger{% endif %}">{{ future.total }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

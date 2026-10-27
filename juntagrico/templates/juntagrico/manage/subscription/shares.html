@@ -1,0 +1,80 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+
+{% block list_head %}
+    <th class="filter">
+        {% trans "Status" %}
+    </th>
+    <th class="filter">
+        {% trans "Inhalt" %}
+    </th>
+    <th class="filter">
+        {% trans "Benötigt" %}
+    </th>
+    <th class="filter">
+        {% trans "Bezahlt (Gesamt)" %}
+    </th>
+    <th class="filter">
+        {% trans "Ausreichend?" %}
+    </th>
+{% endblock %}
+
+{% block list_foot %}
+    <th>
+        {% trans "Status" %}
+    </th>
+    <th>
+        {% trans "Inhalt" %}
+    </th>
+    <th>
+        {% trans "Benötigt" %}
+    </th>
+    <th>
+        {% trans "Bezahlt (Gesamt)" %}
+    </th>
+    <th>
+        {% trans "Ausreichend?" %}
+    </th>
+{% endblock %}
+
+{% block list_entry %}
+    <td>
+        {{ subscription.state_text }}
+        {% if subscription.canceled %}
+            <span class="badge badge-danger">{% trans "gekündigt" %}</span>
+        {% endif %}
+    </td>
+    <td>
+        {% for item in subscription.content_strings %}
+            <div>
+                {{ item }}
+            </div>
+        {% endfor %}
+    </td>
+    {% with required=subscription.required_shares %}
+        <td>
+            {{ required }}
+        </td>
+        <td>
+            <span class="badge {% if subscription.dedicated_paid_shares >= required %}badge-success{% else %}badge-danger{% endif %}"
+                  title="{% trans 'Bezahlte Anteilscheine' %}">
+                {{ subscription.dedicated_paid_shares }}
+            </span>
+            {% if subscription.dedicated_total_shares > subscription.dedicated_paid_shares %}
+                (
+                <span class="badge {% if subscription.dedicated_total_shares >= required %}badge-success{% else %}badge-danger{% endif %}"
+                      title="{% trans 'Alle Anteilscheine' %}">
+                    {{ subscription.dedicated_total_shares }}
+                </span>
+                )
+            {% endif %}
+        </td>
+        <td>
+            {% if subscription.dedicated_paid_shares >= required %}{% trans "Ja" %}{% else %}{% trans "Nein" %}{% endif %}
+        </td>
+    {% endwith %}
+{% endblock %}

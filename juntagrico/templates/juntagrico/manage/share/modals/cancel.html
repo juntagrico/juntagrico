@@ -1,0 +1,24 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans with v_share=vocabulary.share v_member=vocabulary.member %}{{ v_share }} für {{ v_member }} kündigen{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <div class="alert alert-secondary">
+        <i class="bi bi-envelope"></i>
+        {% blocktrans trimmed with person='<span class="modal-person"></span>' %}
+            {{ person }} wird bei Kündigung automatisch per E-Mail benachrichtigt.
+        {% endblocktrans %}
+    </div>
+    <p>
+        {% trans "Bist du sicher?" %}
+    </p>
+{% endblock %}
+
+{% block buttons %}
+    <button type="submit" class="modal-submit btn btn-danger mb-1">
+        {% trans "Kündigen" %}
+    </button>
+{% endblock %}

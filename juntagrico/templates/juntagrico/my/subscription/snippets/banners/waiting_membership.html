@@ -3,12 +3,12 @@
 {% vocabulary "subscription" as v_subscription %}
 <div class="alert alert-danger">
     {% if subscription_membership.join_date %}
-        {% blocktrans trimmed with jd=subscription_membership.join_date %}
-            Du wirst diesem/r {{ v_subscription }} am {{ jd }} beitreten.
+        {% blocktrans trimmed with v_this_subscription_dat=vocabulary.this_subscription_dat jd=subscription_membership.join_date %}
+            Du wirst {{ v_this_subscription_dat }} am {{ jd }} beitreten.
         {% endblocktrans %}
     {% else %}
-        {% blocktrans trimmed %}
-            Dein Beitritt zu diesem/r {{ v_subscription }} ist noch ausstehend.
+        {% blocktrans trimmed with v_this_subscription_dat=vocabulary.this_subscription_dat %}
+            Dein Beitritt zu {{ v_this_subscription_dat }} ist noch ausstehend.
         {% endblocktrans %}
     {% endif %}
 </div>

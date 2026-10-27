@@ -1,0 +1,5 @@
+{% load i18n %}
+{{subscription}}
+{% trans "Von:" %} {% include "juntagrico/snippets/subscription/recipients.html" %}
+{% blocktrans with email=subscription.primary_member.email %}Kontakt: {{ email }}{% endblocktrans %}
+{{ server_url }}{% url 'admin:juntagrico_subscription_change' subscription.id %}

@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _, gettext
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, ProductSizeQueryset, SubscriptionProductQueryset
-from juntagrico.util import temporal
 
 
 class SubscriptionProduct(JuntagricoBaseModel):
@@ -110,15 +109,23 @@ class SubscriptionType(JuntagricoBaseModel):
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
     bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.PROTECT,
                                related_name='types', verbose_name=_('Paket'))
-    shares = models.PositiveIntegerField(
-        _('Anz benötigter Anteilsscheine'), default=0)
+    requires_membership = models.BooleanField(
+        _('Erfordert {membership}').format(membership=Config.vocabulary('membership')),
+        default=True
+    )
+    shares = models.IntegerField(
+        _('Anz benötigter {shares}').format(
+            shares=Config.vocabulary('share_pl')
+        ),
+        default=0,
+    )
     required_assignments = models.FloatField(_('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.FloatField(_('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     is_extra = models.BooleanField(_('Ist Zusatzabo'), default=False)
     trial = models.BooleanField(_('Probe-Abo'), default=False)  # Deprecated
-    trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
+    trial_days = models.IntegerField(_('Probedauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     # Interval of the subscription (e.g 2 for every 2 weeks)
@@ -136,14 +143,6 @@ class SubscriptionType(JuntagricoBaseModel):
     @property
     def has_periods(self):
         return self.periods.count() > 0
-
-    def min_duration_info(self):
-        if self.trial_days:
-            return gettext('Für {num} Tage. Keine automatische Verlängerung.').format(num=self.trial_days)
-        if self.has_periods:
-            return None  # price list already shows end of periods
-        date = temporal.end_of_business_year()
-        return gettext('Bis {day}.{month}. Automatische Verlängerung.').format(day=date.day, month=date.month)
 
     @property
     def display_name(self):

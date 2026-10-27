@@ -11,11 +11,13 @@
 {% endblock %}
 
 {% block allcontent %}
-    <div class="offset-md-2 col-md-8 mb-3">
-        {% block intro %}{% endblock %}
-    </div>
     <div class="offset-md-2 col-md-8">
-        {% block content %}{% endblock %}
+        <div class="mb-5">
+            {% block intro %}{% endblock %}
+        </div>
+        <div>
+            {% block content %}{% endblock %}
+        </div>
     </div>
 {% endblock %}
 

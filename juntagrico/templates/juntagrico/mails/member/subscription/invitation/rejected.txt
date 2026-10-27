@@ -1,0 +1,7 @@
+{% extends "../../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% blocktrans with invitee=invitee %}Soeben hat '{{ invitee }}' deine Einladung abgelehnt.{% endblocktrans %}
+{% endblock %}
