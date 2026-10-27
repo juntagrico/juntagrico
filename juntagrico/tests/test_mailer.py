@@ -6,7 +6,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
-from . import JuntagricoTestCaseWithShares
+from . import JuntagricoTestCaseWithShares, JuntagricoTestCase
+from ..mailer import get_emails_by_permission
 from ..util.string import int_array_decompress
 
 
@@ -414,3 +415,23 @@ class BackendTest(TestCase):
         self.make_email(['john <john@example.com>', 'maria <maria@example.com>']).send()
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].bcc, ['maria <maria@example.com>'])
+
+
+class NotificationTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # load from fixtures
+        cls.load_members()
+    
+    def testEmailByPermission(self):
+        self.assertListEqual(
+            list(get_emails_by_permission('notified_on_member_creation')),
+            ['email1@email.org'],
+        )
+
+    def testInactiveMember(self):
+        # inactive members should not receive notifications
+        self.member.cancel()
+        self.member.deactivate()
+        self.assertFalse(get_emails_by_permission('notified_on_member_creation').exists())
+        self.assertFalse(get_emails_by_permission('depot_list_notification').exists())

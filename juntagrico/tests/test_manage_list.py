@@ -87,3 +87,13 @@ class ManageListTests(JuntagricoTestCase):
         self.assertPost(reverse('changedate-set'), data={'date': '1999-01-01'}, code=302)
         self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
         self.assertGet(reverse('changedate-unset'), code=302)
+        # missing date
+        self.assertPost(reverse('changedate-set'), code=200)
+
+    def testAnonymousAccess(self):
+        self.client.logout()
+        for name, args in [('changedate-set', []), ('changedate-unset', []), ('manage-area-member-remove', [self.area.pk])]:
+            response = self.client.post(reverse(name, args=args), {'date': '1999-01-01', 'member_id': 1})
+            self.assertRedirects(response, reverse('login') + '?next=' + reverse(name, args=args),
+                                 fetch_redirect_response=False)
+        self.assertTrue(self.area.members.filter(id=1).exists())
