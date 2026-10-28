@@ -8,13 +8,17 @@
             <div class="alert alert alert-danger mb-3">
                 <p>{{ error_message }}</p>
 
-                <p><a href="{% url 'login' %}">{% translate 'Anmelden' %}</a></p>
+                <p>
+                    <a href="{% url 'send-confirm' %}" class="alert-link">
+                        {% trans "Fordere hier einen neuen Link an." %}
+                    </a>
+                </p>
             </div>
         {% else %}
             <div class="alert alert-success mb-3">
                 <p>{% translate "Deine E-Mail-Adresse wurde erfolgreich bestätigt." %}</p>
 
-                <p><a href="{% url 'login' %}">{% translate 'Anmelden' %}</a></p>
+                <p><a href="{% url 'home' %}">{% translate 'Anmelden' %}</a></p>
             </div>
         {% endif %}
     </div>

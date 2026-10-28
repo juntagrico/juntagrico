@@ -1,3 +1,5 @@
+import hashlib
+
 from django.conf import settings
 from django.contrib.auth import get_user
 from django.contrib.auth.models import Permission
@@ -204,10 +206,17 @@ class AuthTests(JuntagricoTestCase):
         self.member.save()
         self.assertEqual(self.member.confirmed, False)
         # test confirmation link
-        response = self.client.get(reverse('confirm', args=['wrong_hash']))
-        self.assertEqual(response.status_code, 200)
-        self.member.refresh_from_db()
-        self.assertEqual(self.member.confirmed, False)
+        token_before_change = Member.objects.get(pk=self.member.pk).get_hash()
+        self.member.email = 'other_email@email.org'
+        self.member.save()
+        # the former unsigned hash can be computed by anyone
+        old_hash = hashlib.sha1((str(self.member.email) + str(self.member.pk)).encode('utf8')).hexdigest()
+        for invalid in ['wrong_hash', old_hash, token_before_change, self.member.get_hash() + 'x']:
+            response = self.client.get(reverse('confirm', args=[invalid]))
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(response.context['error_message'])
+            self.member.refresh_from_db()
+            self.assertEqual(self.member.confirmed, False)
         response = self.client.get(reverse('confirm', args=[self.member.get_hash()]))
         self.assertEqual(response.status_code, 200)
         self.member.refresh_from_db()
