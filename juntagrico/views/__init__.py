@@ -254,8 +254,10 @@ def cancel_membership(request):
 
 @login_required
 def send_confirm(request):
-    membernotification.email_confirmation(request.user.member)
-    return render(request, 'info/confirmation_sent.html', {})
+    member = request.user.member
+    if not member.confirmed:
+        membernotification.email_confirmation(member)
+    return render(request, 'info/confirmation_sent.html', {'confirmed': member.confirmed})
 
 
 @login_required

@@ -2,9 +2,15 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% block content %}
-    <div class="alert alert-success" role="alert">
-        {% trans "Der Link wurde versendet." %}
-    </div>
+    {% if confirmed %}
+        <div class="alert alert-success" role="alert">
+            {% trans "Deine E-Mail-Adresse wurde bereits bestätigt." %}
+        </div>
+    {% else %}
+        <div class="alert alert-success" role="alert">
+            {% trans "Der Link wurde versendet." %}
+        </div>
+    {% endif %}
 {% endblock %}
 {% block scripts %}
 {% endblock %}

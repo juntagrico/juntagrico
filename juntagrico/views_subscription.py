@@ -158,12 +158,12 @@ def confirm(request, member_hash):
     Confirm mail address from link with hash after signup or if user that has been added as a co_subscription member
     """
     renderdict = {'error_message': _('Ungültiger Link.')}
-    for member in Member.objects.filter(confirmed=False):
-        if member_hash == member.get_hash():
+    member = Member.from_hash(member_hash)
+    if member is not None:
+        if not member.confirmed:
             member.confirmed = True
             member.save()
-            renderdict = {}
-            break
+        renderdict = {}
     return render(request, 'mail_confirmation.html', renderdict)
 
 
