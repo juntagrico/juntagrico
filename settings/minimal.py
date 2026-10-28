@@ -76,7 +76,6 @@ EMAIL_BACKEND = 'juntagrico.backends.email.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'juntagrico.util.auth.AuthenticateWithEmail',
-    'django.contrib.auth.backends.ModelBackend'
 )
 
 # Sites Settings
