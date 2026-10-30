@@ -69,6 +69,25 @@ These have the following effects:
 - staff status: Allows the user to login to the django admin page ("Datenverwaltung"), to see which version of juntagrico is installed and to contact any member via email.
 - superuser status: Grants the user all permissions, except the notification permissions, which need to be granted specifically.
 
+Impersonation
+-------------
+
+Users with superuser status can impersonate other users to see juntagrico from their perspective.
+By default `django-impersonate <https://code.netlandish.com/~petersanchez/django-impersonate/>`_ also allows users with staff status to impersonate any user,
+except superusers. While impersonating, a user has all permissions of the impersonated user,
+which allows staff users to gain permissions that they were not granted.
+It is therefore recommended to restrict impersonation to superusers in your ``settings.py``:
+
+.. code-block:: python
+
+    IMPERSONATE = {
+        'REQUIRE_SUPERUSER': True,
+    }
+
+All impersonations are logged. Superusers can review them in the data management ("Datenverwaltung") under "Impersonate" -> "Impersonation logs".
+Refer to the `django-impersonate settings <https://code.netlandish.com/~petersanchez/django-impersonate/#settings>`_
+for further options, e.g. ``CUSTOM_ALLOW`` to define your own rule who may impersonate.
+
 Dependent permissions
 ---------------------
 In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also

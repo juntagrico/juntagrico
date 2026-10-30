@@ -78,6 +78,12 @@ AUTHENTICATION_BACKENDS = (
     'juntagrico.util.auth.AuthenticateWithEmail',
 )
 
+# Impersonate Settings
+
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True,
+}
+
 # Sites Settings
 
 SITE_ID = 1

@@ -85,6 +85,7 @@ LOGIN_REDIRECT_URL = "/"
 # Impersonate Settings
 
 IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True,
     'REDIRECT_URL': '/my/profile',
 }
 
