@@ -8,6 +8,7 @@ recursive-include juntagrico_legacy/templates *
 recursive-include juntagrico_legacy/locale *
 include requirements.txt
 global-exclude *.pyc
+global-exclude *.map
 exclude manage.py
 exclude settings/*
 exclude urls/*
