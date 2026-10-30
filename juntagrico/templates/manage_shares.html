@@ -82,10 +82,13 @@
                                     {% elif ibanempty %}
                                         <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>
                                     {% elif share.cancelled_date is None %}
-                                        <a href="{% url 'share-cancel' share.id %}" class="btn btn-outline-danger"
-                                           onclick="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ next_membership_end_date }} kündigen? {% endblocktrans%}')">
-                                            {% trans "kündigen" %}
-                                        </a>
+                                        <form action="{% url 'share-cancel' share.id %}" method="post"
+                                              onsubmit="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ next_membership_end_date }} kündigen? {% endblocktrans%}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                {% trans "kündigen" %}
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </td>
                             </tr>

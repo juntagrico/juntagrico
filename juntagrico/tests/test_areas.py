@@ -15,13 +15,17 @@ class AreaTests(JuntagricoTestCase):
         self.assertGet(url, member=self.area_admin)
 
     def testAreaJoinAndLeave(self):
-        self.assertGet(reverse('area-join', args=[self.area2.pk]))
+        self.assertGet(reverse('area-join', args=[self.area2.pk]), code=405)
+        self.assertEqual(self.area2.members.count(), 0)
+        self.assertPost(reverse('area-join', args=[self.area2.pk]))
         self.assertEqual(self.area2.members.count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].recipients(), ['email2@email.org', 'areaadmin@email.org'])
         mail.outbox = []
 
-        self.assertGet(reverse('area-leave', args=[self.area2.pk]))
+        self.assertGet(reverse('area-leave', args=[self.area2.pk]), code=405)
+        self.assertEqual(self.area2.members.count(), 1)
+        self.assertPost(reverse('area-leave', args=[self.area2.pk]))
         self.assertEqual(self.area2.members.count(), 0)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].recipients(), ['email2@email.org', 'areaadmin@email.org'])

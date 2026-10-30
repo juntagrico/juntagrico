@@ -230,13 +230,14 @@ $.fn.ToggleButton = function (selector, callback) {
     })
 }
 
-$.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') {
+$.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}', csrf_token = '') {
     $(this).change(function () {
         let slider = $(this)
+        let data = {csrfmiddlewaretoken: csrf_token}
         if (slider.is(':checked')) {
-            $.get(activate_url.replace(placeholder, slider.val()));
+            $.post(activate_url.replace(placeholder, slider.val()), data);
         } else {
-            $.get(disable_url.replace(placeholder, slider.val()));
+            $.post(disable_url.replace(placeholder, slider.val()), data);
         }
     })
 }
