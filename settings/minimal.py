@@ -50,6 +50,9 @@ MIDDLEWARE = [
     'impersonate.middleware.ImpersonateMiddleware',
 ]
 
+# keep the Referer header for cross-origin requests, e.g. the OpenStreetMap tiles of the depot maps
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

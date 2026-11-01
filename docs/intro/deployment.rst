@@ -14,12 +14,22 @@ Run the django deployment checks against your production settings and resolve th
 
 In particular, enable the security and clickjacking middlewares as in
 `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_.
-With the django defaults they set the headers ``X-Frame-Options: DENY``, ``X-Content-Type-Options: nosniff``
-and ``Referrer-Policy: same-origin``.
+They set the headers ``X-Frame-Options: DENY`` and ``X-Content-Type-Options: nosniff``.
+Also set the referrer policy as in ``settings/minimal.py``:
+
+.. code-block:: python
+
+    # settings.py
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+Do not keep the django default ``same-origin``: with it, browsers send no ``Referer`` header to other sites.
+The OpenStreetMap tile servers then block the tiles of the depot maps,
+and external services such as web analytics may reject the requests.
 Ideally, these headers are set by the web server in front of django instead,
 so that they also apply to responses not served by django, such as static and media files
 (see the `django documentation <https://docs.djangoproject.com/en/5.2/ref/middleware/#module-django.middleware.security>`_).
-In that case make sure the headers are not sent twice with conflicting values.
+In that case make sure the headers are not sent twice with conflicting values,
+and use the same referrer policy in the web server.
 If your instance is only reachable via HTTPS, also mark the cookies as secure:
 
 .. code-block:: python
