@@ -527,6 +527,7 @@ class SubscriptionPartSelectRequiredForm(SubscriptionPartBaseForm):
                 subscription=Config.vocabulary('subscription')
             ))
             raise ValidationError(selection_error_message, code='selection_error')
+        return super().clean()  # run validators
 
 
 class SubscriptionPartSelectForm(SubscriptionPartSelectRequiredForm):
