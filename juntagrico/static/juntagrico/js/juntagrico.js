@@ -247,6 +247,7 @@ $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') 
 function default_tile_layer() {
     return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
+        referrerPolicy: 'strict-origin-when-cross-origin',
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
             '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
     })
