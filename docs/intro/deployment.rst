@@ -74,36 +74,48 @@ address, phone number, birthday).
 **Role-based validators.** Juntagrico provides specialized validators that apply
 strict rules only to users with elevated privileges:
 
-- ``StaffOnlyPasswordValidator`` — applies the wrapped validators to staff and
+- ``juntagrico.password_validation.StaffOnlyPasswordValidator`` — applies the wrapped validators to staff and
   superusers only.
-- ``PermittedOnlyPasswordValidator`` — extends the above to users who have any
+- ``juntagrico.password_validation.PermittedOnlyPasswordValidator`` — extends the above to users who have any
   permissions or group memberships.
-- ``PrivilegedOnlyPasswordValidator`` — further extends to users who coordinate
+- ``juntagrico.password_validation.PrivilegedOnlyPasswordValidator`` — further extends to users who coordinate
   activity areas or depots.
-- ``GroupOnlyPasswordValidator`` — applies validators only to members of a
+- ``juntagrico.password_validation.GroupOnlyPasswordValidator`` — applies validators only to members of a
   specific group (default: ``'NeedsStrongPassword'``).
 
 Example — require strong passwords for staff and coordinators:
 
 .. code-block:: python
 
-    from juntagrico.password_validation import PrivilegedOnlyPasswordValidator
+    from juntagrico import defaults
 
     AUTH_PASSWORD_VALIDATORS = [
         {
-            'NAME': PrivilegedOnlyPasswordValidator,
-            'VALIDATORS': [
-                {
-                    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-                    'OPTIONS': {'min_length': 16},
-                },
-                {
-                    'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-                },
-            ],
+            'NAME': 'juntagrico.password_validation.PrivilegedOnlyPasswordValidator',
+            'OPTIONS': {
+                'validators': [
+                    {
+                        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+                        'OPTIONS': {'min_length': 16},
+                    },
+                    {
+                        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+                    },
+                ],
+            }
+        },
+        {
+            'NAME': 'juntagrico.password_validation.GroupOnlyPasswordValidator',
+            'OPTIONS': {
+                'validators': defaults.password_validators,
+                'group_name': 'my_group',
+            }
         },
         # fallback validators for all users
-        *password_validators,
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+            'OPTIONS': {'min_length': 14},
+        },
     ]
 
 .. note::
@@ -157,11 +169,14 @@ using the helpers in ``juntagrico.defaults``:
 
 .. code-block:: python
 
+    allow_impersonate = defaults.allow_group('impersonators')
+
     IMPERSONATE = {
-        'CUSTOM_ALLOW': 'juntagrico.defaults.allow_group',
+        'CUSTOM_ALLOW': 'myapp.settings.allow_impersonate',
         'CUSTOM_USER_QUERYSET': 'juntagrico.defaults.unprivileged_only',
     }
 
+Replace ``myapp`` with your project name.
 The ``CUSTOM_ALLOW`` value should be a dotted path to a callable, for example
 ``'juntagrico.defaults.allow_group'`` configured with an `'impersonators'`` group.
 Similarly, ``CUSTOM_USER_QUERYSET`` should be a string like

@@ -45,7 +45,7 @@ class RequirePasswordChangeMiddleware:
             except Resolver404:
                 match = None
 
-            if view_match(match, self.get_allowed_url_names()):
+            if not view_match(match, self.get_allowed_url_names()):
                 return redirect(self.password_view_name)
 
         return self.get_response(request)

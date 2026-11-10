@@ -50,7 +50,7 @@ class GroupOnlyPasswordValidator(StaffOnlyPasswordValidator):
         self.group_name = group_name
 
     def filter(self, user):
-        return user.groups.filter(self.group_name).exists()
+        return user.groups.filter(name=self.group_name).exists()
 
 
 class AccountAttributeSimilarityValidator(UserAttributeSimilarityValidator):
