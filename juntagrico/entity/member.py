@@ -1,8 +1,8 @@
 import datetime
-import hashlib
 import uuid
 
 from django.contrib.auth.models import User
+from django.core.signing import BadSignature, Signer
 from django.db import models
 from django.db.models import Q, Sum, Max
 from django.utils.functional import cached_property
@@ -337,8 +337,34 @@ class Member(AbstractProfile):
         emails[self.email] = 'private'
         return [(identifier, email) for email, identifier in emails.items()]
 
+    CONFIRMATION_SALT = 'juntagrico.member.confirm'
+
+    def _confirmation_signer(self):
+        # the email address is part of the salt, so the token is bound to it without containing it
+        return Signer(salt=f'{self.CONFIRMATION_SALT}:{self.email}')
+
     def get_hash(self):
-        return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
+        """
+        :return: signed token for the email confirmation link. It becomes invalid when the email address changes.
+        """
+        return self._confirmation_signer().sign(str(self.pk))
+
+    @classmethod
+    def from_hash(cls, member_hash):
+        """
+        :return: the member of a valid confirmation token, or None
+        """
+        pk, _, _ = member_hash.rpartition(':')
+        if not pk.isdigit():
+            return None
+        member = cls.objects.filter(pk=pk).first()
+        if member is None:
+            return None
+        try:
+            member._confirmation_signer().unsign(member_hash)
+        except BadSignature:
+            return None
+        return member
 
     def clean(self):
         check_member_consistency(self)

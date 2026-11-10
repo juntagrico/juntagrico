@@ -108,6 +108,8 @@ Create a superuser with member to login into your instance:
 
     $ python -m manage createadmin
 
+Before going live, read the :ref:`deployment <intro-deployment>` section.
+
 
 Create Test Data (optional)
 ---------------------------

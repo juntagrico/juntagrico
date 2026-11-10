@@ -93,3 +93,24 @@ msgstr "Dieser Befehl erfordert ``faker``. Installiere es via pip."
 
 msgid "Like ``generate_testdata`` but produces a much bigger set of test data."
 msgstr "Wie ``generate_testdata`` aber erzeugt einen viel grösseren Satz an Testdaten."
+
+msgid "sanitize_richtext"
+msgstr "sanitize_richtext"
+
+msgid "Sanitizes HTML content in rich text fields to remove potentially dangerous tags and attributes (e.g. ``<script>`` tags, ``onclick`` handlers). This is useful for cleaning up existing data after enabling the rich text editor, or as a one-time migration to harden stored content."
+msgstr "Säubert HTML-Inhalt in Rich-Text-Feldern, um potenziell gefährliche Tags und Attribute zu entfernen (z.B. ``<script>``-Tags, ``onclick``-Handler). Dies ist nützlich, um bestehende Daten nach dem Aktivieren des Rich-Text-Editors aufzuräumen oder als einmalige Migration, um gespeicherten Inhalt abzusichern."
+
+msgid "By default, the command sanitizes all known juntagrico rich text fields. You can also pass specific fields in ``app_label.ModelName.field_name`` format."
+msgstr "Standardweise säubert der Befehl alle bekannten Juntagrico-Rich-Text-Felder. Du kannst auch spezifische Felder im Format ``app_label.ModelName.field_name`` übergeben."
+
+msgid "Options:"
+msgstr "Optionen:"
+
+msgid "``--dry-run``: Show what would be changed without actually updating the database."
+msgstr "``--dry-run``: Zeigt, was geändert würde, ohne die Datenbank tatsächlich zu aktualisieren."
+
+msgid "``--batch-size``: Number of records to process at a time (default: 500)."
+msgstr "``--batch-size``: Anzahl der Datensätze, die gleichzeitig verarbeitet werden (Standard: 500)."
+
+msgid "Example usage:"
+msgstr "Beispielverwendung:"

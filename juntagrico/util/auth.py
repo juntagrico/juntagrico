@@ -1,8 +1,12 @@
+
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _, gettext_lazy
 
@@ -11,22 +15,23 @@ from juntagrico.mailer import membernotification
 from juntagrico.models import Member
 
 
-class AuthenticateWithEmail(object):
-    @staticmethod
-    def authenticate(request, username=None, password=None):
+class AuthenticateWithEmail(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            user = Member.objects.get(email__iexact=username).user
-            if user.check_password(password):
-                return user
-        except Member.DoesNotExist:
-            return None
-
-    @staticmethod
-    def get_user(user_id):
-        try:
-            return User.objects.get(pk=user_id)
+            user = User.objects.get(Q(member__email__iexact=username) | Q(username=username))
         except User.DoesNotExist:
-            return None
+            # Run the default password hasher once to reduce the timing
+            # difference between an existing and a nonexistent user.
+            User().set_password(password)
+        else:
+            if user.check_password(password) and self.user_can_authenticate(user):
+                return user
+
+    def user_can_authenticate(self, user):
+        """
+        Reject inactive users/members
+        """
+        return super().user_can_authenticate(user) and not user.member.inactive
 
 
 class JuntagricoAuthenticationForm(AuthenticationForm):
@@ -49,6 +54,8 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
                 code='inactive',
             )
 
+        super().confirm_login_allowed(user)
+
         if not user.member.confirmed and Config.enforce_mail_confirmation():
             membernotification.email_confirmation(user.member)
             raise ValidationError(
@@ -59,6 +66,20 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
 
 class JuntagricoLoginView(LoginView):
     form_class = JuntagricoAuthenticationForm
+
+    def form_valid(self, form):
+        user = form.get_user()
+
+        try:
+            validate_password(form.cleaned_data["password"], user)
+        except ValidationError:
+            # LoginView logs the user in here; middleware will restrict
+            # this session to the password-change flow.
+            response = super().form_valid(form)
+            self.request.session["must_change_password"] = True
+            return response
+
+        return super().form_valid(form)
 
 
 class JuntagricoPasswordResetForm(PasswordResetForm):

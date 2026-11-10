@@ -19,6 +19,7 @@ It provides the basic functionality like
    intro/installation.rst
    intro/basic.rst
    intro/advanced.rst
+   intro/deployment.rst
 
 
 .. toctree::

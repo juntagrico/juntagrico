@@ -9,7 +9,7 @@ authors = [
     {name = "juntagrico", email = "python@juntagrico.org"},
 ]
 readme = "README.md"
-license = { file = "LICENSE.txt" }
+license = "LGPL-3.0-only"
 requires-python = ">=3.10"
 dependencies = [
     "Django~=5.2.3",
@@ -27,6 +27,7 @@ dependencies = [
     "svglib<1.6.0",
     "XlsxWriter~=3.2.3",
     "python-dateutil~=2.9.0",
+    "nh3>=0.3.7",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -35,7 +36,6 @@ classifiers = [
     "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
     "Intended Audience :: Other Audience",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",

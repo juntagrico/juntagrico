@@ -10,7 +10,7 @@ from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job, JobType
-from juntagrico.forms import MemberProfileForm, PasswordForm, AreaDescriptionForm
+from juntagrico.forms import MemberProfileForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
@@ -211,8 +211,10 @@ def profile(request):
 
 @login_required
 def send_confirm(request):
-    membernotification.email_confirmation(request.user.member)
-    return render(request, 'info/confirmation_sent.html', {})
+    member = request.user.member
+    if not member.confirmed:
+        membernotification.email_confirmation(member)
+    return render(request, 'info/confirmation_sent.html', {'confirmed': member.confirmed})
 
 
 @login_required
@@ -221,22 +223,8 @@ def info_unpaid_shares(request):
 
 
 @login_required
-def change_password(request):
-    success = False
-    if request.method == 'POST':
-        form = PasswordForm(request.POST)
-        if form.is_valid():
-            request.user.set_password(form.cleaned_data['password'])
-            request.user.save()
-            success = True
-    else:
-        form = PasswordForm()
-
-    renderdict = {
-        'form': form,
-        'success': success
-    }
-    return render(request, 'password.html', renderdict)
+def password_changed(request):
+    return render(request, 'password.html', {'success': True})
 
 
 class LogoutView(auth_views.LogoutView):

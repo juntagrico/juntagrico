@@ -1016,6 +1016,30 @@ msgstr "COOKIE_CONSENT"
 msgid "The text, confirm text, link text and url of the cookie consent"
 msgstr "Der Text, Bestätigungstext, Linktext und die URL der Cookie-Einwilligung"
 
+#: ../../reference/settings.rst:923 99414fccbd224aa39b5bb5eccfaf9c5b
+msgid "Security"
+msgstr "Sicherheit"
+
+#: ../../reference/settings.rst:929 32e78d36f91049d88fdb8af45a84920e
+msgid "UNLOCK_MAILTEMPLATES"
+msgstr "UNLOCK_MAILTEMPLATES"
+
+#: ../../reference/settings.rst:931 0fdd66dcea9d4b53b1261083a32c06e5
+msgid "By default, mail templates are locked in the admin interface to prevent potential security issues with code injection. Set this to ``True`` to allow adding new templates and editing existing ones."
+msgstr "Standardweise sind E-Mail-Vorlagen in der Admin-Oberfläche gesperrt, um potenzielle Sicherheitsprobleme durch Code-Injection zu verhindern. Setze dies auf ``True``, um das Hinzufügen neuer Vorlagen und das Bearbeiten bestehender Vorlagen zu erlauben."
+
+#: ../../reference/settings.rst:935 974c455d5a0a4e20aa32eed9f79d6e70
+msgid "Type: Boolean"
+msgstr "Typ: Boolean"
+
+#: ../../reference/settings.rst:945 fb6b7913ef314c59863ea911a8cf3773
+msgid "ALWAYS_ALLOWED_URLNAMES"
+msgstr "ALWAYS_ALLOWED_URLNAMES"
+
+#: ../../reference/settings.rst:947 44ff37281e0c450abbfd844f90337392
+msgid "List of URL name patterns that should always be accessible, even when a user is forced to change their password (see :ref:`Password Validation <intro-security-password>`). Patterns may contain namespaces and wildcards, e.g. ``'home'``, ``'profile-*'``, ``'oauth:*'``."
+msgstr "Liste von URL-Namenmustern, die immer zugänglich sein sollen, auch wenn ein Benutzer gezwungen ist, sein Passwort zu ändern (siehe :ref:`Passwortvalidierung <intro-security-password>`). Muster können Namensräume und Platzhalter enthalten, z.B. ``'home'``, ``'profile-*'``, ``'oauth:*'``."
+
 #: ../../reference/settings.rst:1072 c66ff022c6fa429b83b5bb979f7f7412
 msgid "Demo Settings"
 msgstr "Demo-Einstellungen"

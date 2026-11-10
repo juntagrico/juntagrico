@@ -12,6 +12,7 @@ from juntagrico.admins.job_admin import JobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
 from juntagrico.admins.location_admin import LocationAdmin
+from juntagrico.admins.mail_template_admin import MailTemplateAdmin
 from juntagrico.admins.member_admin import (
     MemberAdmin,
     MemberAdminWithShares,
@@ -56,7 +57,7 @@ admin.site.register(Member, MemberAdminWithShares if Config.enable_shares() else
 admin.site.register(Invitee, InviteeAdmin)
 admin.site.register(SubscriptionMembership, BaseAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
-admin.site.register(MailTemplate)
+admin.site.register(MailTemplate, MailTemplateAdmin)
 admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra, BaseAdmin)
 admin.site.register(JobExtraType, BaseAdmin)

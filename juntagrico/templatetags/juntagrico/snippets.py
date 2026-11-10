@@ -18,9 +18,12 @@ register = template.Library()
 
 @register.inclusion_tag('snippets/impersonation_link.html')
 def impersonate_start(request, member):
+    if not Config.allow_impersonate(request):
+        return {'can_impersonate': False}
+
     if not hasattr(request, 'users_impersonable'):
         request.users_impersonable = users_impersonable(request)
-    
+
     user = member.user
     return {
         'can_impersonate': user in request.users_impersonable,
