@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.test import override_settings, RequestFactory
 from django.urls import reverse, resolve
 
-from juntagrico.defaults import allow_group, user_queryset
+from juntagrico.defaults import allow_group, user_queryset, password_validators
 from juntagrico.middleware import view_match, RequirePasswordChangeMiddleware
 from juntagrico.util.redirect import safe_redirect
 from . import JuntagricoTestCaseWithShares
@@ -13,14 +13,7 @@ from . import JuntagricoTestCaseWithShares
 
 fake_response = type('Response', (), {'status_code': 200})()
 
-DOC_DEFAULT_VALIDATORS = [
-    {'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-     'OPTIONS': {'min_length': 12}},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
+DOC_DEFAULT_VALIDATORS = password_validators
 DOC_EXAMPLE_VALIDATORS = [
     {
         'NAME': 'juntagrico.password_validation.PrivilegedOnlyPasswordValidator',
@@ -35,13 +28,7 @@ DOC_EXAMPLE_VALIDATORS = [
     {
         'NAME': 'juntagrico.password_validation.GroupOnlyPasswordValidator',
         'OPTIONS': {
-            'validators': [
-                {'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator'},
-                {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-                 'OPTIONS': {'min_length': 12}},
-                {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-                {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-            ],
+            'validators': password_validators,
             'group_name': 'my_group',
         }
     },
@@ -107,14 +94,8 @@ class PasswordValidationTests(JuntagricoTestCaseWithShares):
         store.load()
         store['must_change_password'] = True
         store.save()
-        from juntagrico.views.authentication import JuntagricoPasswordChangeView
-        request = RequestFactory().get('/my/password')
-        request.user = self.member.user
-        request.session = store
-        view = JuntagricoPasswordChangeView()
-        view.setup(request)
-        context = view.get_context_data()
-        self.assertTrue(context.get('must_change_password', False))
+        response = self.client.get(reverse('password'))
+        self.assertContains(response, 'Setze ein neues sicheres Passwort.')
 
     def test_password_changed_view(self):
         """The password_changed view renders the success page (views/__init__.py line 270)."""
@@ -163,9 +144,10 @@ class MiddlewareTests(JuntagricoTestCaseWithShares):
         self.assertFalse(view_match(None, {'home', 'password'}))
 
     def test_view_match_with_wildcard(self):
-        """view_match should support wildcard patterns."""
-        match = resolve(reverse('home'))
-        self.assertTrue(view_match(match, {'home'}))
+        """view_match should support wildcard patterns (fnmatch)."""
+        match = resolve(reverse('manage-shares'))
+        self.assertTrue(view_match(match, {'manage*'}))
+        self.assertFalse(view_match(match, {'manage'}))
 
     @override_settings(ALWAYS_ALLOWED_URLNAMES=['home'])
     def test_middleware_with_custom_allowed_names(self):
@@ -225,6 +207,7 @@ class RedirectSafetyTests(JuntagricoTestCaseWithShares):
         self.assertIsNone(safe_redirect(None))
 
 
+# don't install impersonate
 NO_INSTALLED_APPS = override_settings(INSTALLED_APPS=[
     'django.contrib.auth',
     'django.contrib.contenttypes',
