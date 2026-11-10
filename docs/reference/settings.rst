@@ -919,6 +919,44 @@ DISABLE_NOTIFICATIONS
 
     []
 
+.. _reference-settings-security:
+
+Security
+--------
+
+.. _reference-settings-unlock-mailtemplates:
+
+UNLOCK_MAILTEMPLATES
+^^^^^^^^^^^^^^^^^^^^
+  By default, mail templates are locked in the admin interface to prevent
+  potential security issues with code injection. Set this to ``True`` to
+  allow adding new templates and editing existing ones.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+.. _reference-settings-always-allowed-urlnames:
+
+ALWAYS_ALLOWED_URLNAMES
+^^^^^^^^^^^^^^^^^^^^^^^
+  List of URL name patterns that should always be accessible, even when a user
+  is forced to change their password (see :ref:`Password Validation
+  <intro-security-password>`). Patterns may contain namespaces and wildcards,
+  e.g. ``'home'``, ``'profile-*'``, ``'oauth:*'``.
+
+  Type: List of strings
+
+  default value
+
+  .. code-block:: python
+
+    []
+
 GDPR
 ----
 
