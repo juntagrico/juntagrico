@@ -110,7 +110,7 @@ jobs:
         coverage run -a -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
         coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
       if: ${{ matrix.python-version  == '3.11' }}
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: ${{ matrix.python-version  == '3.11' }}
       with:
         name: coverage-${{ matrix.exclude-test }}
