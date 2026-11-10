@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -4754,6 +4753,10 @@ msgid "%(v_co_member)s bearbeiten"
 msgstr "modifier %(v_co_member)s"
 
 #: juntagrico/templates/juntagrico/subscription/create/add_member.html:47
+#, python-format
+msgid "Weitere %(v_co_member)s hinzufügen"
+msgstr "ajouter d'autres %(v_co_member)s"
+
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:80
 #, python-format
 msgid "Weitere %(v_co_member_pl)s hinzufügen"
@@ -4900,6 +4903,10 @@ msgid "%(v_subscription)s zusammenstellen"
 msgstr "Composer %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:23
+#, python-format
+msgid "Wähle deine %(v_subscription)s-Bestandteile"
+msgstr "Choisis tes composants %(v_subscription)s"
+
 #: juntagrico/templates/juntagrico/subscription/create/summary.html:73
 msgid "Telefon"
 msgstr "Téléphone"
