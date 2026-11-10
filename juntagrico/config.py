@@ -245,6 +245,10 @@ class Config:
         }
     )
 
+    # Security Settings
+    unlock_mailtemplates = _get_setting('UNLOCK_MAILTEMPLATES', False)
+    always_allowed_url_names = _get_setting('ALWAYS_ALLOWED_URLNAMES', [])
+
     @classmethod
     def using_richtext(cls):
         try:
@@ -254,6 +258,13 @@ class Config:
             )
         except (AttributeError, KeyError):
             return False
+
+    @classmethod
+    def allow_impersonate(cls, request):
+        if 'impersonate' in settings.INSTALLED_APPS:
+            from impersonate.helpers import check_allow_impersonate
+            return check_allow_impersonate(request)
+        return False
 
     @classmethod
     def notifications(cls, name):

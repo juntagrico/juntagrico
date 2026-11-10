@@ -26,6 +26,26 @@ RICHTEXTFIELD_DEFAULT_MAILER_PROFILE = {
 }
 
 
+def sanitize_html(value):
+    import nh3
+    return nh3.clean(
+        value or "",
+        tags={
+            "p", "div", "br",
+            "strong", "b", "em", "i",
+            "ul", "ol", "li",
+            "blockquote",
+            "a",
+        },
+        attributes={
+            "a": {"href", "title", "target"},
+            "*": {"style"},
+        },
+        filter_style_properties={"text-align", "padding-left"},
+        url_schemes={"http", "https", "mailto"},
+    )
+
+
 def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, mailer: dict = None, **profiles):
     """
     :param language: The `LANGUAGE_CODE` specified in django settings
@@ -48,6 +68,7 @@ def richtextfield_config(language=None, use_in_admin=False, admin: dict = None, 
     # use richtext in admin if enabled and specify profile
     if use_in_admin or admin is not None:
         conf['profiles']['juntagrico.admin'] = admin or {}
+    conf['sanitizer_profiles'] = {'juntagrico.admin': sanitize_html}
     return conf
 
 
@@ -58,3 +79,78 @@ DEPOT_LISTS = {
     'depot_overview': 'exports/depot_overview.html',
     'amount_overview': 'exports/amount_overview.html',
 }
+
+
+# Impersonation helper
+
+def allow_group(group_name):
+    """
+    Example usage in settings.py:
+    ```
+    from juntagrico import defaults
+
+    allow_impersonate = defaults.allow_group('impersonators')
+
+    IMPERSONATE = {
+        'CUSTOM_ALLOW': 'myapp.settings.allow_impersonate'
+    }
+    ```
+    """
+    def check(request):
+        return request.user.groups.filter(name=group_name).exists()
+    return check
+
+
+# CUSTOM_USER_QUERYSET presets
+# Example usage in settings.py:
+# ```
+# IMPERSONATE = {
+#     'CUSTOM_USER_QUERYSET': 'juntagrico.defaults.unprivileged_only'
+# }
+# ```
+def user_queryset(unless_superuser=True, **filters):
+    def check(request):
+        from django.contrib.auth.models import User
+        if unless_superuser and request.user.is_superuser:
+            return User.objects.all()
+        return User.objects.filter(**filters)
+    return check
+
+
+nonstaff_only = user_queryset(is_superuser=False, is_staff=False)
+
+nonpermitted_only = user_queryset(
+    is_superuser=False,
+    is_staff=False,
+    groups__isnull=True,
+    user_permissions__isnull=True,
+)
+
+unprivileged_only = user_queryset(
+    is_superuser=False,
+    is_staff=False,
+    groups__isnull=True,
+    user_permissions__isnull=True,
+    member__coordinated_areas__isnull=True,
+    member__coordinated_depots__isnull=True,
+)
+
+
+# Password validation
+# recommended default validators
+
+password_validators = [
+    {
+        'NAME': 'juntagrico.password_validation.AccountAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 12},
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]

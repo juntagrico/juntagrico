@@ -12,7 +12,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job, JobType
 from juntagrico.entity.member import Member
-from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
+from juntagrico.forms import MemberProfileForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
@@ -266,22 +266,8 @@ def info_unpaid_shares(request):
 
 
 @login_required
-def change_password(request):
-    success = False
-    if request.method == 'POST':
-        form = PasswordForm(request.POST)
-        if form.is_valid():
-            request.user.set_password(form.cleaned_data['password'])
-            request.user.save()
-            success = True
-    else:
-        form = PasswordForm()
-
-    renderdict = {
-        'form': form,
-        'success': success
-    }
-    return render(request, 'password.html', renderdict)
+def password_changed(request):
+    return render(request, 'password.html', {'success': True})
 
 
 def logout_view(request):

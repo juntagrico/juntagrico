@@ -38,3 +38,123 @@ msgstr "Aktiviere insbesondere die Security- und die Clickjacking-Middleware wie
 #: ../../intro/deployment.rst:28
 msgid "``Strict-Transport-Security`` (HSTS) can be set either with ``SECURE_HSTS_SECONDS`` or in the web server in front of django. If django runs behind a proxy, ``SECURE_SSL_REDIRECT`` requires ``SECURE_PROXY_SSL_HEADER`` and a proxy that sets this header, otherwise the redirect loops. Refer to the `django deployment checklist <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_ for details."
 msgstr "``Strict-Transport-Security`` (HSTS) kann entweder mit ``SECURE_HSTS_SECONDS`` oder im Webserver vor Django gesetzt werden. Läuft Django hinter einem Proxy, braucht ``SECURE_SSL_REDIRECT`` die Einstellung ``SECURE_PROXY_SSL_HEADER`` und einen Proxy, der diesen Header setzt, sonst entsteht eine Weiterleitungsschleife. Details findest du in der `Deployment-Checkliste von Django <https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/>`_."
+
+#: ../../intro/deployment.rst:39
+msgid "Security Hardening"
+msgstr "Sicherheitsoptimierung"
+
+#: ../../intro/deployment.rst:42
+msgid "Juntagrico provides several security hardening measures described below."
+msgstr "Juntagrico bietet mehrere Massnahmen zur Sicherheitsoptimierung, die unten beschrieben sind."
+
+#: ../../intro/deployment.rst:46
+msgid "Password Validation"
+msgstr "Passwortvalidierung"
+
+#: ../../intro/deployment.rst:49
+msgid "Juntagrico now supports role-based password validation. When a user logs in with a password that does not meet the configured requirements, a middleware will restrict their session to the password change page until they set a stronger password."
+msgstr "Juntagrico unterstützt jetzt rollenbasierte Passwortvalidierung. Wenn sich ein Benutzer mit einem Passwort anmeldet, das die konfigurierten Anforderungen nicht erfüllt, schränkt eine Middleware die Sitzung auf die Passwortänderungsseite ein, bis ein stärkeres Passwort gesetzt wird."
+
+#: ../../intro/deployment.rst:54
+msgid "To enable, add the middleware and configure password validators in your ``settings.py``:"
+msgstr "Zum Aktivieren die Middleware hinzufügen und Passwortvalidatoren in ``settings.py`` konfigurieren:"
+
+#: ../../intro/deployment.rst:69
+msgid "The recommended default validators (from ``juntagrico.defaults.password_validators``) enforce a minimum length of 12 characters, check against common passwords, and prevent passwords that resemble the user's personal information (name, email, address, phone number, birthday)."
+msgstr "Die empfohlenen Standardvalidatoren (aus ``juntagrico.defaults.password_validators``) erzwingen eine Mindestlänge von 12 Zeichen, prüfen gegen gängige Passwörter und verhindern Passwörter, die den persönlichen Informationen des Benutzers ähneln (Name, E-Mail, Adresse, Telefonnummer, Geburtstag)."
+
+#: ../../intro/deployment.rst:74
+msgid "**Role-based validators.** Juntagrico provides specialized validators that apply strict rules only to users with elevated privileges:"
+msgstr "**Rollenbasierte Validatoren.** Juntagrico bietet spezialisierte Validatoren, die strenge Regeln nur für Benutzer mit erweiterten Berechtigungen anwenden:"
+
+#: ../../intro/deployment.rst:77
+msgid "``StaffOnlyPasswordValidator`` — applies the wrapped validators to staff and superusers only."
+msgstr "``StaffOnlyPasswordValidator`` — wendet die eingebetteten Validatoren nur auf Staff- und Super-Benutzer an."
+
+#: ../../intro/deployment.rst:79
+msgid "``PermittedOnlyPasswordValidator`` — extends the above to users who have any permissions or group memberships."
+msgstr "``PermittedOnlyPasswordValidator`` — erweitert das oben Gesagte auf Benutzer, die irgendwelche Berechtigungen oder Gruppenmitgliedschaften haben."
+
+#: ../../intro/deployment.rst:81
+msgid "``PrivilegedOnlyPasswordValidator`` — further extends to users who coordinate activity areas or depots."
+msgstr "``PrivilegedOnlyPasswordValidator`` — erweitert weiter auf Benutzer, die Aktivitätsbereiche oder Depots koordinieren."
+
+#: ../../intro/deployment.rst:83
+msgid "``GroupOnlyPasswordValidator`` — applies validators only to members of a specific group (default: ``'NeedsStrongPassword'``)."
+msgstr "``GroupOnlyPasswordValidator`` — wendet Validatoren nur auf Mitglieder einer bestimmten Gruppe an (Standard: ``'NeedsStrongPassword'``)."
+
+#: ../../intro/deployment.rst:86
+msgid "Example — require strong passwords for staff and coordinators:"
+msgstr "Beispiel — starke Passwörter für Staff und Koordinatoren erforderlich machen:"
+
+#: ../../intro/deployment.rst:109
+msgid "The ``RequirePasswordChangeMiddleware`` allows certain URLs to remain accessible even during the forced password change flow. By default these are the password page, logout, JS i18n, and impersonate-stop. You can extend this list with the :ref:`ALWAYS_ALLOWED_URLNAMES <reference-settings-always-allowed-urlnames>` setting."
+msgstr "Die ``RequirePasswordChangeMiddleware`` erlaubt bestimmten URLs, auch während des erzwungenen Passwortänderungs-Flows zugänglich zu bleiben. Standardweise sind dies die Passwortseite, Logout, JS i18n und impersonate-stop. Diese Liste kann mit der Einstellung :ref:`ALWAYS_ALLOWED_URLNAMES <reference-settings-always-allowed-urlnames>` erweitert werden."
+
+#: ../../intro/deployment.rst:115
+msgid "Rich Text Sanitization"
+msgstr "Rich-Text-Bereinigung"
+
+#: ../../intro/deployment.rst:118
+msgid "When the rich text editor is enabled in the admin interface, all HTML content saved through it is automatically sanitized using the ``nh3`` library. Only a whitelist of safe tags (``<p>``, ``<strong>``, ``<em>``, ``<a>``, lists, etc.) and attributes (``href``, ``title``, ``target`` on links; ``style`` everywhere) are preserved. Dangerous constructs like ``<script>`` tags and event handlers (e.g. ``onclick``) are stripped."
+msgstr "Wenn der Rich-Text-Editor in der Admin-Oberfläche aktiviert ist, wird der gesamte über ihn gespeicherte HTML-Inhalt automatisch mit der ``nh3``-Bibliothek gesäubert. Nur eine Whitelist von sicheren Tags (``<p>``, ``<strong>``, ``<em>``, ``<a>``, Listen usw.) und Attributen (``href``, ``title``, ``target`` bei Links; ``style`` überall) wird beibehalten. Gefährliche Konstrukte wie ``<script>``-Tags und Event-Handler (z.B. ``onclick``) werden entfernt."
+
+#: ../../intro/deployment.rst:125
+msgid "The sanitizer is configured via the ``sanitizer_profiles`` key in ``DJRICHTEXTFIELD_CONFIG``, which is set automatically when you use ``defaults.richtextfield_config()``."
+msgstr "Der Sanitizer wird über den Key ``sanitizer_profiles`` in ``DJRICHTEXTFIELD_CONFIG`` konfiguriert, der automatisch gesetzt wird, wenn ``defaults.richtextfield_config()`` verwendet wird."
+
+#: ../../intro/deployment.rst:129
+msgid "**Cleaning existing data.** If you already have HTML content in your database that was entered before sanitization was enabled, run the :ref:`sanitize_richtext <reference-commands-sanitize-richtext>` management command to clean it:"
+msgstr "**Bestehende Daten säubern.** Wenn du bereits HTML-Inhalt in deiner Datenbank hast, der eingegeben wurde, bevor die Sanitisierung aktiviert wurde, führe den Verwaltungs-Befehl :ref:`sanitize_richtext <reference-commands-sanitize-richtext>` aus, um ihn zu säubern:"
+
+#: ../../intro/deployment.rst:139
+msgid "Open Redirect Protection"
+msgstr "Schutz vor Open-Redirects"
+
+#: ../../intro/deployment.rst:142
+msgid "All redirect URLs — including the ``next`` parameter in the Django admin and the referer-based return-after-action redirects — are now validated. Only URLs that resolve to a known route in the application are followed; external or invalid URLs are safely ignored, and the user is redirected to the home page instead."
+msgstr "Alle Weiterleitungs-URLs — einschließlich des ``next``-Parameters im Django-Admin und der auf dem Referer basierenden Weiterleitungen nach Aktionen — werden jetzt validiert. Nur URLs, die zu einer bekannten Route in der Anwendung auflösen, werden befolgt; externe oder ungültige URLs werden sicher ignoriert und der Benutzer wird stattdessen zur Startseite weitergeleitet."
+
+#: ../../intro/deployment.rst:148
+msgid "Optional Impersonation"
+msgstr "Optionale Impersonalisierung"
+
+#: ../../intro/deployment.rst:151
+msgid "The ``impersonate`` third-party app is now optional. If it is not listed in ``INSTALLED_APPS``, the impersonation-related UI elements are simply hidden, and the application runs without errors."
+msgstr "Die Drittanbieter-App ``impersonate`` ist jetzt optional. Wenn sie nicht in ``INSTALLED_APPS`` aufgeführt ist, werden die UI-Elemente für die Impersonalisierung einfach ausgeblendet und die Anwendung läuft ohne Fehler."
+
+#: ../../intro/deployment.rst:155
+msgid "If you do use impersonation, you can restrict who may impersonate other users using the helpers in ``juntagrico.defaults``:"
+msgstr "Wenn du die Impersonalisierung verwendest, kannst du einschränken, wer andere Benutzer impersonieren darf, mit den Helfern in ``juntagrico.defaults``:"
+
+#: ../../intro/deployment.rst:165
+msgid "The ``CUSTOM_ALLOW`` value should be a dotted path to a callable, for example ``'juntagrico.defaults.allow_group'`` configured with an `'impersonators'`` group. Similarly, ``CUSTOM_USER_QUERYSET`` should be a string like ``'juntagrico.defaults.unprivileged_only'``."
+msgstr "Der ``CUSTOM_ALLOW``-Wert sollte ein mit Punkten getrennter Pfad zu einem aufrufbaren Objekt sein, zum Beispiel ``'juntagrico.defaults.allow_group'`` konfiguriert mit einer `'impersonators'``-Gruppe. Ebenso sollte ``CUSTOM_USER_QUERYSET`` ein String wie ``'juntagrico.defaults.unprivileged_only'`` sein."
+
+#: ../../intro/deployment.rst:170
+msgid "Available queryset presets:"
+msgstr "Verfügbare Queryset-Präsets:"
+
+#: ../../intro/deployment.rst:172
+msgid "``nonstaff_only`` — all users except staff and superusers."
+msgstr "``nonstaff_only`` — alle Benutzer ausser Staff- und Super-Benutzern."
+
+#: ../../intro/deployment.rst:173
+msgid "``nonpermitted_only`` — users without any permissions or group memberships."
+msgstr "``nonpermitted_only`` — Benutzer ohne Berechtigungen oder Gruppenmitgliedschaften."
+
+#: ../../intro/deployment.rst:174
+msgid "``unprivileged_only`` — users without permissions, groups, or coordination roles (activity areas or depots)."
+msgstr "``unprivileged_only`` — Benutzer ohne Berechtigungen, Gruppen oder Koordinationsrollen (Aktivitätsbereiche oder Depots)."
+
+#: ../../intro/deployment.rst:177
+msgid "For maximum security, you may also limit impersonation to superusers only:"
+msgstr "Für maximale Sicherheit kannst du die Impersonalisierung auch auf Super-Benutzer beschränken:"
+
+#: ../../intro/deployment.rst:185
+msgid "Mail Template Locking"
+msgstr "Sperre der E-Mail-Vorlagen"
+
+#: ../../intro/deployment.rst:188
+msgid "By default, mail templates are read-only in the admin interface to prevent unauthorized modification of email content. Set :ref:`UNLOCK_MAILTEMPLATES <reference-settings-unlock-mailtemplates>` to ``True`` in your settings to re-enable editing."
+msgstr "Standardweise sind E-Mail-Vorlagen in der Admin-Oberfläche schreibgeschützt, um unbefugte Änderungen am E-Mail-Inhalt zu verhindern. Setze :ref:`UNLOCK_MAILTEMPLATES <reference-settings-unlock-mailtemplates>` auf ``True`` in deinen Einstellungen, um das Bearbeiten wieder zu ermöglichen."
