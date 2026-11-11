@@ -93,10 +93,13 @@
                                         {% blocktrans asvar confirm_text trimmed with v_this_share_acc=vocabulary.this_share_acc %}
                                             Möchtest du {{ v_this_share_acc }} verbindlich zum {{ next_membership_end_date }} kündigen?
                                         {% endblocktrans%}
-                                        <a href="{% url 'share-cancel' share.id %}" class="btn btn-outline-danger"
-                                           onclick="return confirm('{{ confirm_text }}')">
-                                            {% trans "kündigen" %}
-                                        </a>
+                                        <form action="{% url 'share-cancel' share.id %}" method="post"
+                                              onsubmit="return confirm('{{ confirm_text }}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                {% trans "kündigen" %}
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </td>
                             </tr>

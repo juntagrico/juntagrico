@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
@@ -126,6 +127,7 @@ def show_area(request, area_id, form_class=AreaDescriptionForm):
 
 
 @login_required
+@require_POST
 def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
@@ -137,6 +139,7 @@ def area_join(request, area_id):
 
 
 @login_required
+@require_POST
 def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member

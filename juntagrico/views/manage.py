@@ -419,6 +419,7 @@ class ShareCanceledView(ShareView):
     queryset = Share.objects.canceled().select_related('member__user').annotate_backpayable
 
 
+@require_POST
 @permission_required('juntagrico.change_share')
 @using_change_date
 def share_payout(request, change_date, share_id=None):
