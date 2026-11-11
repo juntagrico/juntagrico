@@ -49,7 +49,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertRedirects(response, reverse(redirect), fetch_redirect_response=False)
 
     def addSubToSummary(self, with_co_member=False):
-        sub_types_id = SubscriptionType.objects.values_list('id', flat=True)
+        sub_types_id = SubscriptionType.objects.normal().values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-subscription'),
             {
