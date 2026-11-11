@@ -7,6 +7,22 @@ on:
     branches: [ main, 'releases/**' ]
 
 jobs:
+  lint:
+    name: Ruff lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Ruff check
+        uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6 # v3
+        with:
+          args: check --preview
+
   check-dependencies:
     name: Dependency Check
     runs-on: ubuntu-latest
@@ -28,8 +44,8 @@ jobs:
       - name: Run deptry
         run: deptry . --github-output
 
-  tests:
-    name: Tests (${{ matrix.python-version }}, ${{ matrix.database }})
+  tests-postgres:
+    name: Tests (${{ matrix.python-version }}, postgres)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,14 +56,11 @@ jobs:
       COVERAGE_FILE: coverage${{ matrix.exclude-test }}
     strategy:
       matrix:
-        database: ['postgres']
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         exclude-test: ['']
         include:
           - python-version: '3.11'
             exclude-test: shares
-          - python-version: '3.14'
-            database: mysql
 
     services:
       postgres:
@@ -63,7 +76,52 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        if: ${{ matrix.database == 'postgres' }}
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: install dependencies
+      run: |
+        pip install --upgrade -r requirements.txt
+        pip install psycopg
+    - name: make migrations
+      run: python -m django makemigrations --noinput
+    - name: run tests
+      run: |
+        python -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
+        python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
+        python -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
+      if: ${{ matrix.python-version  != '3.11' }}
+    - name: run tests with coverage
+      run: |
+        coverage run -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
+        coverage run -a -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
+        coverage run -a -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
+        coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
+      if: ${{ matrix.python-version  == '3.11' }}
+    - uses: actions/upload-artifact@v7
+      if: ${{ matrix.python-version  == '3.11' }}
+      with:
+        name: coverage-${{ matrix.exclude-test }}
+        path: coverage-${{ matrix.exclude-test }}.lcov
+
+  tests-mysql:
+    name: Tests (3.14, mysql)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DJANGO_SETTINGS_MODULE: settings.dev
+      PYTHONPATH: .
+      EXCLUDE_TEST: ''
+    strategy:
+      matrix:
+        python-version: ['3.14']
+
+    services:
       mysql:
         image: mysql:latest
         env:
@@ -76,7 +134,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        if: ${{ matrix.database == 'mysql' }}
 
     steps:
     - uses: actions/checkout@v7
@@ -87,45 +144,22 @@ jobs:
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements.txt
-        pip install psycopg mysqlclient
-    - name: ruff
-      run: |
-        ruff check --preview juntagrico
+        pip install mysqlclient
     - name: make migrations
       run: python -m django makemigrations --noinput
-    - name: run tests on postgres
-      run: |
-        python -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
-        python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
-        python -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
-      if: ${{ matrix.database == 'postgres' && matrix.python-version  != '3.11' }}
-    - name: run tests on mysql
+    - name: run tests
       run: |
         python -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
       env:
         GITHUB_MYSQL: 1
-      if: ${{ matrix.database == 'mysql' }}
-    - name: run tests with coverage on postgres
-      run: |
-        coverage run -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
-        coverage run -a -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
-        coverage run -a -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
-        coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
-      if: ${{ matrix.database == 'postgres' && matrix.python-version  == '3.11' }}
-    - uses: actions/upload-artifact@v7
-      if: ${{ matrix.database == 'postgres' && matrix.python-version  == '3.11' }}
-      with:
-        name: coverage-${{ matrix.exclude-test }}
-        path: coverage-${{ matrix.exclude-test }}.lcov
 
   coverage:
     name: Coverage Report
-    needs: tests
+    needs: tests-postgres
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
