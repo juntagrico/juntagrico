@@ -32,19 +32,22 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.2.0.db',
+        'NAME': 'dev.2.1.db',
     }
 }
 
 ROOT_URLCONF = 'urls.minimal'
 
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'juntagrico.middleware.RequirePasswordChangeMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
 ]
 
@@ -74,7 +77,6 @@ EMAIL_BACKEND = 'juntagrico.backends.email.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'juntagrico.util.auth.AuthenticateWithEmail',
-    'django.contrib.auth.backends.ModelBackend'
 )
 
 # Sites Settings

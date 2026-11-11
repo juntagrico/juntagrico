@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -26,7 +26,7 @@ jobs:
           pip install deptry
 
       - name: Run deptry
-        run: deptry . --github-output
+        run: deptry . --extend-exclude ".*/debug.py" --github-output
 
   tests:
     name: Tests
@@ -77,34 +77,40 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements.txt
-        pip install psycopg2 mysqlclient
+        pip install psycopg mysqlclient
     - name: ruff
       run: |
         ruff check --preview juntagrico
+    - name: make migrations
+      run: python -m django makemigrations --noinput
     - name: run tests on mysql
       run: |
-        python -m django makemigrations --noinput
         python -m manage test juntagrico.tests --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico_legacy.tests --settings="settings.legacy"
       env:
         GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
-        python -m django makemigrations --noinput
+        python -m manage test juntagrico.tests --exclude-tag=$EXCLUDE_TEST
+        python -m manage test juntagrico_legacy.tests --settings="settings.legacy"
+        python -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
+      if: ${{ matrix.python-version  != '3.11' }}
+    - name: run tests with coverage on postgres
+      run: |
         coverage run -m manage test juntagrico.tests --exclude-tag=$EXCLUDE_TEST
         coverage run -a -m manage test juntagrico_legacy.tests --settings="settings.legacy"
         coverage run -a -m manage test juntagrico.tests.test_deploy --settings="settings.deployment"
-    - run: coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
+        coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
       if: ${{ matrix.python-version  == '3.11' }}
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       if: ${{ matrix.python-version  == '3.11' }}
       with:
         name: coverage-${{ matrix.exclude-test }}
@@ -118,8 +124,8 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v6
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           path: coverage
           merge-multiple: true

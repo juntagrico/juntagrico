@@ -1,0 +1,91 @@
+{% load i18n %}
+{% load juntagrico.config %}
+<div class="card shadow-sm mt-4">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="my-1"><i class="bi bi-person mr-2"></i>{% vocabulary 'membership' %}</h5>
+        <div>
+            {% with membership=memberships.first %}
+                {% if not membership %}
+                    <span class="badge badge-danger mt-1">
+                        {{ vocabulary.not_a_member_type }}
+                    </span>
+                {% elif not membership.active %}
+                    {% if membership.deactivation_date %}
+                        <span class="badge badge-secondary mt-1">
+                            {% trans "ehemals" %}
+                        </span>
+                    {% elif membership.activation_date %}
+                        <span class="badge badge-warning mt-1">
+                            {% trans "bevorstehend" %}
+                        </span>
+                    {% else %}
+                        <span class="badge badge-warning mt-1">
+                            {% trans "beantragt" %}
+                        </span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge badge-success mt-1">
+                        {% trans "aktiv" %}
+                    </span>
+                    {% if membership.canceled %}
+                        <span class="badge badge-danger mt-1">
+                            {% trans "gekündigt" %}
+                        </span>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    {% if memberships %}
+        <ul class="list-group list-group-flush">
+            {% for membership in memberships %}
+                <li class="list-group-item">
+                    <div>
+                        {% if membership.number %}
+                            <span class="membership-number">#{{ membership.number }}:</span>
+                        {% endif %}
+
+                        {% if membership.deactivation_date %}
+                            {{ membership.activation_date|date:"SHORT_DATE_FORMAT" }} -
+                            {{ membership.deactivation_date|date:"SHORT_DATE_FORMAT" }}
+                        {% elif membership.activation_date %}
+                            {% if membership.active %}
+                                {% blocktrans with ad=membership.activation_date %}Seit {{ ad }}{% endblocktrans %}
+                            {% else %}
+                                {% blocktrans with ad=membership.activation_date %}Ab {{ ad }}{% endblocktrans %}
+                            {% endif %}
+                        {% else %}
+                            <span>
+                            {% blocktrans with cd=membership.creation_date %}Beantragt am {{ cd }}{% endblocktrans %}
+                        </span>
+                        {% endif %}
+
+                        {% if perms.juntagrico.change_membership %}
+                            <a href="{% url 'admin:juntagrico_membership_change' membership.id %}{% querystring next=request.path %}"
+                               title="{% trans 'Datenverwaltung öffnen' %}">
+                                <i class="bi bi-wrench ml-2"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if membership.notes %}
+                            <div class="alert alert-light">
+                                <i class="bi bi-sticky mr-2"></i>
+                                {{ membership.notes|linebreaksbr }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if membership and membership.waiting and not membership.activation_date %}
+                        <div class="mb-2">
+                            {% include "juntagrico/manage/membership/snippets/button_activate.html" %}
+                        </div>
+                    {% elif membership.active and membership.canceled and not membership.deactivation_date %}
+                        <div class="mb-2">
+                            {% include "juntagrico/manage/membership/snippets/button_deactivate.html" %}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

@@ -1,4 +1,7 @@
+import hashlib
+
 from django.conf import settings
+from django.contrib.auth import get_user
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.test import override_settings
@@ -13,7 +16,10 @@ class ProfileTests(JuntagricoTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.member = cls.create_member('member_with_shares@email.org')
+        cls.member = cls.create_member('member_with_shares@email.org', True)
+        cls.member.number = 1
+        cls.member.save()
+        cls.membership = cls.member.memberships.first()
         cls.default_member = cls.member
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
@@ -26,15 +32,27 @@ class ProfileTests(JuntagricoTestCase):
         cls.admin.user.user_permissions.add(
             Permission.objects.get(codename='notified_on_member_cancellation')
         )
-        cls.cancellation_data = {
-            'message': 'my last message',
-            'iban': 'CH61 0900 0000 1900 0012 6',
-            'addr_street': 'addr_street',
-            'addr_zipcode': ' 1234',
-            'addr_location': 'addr_location'
-        }
 
-    def testProfile(self):
+    @override_settings(MEMBERSHIP={'enable': False})
+    def testProfileNoMemberships(self):
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithRequestedMembership(self):
+        self.membership.activation_date = None
+        self.membership.save()
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithActiveMembership(self):
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithCanceledMembership(self):
+        self.membership.cancellation_date = '2026-03-12'
+        self.membership.save()
+        self.assertGet(reverse('profile'))
+
+    def testProfileWithoutMembership(self):
+        self.membership.deactivation_date = self.membership.cancellation_date = '2026-03-12'
+        self.membership.save()
         self.assertGet(reverse('profile'))
 
     def testProfilePost(self):
@@ -45,108 +63,42 @@ class ProfileTests(JuntagricoTestCase):
                                              'addr_location': 'addr_location',
                                              'phone': 'phone'})
 
-    def testCancelMembership(self):
-        self.assertGet(reverse('cancel-membership'))
-
-    def testCancelMembershipPost(self):
-        self.assertPost(reverse('cancel-membership'), code=302, data=self.cancellation_data)
-        self.member.refresh_from_db()
-        self.assertTrue(self.member.canceled)
-        self.assertEqual(self.member.usable_shares_count, 0)
-        # pay back the share
-        if settings.ENABLE_SHARES:
-            self.paid_share.refresh_from_db()
-            self.paid_share.payback_date = self.paid_share.termination_date
-            self.paid_share.save()
-        # deactivate member
-        self._testDeactivateMembershipSingle(self.member)
-
-    def testCancelMembershipPostWithUnpaidShares(self):
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_with_unpaid_share,
-                        data=self.cancellation_data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(self.cancellation_data['message'] in mail.outbox[0].body,
-                        f'message not found in: {mail.outbox[0].body}')
-        self.member_with_unpaid_share.refresh_from_db()
-        self.assertTrue(self.member_with_unpaid_share.canceled)
-        self.assertEqual(self.member_with_unpaid_share.usable_shares_count, 0)
-        self._testDeactivateMembershipSingle(self.member_with_unpaid_share)
-
-    def testCancelMembershipNonCoopPost(self):
-        data = {
-            'message': 'a personal message',
-        }
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_without_shares, data=data)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.assertTrue(data['message'] in mail.outbox[0].body, f'message not found in: {mail.outbox[0].body}')
-        self.member_without_shares.refresh_from_db()
-        self.assertTrue(self.member_without_shares.inactive)
-        self._testDeactivateMembershipSingle(self.member_without_shares)
-
-    def testCancelMembershipWithCanceledShares(self):
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_with_canceled_share)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.member_with_canceled_share.refresh_from_db()
-        self.assertTrue(self.member_with_canceled_share.canceled)
-        # pay back the share
-        if settings.ENABLE_SHARES:
-            self.canceled_share.refresh_from_db()
-            self.canceled_share.payback_date = self.canceled_share.termination_date
-            self.canceled_share.save()
-        self._testDeactivateMembershipSingle(self.member_with_canceled_share)
-
-    def testCancelMembershipWithCanceledSubscriptions(self):
-        self.set_up_depots()
-        self.set_up_sub_types()
-        sub = self.create_sub_now(self.depot)
-        self.member.join_subscription(sub, True)
-        # don't cancel while subscription is active
-        self.assertPost(reverse('cancel-membership'), code=200, member=self.member, data=self.cancellation_data)
-        self.member.refresh_from_db()
-        self.assertFalse(self.member.canceled)
-        self.assertEqual(len(mail.outbox), 0)
-        # succeed when canceled
-        sub.cancel()
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member, data=self.cancellation_data)
-        self.member.refresh_from_db()
-        self.assertTrue(self.member.canceled)
-        self.assertEqual(len(mail.outbox), 1)  # admin notification
-
-    def _testDeactivateMembershipSingle(self, member):
-        self.assertPost(reverse('manage-member-deactivate-single', args=(member.pk,)), member=self.admin, code=302)
-        member.refresh_from_db()
-        self.assertTrue(member.inactive)
-
-    def testDeactivateMembership(self):
-        # Expected result: members that have no paid shares, can be deactivated.
-        members = {
-            self.member: not settings.ENABLE_SHARES,  # still has canceled shares
-            self.member_without_shares: True,
-            self.member_with_unpaid_share: True,
-            self.member_with_canceled_share: not settings.ENABLE_SHARES
-        }
-        for member in members.keys():
-            member.cancel()
-        self.assertPost(
-            reverse('manage-member-deactivate'),
-            {'member_ids': '_'.join([str(m.pk) for m in members.keys()])},
-            member=self.admin,
-            code=302
-        )
-        for member, result in members.items():
-            member.refresh_from_db()
-            self.assertEqual(member.inactive, result, f'{member} {member.email}')
-
 
 class AuthTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.deactivated_member = cls.create_member('deactivated_member@example.com', deactivation_date='2020-01-01')
+        cls.deactivated_member = cls.create_member(
+            'deactivated_member@example.com',
+            deactivation_date='2020-01-01',
+            confirmed=True,
+        )
 
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))
         self.assertEqual(len(mail.outbox), 1)
+
+    def testLoginWithEmail(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+    def testLoginWithUsername(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.user.username,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
 
     @override_settings(ENFORCE_MAIL_CONFIRMATION=False)
     def testUnconfirmedLogin(self):
@@ -177,10 +129,17 @@ class AuthTests(JuntagricoTestCase):
         self.member.save()
         self.assertEqual(self.member.confirmed, False)
         # test confirmation link
-        response = self.client.get(reverse('confirm', args=['wrong_hash']))
-        self.assertEqual(response.status_code, 200)
-        self.member.refresh_from_db()
-        self.assertEqual(self.member.confirmed, False)
+        token_before_change = Member.objects.get(pk=self.member.pk).get_hash()
+        self.member.email = 'other_email@email.org'
+        self.member.save()
+        # the former unsigned hash can be computed by anyone
+        old_hash = hashlib.sha1((str(self.member.email) + str(self.member.pk)).encode('utf8')).hexdigest()
+        for invalid in ['wrong_hash', old_hash, token_before_change, self.member.get_hash() + 'x']:
+            response = self.client.get(reverse('confirm', args=[invalid]))
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(response.context['error_message'])
+            self.member.refresh_from_db()
+            self.assertEqual(self.member.confirmed, False)
         response = self.client.get(reverse('confirm', args=[self.member.get_hash()]))
         self.assertEqual(response.status_code, 200)
         self.member.refresh_from_db()
@@ -205,5 +164,47 @@ class AuthTests(JuntagricoTestCase):
         self.assertPost(reverse('password_reset'), {'email': 'deactivated_member@example.com'}, code=302)
         self.assertEqual(len(mail.outbox), 0)  # should send no email
 
+    def testDeactivatedUserSessionEnds(self):
+        self.client.force_login(self.member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 200)
+        self.member.user.is_active = False
+        self.member.user.save()
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testDeactivatedMemberSessionEnds(self):
+        self.client.force_login(self.deactivated_member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testInactiveUserLogin(self):
+        self.member.user.is_active = False
+        self.member.user.save()
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 200)
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
+    @override_settings(AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend'])
+    def testInactiveMemberLogin(self):
+        # The AuthenticateWithEmail backend will show a generic error message
+        # because deactivated members are excluded earlier
+        # In case another backend is used, the login form will also fail with a more specific error message
+        response = self.client.post(
+            reverse('login'),
+            {
+                'username': self.deactivated_member.user.username,
+                'password': self.deactivated_member.set_password(),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Dein Konto ist deaktiviert')
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
     def testLogout(self):
-        self.assertGet(reverse('logout'), code=302)
+        self.assertGet(reverse('logout'), code=405)
+        self.assertPost(reverse('logout'), code=302)

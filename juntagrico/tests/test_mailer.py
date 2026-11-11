@@ -6,7 +6,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
-from . import JuntagricoTestCaseWithShares
+from . import JuntagricoTestCaseWithShares, JuntagricoTestCase
+from ..mailer import get_emails_by_permission
 from ..util.string import int_array_decompress
 
 
@@ -297,11 +298,11 @@ class MailerTests(JuntagricoTestCaseWithShares):
         with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'from_email': 'private',
-                'to_list': ['all_subscriptions'],
+                'to_list': ['all_subscriptions', 'all_memberships'],
                 'to_members': [self.member.id],
                 'to_areas': [self.area.id],
                 'to_depots': [self.depot.id],
-                'to_job': [self.job2.id],
+                'to_jobs': [self.job2.id],
                 'copy': 'on',
                 'subject': 'test',
                 'attachments0': fp
@@ -321,6 +322,43 @@ class MailerTests(JuntagricoTestCaseWithShares):
             expected = ['First_name4 Last_name4 <email4@email.org>'] + expected
         self.assertListEqual(sorted(mail.outbox[0].bcc), expected)
         self.assertRedirects(response, reverse('email-sent'))
+
+    def testToAll(self):
+        post_data = {
+            'from_email': 'private',
+            'to_list': ['all'],
+            'subject': 'test',
+        }
+        # member can't send to all
+        self.assertPost(reverse('email-write'), post_data, code=200)
+        # admin can
+        self.assertPost(reverse('email-write'), post_data, code=302, member=self.admin)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            len(mail.outbox[0].bcc),
+            16,
+        )
+
+    def testToJob(self):
+        post_data = {
+            'from_email': 'private',
+            'to_jobs': [self.job2.id],
+            'subject': 'test',
+        }
+        # to depot has some recipients
+        self.assertPost(reverse('email-write'), post_data, code=302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertListEqual(
+            sorted(mail.outbox[0].bcc),
+            [
+                'first_name1 last_name1 <email1@email.org>',
+            ],
+        )
+        mail.outbox = []
+        # job 3 has no participants
+        post_data['to_depots'] = [self.job3.id]
+        self.assertPost(reverse('email-write'), post_data, code=200)
+        self.assertEqual(len(mail.outbox), 0)
 
     def testDepotMailSend(self):
         self.sub3.depot = self.depot2
@@ -414,3 +452,23 @@ class BackendTest(TestCase):
         self.make_email(['john <john@example.com>', 'maria <maria@example.com>']).send()
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].bcc, ['maria <maria@example.com>'])
+
+
+class NotificationTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # load from fixtures
+        cls.load_members()
+    
+    def testEmailByPermission(self):
+        self.assertListEqual(
+            list(get_emails_by_permission('notified_on_member_creation')),
+            ['email1@email.org'],
+        )
+
+    def testInactiveMember(self):
+        # inactive members should not receive notifications
+        self.member.cancel()
+        self.member.deactivate()
+        self.assertFalse(get_emails_by_permission('notified_on_member_creation').exists())
+        self.assertFalse(get_emails_by_permission('depot_list_notification').exists())

@@ -1,0 +1,13 @@
+{% load juntagrico.snippets %}
+
+{{ membership.number|default_if_none:'' }}
+{% if perms.juntagrico.view_membership or perms.juntagrico.change_membership %}
+    <a href="{% url 'admin:juntagrico_membership_change' membership.id %}"
+       {% if css_class %}class="{{ css_class }}"{% endif %}>
+        [{{ membership.id }}]
+    </a>
+{% else %}
+    <span {% if css_class %}class="{{ css_class }}"{% endif %}>
+        [{{ membership.id }}]
+    </span>
+{% endif %}

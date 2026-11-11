@@ -49,6 +49,7 @@ def future(request):
     return render(request, 'future.html', renderdict)
 
 
+@login_required
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404
@@ -58,11 +59,12 @@ def set_change_date(request):
         if date == datetime.date.today():
             raw_date = None
         request.session['changedate'] = raw_date
-    except ValueError:
+    except (TypeError, ValueError):
         return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)
 
 
+@login_required
 def unset_change_date(request):
     request.session['changedate'] = None
     return return_to_previous_location(request)

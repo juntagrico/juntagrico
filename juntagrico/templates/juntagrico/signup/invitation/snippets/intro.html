@@ -1,0 +1,12 @@
+{% extends "../../snippets/intro.html" %}
+{% load juntagrico.snippets %}
+{% load juntagrico.config %}
+{% load i18n %}
+
+
+{% block intro_1 %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    <p class="capfirst">
+        {% blocktrans with inviter=invitee.invited_by %}{{ inviter }} hat dich bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
+    </p>
+{% endblock %}

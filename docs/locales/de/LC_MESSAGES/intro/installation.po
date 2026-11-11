@@ -119,6 +119,10 @@ msgstr "Im Produktionsbetrieb (``DEBUG=False``) müssen die statischen Dateien g
 msgid "Create a superuser with member to login into your instance:"
 msgstr "Erstelle einen Superuser mit Konto, um dich bei deiner Instanz einzuloggen:"
 
+#: ../../intro/installation.rst:111
+msgid "Before going live, read the :ref:`deployment <intro-deployment>` section."
+msgstr "Lies vor dem Go-live den Abschnitt :ref:`Deployment <intro-deployment>`."
+
 #: ../../intro/installation.rst:113 8550b1d1e9f84f74be77a3a6048edaba
 msgid "Create Test Data (optional)"
 msgstr "Testdaten erstellen (optional)"
