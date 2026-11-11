@@ -100,8 +100,8 @@ jobs:
       run: |
         echo "::remove-matcher owner=python::"
         coverage run --parallel-mode -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
-        coverage run --parallel-mode -a -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
-        coverage run --parallel-mode -a -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
+        coverage run --parallel-mode -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
+        coverage run --parallel-mode -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
         coverage combine
         coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
       if: ${{ matrix.python-version  == '3.11' }}
