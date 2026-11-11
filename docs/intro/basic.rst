@@ -74,8 +74,8 @@ Depot list setup
 ----------------
 Initial List Generation
 ^^^^^^^^^^^^^^^^^^^^^^^
-The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`. This command can
-be called manually or using a cronjob.
+The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`.
+This command can be called manually or using a cronjob.
 
 Make sure to set the :ref:`depot list settings <settings-depot>` according to your needs.
 
@@ -109,10 +109,15 @@ Only set the terms you want to override, e.g.:
 
 .. code-block:: python
 
-    VOCABULARY = {
-        'subscription': 'Ernteanteil',
-        'subscription_pl': 'Ernteanteile'
-    }
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.german(
+        subscription=('Ernteanteil', 'Ernteanteile', 'm'),  # m = masculine
+        assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
+        package='Korb',
+    )
+
+See the :ref:`VOCABULARY setting <settings-vocabulary>` for the full list of options.
 
 Change Texts
 ^^^^^^^^^^^^

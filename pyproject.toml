@@ -79,6 +79,11 @@ dev = [
     "psycopg>=3.1.8",
     "ruff>=0.14.11",
 ]
+debug = [
+    "django-debug-toolbar>=8.0.0",
+    "django-debug-toolbar-template-profiler>=2.1.0",
+    "django-admin-shell>=2.0.1",
+]
 
 [tool.deptry.per_rule_ignores]
 DEP002 = ["crispy-bootstrap4", "svglib"]

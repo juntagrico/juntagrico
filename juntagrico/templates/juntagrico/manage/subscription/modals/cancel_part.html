@@ -6,7 +6,15 @@
 {% endblock %}
 
 {% block body %}
-    {% trans "Bist du sicher?" %}
+    <div class="alert alert-secondary">
+        <i class="bi bi-envelope"></i>
+        {% blocktrans trimmed with v_subscription=vocabulary.subscription %}
+            {{ v_subscription }}-Verwalter:in wird bei Kündigung automatisch per E-Mail benachrichtigt.
+        {% endblocktrans %}
+    </div>
+    <p>
+        {% trans "Bist du sicher?" %}
+    </p>
 {% endblock %}
 
 {% block buttons %}

@@ -1,8 +1,8 @@
-from .dev import *  # noqa: F401
+from .dev import *  # noqa: F401 F403
 
 INSTALLED_APPS = [
     'juntagrico_legacy',
-] + INSTALLED_APPS
+] + INSTALLED_APPS  # noqa: F405
 
 
 ROOT_URLCONF = 'urls.legacy'

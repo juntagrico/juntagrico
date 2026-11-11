@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "enable_membership" as c_enable_membership %}
+{% if c_enable_membership %}
+    {% if perms.juntagrico.view_membership or perms.juntagrico.change_membership %}
+        <li class="nav-item">
+            <a class="nav-link{% if 'manage-membership' not in request.resolver_match.url_name %} collapsed{% endif %}" data-toggle="collapse" href="#membershipman">
+                <i class="bi bi-caret-down turn"></i>
+                {{ vocabulary.member_type_pl }}
+            </a>
+            <div class="collapse{% if 'manage-membership' in request.resolver_match.url_name %} show{% endif %}" id="membershipman">
+                <ul class="nav flex-column subadmin-menu">
+                    {% block sub %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-membership-active' %}">
+                                {% blocktrans %}Aktive{% endblocktrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-membership-requested' %}">
+                                {% blocktrans %}Anträge{% endblocktrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-membership-canceled' %}">
+                                 {% blocktrans %}Kündigungen{% endblocktrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-membership-archive' %}">
+                                 {% blocktrans %}Ehemalige{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endblock %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+{% endif %}
