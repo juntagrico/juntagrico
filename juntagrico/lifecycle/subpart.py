@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils.translation import gettext as _
 
 from juntagrico.signals import sub_part_activated, sub_part_deactivated
@@ -6,9 +7,19 @@ from juntagrico.util.lifecycle import handle_activated_deactivated
 
 
 def check_sub_part_consistency(instance):
+    # allow controlled reactivation
+    if (not instance.pk or instance._old['deactivation_date'] is not None) and instance.deactivation_date is None:
+        with transaction.atomic():
+            instance.subscription.deactivation_date = None
+            instance.subscription.save()
+            instance.subscription.subscriptionmembership_set.filter(member=instance.subscription.primary_member).update(
+                leave_date=None
+            )
     # keep part deactivation date consistent with subscription deactivation date
     sub_deactivation_date = instance.subscription.deactivation_date
-    if sub_deactivation_date is not None and instance.deactivation_date is None:
+    if sub_deactivation_date is not None and (
+            instance.deactivation_date is None or instance.deactivation_date > sub_deactivation_date
+        ):
         instance.deactivation_date = sub_deactivation_date
     # check consistency
     instance.check_date_order()

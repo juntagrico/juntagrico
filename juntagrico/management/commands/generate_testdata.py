@@ -8,7 +8,8 @@ from juntagrico.config import Config
 from juntagrico.entity.depot import Depot, DepotCoordinator
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator, Assignment, Job
 from juntagrico.entity.location import Location
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, SubscriptionMembership
+from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
@@ -28,9 +29,11 @@ class Command(BaseCommand):
             **kwargs
         }
         subscription = Subscription.objects.create(**sub_fields)
-        member.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(1))
-        if member.subscription_future:
-            member.leave_subscription(member.subscription_future)
+        yesterday = datetime.date.today() - datetime.timedelta(1)
+        for submem in SubscriptionMembership.objects.filter(member=member, leave_date=None):
+            submem.leave(yesterday)
+            if not submem.subscription.current_members.exists():
+                submem.subscription.delete()
         member.join_subscription(subscription)
         subscription.primary_member = member
         subscription.save()
@@ -73,19 +76,73 @@ class Command(BaseCommand):
         member_2, _ = Member.objects.get_or_create(email=mem2_fields['email'], defaults=mem2_fields)
         member_3, _ = Member.objects.get_or_create(email=mem3_fields['email'], defaults=mem3_fields)
         member_4, _ = Member.objects.get_or_create(email=mem4_fields['email'], defaults=mem4_fields)
-        Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
+        member_5, _ = Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
         member_6, _ = Member.objects.get_or_create(email=mem6_fields['email'], defaults=mem6_fields)
+
+        mem7_fields = {
+            'first_name': 'Andres',
+            'last_name': 'Watson',
+            'email': 'andres.watson@juntagico.juntagrico',
+            'addr_street': 'Monbijoustrasse 31',
+            'addr_zipcode': '3001',
+            'addr_location': 'Bern',
+            'birthday': '2011-06-16',
+            'phone': '031 390 93 36',
+            'mobile_phone': '',
+            'confirmed': True,
+            'reachable_by_email': False,
+            'cancellation_date': '2026-06-30',
+        }
+        Member.objects.get_or_create(email=mem7_fields['email'], defaults=mem7_fields)
+        mem8_fields = {
+            'first_name': 'Leah',
+            'last_name': 'Grande',
+            'email': 'leah.grande@juntagico.juntagrico',
+            'addr_street': 'Nordring 4',
+            'addr_zipcode': '3001',
+            'addr_location': 'Bern',
+            'birthday': '1980-01-16',
+            'phone': '031 312 64 00',
+            'mobile_phone': '',
+            'confirmed': True,
+            'reachable_by_email': False,
+            'cancellation_date': '2025-06-30',
+            'deactivation_date': '2026-06-30',
+        }
+        Member.objects.get_or_create(email=mem8_fields['email'], defaults=mem8_fields)
+        if Config.enable_membership():
+            defaults = {'activation_date': '2017-03-27'}
+            Membership.objects.get_or_create(account=member_1, defaults=defaults)
+            Membership.objects.get_or_create(account=member_2, defaults=defaults)
+            Membership.objects.get_or_create(account=member_3, defaults=defaults)
+            Membership.objects.get_or_create(account=member_4)
+            defaults['cancellation_date'] = '2026-03-27'
+            Membership.objects.get_or_create(account=member_5, defaults=defaults)
+            defaults['deactivation_date'] = '2026-06-30'
+            Membership.objects.get_or_create(account=member_6, defaults=defaults)
         if Config.enable_shares():
-            share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,
-                                'cancelled_date': None, 'termination_date': None, 'payback_date': None, 'number': None,
-                                'notes': ''}
-            Share.objects.create(**share_all_fields)
-            Share.objects.create(**share_all_fields)
-            share_all_fields['member'] = member_2
-            Share.objects.create(**share_all_fields)
-            Share.objects.create(**share_all_fields)
-            share_all_fields['member'] = member_3
-            Share.objects.create(**share_all_fields)
+            Share.objects.create(member=member_1)
+            share_all_fields = {'paid_date': '2017-03-27', 'issue_date': '2017-03-27'}
+            Share.objects.create(**share_all_fields, member=member_1)
+            Share.objects.create(**share_all_fields, member=member_1)
+            Share.objects.create(
+                **share_all_fields,
+                member=member_1,
+                cancelled_date='2026-03-31',
+                termination_date='2026-06-30',
+            )
+            Share.objects.create(
+                **share_all_fields,
+                member=member_1,
+                cancelled_date='2026-03-31',
+                termination_date='2026-06-30',
+                payback_date='2026-06-30',
+            )
+            # member 2
+            Share.objects.create(**share_all_fields, member=member_2)
+            Share.objects.create(**share_all_fields, member=member_2)
+            # member 3
+            Share.objects.create(**share_all_fields, member=member_3)
         subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
         product_size, _ = ProductSize.objects.get_or_create(name='Gross', product=subproduct)
         category, _ = SubscriptionCategory.objects.get_or_create(name='Kategorie 1', description='Beschreibung 1')
@@ -101,11 +158,25 @@ class Command(BaseCommand):
             bundle = SubscriptionBundle.objects.create(**bundle_fields)
         if product_size not in bundle.product_sizes.all():
             SubscriptionBundleProductSize.objects.create(bundle=bundle, product_size=product_size)
+
         subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'bundle': bundle, 'shares': 2,
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                          'Zwei personen Haushalt für eine Woche.'}
         subtype, _ = SubscriptionType.objects.get_or_create(name=subtype_fields['name'], defaults=subtype_fields)
+        subtype_fields |= {
+            'name': 'Normales Abo (Probe)',
+            'long_name': 'Ganz Normales Abo',
+            'bundle': bundle,
+            'shares': 0,
+            'visible': True,
+            'required_assignments': 2,
+            'price': 250,
+            'description': 'Probiere unser Abo für 90 Tage aus.',
+            'trial_days': 90
+        }
+        subtype_trial, _ = SubscriptionType.objects.get_or_create(name=subtype_fields['name'], defaults=subtype_fields)
+        
         depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',
                                   'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
                                   'addr_location': 'Zürich'}
@@ -130,8 +201,8 @@ class Command(BaseCommand):
 
         self.create_subscription(depot1, member_1, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
         self.create_subscription(depot2, member_2, subtype, datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
-        self.create_subscription(depot1, member_3, subtype)
-        self.create_subscription(depot2, member_4, subtype)
+        self.create_subscription(depot1, member_3, subtype, future_depot=depot2)
+        self.create_subscription(depot2, member_4, subtype_trial)
         self.create_subscription(
             depot2, member_6, subtype,
             cancellation_date=datetime.date.today(),

@@ -18,6 +18,7 @@
         {% if member.share_set.unpaid.exists %}
             {% include "messages/unpaid_shares.html" with amount=member.share_set.unpaid.count %}
         {% endif %}
+        {% invitation_banner member %}
     {% endwith %}
 {% endblock %}
 

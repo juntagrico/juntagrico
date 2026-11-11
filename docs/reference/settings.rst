@@ -201,7 +201,10 @@ ORGANISATION_BANK_CONNECTION
 
 CURRENCY
 ^^^^^^^^
-  The default currency used within the system
+  The default currency used within the system.
+
+  .. note::
+    Changed in version 2.1.0: use ``{}`` to control where the numeric value is placed.
 
   Type: String
 
@@ -209,11 +212,55 @@ CURRENCY
 
   .. code-block:: python
 
-    "CHF"
+    "CHF {}"
 
 
 External Documents
 ------------------
+
+DOCUMENTS
+^^^^^^^^^
+
+  Define name and url of external documents and where they are displayed.
+  Some urls can instead be defined with the respective settings (e.g. BUSINESS_REGULATIONS).
+  However this setting gives more flexibility and allows naming the documents and adding custom documents.
+
+  DOCUMENTS is a list that contains tuples with the following 3 entries
+
+  1. Name of the document. If the document should be used in a sentence the name should be a tuple with 2 entries:
+     The name as such and the name with the article (e.g. "the document").
+  2. URL of the document or Website.
+  3. One or more space separated tags defining where the document should be displayed. See below.
+
+  Tags define where the document is shown:
+
+  - ``'account'``: show on profile/membership page
+  - ``'account-signup'``: same as above and additionally show it in the first step of the signup process
+  - ``'account-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'membership-signup'``: show on step "membership" during signup process
+  - ``'membership-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'subscription'``: show on subscription overview page
+  - ``'extrasub'``: show below subscription parts on subscription overview page
+  - ``'activityarea'``: show on activity area overview page
+
+  Type: List of Tuples or Strings
+
+  Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and
+  adding the same document in DOCUMENTS will show the document twice.
+
+  Default value is ``[]``, but if the other document settings are set, they are applied as follows:
+
+  .. code-block:: python
+
+    [
+        ((_('Betriebsreglement'), _('das Betriebsreglement')), BUSINESS_REGULATIONS, 'account-signup-accept subscription'),
+        ((_('Statuten'), _('die Statuten')), BYLAWS, 'membership-signup-accept account subscription'),
+        ((_('DSGVO Infos'), _('die DSGVO Infos')), GDPR_INFO, 'account-signup-accept subscription'),
+        (_('Häufig gestellte Fragen'), FAQ_DOC, 'account subscription'),
+        (_('Infos zu den Zusatz-Abos'), EXTRA_SUB_INFO, 'extrasub'),
+        (_('Infoblatt'), ACTIVITY_AREA_INFO, 'activityarea'),
+    ]
+
 
 BUSINESS_REGULATIONS
 ^^^^^^^^^^^^^^^^^^^^
@@ -388,17 +435,50 @@ ENFORCE_MAIL_CONFIRMATION
 Membership
 ----------
 
-BASE_FEE
-^^^^^^^^
-  Yearly fee for members without a subscription
+MEMBERSHIP
+^^^^^^^^^^
+  Membership configuration
 
-  Type: String
+  The setting takes a dictionary of key-value pairs:
+
+    - ``'enable'``: enable all membership related functions (Bool)
+    - ``'required_shares'``: amount of shares required for a membership (Integer)
+    - ``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)
+    - ``'required_on_signup'``: whether a membership is mandatory to signup up
+
+        - True: always require membership on signup
+        - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
+        - False: don't require membership during signup, unless selected subscriptions require it
+
+    - ``'fee'``: yearly membership fee (Float, Integer or String)
+    - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
+      and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
 
   default value
 
   .. code-block:: python
 
-    ""
+        {
+            'enable': True,
+            'required_shares': 1,
+            'cumulative_shares': False,
+            'required_on_signup': 'if_no_sub',
+            'fee': 0,
+            'sync_shares': True,
+        }
+
+
+BASE_FEE
+^^^^^^^^
+  Yearly fee for anybody without a subscription, regardless of membership status.
+
+  Type: Integer, Float or String
+
+  default value
+
+  .. code-block:: python
+
+    None
 
 MEMBERSHIP_END_MONTH
 ^^^^^^^^^^^^^^^^^^^^
@@ -459,13 +539,13 @@ SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share
 
-  Type: String
+  Type: Integer, Float or String
 
   default value
 
   .. code-block:: python
 
-    "250"
+    250
 
 
 Jobs
@@ -579,7 +659,7 @@ DEPOT_LISTS
     def extra_context(context):
         from juntagrico.entity.subs import Subscription
         # pass a custom set to subscriptions
-        return dict(subscriptions=Subscription.objects.active_on(context['date']).filter(...))
+        return dict(subscriptions=Subscription.objects.served_on(context['date']).filter(...))
 
     DEPOT_LISTS = defaults.DEPOT_LISTS | {
         'depotlist': {  # overwrite existing depotlist definition.
@@ -642,11 +722,43 @@ DEFAULT_DEPOTLIST_GENERATORS
 Appearance
 ----------
 
+.. _settings-vocabulary:
+
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your organisation form.
+  Vocabulary dictionary for organisation specific words.
+
+  the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
+
+  There are helpers for some languages, that will adjust all related fragments:
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.german(
+        subscription=('Ernteanteil', 'Ernteanteile', 'm'),  # m = masculine
+        assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
+        package='Korb',  # pass other vocabulary items as arguments
+    )
+
+  Other key that can be defined with a tuple: 'account', 'member_type', 'membership', 'share', 'co_member', 'depot'.
+  Keys without tuple: 'price', 'package', 'from'.
+
+  For french, use a capital letter for the gender if your word starts with an "h aspiré".
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.french(
+        subscription=('part de récolte', 'parts de récolte', 'm'),  # m = masculine
+        assignment=('haricot', 'haricots', 'M'),  # M = masculine with a h aspiré
+    )
+
+  For other languages you will have to define all relevant fragments.
 
   Type: Dictionary
 
@@ -655,21 +767,50 @@ VOCABULARY
   .. code-block:: python
 
     {
-        'member': 'Mitglied',
-        'member_pl' : 'Mitglieder',
+        # account
+        'account': 'Konto',
+        'account_pl' : 'Konten',
+        'this_account':'dieses Konto',
+        # assignment
         'assignment' : 'Arbeitseinsatz',
         'assignment_pl' : 'Arbeitseinsätze',
-        'share' : 'Anteilschein',
-        'share_pl' : 'Anteilscheine',
-        'subscription' : 'Abo',
-        'subscription_pl' : 'Abos',
-        'co_member' : 'Mitabonnent',
-        'co_member_pl' : 'Mitabonnenten',
-        'price' : 'Betriebsbeitrag',
+        'the_assignment_acc' : 'den Arbeitseinsatz',  # für ...
+        # membership/type
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
+        'not_a_member_type': 'kein Mitglied',  # das ist ...
+        'membership' : 'Mitgliedschaft',
+        'membership_pl' : 'Mitgliedschaften',
+        'your_membership_acc': 'deine Mitgliedschaft',  # für ...
+        # share
+        'share' : 'Anteilschein',
+        'share_pl' : 'Anteilscheine',
+        'this_share': 'dieser Anteilschein',
+        'this_share_acc': 'diesen Anteilschein',  # für ...
+        'no_share': 'kein Anteilschein',
+        # subscription
+        'subscription' : 'Abo',
+        'subscription_pl' : 'Abos',
+        'the_subscription': 'das Abo',
+        'the_subscription_acc': 'das Abo',  # für ...
+        'no_subscription_acc': 'kein Abo',  # für ...
+        'this_subscription_acc': 'dieses Abo',  # für ...
+        'this_subscription_dat': 'diesem Abo',  # von ...
+        'your_subscription_acc': 'dein Abo',  # für ...
+        'your_subscription_dat': 'deinem Abo',  # von ...
+        'with_active_subscription': 'mit aktivem Abo',
+        # co-member
+        'co_member' : 'Mitabonnent',
+        'co_member_pl' : 'Mitabonnenten',
+        # depot
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
+        'the_depot_acc': 'das Depot',
+        'the_depot_dat': 'dem Depot',  # von ...
+        'to_the_depot': 'zum Depot',  # ich wechsle ...
+        'your_depot': 'dein Depot',
+        # others
+        'price' : 'Betriebsbeitrag',
         'package': 'Tasche',
         'from': '{} von {}'
     }
@@ -775,6 +916,9 @@ EMAILS
   .. warning::
     Deprecated since version 1.6.0. :ref:`Override template directly instead <reference-templates>`.
 
+  .. warning::
+    Removed options ``co_welcome`` and ``co_added`` since version 2.1.0.
+
   Defining the different email templates
 
   default value
@@ -783,8 +927,6 @@ EMAILS
 
     {
         'welcome': 'mails/member/member_welcome.txt',
-        'co_welcome': 'mails/member/co_member_welcome.txt',
-        'co_added': 'mails/member/co_member_added.txt',
         'password': 'mails/member/password_reset.txt',
         'confirm': 'mails/member/email_confirm.txt',
         'j_reminder': 'mails/member/job_reminder.txt',
@@ -909,9 +1051,13 @@ DISABLE_NOTIFICATIONS
 
   - `'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message.
   - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
+  - `'membership_activated'`: Don't notify new members when their membership is activated.
+  - `'membership_deactivated'`: Don't notify leaving members when their membership is deactivated.
+  - `'subscription_activated'`: Don't notify members when their subscription (parts) are activated.
+  - `'subscription_deactivated'`: Don't notify members when their subscription (parts) are deactivated.
 
   .. note::
-    Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
+    Notifications on job subscription are always sent, when the member leaves a message, because the message is not stored outside of the email.
 
   default value:
 

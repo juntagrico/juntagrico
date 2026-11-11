@@ -1,9 +1,8 @@
 import os
 
-from .minimal import *  # noqa: F401
+from .minimal import *  # noqa: F401,F403
 
 from juntagrico.defaults import richtextfield_config
-from juntagrico.util.settings import tinymce_lang
 
 
 # Core Settings
@@ -63,7 +62,7 @@ class InvalidTemplateVariable(str):
         raise NameError(f"In template, undefined variable or unknown value for: '{other}'")
 
 
-TEMPLATES[0]['OPTIONS'].update({
+TEMPLATES[0]['OPTIONS'].update({  # noqa: F405
     # 'string_if_invalid': InvalidTemplateVariable("%s"),
     'debug': DEBUG,
 })
@@ -136,3 +135,5 @@ BYLAWS = 'https://juntagrico.juntagrico/bylaws'
 FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
+BASE_FEE = 100
+MEMBERSHIP = {'fee': 150}

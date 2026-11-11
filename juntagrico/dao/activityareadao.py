@@ -4,6 +4,7 @@ from juntagrico.entity.jobs import ActivityArea
 class ActivityAreaDao:
     @staticmethod
     def all_visible_areas_ordered():
+        print('ActivityAreaDao.all_visible_areas_ordered is deprecated. Filter the areas instead')
         return ActivityArea.objects.filter(hidden=False).order_by('-core', 'name')
 
     @staticmethod
@@ -12,4 +13,5 @@ class ActivityAreaDao:
 
     @staticmethod
     def all_core_areas():
+        print('ActivityAreaDao.all_core_areas is deprecated: Use ActivityArea.objects.filter(core=True) instead')
         return ActivityArea.objects.filter(core=True)

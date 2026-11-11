@@ -1,0 +1,5 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "organisation_name" as c_organisation_name %}
+{% blocktrans %}Bis bald und liebe Grüsse,
+die Betriebsgruppe von {{ c_organisation_name }}{% endblocktrans %}
