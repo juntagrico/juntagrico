@@ -329,7 +329,7 @@ function init_depot_map(map, markers) {
     let depot_selector = $('#depot')
     depot_selector.on('change', function(e){
         let selected = parseInt(this.value) || this.val()
-        map.closePopup()
+        if (map) map.closePopup()
         let marker = markers.get(selected)
         if (marker !== undefined) marker.openPopup()
         toggle_depot_description(this)
