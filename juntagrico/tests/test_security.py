@@ -364,6 +364,61 @@ class DocDefaultPasswordValidatorsTests(JuntagricoTestCaseWithShares):
             validate_password(self.member.email, self.member.user)
 
 
+@override_settings(
+    AUTH_PASSWORD_VALIDATORS=[
+        {
+            'NAME': 'juntagrico.password_validation.PermittedOnlyPasswordValidator',
+            'OPTIONS': {
+                'validators': [
+                    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+                     'OPTIONS': {'min_length': 16}},
+                ],
+            },
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+            'OPTIONS': {'min_length': 8},
+        },
+    ]
+)
+class PermittedOnlyPasswordValidatorTests(JuntagricoTestCaseWithShares):
+    """Tests for PermittedOnlyPasswordValidator (password_validation.py)."""
+
+    def _create_non_staff_user(self):
+        """Create a user that is not staff, not superuser, with no groups or permissions."""
+        from django.contrib.auth.models import User
+        user = User.objects.create_user(username='perm_test_user', password='TempPass123!')
+        return user
+
+    def test_user_with_user_permissions_requires_strong_password(self):
+        """A non-staff user with user_permissions should be subject to the strong password
+        validators (password_validation.py line 33: user.user_permissions.exists())."""
+        from django.contrib.auth.password_validation import validate_password
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        user = self._create_non_staff_user()
+        content_type = ContentType.objects.get(app_label='auth', model='user')
+        permission = Permission.objects.get(content_type=content_type, codename='view_user')
+        user.user_permissions.add(permission)
+        # User has user_permissions, so strong validator should apply (min 16)
+        with self.assertRaises(ValidationError):
+            validate_password('Short1234!', user)
+        # Long enough password should pass
+        validate_password('MySecurePassword123!', user)
+        user.delete()
+
+    def test_user_without_permissions_uses_fallback(self):
+        """A non-staff user without user_permissions or groups should use
+        the fallback validator (min 8 chars)."""
+        from django.contrib.auth.password_validation import validate_password
+        user = self._create_non_staff_user()
+        # No user_permissions, no groups, not staff -> fallback validator (min 8)
+        validate_password('Short1234!', user)
+        with self.assertRaises(ValidationError):
+            validate_password('Ab1!', user)
+        user.delete()
+
+
 @override_settings(AUTH_PASSWORD_VALIDATORS=DOC_EXAMPLE_VALIDATORS)
 class DocExamplePasswordValidationTests(JuntagricoTestCaseWithShares):
     """Tests for the role-based password validation example from docs/intro/deployment.rst."""

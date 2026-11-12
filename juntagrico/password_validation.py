@@ -30,7 +30,7 @@ class StaffOnlyPasswordValidator:
 
 class PermittedOnlyPasswordValidator(StaffOnlyPasswordValidator):
     def filter(self, user):
-        return super().filter(user) or user.permissions.exists() or user.groups.exists()
+        return super().filter(user) or user.user_permissions.exists() or user.groups.exists()
 
 
 class PrivilegedOnlyPasswordValidator(PermittedOnlyPasswordValidator):

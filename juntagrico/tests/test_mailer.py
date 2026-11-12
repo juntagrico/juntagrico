@@ -465,6 +465,10 @@ class NotificationTests(JuntagricoTestCase):
             list(get_emails_by_permission('notified_on_member_creation')),
             ['email1@email.org'],
         )
+        self.assertListEqual(
+            list(get_emails_by_permission('juntagrico.notified_on_member_creation')),
+            ['email1@email.org'],
+        )
 
     def testInactiveMember(self):
         # inactive members should not receive notifications
