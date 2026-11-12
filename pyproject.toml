@@ -14,7 +14,7 @@ requires-python = ">=3.10"
 dependencies = [
     "Django~=5.2.3",
     "django-admin-sortable2~=2.3.0",
-    "django-crispy-forms~=2.5.0",
+    "django-crispy-forms>=2.5,<2.8",
     "crispy-bootstrap4~=2026.2.0",
     "django-impersonate~=1.9.5",
     "django-polymorphic~=4.11.1",
