@@ -2,7 +2,7 @@ import hashlib
 
 from django.conf import settings
 from django.contrib.auth import get_user
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
@@ -285,55 +285,60 @@ class AuthTests(JuntagricoTestCase):
     def testLogout(self):
         self.assertGet(reverse('logout'), code=302)
 
+
+class AuthBackendTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.member = cls.create_member('otheruser@example.com')
+        cls.member.confirmed = True
+        cls.member.save()
+        cls.password = cls.member.set_password()
+        cls.other_user = User.objects.create_user(username='otheruser@example.com', password='otherpassword')
+        cls.other_user.save()
+    
     def testMemberEmailMatchesOtherUsername(self):
         """
         A Member's email equals the username of another User.
         Logging in with that email should authenticate the Member, not the other User.
         """
-        from django.contrib.auth.models import User
-        # Create a member with a specific email
-        member = self.create_member('otheruser@example.com')
-        member.confirmed = True
-        member.save()
-        password = member.set_password()
-        # Create another User whose username matches the member's email
-        other_user = User.objects.create_user(username='otheruser@example.com', password='otherpassword')
         # other_user has no Member associated
         # Login with the email (which is also the other_user's username)
         response = self.client.post(reverse('login'), {
             'username': 'otheruser@example.com',
-            'password': password,
+            'password': self.password,
         })
         self.assertEqual(response.status_code, 302)
         user = get_user(self.client)
         self.assertTrue(user.is_authenticated)
         # Should authenticate the Member, not the other User
-        self.assertEqual(user.id, member.user.id)
-        self.assertNotEqual(user.id, other_user.id)
-
-    @override_settings(
-        AUTHENTICATION_BACKENDS=(
-            'juntagrico.util.auth.AuthenticateWithEmail',
-            'django.contrib.auth.backends.ModelBackend',
-        )
-    )
+        self.assertEqual(user.id, self.member.user.id)
+        self.assertNotEqual(user.id, self.other_user.id)
+        
     def testUserWithoutMemberShouldNotAuth(self):
         """
         A User without a Member exists with a given username.
         Auth should not pass and no other auth backends should be tried.
         """
-        from django.contrib.auth.models import User
-        # Create a User without a Member
-        User.objects.create_user(username='no_member_user', password='secret')
         # Try to authenticate
         response = self.client.post(
             reverse('login'),
             {
-                'username': 'no_member_user',
-                'password': 'secret',
+                'username': 'otheruser@example.com',
+                'password': 'otherpassword',
             },
         )
         # The login should fail. The second backend is not used.
         self.assertEqual(response.status_code, 200)
         user = get_user(self.client)
         self.assertFalse(user.is_authenticated)
+
+
+@override_settings(
+    AUTHENTICATION_BACKENDS=(
+        'juntagrico.util.auth.AuthenticateWithEmail',
+        'django.contrib.auth.backends.ModelBackend',
+    )
+)
+class ModelAuthBackendTests(AuthBackendTests):
+    """AuthenticateWithEmail should fully shadow ModelBackend"""

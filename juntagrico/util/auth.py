@@ -21,11 +21,12 @@ class AuthenticateWithEmail(ModelBackend):
         try:
             user = User.objects.get(member__email__iexact=username)
         except User.DoesNotExist:
-            # try ModelBackend
-            return super().authenticate(request, username, password, **kwargs)
+            pass
         else:
             if user.check_password(password) and self.user_can_authenticate(user):
                 return user
+        # try ModelBackend
+        return super().authenticate(request, username, password, **kwargs)
 
     def user_can_authenticate(self, user):
         """
