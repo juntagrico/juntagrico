@@ -1,0 +1,16 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% vocabulary 'a_subscription_dat' as v_a_subscription_dat %}
+{% for invitation in invitations %}
+    <div class="alert alert-info">
+        <h4>
+            <i class="bi bi-envelope-paper-heart mr-2"></i>{% trans 'Einladung' %}
+        </h4>
+        <p>
+            {% blocktrans trimmed with inviter=invitation.invited_by %}
+                {{ inviter }} hat dich eingeladen {{ v_a_subscription_dat }} beizutreten.
+            {% endblocktrans %}
+        </p>
+        <a class="btn btn-info" href="{% url 'invitation-existing' invitation.key %}">{% trans 'Einladung öffnen' %}</a>
+    </div>
+{% endfor %}

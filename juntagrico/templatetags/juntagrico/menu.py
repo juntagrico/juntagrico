@@ -2,6 +2,7 @@ from django import template
 from django.template import loader
 from django.contrib.admin.sites import site as default_site
 
+from juntagrico.forms import account
 from juntagrico.util import addons
 
 register = template.Library()
@@ -38,3 +39,11 @@ def can_open_admin(context):
 
     site = default_site
     return site.has_permission(request)
+
+
+@register.inclusion_tag('juntagrico/menu/modals/account_search.html')
+def account_search():
+    return {
+        'name': 'account_search',
+        'account_search_form': account.SearchForm()
+    }
