@@ -3195,11 +3195,11 @@ msgid "Nicht leer"
 msgstr "No lo olvides."
 
 #: juntagrico/templates/js/i18n.js:63
-msgid "Größer als"
+msgid "Grösser als"
 msgstr ""
 
 #: juntagrico/templates/js/i18n.js:64
-msgid "Größer als oder gleich"
+msgid "Grösser als oder gleich"
 msgstr ""
 
 #: juntagrico/templates/js/i18n.js:65
@@ -3253,7 +3253,7 @@ msgid "Filterregel entfernen"
 msgstr ""
 
 #: juntagrico/templates/js/i18n.js:86
-msgid "Äußere Kriterien"
+msgid "Äussere Kriterien"
 msgstr ""
 
 #: juntagrico/templates/js/i18n.js:88

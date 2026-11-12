@@ -25,7 +25,7 @@ dependencies = [
     "schwifty==2026.01.0",
     "xhtml2pdf==0.2.28",
     "svglib<1.6.0",
-    "XlsxWriter~=3.2.3",
+    "XlsxWriter>=3.2.3,<3.4.0",
     "python-dateutil~=2.9.0",
     "nh3>=0.3.7",
 ]
@@ -78,6 +78,11 @@ dev = [
     "pre-commit>=4.5.1",
     "psycopg>=3.1.8",
     "ruff>=0.14.11",
+]
+debug = [
+    "django-debug-toolbar>=8.0.0",
+    "django-debug-toolbar-template-profiler>=2.1.0",
+    "django-admin-shell>=2.0.1",
 ]
 
 [tool.deptry.per_rule_ignores]

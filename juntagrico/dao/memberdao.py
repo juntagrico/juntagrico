@@ -30,5 +30,9 @@ class MemberDao:
 
     @staticmethod
     def members_by_permission(permission_codename):
-        perm = Permission.objects.get(content_type__app_label=Member._meta.app_label, codename=permission_codename)
+        if '.' in permission_codename:
+            app_label, codename = permission_codename.split('.')
+            perm = Permission.objects.get(content_type__app_label=app_label, codename=codename)
+        else:
+            perm = Permission.objects.get(codename=permission_codename)
         return Member.objects.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()
