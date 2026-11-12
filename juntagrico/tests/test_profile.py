@@ -284,3 +284,56 @@ class AuthTests(JuntagricoTestCase):
 
     def testLogout(self):
         self.assertGet(reverse('logout'), code=302)
+
+    def testMemberEmailMatchesOtherUsername(self):
+        """
+        A Member's email equals the username of another User.
+        Logging in with that email should authenticate the Member, not the other User.
+        """
+        from django.contrib.auth.models import User
+        # Create a member with a specific email
+        member = self.create_member('otheruser@example.com')
+        member.confirmed = True
+        member.save()
+        password = member.set_password()
+        # Create another User whose username matches the member's email
+        other_user = User.objects.create_user(username='otheruser@example.com', password='otherpassword')
+        # other_user has no Member associated
+        # Login with the email (which is also the other_user's username)
+        response = self.client.post(reverse('login'), {
+            'username': 'otheruser@example.com',
+            'password': password,
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+        # Should authenticate the Member, not the other User
+        self.assertEqual(user.id, member.user.id)
+        self.assertNotEqual(user.id, other_user.id)
+
+    @override_settings(
+        AUTHENTICATION_BACKENDS=(
+            'juntagrico.util.auth.AuthenticateWithEmail',
+            'django.contrib.auth.backends.ModelBackend',
+        )
+    )
+    def testUserWithoutMemberShouldNotAuth(self):
+        """
+        A User without a Member exists with a given username.
+        Auth should not pass and no other auth backends should be tried.
+        """
+        from django.contrib.auth.models import User
+        # Create a User without a Member
+        User.objects.create_user(username='no_member_user', password='secret')
+        # Try to authenticate
+        response = self.client.post(
+            reverse('login'),
+            {
+                'username': 'no_member_user',
+                'password': 'secret',
+            },
+        )
+        # The login should fail. The second backend is not used.
+        self.assertEqual(response.status_code, 200)
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
