@@ -22,7 +22,7 @@ dependencies = [
     "django-select2~=8.4.1",
     "django-import-export~=4.4.0",
     "icalendar>=6.3,<7.4",
-    "schwifty==2026.01.0",
+    "schwifty>=2026.01.0",
     "xhtml2pdf>=0.2.27,<0.3.0",
     "XlsxWriter>=3.2.3,<3.4.0",
     "python-dateutil>=2.9,<3.1",
