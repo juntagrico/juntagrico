@@ -56,7 +56,7 @@ jobs:
       COVERAGE_FILE: coverage${{ matrix.exclude-test }}
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.11', '3.12', '3.13', '3.14']
         exclude-test: ['']
         include:
           - python-version: '3.11'
