@@ -21,7 +21,7 @@ dependencies = [
     "django-richtextfield~=1.6.1",
     "django-select2~=8.4.1",
     "django-import-export~=4.4.0",
-    "icalendar~=6.3.0",
+    "icalendar>=6.3,<7.4",
     "schwifty==2026.01.0",
     "xhtml2pdf==0.2.17",
     "svglib<1.6.0",
