@@ -1,0 +1,251 @@
+{% extends "./show.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    <h3>
+        {% blocktrans with v_share_pl=vocabulary.share_pl %}{{ v_share_pl }} von {{ account }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+
+{% block head %}
+    <a href="{% url 'manage-account-single' account.id %}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-return-left"></i>
+        {% blocktrans %}Zum Profil von {{ account }}{% endblocktrans %}
+    </a>
+
+    {% share_overview account %}
+
+    {% if perms.juntagrico.change_share %}
+        <div class="alert alert-secondary">
+            <i class="bi bi-envelope"></i>
+            {% blocktrans trimmed with v_member_pl=vocabulary.member_pl %}
+                {{ v_member_pl }} werden bei Kündigung automatisch per E-Mail benachrichtigt.
+            {% endblocktrans %}
+        </div>
+
+        {% action_date request %}
+    {% endif %}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "share" %}
+                </th>
+                <th class="filter">
+                    {% trans "Status" %}
+                </th>
+                {% block inner_list_head %}
+                    <th class="filter">
+                        {% trans "Bestellt am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Bezahlt am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Ausgestellt am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Eingebucht am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Gekündigt am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Gekündigt auf" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Zurückbezahlt am" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Zurückgesandt" %}
+                    </th>
+                {% endblock %}
+                <th class="filter">
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    {% vocabulary "share" %}
+                </th>
+                <th>
+                    {% trans "Status" %}
+                </th>
+                {% block inner_list_foot %}
+                    <th>
+                        {% trans "Bestellt am" %}
+                    </th>
+                    <th>
+                        {% trans "Bezahlt am" %}
+                    </th>
+                    <th>
+                        {% trans "Ausgestellt am" %}
+                    </th>
+                    <th>
+                        {% trans "Eingebucht am" %}
+                    </th>
+                    <th>
+                        {% trans "Gekündigt am" %}
+                    </th>
+                    <th>
+                        {% trans "Gekündigt auf" %}
+                    </th>
+                    <th>
+                        {% trans "Zurückbezahlt am" %}
+                    </th>
+                    <th>
+                        {% trans "Zurückgesandt" %}
+                    </th>
+                {% endblock %}
+                <th>
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% block entries %}
+                {% for share in object_list %}
+                    <tr>
+                        <td data-order="{{ job.identifier }}">
+                            {% include './snippets/display_linked.html' %}
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% with state=share.state %}
+                                    {% if state == 'unpaid' %}
+                                        badge-warning
+                                    {% elif state == 'paid' %}
+                                        badge-success
+                                    {% elif state == 'voided' %}
+                                        badge-dark
+                                    {% elif state == 'canceled' %}
+                                        badge-danger
+                                    {% elif state == 'paidback' %}
+                                        badge-secondary
+                                    {% endif %}
+                                {% endwith %}
+                                ">
+                                {{ share.state_text }}
+                            </span>
+
+                        </td>
+                        {% block inner_list_entry %}
+                            <td>
+                                {{ share.creation_date|date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ share.paid_date|date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ share.issue_date|date:"Y-m-d" }}
+                            </td>
+                            <td>
+                                {{ share.booking_date|date:"Y-m-d" }}
+                            </td>
+                            <td data-order="{{ share.cancelled_date|date:"Y-m-d" }}">
+                                {{ share.cancelled_date|date:"Y-m-d" }}
+                                {% if not share.cancelled_date and perms.juntagrico.change_share %}
+                                    <div class="d-none share_id{% if not share.cancelled_date %} cancellable{% endif %}">
+                                        {{ share.id }}{# spaces are required here #}
+                                    </div>
+                                    <form action="{% url 'manage-share-cancel' %}" method="POST" class="d-inline"
+                                          id="cancel_{{ share.id }}_form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="share_id" value="{{ share.id }}">
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-toggle="modal" data-target="#cancel_modal"
+                                                data-person="{{ account }}">
+                                            {% if share.paid_date %}
+                                                <i class="bi bi-ban"></i>
+                                                {% trans "kündigen" %}
+                                            {% else %}
+                                                <i class="bi bi-x-circle"></i>
+                                                {% trans "stornieren" %}
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ share.termination_date|date:"Y-m-d" }}
+                            </td>
+                            <td data-order="{{ share.payback_date|date:"Y-m-d" }}">
+                                {{ share.payback_date|date:"Y-m-d" }}
+                                {% if perms.juntagrico.change_share and share.backpayable %}
+                                    <div class="d-none share_id backpayable">
+                                        {{ share.id }}{# spaces are required here #}
+                                    </div>
+                                    <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
+                                        <i class="bi bi-journal-check"></i>
+                                        {% trans "Ausbuchen" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ share.sent_back|yesno:_('Ja,Nein') }}
+                            </td>
+                        {% endblock %}
+                        <td>
+                            {{ share.notes }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endblock %}
+        </tbody>
+    </table>
+
+    {# Modal for cancellation #}
+    {% if perms.juntagrico.change_share %}
+        {% include "./modals/cancel.html" with name='cancel' %}
+    {% endif %}
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    {% block datatable_constructor_extra %}
+        {% if perms.juntagrico.change_share %}
+            config.layout.topStart.features.buttons = [
+                id_action_button(
+                    '<i class="bi bi-ban"></i> {% trans "kündigen/stornieren" %}',
+                    '{% url 'manage-share-cancel' %}',
+                    '{% csrf_token %}',
+                    '.cancellable', 'share_id',
+                    [
+                        {% vocabulary "share" as v_share %}
+                        '{% blocktrans %}1 {{ v_share }} kündigen?{% endblocktrans %}',
+                        {% vocabulary "share_pl" as v_share_pl %}
+                        '{% blocktrans %}Diese {count} {{ v_share_pl }} kündigen?{% endblocktrans %}'
+                    ]
+                ),
+                id_action_button(
+                    '<i class="bi bi-file-earmark-binary"></i> {% trans "Zahlungsdatei erzeugen" %}',
+                    '{% url "share-pain001" %}',
+                    '{% csrf_token %}',
+                    '.backpayable', 'share_ids'
+                ),
+                {% if perms.juntagrico.change_share %}
+                    id_action_button(
+                        '<i class="bi bi-journal-check"></i> {% trans "Ausbuchen" %}',
+                        '{% url 'manage-share-payout' %}',
+                        '{% csrf_token %}',
+                        '.backpayable', 'share_ids',
+                        [
+                            {% vocabulary "share" as v_share %}
+                            '{% blocktrans %}1 {{ v_share }} ausbuchen?{% endblocktrans %}',
+                            {% vocabulary "share_pl" as v_share_pl %}
+                            '{% blocktrans %}Diese {count} {{ v_share_pl }} ausbuchen?{% endblocktrans %}'
+                        ]
+                    )
+                {% endif %}
+            ]
+        {% endif %}
+    {% endblock %}
+{% endblock %}

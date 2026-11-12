@@ -2,7 +2,7 @@
 {% if request.user.member.can_contact %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'email-write' %}">
-            {% trans "E-Mail-Versand" %}
+            <i class="bi bi-envelope mr-2"></i>{% trans "E-Mail-Versand" %}
         </a>
     </li>
 {% endif %}

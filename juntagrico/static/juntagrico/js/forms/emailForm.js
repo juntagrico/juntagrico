@@ -4,6 +4,13 @@ $(function () {
         $('#div_id_to_depots').toggle(!this.checked)
     })
 
+    // if all are selected, all other selections are obsolete
+    $('[value="all"]').on('change', function () {
+        let parent = $(this).parent()
+        parent.siblings().toggle(!this.checked)
+        parent.parent().parent().siblings('div').toggle(!this.checked)
+    })
+
     // update the number of recipients in the submit button
     $('#fieldset_to').on('change', function () {
         let submit_button = $('#submit-id-submit')

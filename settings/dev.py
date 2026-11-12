@@ -1,6 +1,6 @@
 import os
 
-from .minimal import *  # noqa: F401, F403
+from .minimal import *  # noqa: F401,F403
 
 from juntagrico.defaults import richtextfield_config
 
@@ -135,3 +135,5 @@ BYLAWS = 'https://juntagrico.juntagrico/bylaws'
 FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
+BASE_FEE = 100
+MEMBERSHIP = {'fee': 150}

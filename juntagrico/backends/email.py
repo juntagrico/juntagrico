@@ -4,6 +4,8 @@ import re
 import threading
 import time
 
+from gettext import gettext as _
+
 from django.conf import settings
 from django.core.mail.backends import smtp, base, console, locmem
 from django.dispatch import Signal
@@ -145,3 +147,35 @@ class ConsoleBatchEmailBackend(BaseBatchEmailBackend, console.EmailBackend):
 
 class LocmemBatchEmailBackend(BaseBatchEmailBackend, locmem.EmailBackend):
     pass
+
+
+class MailTextBackend(console.EmailBackend):
+    """ only prints first email to console
+    used for management command mailtexts
+    """
+    def __init__(self, *args, **kwargs):
+        self.done = False
+        super().__init__(*args, **kwargs)
+
+    def write_message(self, message):
+        self.stream.write('\n')
+        self.stream.write(_('Betreff:') + ' ' + message.subject + '\n')
+        for attachment in message.attachments:
+            self.stream.write(_('Anhang:') + ' ' + attachment.filename + '\n')
+        self.stream.write('\n')
+        self.stream.write(message.body + '\n')
+        self.stream.write("-" * 79 + '\n\n')
+
+    def send_messages(self, email_messages):
+        # only print one email per connection
+        if self.done:
+            return 0
+        self.done = True
+        for message in email_messages[:1]:
+            try:
+                self.write_message(message)
+                self.stream.flush()  # flush after each message
+            except Exception as e:
+                print(e)
+            return 1
+        return 0
