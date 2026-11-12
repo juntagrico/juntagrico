@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.14'
       - name: Ruff check
-        uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6 # v3
+        uses: astral-sh/ruff-action@v4.1.0
         with:
           args: check --preview
 
@@ -91,15 +91,18 @@ jobs:
       run: python -m django makemigrations --noinput
     - name: run tests
       run: |
+        echo "::remove-matcher owner=python::"
         python -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
         python -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
       if: ${{ matrix.python-version  != '3.11' }}
     - name: run tests with coverage
       run: |
-        coverage run -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
-        coverage run -a -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
-        coverage run -a -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
+        echo "::remove-matcher owner=python::"
+        coverage run --parallel-mode --concurrency=multiprocessing -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
+        coverage run --parallel-mode --concurrency=multiprocessing -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
+        coverage run --parallel-mode --concurrency=multiprocessing -m manage test juntagrico.tests.test_deploy --parallel --settings="settings.deployment"
+        coverage combine
         coverage lcov -o coverage-${{ matrix.exclude-test }}.lcov
       if: ${{ matrix.python-version  == '3.11' }}
     - uses: actions/upload-artifact@v7
@@ -116,10 +119,7 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: settings.dev
       PYTHONPATH: .
-      EXCLUDE_TEST: ''
-    strategy:
-      matrix:
-        python-version: ['3.14']
+      GITHUB_MYSQL: 1
 
     services:
       mysql:
@@ -137,10 +137,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.14
       uses: actions/setup-python@v7
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.14'
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements.txt
@@ -149,10 +149,9 @@ jobs:
       run: python -m django makemigrations --noinput
     - name: run tests
       run: |
-        python -m manage test juntagrico.tests --parallel --exclude-tag=$EXCLUDE_TEST
+        echo "::remove-matcher owner=python::"
+        python -m manage test juntagrico.tests --parallel
         python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
-      env:
-        GITHUB_MYSQL: 1
 
   coverage:
     name: Coverage Report
