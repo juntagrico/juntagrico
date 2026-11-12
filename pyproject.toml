@@ -26,7 +26,7 @@ dependencies = [
     "xhtml2pdf>=0.2.27,<0.3.0",
     "svglib<1.6.0",
     "XlsxWriter>=3.2.3,<3.4.0",
-    "python-dateutil~=2.9.0",
+    "python-dateutil>=2.9,<3.1",
     "nh3>=0.3.7",
 ]
 classifiers = [
