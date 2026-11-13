@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
+from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset
 
 
-class Billable(JuntagricoBasePoly):
+class Billable(JuntagricoBaseModel):
     '''
     Parent type for billables.
     '''
