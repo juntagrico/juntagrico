@@ -1,7 +1,7 @@
 import hashlib
 
 from django.conf import settings
-from django.contrib.auth import get_user
+from django.contrib.auth import authenticate, get_user
 from django.contrib.auth.models import Permission, User
 from django.core import mail
 from django.test import override_settings
@@ -176,6 +176,13 @@ class AuthTests(JuntagricoTestCase):
         self.assertEqual(response.status_code, 302)
         user = get_user(self.client)
         self.assertTrue(user.is_authenticated)
+
+    def testAuthenticateWithoutCredentials(self):
+        # multiple users without member must not break authentication without credentials,
+        # e.g. when called by token based backends
+        User.objects.create_user('no_member_1')
+        User.objects.create_user('no_member_2')
+        self.assertIsNone(authenticate(request=None))
 
     @override_settings(ENFORCE_MAIL_CONFIRMATION=False)
     def testUnconfirmedLogin(self):
