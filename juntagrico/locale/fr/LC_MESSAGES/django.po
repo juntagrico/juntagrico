@@ -3924,7 +3924,7 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/membership/requested.html:56
 msgid "aktivieren"
-msgstr ""
+msgstr "activer"
 
 #: juntagrico/templates/juntagrico/manage/membership/requested.html:68
 #: juntagrico/templates/juntagrico/manage/subscription/trial.html:83
