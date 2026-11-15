@@ -189,7 +189,9 @@ Defines the structure to display subscription categories in the subscription/par
 Blocks:
 
 - ``all_head``: Wrapper for the category header
+
   - ``head``: Name and description of category
+
 - ``fields``: Nested fields
 
 
@@ -210,8 +212,10 @@ Blocks:
 - ``name``: Long name of the subscription type
 - ``description``: Description text of the subscription type
 - ``price``: Price display for all cases
+
   - ``periodic_price``: Price display for types that have periods
   - ``price_display``: Price display for types without periods
+
 - ``required_assignments``: Required assignments count
 - ``required_core_assignments``: Required core assignments count
 - ``shares``: Required shares count
@@ -280,6 +284,7 @@ Displays selected subscription part types in signup summary.
 Blocks:
 
 - ``price``: Price display for all cases
+
   - ``periodic_price``: Price display for types that have periods
   - ``trial_price``: Price display for trial types without periods
   - ``regular_price``: Price display for non-trial types without periods
@@ -343,6 +348,7 @@ Intro text on the activity area overview page.
 Blocks:
 
 - ``all``: Use this block if you want to append or prepend text
+
   - ``intro1``: First paragraph about participation
   - ``intro2``: Second paragraph about registration
   - ``documents``: Activity area documents. Populated from the :ref:`DOCUMENTS <reference-settings-documents>` setting.
@@ -376,6 +382,7 @@ juntagrico/my/membership/profile.html
 Blocks for membership info banners, buttons, account information, and profile editing.
 
 - ``membership``: Entire membership status section
+
   - ``info_canceled``: Info banner when membership is canceled
   - ``info_active``: Info banner when membership is active
   - ``info_inactive``: Info banner when no membership exists
@@ -383,10 +390,13 @@ Blocks for membership info banners, buttons, account information, and profile ed
   - ``button_cancel_membership``: Button to cancel membership
   - ``button_create_membership``: Button to create new membership
   - ``button_recreate_membership``: Button to revoke cancellation
+
 - ``account_number``: Displays member account number
 - ``documents``: Account-related documents
 - ``password``: Password section
+
   - ``button_change_password``: Button to change password
+
 - ``profile``: Personal information editing section
 
 juntagrico/my/membership/create.html
