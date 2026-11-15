@@ -94,15 +94,15 @@
                     </div>
                 {% endblock %}
             </div>
-            <div class="allcontent row">
+            <div class="allcontent row flex-nowrap">
                 {% block allcontent %}
-                    <div class="sidebar col-md-3 d-none d-md-block">
+                    <div class="sidebar sidebar-large col-md-3 d-none d-md-block">
                         {% block menu %}
                             {% include "juntagrico/menu/navigation.html" %}
                             {{ widgets_menu }}
                         {% endblock %}
                     </div>
-                    <div class="content-container col-md-9 col-sm-12">
+                    <div class="content-container col-md-1 flex-grow-1">
                         <div class="messages row">
                             <div class="col-md-12">
                                 {% for message in messages %}
@@ -127,6 +127,11 @@
                     </div>
                 {% endblock %}
             </div>
+
+            {% if perms.juntagrico.view_member %}
+                {% account_search %}
+            {% endif %}
+
         </div>
         <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap/js/bootstrap.bundle.min.js' %}">
         </script>

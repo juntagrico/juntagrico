@@ -59,6 +59,25 @@ Configure and run
 
 you can now open http://localhost:8000 in your browser.
 
+Debug
+^^^^^
+
+For debugging purposes Juntagrico can be run with the debug toolbar and django admin shell.
+
+Install the debug dependencies
+
+.. code:: bash
+
+   pip install --group debug
+
+
+Then run juntagrico with the debug settings
+
+.. code:: bash
+
+   python -m manage runserver --settings=settings.debug 8000
+
+
 Setup using Docker
 ------------------
 

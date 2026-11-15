@@ -1,0 +1,8 @@
+{% load i18n %}
+{% block all %}
+    {% blocktrans trimmed with v_membership=vocabulary.membership v_share=vocabulary.share v_share_pl=vocabulary.share_pl count count=required %}
+        Für die {{ v_membership }}, benötigst du persönlich mindestens {{ count }} {{ v_share }}.
+    {% plural %}
+        Für die {{ v_membership }}, benötigst du persönlich mindestens {{ count }} {{ v_share_pl }}.
+    {% endblocktrans %}
+{% endblock %}

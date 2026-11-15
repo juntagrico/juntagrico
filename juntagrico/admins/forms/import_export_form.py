@@ -11,7 +11,16 @@ from juntagrico.entity.jobs import Job
 from juntagrico.util.temporal import start_of_business_year, end_of_business_year
 
 
-class ExportAssignmentDateRangeForm(SelectableFieldsExportForm):
+class TranslatedSelectableFieldsExportForm(SelectableFieldsExportForm):
+    def _get_field_label(self, resource, field_name):
+        field = resource.fields.get(field_name)
+        if field and hasattr(resource, 'verbose_names'):
+            if verbose_name := resource.verbose_names().get(field.column_name):
+                return f"{verbose_name} ({field.column_name})"
+        return field_name.replace("_", " ").title()
+
+
+class ExportAssignmentDateRangeForm(TranslatedSelectableFieldsExportForm):
     export_start_date = forms.DateField(
         label=_('Startdatum'),
         help_text=_('Startdatum für Einsatzzählung'),

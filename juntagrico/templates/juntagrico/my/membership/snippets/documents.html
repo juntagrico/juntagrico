@@ -1,0 +1,18 @@
+{% load juntagrico.snippets %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% documents "membership-signup" as c_documents %}
+{% if c_documents %}
+    {% block read_instructions %}
+        <p>
+            {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
+            {% endblocktrans %}
+        </p>
+    {% endblock %}
+    <ul>
+        {% for name, link in c_documents %}
+            <li>{% ext_link name link %}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

@@ -1,0 +1,54 @@
+{% load i18n %}
+
+{% if show_messages %}
+    <hr class="mt-5"/>
+    <div class="row pb-4">
+        <div class="col-lg-3">
+            <div>{% trans "Mitteilungen:" %}</div>
+            <div class="text-muted">
+                {% blocktrans %}Mitteilungen werden nach dem Einsatz automatisch gelöscht.{% endblocktrans %}
+            </div>
+        </div>
+        <div class="col-lg-9">
+            {% for message in messages %}
+                <div class="card mb-2{% if message.account == member %} border-primary{% endif %}">
+                    <div class="card-body">
+                        <div>
+                            <span class="card-title font-weight-bold">{{ message.account }}</span>
+                            {% if not message.account.inactive %}
+                                {% if can_contact or message.account.reachable_by_email %}
+                                    {% spaceless %}
+                                        <a class="contact-member" href="{% url 'email-to-member' message.account.id %}">
+                                            <i class="bi bi-envelope"></i>
+                                        </a>
+                                    {% endspaceless %}
+                                {% endif %}
+                            {% endif %}
+                            <span class="float-right">
+                                <span class="card-subtitle ml-2 text-muted">{{ message.created_at|date }}</span>
+                                {% if can_manage_messages or message.account == member %}
+                                    <a href="#" data-toggle="modal" data-target="#remove_message_{{ message.id }}_modal"
+                                       title="{% trans 'Löschen' %}">
+                                        <i class="bi bi-trash" aria-label="{% trans 'Löschen' %}"></i>
+                                    </a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="card-text">{{ message.message }}</p>
+                    </div>
+                </div>
+                {% include "juntagrico/job/modals/remove_message.html" with name='remove_message' %}
+            {% endfor %}
+            {% if message_form %}
+                <button class="btn btn-secondary add-message">
+                    <i class="bi bi-plus-square"></i>
+                    {% trans 'Mitteilung verfassen' %}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if message_form %}
+        {% include "juntagrico/job/modals/add_message.html" with name='add_message' %}
+    {% endif %}
+{% endif %}

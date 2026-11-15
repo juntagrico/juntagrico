@@ -8,334 +8,316 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-28 23:39-0600\n"
+"POT-Creation-Date: 2026-11-15 07:12-0600\n"
 "PO-Revision-Date: 2021-10-18 06:38+0000\n"
 "Last-Translator: admin juntagrico, 2026\n"
+"Language-Team: French (https://app.transifex.com/juntagrico/teams/126289/"
+"fr/)\n"
 "Language: fr\n"
-"Language-Team: French "
-"(https://app.transifex.com/juntagrico/teams/126289/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
 "1000000 == 0 ? 1 : 2;\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: juntagrico_legacy/templates/export.html:6
+#: templates/export.html:6
 msgid "Exporte"
 msgstr "Exportations"
 
-#: juntagrico_legacy/templates/export.html:15
+#: templates/export.html:15
 msgid ""
 "Diese Exporte werden in einer zukünftigen Version entfernt. Sprich mit "
 "deiner/m System-Admin, falls die neuen Exporte deine Anforderungen nicht "
 "abdecken."
 msgstr ""
 "Ces exportations seront supprimées dans une prochaine version. Contactez "
-"votre administrateur système si les nouvelles exportations ne répondent "
-"pas à vos besoins."
+"votre administrateur système si les nouvelles exportations ne répondent pas "
+"à vos besoins."
 
-#: juntagrico_legacy/templates/export.html:23
-#: juntagrico_legacy/templates/export.html:41
-#: juntagrico_legacy/templates/export.html:61
-#: juntagrico_legacy/templates/export.html:79
+#: templates/export.html:23 templates/export.html:41 templates/export.html:61
+#: templates/export.html:79
 msgid "exportieren"
 msgstr "exporter"
 
-#: juntagrico_legacy/templates/export.html:28
-#: juntagrico_legacy/templates/export.html:46
-#: juntagrico_legacy/templates/export.html:66
-#: juntagrico_legacy/templates/export.html:84
+#: templates/export.html:28 templates/export.html:46 templates/export.html:66
+#: templates/export.html:84
 msgid "Neu: Datenverwaltung"
 msgstr "Nouveau : gestion des données"
 
-#: juntagrico_legacy/templates/export.html:30
-#: juntagrico_legacy/templates/export.html:48
-#: juntagrico_legacy/templates/export.html:68
-#: juntagrico_legacy/templates/export.html:86
+#: templates/export.html:30 templates/export.html:48 templates/export.html:68
+#: templates/export.html:86
 msgid "&rarr; Exportieren (oben rechts)"
 msgstr "&rarr; Exporter (en haut à droite)"
 
-#: juntagrico_legacy/templates/export.html:31
-#: juntagrico_legacy/templates/export.html:49
+#: templates/export.html:31 templates/export.html:49
 msgid "&rarr; Ressource:"
 msgstr "&rarr; Ressource :"
 
-#: juntagrico_legacy/templates/export.html:37
+#: templates/export.html:37
 #, python-format
 msgid "%(v_member_pl)s mit %(v_assignment_pl)s und Tätigketsbereichen"
 msgstr "%(v_member_pl)s avec %(v_assignment_pl)s et domaines d'activité"
 
-#: juntagrico_legacy/templates/export.html:49
+#: templates/export.html:49
 msgid "mit ..."
 msgstr "avec ..."
 
 # | msgid "Zusatzabos"
-#: juntagrico_legacy/templates/extra_change.html:8
+#: templates/extra_change.html:8
 msgid "Zusatzabos ändern"
 msgstr "Modifier les abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/extra_change.html:14
+#: templates/extra_change.html:14
 msgid "Du hast noch keine Zusatzabos"
 msgstr "Tu n'as pas encore d'abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/extra_change.html:16
-#: juntagrico_legacy/views.py:130
+#: templates/extra_change.html:16 views.py:154
 msgid "Übersicht"
 msgstr "Aperçu"
 
-#: juntagrico_legacy/templates/extra_change.html:22
+#: templates/extra_change.html:22
 msgid "Abo"
 msgstr "Abonnement"
 
-#: juntagrico_legacy/templates/extra_change.html:25
-#: juntagrico_legacy/templates/size_change.html:29
-#: juntagrico_legacy/templates/subscription.html:71
-#: juntagrico_legacy/views.py:136
+#: templates/extra_change.html:25 templates/size_change.html:29
+#: templates/subscription.html:71 views.py:160
 msgid "Status"
 msgstr "État"
 
-#: juntagrico_legacy/templates/extra_change.html:42
-#: juntagrico_legacy/templates/size_change.html:63
+#: templates/extra_change.html:42 templates/size_change.html:63
 #, python-format
 msgid "Gekündigt am %(cd)s"
 msgstr "Résilié le %(cd)s"
 
-#: juntagrico_legacy/templates/extra_change.html:47
+#: templates/extra_change.html:47
 msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
 msgstr "Es-tu sûr·e de vouloir résilier cet abonnement supplémentaire ?"
 
-#: juntagrico_legacy/templates/extra_change.html:48
-#: juntagrico_legacy/templates/size_change.html:59
+#: templates/extra_change.html:48 templates/size_change.html:59
 msgid "kündigen"
 msgstr "résilier"
 
 # | msgid "Zusatzabos"
-#: juntagrico_legacy/templates/extra_change.html:60
+#: templates/extra_change.html:60
 msgid "Zusatzabos bestellen"
 msgstr "Commander des abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/extra_change.html:67
+#: templates/extra_change.html:67
 #, python-format
 msgid ""
-"Für gekündigte %(v_subscription_pl)s können keine Zusatzabos bestellt "
-"werden."
+"Für gekündigte %(v_subscription_pl)s können keine Zusatzabos bestellt werden."
 msgstr ""
 "Aucun abonnement supplémentaire ne peut être commandé pour des "
 "%(v_subscription_pl)s résiliées."
 
-#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:8
-#: juntagrico_legacy/templates/subscription.html:185
+#: templates/juntagrico/menu/admin/extra_subscriptions.html:8
+#: templates/subscription.html:185
 msgid "Zusatzabos"
 msgstr "Abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:16
-#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:9
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:6
+#: templates/juntagrico/menu/admin/extra_subscriptions.html:16
+#: templates/juntagrico/menu/admin/subscriptions.html:9
+#: templates/management_lists/waitinglist.html:6
 msgid "Warteliste"
 msgstr "liste d'attente"
 
-#: juntagrico_legacy/templates/juntagrico/menu/admin/extra_subscriptions.html:23
-#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:16
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:6
+#: templates/juntagrico/menu/admin/extra_subscriptions.html:23
+#: templates/juntagrico/menu/admin/subscriptions.html:16
+#: templates/management_lists/canceledlist.html:6
 msgid "Kündigungsliste"
 msgstr "liste des résiliations"
 
-#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:23
+#: templates/juntagrico/menu/admin/subscriptions.html:23
 msgid "Bestandteile Warteliste"
 msgstr "Liste d'attente des composants"
 
-#: juntagrico_legacy/templates/juntagrico/menu/admin/subscriptions.html:30
+#: templates/juntagrico/menu/admin/subscriptions.html:30
 msgid "Bestandteile Kündigungsliste"
 msgstr "Liste des composants à supprimer"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:22
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:28
-#: juntagrico_legacy/views.py:137
+#: templates/management_lists/canceledlist.html:22
+#: templates/management_lists/part_canceledlist.html:28 views.py:161
 msgid "Kündigungsdatum"
 msgstr "date de résiliation"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:25
+#: templates/management_lists/canceledlist.html:25
 msgid "Enddatum"
 msgstr "Date de fin"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:28
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:22
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:23
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:25
+#: templates/management_lists/canceledlist.html:28
+#: templates/management_lists/part_canceledlist.html:22
+#: templates/management_lists/part_waitinglist.html:23
+#: templates/management_lists/waitinglist.html:25
 msgid "Kontakt"
 msgstr "Contact"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:31
+#: templates/management_lists/canceledlist.html:31
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:36
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:44
+#: templates/management_lists/canceledlist.html:36
+#: templates/management_lists/waitinglist.html:44
 msgid "Notizen"
 msgstr "notes"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:67
+#: templates/management_lists/canceledlist.html:67
 msgid "Wurde bereits deaktiviert auf den"
 msgstr "Déjà désactivé au"
 
-#: juntagrico_legacy/templates/management_lists/canceledlist.html:70
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:59
+#: templates/management_lists/canceledlist.html:70
+#: templates/management_lists/part_canceledlist.html:59
 msgid "deaktivieren"
 msgstr "désactiver"
 
-#: juntagrico_legacy/templates/management_lists/extra_canceledlist.html:5
+#: templates/management_lists/extra_canceledlist.html:5
 msgid "Kündigungsliste der Zusatz-Abos"
 msgstr "Liste des résiliations des abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/management_lists/extra_waitinglist.html:6
+#: templates/management_lists/extra_waitinglist.html:6
 msgid "Warteliste der Zusatz-Abos"
 msgstr "Liste d'attente pour les abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:6
+#: templates/management_lists/part_canceledlist.html:6
 msgid "Kündigungsliste der Bestandteile"
 msgstr "Liste des composants supprimés"
 
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:19
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:20
+#: templates/management_lists/part_canceledlist.html:19
+#: templates/management_lists/part_waitinglist.html:20
 msgid "Typ"
 msgstr "Type"
 
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:25
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:26
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:28
-#: juntagrico_legacy/views.py:89
+#: templates/management_lists/part_canceledlist.html:25
+#: templates/management_lists/part_waitinglist.html:26
+#: templates/management_lists/waitinglist.html:28 views.py:113
 msgid "Email"
 msgstr "Adresse e-mail"
 
-#: juntagrico_legacy/templates/management_lists/part_canceledlist.html:56
+#: templates/management_lists/part_canceledlist.html:56
 msgid "Wurde bereits deaktiviert"
 msgstr "Déjà désactivé"
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:6
+#: templates/management_lists/part_waitinglist.html:6
 msgid "Warteliste der Bestandteile"
 msgstr "Liste d'attente des composants"
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:29
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:39
+#: templates/management_lists/part_waitinglist.html:29
+#: templates/management_lists/waitinglist.html:39
 msgid "Bestelldatum"
 msgstr "Date de commande"
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:57
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:88
+#: templates/management_lists/part_waitinglist.html:57
+#: templates/management_lists/waitinglist.html:88
 msgid "Wurde bereits aktiviert"
 msgstr "Déjà activé"
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:59
+#: templates/management_lists/part_waitinglist.html:59
 #, python-format
 msgid " Übergeordnete/s/r %(v_subscription)s ist noch nicht aktiv "
 msgstr "%(v_subscription)s supérieur n'est pas encore actif"
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:61
+#: templates/management_lists/part_waitinglist.html:61
 #, python-format
 msgid " Übergeordnete/s/r %(v_subscription)s ist deaktiviert "
 msgstr "%(v_subscription)s supérieur est désactivé."
 
-#: juntagrico_legacy/templates/management_lists/part_waitinglist.html:64
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:91
+#: templates/management_lists/part_waitinglist.html:64
+#: templates/management_lists/waitinglist.html:91
 msgid "aktivieren"
 msgstr "activer"
 
-#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:7
+#: templates/management_lists/snippets/change_date.html:7
 msgid "Änderungsdatum einstellen"
 msgstr "Définir la date de modification"
 
-#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:12
+#: templates/management_lists/snippets/change_date.html:12
 #, python-format
 msgid "Das Änderungsdatum ist auf %(change_date)s gesetzt."
 msgstr "La date de modification est fixée au %(change_date)s."
 
-#: juntagrico_legacy/templates/management_lists/snippets/change_date.html:14
+#: templates/management_lists/snippets/change_date.html:14
 msgid "Beende dies hier"
 msgstr "Finis ça ici."
 
-#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:4
+#: templates/management_lists/snippets/deprecation_warning.html:4
 msgid ""
-"Diese Ansicht wird in einer zukünftigen Version entfernt. Sprich mit "
-"deiner/m System-Admin, falls die neue Liste deine Anforderungen nicht "
-"abdeckt. "
+"Diese Ansicht wird in einer zukünftigen Version entfernt. Sprich mit deiner/"
+"m System-Admin, falls die neue Liste deine Anforderungen nicht abdeckt. "
 msgstr ""
 "Cette vue sera supprimée dans une prochaine version. Contactez votre "
 "administrateur système si la nouvelle liste ne répond pas à vos besoins. "
 
-#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:6
+#: templates/management_lists/snippets/deprecation_warning.html:6
 msgid "Neue Liste: "
 msgstr "Nouvelle liste : "
 
-#: juntagrico_legacy/templates/management_lists/snippets/deprecation_warning.html:7
+#: templates/management_lists/snippets/deprecation_warning.html:7
 msgid "Pendente Änderungen"
 msgstr "Modifications en attente"
 
-#: juntagrico_legacy/templates/management_lists/snippets/email_sender.html:8
+#: templates/management_lists/snippets/email_sender.html:8
 msgid "Email senden"
 msgstr "Envoyer un courriel"
 
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:22
+#: templates/management_lists/waitinglist.html:22
 msgid "Start Datum"
 msgstr "Date de début"
 
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:31
+#: templates/management_lists/waitinglist.html:31
 msgid "Tag"
 msgstr "Jour"
 
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:35
+#: templates/management_lists/waitinglist.html:35
 #, python-format
 msgid "Bezahlte %(v_share_pl)s"
 msgstr "%(v_share_pl)s payés"
 
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:77
+#: templates/management_lists/waitinglist.html:77
 msgid "(J)"
 msgstr "(O)"
 
-#: juntagrico_legacy/templates/management_lists/waitinglist.html:79
+#: templates/management_lists/waitinglist.html:79
 msgid "(N)"
 msgstr "(N)"
 
-#: juntagrico_legacy/templates/size_change.html:9
+#: templates/size_change.html:9
 #, python-format
 msgid "%(v_subscription)s-Bestandteile ändern"
 msgstr "Modifier les composants de %(v_subscription)s"
 
 # | msgid "Bestandteile Warteliste"
-#: juntagrico_legacy/templates/size_change.html:19
+#: templates/size_change.html:19
 msgid "Bestandteile verwalten"
 msgstr "Gérer les composants"
 
-#: juntagrico_legacy/templates/size_change.html:26
-#: juntagrico_legacy/views.py:83
+#: templates/size_change.html:26 views.py:107
 msgid "Name"
 msgstr "Nom"
 
-#: juntagrico_legacy/templates/size_change.html:48
+#: templates/size_change.html:48
 msgid "ändern"
 msgstr "modifier"
 
-#: juntagrico_legacy/templates/size_change.html:51
+#: templates/size_change.html:51
 #, python-format
 msgid " Dein/e %(v_subscription)s braucht mindestens 1 Bestandteil"
 msgstr " Ton/ta %(v_subscription)s a besoin d'au moins 1 composant"
 
-#: juntagrico_legacy/templates/size_change.html:53
-#: juntagrico_legacy/templates/subscription_change.html:29
+#: templates/size_change.html:53 templates/subscription_change.html:29
 #, python-format
 msgid "%(v_subscription)s komplett künden"
 msgstr "Résilier complètement %(v_subscription)s"
 
-#: juntagrico_legacy/templates/size_change.html:58
+#: templates/size_change.html:58
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
 msgstr "Es-tu sûr·e de vouloir résilier ce composant ?"
 
 # | msgid "Bestandteile Warteliste"
-#: juntagrico_legacy/templates/size_change.html:76
+#: templates/size_change.html:76
 msgid "Bestandteile bestellen"
 msgstr "Commander des composants"
 
-#: juntagrico_legacy/templates/size_change.html:83
+#: templates/size_change.html:83
 #, python-format
 msgid ""
 "Für gekündigte %(v_subscription_pl)s können keine Bestandteile bestellt "
@@ -344,247 +326,245 @@ msgstr ""
 "Aucun composant ne peut être commandé pour des %(v_subscription_pl)s "
 "résiliées."
 
-#: juntagrico_legacy/templates/size_change.html:88
+#: templates/size_change.html:88
 #, python-format
 msgid "%(v_subscription)s kündigen"
 msgstr "Résilier %(v_subscription)s"
 
-#: juntagrico_legacy/templates/size_change.html:93
+#: templates/size_change.html:93
 #, python-format
 msgid "%(v_subscription)s komplett kündigen"
 msgstr "Résilier complètement %(v_subscription)s"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:9
+#: templates/snippets/snippet_subscription_change_depot.html:9
 msgid "Du bist umgezogen oder möchtest aus einem anderen Grund wechseln?"
 msgstr "Tu as déménagé ou tu souhaites changer pour une autre raison ?"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:9
+#: templates/snippets/snippet_subscription_change_depot.html:9
 msgid ""
 "Du kannst jederzeit wechseln - die Änderung wird sobald aktiv von uns "
 "kommuniziert."
 msgstr ""
-"Tu peux changer à tout moment - le changement sera communiqué dès qu'il "
-"sera effectif."
+"Tu peux changer à tout moment - le changement sera communiqué dès qu'il sera "
+"effectif."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:12
+#: templates/snippets/snippet_subscription_change_depot.html:12
 msgid "Aktuell"
 msgstr "Actuel"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_depot.html:18
+#: templates/snippets/snippet_subscription_change_depot.html:18
 #, python-format
 msgid "%(v_depot)s ändern"
 msgstr "Modifier %(v_depot)s"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:5
+#: templates/snippets/snippet_subscription_change_extra_sub.html:5
 msgid "Zusatz-Abos"
 msgstr "Abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:8
+#: templates/snippets/snippet_subscription_change_extra_sub.html:8
 msgid ""
-"Zusatz-Abos können nur mit einer Frist von einem Monat vor Ende der "
-"Laufzeit geändert werden."
+"Zusatz-Abos können nur mit einer Frist von einem Monat vor Ende der Laufzeit "
+"geändert werden."
 msgstr ""
-"Les abonnements supplémentaires ne peuvent être modifiés qu'avec un "
-"préavis d'un mois avant la fin de la période."
+"Les abonnements supplémentaires ne peuvent être modifiés qu'avec un préavis "
+"d'un mois avant la fin de la période."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:13
+#: templates/snippets/snippet_subscription_change_extra_sub.html:13
 msgid "Weitere Infos zu den Zusatzabos"
 msgstr "Plus d'informations sur les abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:18
+#: templates/snippets/snippet_subscription_change_extra_sub.html:18
 msgid "Zukünftige Zusatz-Abos"
 msgstr "Abonnements supplémentaires futurs"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:22
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:32
+#: templates/snippets/snippet_subscription_change_extra_sub.html:22
+#: templates/snippets/snippet_subscription_change_extra_sub.html:32
 msgid "Keine Zusatz-Abos"
 msgstr "Aucun abonnement supplémentaire"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_extra_sub.html:44
+#: templates/snippets/snippet_subscription_change_extra_sub.html:44
 msgid "Zusatz-Abos ändern"
 msgstr "Modifier les abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:9
+#: templates/snippets/snippet_subscription_change_main_member.html:9
 #, python-format
 msgid "Haupt-%(v_subscription)s-BezieherIn "
 msgstr "Principal·e bénéficiaire de %(v_subscription)s "
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:12
+#: templates/snippets/snippet_subscription_change_main_member.html:12
 #, python-format
 msgid ""
-"Du möchtest nicht mehr Haupt-%(v_subscription)s-BezieherIn sein? Du "
-"kannst jederzeit wechseln, vorausgesetzt jemand deiner %(v_co_member_pl)s"
-" kann Haupt-%(v_subscription)s-BezieherIn werden"
+"Du möchtest nicht mehr Haupt-%(v_subscription)s-BezieherIn sein? Du kannst "
+"jederzeit wechseln, vorausgesetzt jemand deiner %(v_co_member_pl)s kann "
+"Haupt-%(v_subscription)s-BezieherIn werden"
 msgstr ""
 "Tu ne souhaites plus être le/la principal·e bénéficiaire de "
-"%(v_subscription)s ? Tu peux changer à tout moment, pourvu que l'un·e de "
-"tes %(v_co_member_pl)s puisse devenir principal·e bénéficiaire."
+"%(v_subscription)s ? Tu peux changer à tout moment, pourvu que l'un·e de tes "
+"%(v_co_member_pl)s puisse devenir principal·e bénéficiaire."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:16
+#: templates/snippets/snippet_subscription_change_main_member.html:16
 #, python-format
 msgid " Dazu muss sie oder er mindestens 1 bezahlte/n/s %(v_share)s besitzen."
 msgstr " Pour cela, il/elle doit posséder au moins 1 %(v_share)s payé."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_main_member.html:23
+#: templates/snippets/snippet_subscription_change_main_member.html:23
 #, python-format
 msgid "Haupt-%(v_subscription)s-BezieherIn ändern"
 msgstr "Changer le/la principal·e bénéficiaire de %(v_subscription)s"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:7
+#: templates/snippets/snippet_subscription_change_nickname.html:7
 msgid "Spitzname"
 msgstr "Surnom"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:10
+#: templates/snippets/snippet_subscription_change_nickname.html:10
 #, python-format
 msgid ""
-"Du möchtest einen %(v_subscription)s-Spitznamen für die %(v_depot)s-Liste"
-" festlegen?"
+"Du möchtest einen %(v_subscription)s-Spitznamen für die %(v_depot)s-Liste "
+"festlegen?"
 msgstr ""
-"Tu souhaites définir un surnom %(v_subscription)s pour la liste "
-"%(v_depot)s ?"
+"Tu souhaites définir un surnom %(v_subscription)s pour la liste %(v_depot)s ?"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:13
+#: templates/snippets/snippet_subscription_change_nickname.html:13
 msgid "Vorschau"
 msgstr "Aperçu"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:18
+#: templates/snippets/snippet_subscription_change_nickname.html:18
 msgid "Kein Spitzname gewählt. Alle Namen werden angezeigt."
 msgstr "Aucun surnom choisi. Tous les noms seront affichés."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_nickname.html:23
+#: templates/snippets/snippet_subscription_change_nickname.html:23
 msgid "Spitzname ändern"
 msgstr "Modifier le surnom"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:7
+#: templates/snippets/snippet_subscription_change_size.html:7
 msgid "Bestandteile"
 msgstr "Composants"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:10
+#: templates/snippets/snippet_subscription_change_size.html:10
 #, python-format
 msgid ""
-"Die %(v_subscription)s-Bestandteile (auch die Kündigung) kann in der "
-"Regel nur jährlich geändert werden und muss bis spätestens Ende %(ncd)s "
-"gemacht werden, damit die Änderung auf Anfang %(nby)s in Kraft tritt."
+"Die %(v_subscription)s-Bestandteile (auch die Kündigung) kann in der Regel "
+"nur jährlich geändert werden und muss bis spätestens Ende %(ncd)s gemacht "
+"werden, damit die Änderung auf Anfang %(nby)s in Kraft tritt."
 msgstr ""
-"Les composants de %(v_subscription)s (y compris la résiliation) ne "
-"peuvent en règle générale être modifiés qu'une fois par an et doivent "
-"être effectués au plus tard à la fin de %(ncd)s pour que le changement "
-"entre en vigueur au début de %(nby)s."
+"Les composants de %(v_subscription)s (y compris la résiliation) ne peuvent "
+"en règle générale être modifiés qu'une fois par an et doivent être effectués "
+"au plus tard à la fin de %(ncd)s pour que le changement entre en vigueur au "
+"début de %(nby)s."
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:18
+#: templates/snippets/snippet_subscription_change_size.html:18
 msgid "Nächstmögliches Datum"
 msgstr "Prochaine date possible"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:22
+#: templates/snippets/snippet_subscription_change_size.html:22
 msgid "Zukünftige Bestandteile"
 msgstr "Composants futurs"
 
-#: juntagrico_legacy/templates/snippets/snippet_subscription_change_size.html:29
+#: templates/snippets/snippet_subscription_change_size.html:29
 msgid "Bestandteile ändern"
 msgstr "Modifier les composants"
 
-#: juntagrico_legacy/templates/subscription.html:9
+#: templates/subscription.html:9
 #, python-format
 msgid "%(v_subscription)s Übersicht"
 msgstr "Aperçu de %(v_subscription)s"
 
 # | msgid "Bestandteile Warteliste"
-#: juntagrico_legacy/templates/subscription.html:21
+#: templates/subscription.html:21
 msgid "Du bist auf der Warteliste"
 msgstr "Tu es sur la liste d'attente"
 
-#: juntagrico_legacy/templates/subscription.html:24
+#: templates/subscription.html:24
 msgid "Mehr Infos und Optionen dazu findest du hier"
 msgstr "Tu trouveras plus d'informations et d'options ici"
 
-#: juntagrico_legacy/templates/subscription.html:29
+#: templates/subscription.html:29
 #, python-format
-msgid "Du bist entweder kein/e %(v_subscription)s-BezieherIn oder hast gekündigt."
+msgid ""
+"Du bist entweder kein/e %(v_subscription)s-BezieherIn oder hast gekündigt."
 msgstr "Tu n'es pas bénéficiaire de %(v_subscription)s ou tu as résilié."
 
-#: juntagrico_legacy/templates/subscription.html:31
+#: templates/subscription.html:31
 #, python-format
 msgid "%(v_subscription)s (wieder) neu beziehen?"
 msgstr "Souscrire (à nouveau) %(v_subscription)s ?"
 
 # | msgid "Beende dies hier"
-#: juntagrico_legacy/templates/subscription.html:32
+#: templates/subscription.html:32
 msgid "Melde dich hier an"
 msgstr "Inscris-toi ici"
 
-#: juntagrico_legacy/templates/subscription.html:34
+#: templates/subscription.html:34
 #, python-format
 msgid "%(v_subscription)s erstellen"
 msgstr "Créer %(v_subscription)s"
 
-#: juntagrico_legacy/templates/subscription.html:47
-#: juntagrico_legacy/templates/subscription.html:101
+#: templates/subscription.html:47 templates/subscription.html:101
 #, python-format
 msgid "davon %(shares_unpaid)s noch nicht bezahlt"
 msgstr "dont %(shares_unpaid)s non encore payés"
 
 # | msgid "Bestandteile Warteliste"
-#: juntagrico_legacy/templates/subscription.html:51
-#: juntagrico_legacy/templates/subscription.html:105
+#: templates/subscription.html:51 templates/subscription.html:105
 #, python-format
 msgid "%(v_share_pl)s verwalten"
 msgstr "Gérer les %(v_share_pl)s"
 
-#: juntagrico_legacy/templates/subscription.html:59
+#: templates/subscription.html:59
 #, python-format
 msgid "%(v_subscription)s-Bestandteile"
 msgstr "Composants de %(v_subscription)s"
 
 # | msgid "aktivieren"
-#: juntagrico_legacy/templates/subscription.html:75
+#: templates/subscription.html:75
 msgid "aktiv"
 msgstr "actif"
 
 # | msgid "Warteliste"
-#: juntagrico_legacy/templates/subscription.html:78
+#: templates/subscription.html:78
 msgid "Auf der Warteliste"
 msgstr "Sur la liste d'attente"
 
 # | msgid "deaktivieren"
-#: juntagrico_legacy/templates/subscription.html:82
+#: templates/subscription.html:82
 msgid "deaktiviert"
 msgstr "désactivé"
 
-#: juntagrico_legacy/templates/subscription.html:87
+#: templates/subscription.html:87
 #, python-format
 msgid "Gekündigt am %(cd)s auf den %(ed)s."
 msgstr "Résilié le %(cd)s pour le %(ed)s."
 
-#: juntagrico_legacy/templates/subscription.html:109
+#: templates/subscription.html:109
 #, python-format
 msgid "%(v_share_pl)s von %(v_co_member_pl)s"
 msgstr "%(v_share_pl)s de %(v_co_member_pl)s"
 
-#: juntagrico_legacy/templates/subscription.html:113
+#: templates/subscription.html:113
 #, python-format
 msgid "%(csc)s von %(fn)s %(ln)s"
 msgstr "%(csc)s de %(fn)s %(ln)s"
 
-#: juntagrico_legacy/templates/subscription.html:118
+#: templates/subscription.html:118
 msgid "E-Mail-Adresse nicht bestätigt"
 msgstr "Adresse courriel non confirmée"
 
-#: juntagrico_legacy/templates/subscription.html:128
+#: templates/subscription.html:128
 #, python-format
 msgid "%(v_subscription)s geteilt mit"
 msgstr "%(v_subscription)s partagé avec"
 
-#: juntagrico_legacy/templates/subscription.html:147
+#: templates/subscription.html:147
 #, python-format
 msgid "Du hast noch keine %(v_co_member_pl)s eingetragen."
 msgstr "Tu n'as pas encore enregistré·e de %(v_co_member_pl)s."
 
-#: juntagrico_legacy/templates/subscription.html:152
+#: templates/subscription.html:152
 #, python-format
 msgid "Hier %(v_co_member_pl)s eintragen"
 msgstr "Enregistrer %(v_co_member_pl)s ici"
 
-#: juntagrico_legacy/templates/subscription.html:155
+#: templates/subscription.html:155
 #, python-format
 msgid ""
 "Nur Haupt-%(v_subscription)s-BeziehierIn kann weitere %(v_co_member_pl)s "
@@ -593,134 +573,127 @@ msgstr ""
 "Seul·e le/la principal·e bénéficiaire de %(v_subscription)s peut ajouter "
 "d'autres %(v_co_member_pl)s."
 
-#: juntagrico_legacy/templates/subscription.html:164
+#: templates/subscription.html:164
 #, python-format
 msgid "Name auf %(v_depot)s-Liste"
 msgstr "Nom sur la liste %(v_depot)s"
 
-#: juntagrico_legacy/templates/subscription.html:178
+#: templates/subscription.html:178
 #, python-format
 msgid "Weitere Infos zu/r/m %(v_depot)s"
 msgstr "Plus d'informations sur %(v_depot)s"
 
 # | msgid "Zusatzabos"
-#: juntagrico_legacy/templates/subscription.html:194
-#: juntagrico_legacy/templates/subscription.html:214
+#: templates/subscription.html:194 templates/subscription.html:214
 msgid "Keine Zusatzabos"
 msgstr "Aucun abonnement supplémentaire"
 
 # | msgid "Zusatzabos"
-#: juntagrico_legacy/templates/subscription.html:202
+#: templates/subscription.html:202
 msgid "Neue Zusatzabos"
 msgstr "Nouveaux abonnements supplémentaires"
 
-#: juntagrico_legacy/templates/subscription.html:205
+#: templates/subscription.html:205
 #, python-format
 msgid "Die Änderungen treten voraussichtlich am %(nes)s in Kraft"
 msgstr "Les modifications entreront probablement en vigueur le %(nes)s"
 
-#: juntagrico_legacy/templates/subscription.html:224
+#: templates/subscription.html:224
 #, python-format
 msgid "Neue %(v_subscription)s-Bestandteile"
 msgstr "Nouveaux composants de %(v_subscription)s"
 
-#: juntagrico_legacy/templates/subscription.html:227
+#: templates/subscription.html:227
 #, python-format
 msgid "Die Änderung tritt voraussichtlich am %(nes)s in Kraft"
 msgstr "La modification entrera probablement en vigueur le %(nes)s"
 
-#: juntagrico_legacy/templates/subscription.html:242
+#: templates/subscription.html:242
 #, python-format
 msgid "%(v_subscription)s ändern"
 msgstr "Modifier %(v_subscription)s"
 
-#: juntagrico_legacy/templates/subscription.html:245
+#: templates/subscription.html:245
 msgid "Nur der Hauptbezieher kann Änderungen durchführen."
 msgstr "Seul le principal bénéficiaire peut effectuer des modifications."
 
-#: juntagrico_legacy/templates/subscription.html:253
+#: templates/subscription.html:253
 #, python-format
 msgid "%(v_subscription)s verlassen"
 msgstr "Quitter %(v_subscription)s"
 
-#: juntagrico_legacy/templates/subscription_change.html:14
+#: templates/subscription_change.html:14
 msgid "Welchen Teil möchtest du ändern?"
 msgstr "Quelle partie souhaites-tu modifier ?"
 
-#: juntagrico_legacy/views.py:86
+#: views.py:110
 msgid "Kernbereich"
 msgstr "Domaine clé"
 
-#: juntagrico_legacy/views.py:87
+#: views.py:111
 msgid "Taetigkeitsbereiche"
 msgstr "Domaines d'activité"
 
-#: juntagrico_legacy/views.py:88 juntagrico_legacy/views.py:138
+#: views.py:112 views.py:162
 msgid "Depot"
 msgstr "Dépôt"
 
-#: juntagrico_legacy/views.py:90
+#: views.py:114
 msgid "Telefon"
 msgstr "Téléphone"
 
-#: juntagrico_legacy/views.py:91
+#: views.py:115
 msgid "Mobile"
 msgstr "Portable"
 
-#: juntagrico_legacy/views.py:99
+#: views.py:123
 msgid "-Kein Tätigkeitsbereich-"
 msgstr "- Aucun domaine d'activité -"
 
-#: juntagrico_legacy/views.py:101
+#: views.py:125
 msgid "Kein Depot definiert"
 msgstr "Aucun dépôt défini"
 
-#: juntagrico_legacy/views.py:131
+#: views.py:155
 msgid "HauptbezieherIn"
 msgstr "Principal·e bénéficiaire"
 
-#: juntagrico_legacy/views.py:132
+#: views.py:156
 msgid "HauptbezieherInEmail"
 msgstr "Courriel du/de la principal·e bénéficiaire"
 
-#: juntagrico_legacy/views.py:133
+#: views.py:157
 msgid "HauptbezieherInTelefon"
 msgstr "Téléphone du/de la principal·e bénéficiaire"
 
-#: juntagrico_legacy/views.py:134
+#: views.py:158
 msgid "HauptbezieherInMobile"
 msgstr "Portable du/de la principal·e bénéficiaire"
 
-#: juntagrico_legacy/views.py:135
+#: views.py:159
 msgid "Weitere BezieherInnen"
 msgstr "Autres bénéficiaires"
 
-#: juntagrico_legacy/views.py:140
-#, python-brace-format
+#: views.py:164
 msgid "{} soll"
 msgstr "{} doit"
 
-#: juntagrico_legacy/views.py:141
-#, python-brace-format
+#: views.py:165
 msgid "{} status(%)"
 msgstr "{} état(%)"
 
-#: juntagrico_legacy/views.py:142
-#, python-brace-format
+#: views.py:166
 msgid "{} Kernbereich"
 msgstr "{} domaine clé"
 
-#: juntagrico_legacy/views.py:143
-#, python-brace-format
+#: views.py:167
 msgid "{} Kernbereich soll"
 msgstr "{} domaine clé doit"
 
-#: juntagrico_legacy/views.py:144
-#, python-brace-format
+#: views.py:168
 msgid "{} Kernbereich status(%)"
 msgstr "{} domaine clé état(%)"
 
-#: juntagrico_legacy/views.py:145
+#: views.py:169
 msgid "Preis"
 msgstr "Prix"
-

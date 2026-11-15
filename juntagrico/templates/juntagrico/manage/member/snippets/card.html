@@ -1,0 +1,67 @@
+{% load juntagrico.snippets %}
+{% load i18n %}
+<div class="card shadow-sm">
+    <div class="card-body text-center">
+        <div class="position-absolute p-3" style="top: 0; right: 0;">
+            {% impersonate_start request account %}
+            <a href="{% url 'admin:juntagrico_member_change' account.id %}{% querystring next=request.path %}"
+               title="{% trans 'Datenverwaltung öffnen' %}">
+                <i class="bi bi-wrench mr-2"></i>
+            </a>
+        </div>
+        <i class="bi bi-person-circle display-1"></i>
+        <h4 class="card-title mb-1">{{ account }}</h4>
+        <div class="mb-3">
+            {% if account.inactive %}
+                <span class="badge badge-danger">
+                    {% trans "gesperrt" %}
+                </span>
+            {% elif account.deactivation_date %}
+                <span class="badge badge-danger">
+                    {% blocktrans with dd=account.deactivation_date %}gesperrt ab {{ dd }}{% endblocktrans %}
+                </span>
+            {% elif account.cancellation_date %}
+                <span class="badge badge-warning">
+                    {% trans "Löschung beantragt" %}
+                </span>
+            {% else %}
+                <span class="badge badge-success">
+                    {% trans "Konto aktiv" %}
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="text-left">
+            <div class="d-flex align-items-start mb-2">
+                <div class="text-truncate">
+                    <i class="bi bi-envelope-at mr-2">
+                    </i><a href="mailto:{{ account.email }}" title="{{ account.email }}">{{ account.email }}</a>
+                </div>
+                <div class="text-nowrap ml-2">
+                    {% if account.confirmed %}
+                        <i class="bi bi-check-circle" title="{% trans 'E-Mail-Adresse bestätigt' %}"></i>
+                    {% else %}
+                        <i class="bi bi-question-octagon" title="{% trans 'E-Mail-Adresse nicht bestätigt' %}"></i>
+                    {% endif %}
+                    {% if can_contact %}
+                        <a href="{% url 'email-to-member' account.id %}" class="ml-1"><i class="bi bi-envelope"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            <p class="mb-2"><i class="bi bi-telephone mr-2"></i>{{ account.phone|default:"-" }}</p>
+            <p class="mb-2"><i class="bi bi-phone mr-2"></i>{{ account.mobile_phone|default:"-" }}</p>
+            <div class="d-flex align-items-start mb-2">
+                <i class="bi bi-house mr-2 mt-1"></i>
+                <div>
+                    {{ account.addr_street }}
+                    <br>{{ account.addr_zipcode }} {{ account.addr_location }}
+                </div>
+            </div>
+            <p class="mb-2">
+                <i class="bi bi-calendar-event mr-2"></i>{{ account.user.date_joined|date:"d.m.Y" }}
+            </p>
+            <p class="mb-2"><i class="bi bi-hash mr-2"></i>{{ account.number|default:account.id }}</p>
+            <p class="mb-2"><i class="bi bi-person mr-2"></i>{{ account.user.username }}</p>
+        </div>
+    </div>
+</div>

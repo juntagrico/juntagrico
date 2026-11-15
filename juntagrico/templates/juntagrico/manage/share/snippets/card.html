@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header">
+        <h5 class="my-1"><i class="bi bi-file-earmark-text mr-2"></i>{% vocabulary 'share_pl' %}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% share_summary account %}
+    </div>
+    {% if account.shares.exists %}
+        <div class="card-body">
+            <a href="{% url 'manage-share-by-account' account.id %}" class="btn btn-secondary">
+                <span>
+                    {% blocktrans with v_share_pl=vocabulary.share_pl %}{{ v_share_pl }} ansehen{% endblocktrans %}
+                </span>
+            </a>
+        </div>
+    {% endif %}
+</div>

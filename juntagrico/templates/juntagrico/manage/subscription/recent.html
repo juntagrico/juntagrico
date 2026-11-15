@@ -31,6 +31,11 @@
                 <th class="filter">
                     {% vocabulary "subscription" %}
                 </th>
+                {% if show_identifier %}
+                    <th class="filter">
+                        {% trans "Kennzeichnung" %}
+                    </th>
+                {% endif %}
                 <th class="filter">
                     {% trans "Bestandteil" %}
                 </th>
@@ -50,6 +55,11 @@
                 <th>
                     {% vocabulary "subscription" %}
                 </th>
+                {% if show_identifier %}
+                    <th>
+                        {% trans "Kennzeichnung" %}
+                    </th>
+                {% endif %}
                 <th>
                     {% trans "Bestandteil" %}
                 </th>
@@ -70,6 +80,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=deactivated_part.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ deactivated_part.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         {{ deactivated_part.type.display_name }}
                     </td>
@@ -89,6 +104,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=canceled_part.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ canceled_part.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         {{ canceled_part.type.display_name }}
                     </td>
@@ -108,6 +128,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=left_membership.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ left_membership.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         -
                     </td>
@@ -127,6 +152,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=joined_membership.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ joined_membership.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         -
                     </td>
@@ -146,6 +176,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=activated_part.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ activated_part.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         {{ activated_part.type.display_name }}
                     </td>
@@ -165,6 +200,11 @@
                     <td>
                         {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=ordered_part.subscription %}
                     </td>
+                    {% if show_identifier %}
+                        <td>
+                            {{ ordered_part.subscription.identifier|default_if_none:'' }}
+                        </td>
+                    {% endif %}
                     <td>
                         {{ ordered_part.type.display_name }}
                     </td>

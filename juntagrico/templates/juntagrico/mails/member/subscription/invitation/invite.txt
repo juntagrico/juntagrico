@@ -1,0 +1,14 @@
+{% extends "../../base.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block message %}
+{% config "organisation_name" as c_organisation_name %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "co_member" as v_co_member %}
+{% blocktrans with inviter=invitee.invited_by %}Soeben hat dich '{{ inviter }}' als {{ v_co_member }} bei {{ v_d_enriched_organisation }} eingeladen.{% endblocktrans %}
+
+{% trans "Einladung öffnen:" %} {{ server_url }}{% url 'invitation' invitee.key %}
+
+{% blocktrans %}Falls du keine Einladung erwartest, kannst du dieses E-Mail ignorieren.{% endblocktrans %}
+{% endblock %}

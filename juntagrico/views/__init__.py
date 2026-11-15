@@ -1,24 +1,22 @@
 from datetime import timedelta
 
-from django.contrib import auth
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, Job, JobType
-from juntagrico.entity.member import Member
-from juntagrico.forms import MemberProfileForm, NonCoopMemberCancellationForm, \
-    CoopMemberCancellationForm, AreaDescriptionForm
+from juntagrico.forms import MemberProfileForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left, canceled
-from juntagrico.util.temporal import next_membership_end_date
+from juntagrico.queryset.job import get_prefetched_jobs
+from juntagrico.signals import area_joined
 from juntagrico.view_decorators import highlighted_menu
 from juntagrico.config import Config
 
@@ -34,8 +32,10 @@ def home(request):
     # collect jobs that always show
     # avoiding LIMIT in IN-subquery to support mysql https://dev.mysql.com/doc/refman/8.4/en/subquery-restrictions.html
     pinned_jobs = jobs_base.filter(pinned=True)
-    promoted_jobs = jobs_base.by_type_name(Config.jobs_frontpage('promoted_types')).next(Config.jobs_frontpage('promoted_count'))
-    show_job_ids = set(pinned_jobs.values_list('id', flat=True)) | set(promoted_jobs.values_list('id', flat=True))
+    show_job_ids = set(pinned_jobs.values_list('id', flat=True))
+    if promoted_types := Config.jobs_frontpage('promoted_types'):
+        promoted_jobs = jobs_base.by_type_name(promoted_types).next(Config.jobs_frontpage('promoted_count'))
+        show_job_ids |= set(promoted_jobs.values_list('id', flat=True))
     show_jobs_count = len(show_job_ids)
     # fill with future jobs of next x days or until max
     remaining_to_max = Config.jobs_frontpage('max') - show_jobs_count
@@ -49,9 +49,9 @@ def home(request):
         show_job_ids |= set(next_jobs.values_list('id', flat=True))
 
     return render(request, 'home.html', {
-        'jobs': Job.objects.filter(id__in=show_job_ids).order_by('time'),
+        'jobs': get_prefetched_jobs(id__in=show_job_ids),
         'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
-        'areas': ActivityAreaDao.all_visible_areas_ordered(),
+        'areas': ActivityArea.objects.filter(hidden=False).order_by('-core', 'name'),
     })
 
 
@@ -127,6 +127,7 @@ def show_area(request, area_id, form_class=AreaDescriptionForm):
 
 
 @login_required
+@require_POST
 def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
@@ -138,13 +139,11 @@ def area_join(request, area_id):
 
 
 @login_required
+@require_POST
 def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
-    old_area.members.remove(member)
-    area_left.send(ActivityArea, area=old_area, member=member)
-    adminnotification.member_left_activityarea(old_area, member)
-    old_area.save()
+    old_area.leave(member)
     return HttpResponse()
 
 
@@ -214,45 +213,6 @@ def profile(request):
 
 
 @login_required
-def cancel_membership(request):
-    member = request.user.member
-    # Check if membership can be canceled
-    asc = member.usable_shares_count
-    sub = member.subscription_current
-    f_sub = member.subscription_future
-    future_active = f_sub is not None and not f_sub.canceled
-    current_active = sub is not None and not sub.canceled
-    future = future_active and f_sub.share_overflow - asc < 0
-    current = current_active and sub.share_overflow - asc < 0
-    share_error = future or current
-    can_cancel = not share_error and not future_active and not current_active
-    # considering unpaid shares as well, as they might have been paid but not yet updated in the system.
-    # Then IBAN is needed to pay it back.
-    coop_member = member.usable_shares_count > 0
-    if coop_member:
-        form_type = CoopMemberCancellationForm
-    else:
-        form_type = NonCoopMemberCancellationForm
-    if can_cancel and request.method == 'POST':
-        form = form_type(request.POST, instance=member)
-        if form.is_valid():
-            form.save()
-            canceled.send(Member, instance=form.instance, message=form.cleaned_data.get('message'))
-            return redirect('profile')
-    else:
-        form = form_type(instance=member)
-    renderdict = {
-        'coop_member': coop_member,
-        'end_date': next_membership_end_date(),
-        'member': member,
-        'can_cancel': can_cancel,
-        'share_error': share_error,
-        'form': form
-    }
-    return render(request, 'juntagrico/my/membership/cancel.html', renderdict)
-
-
-@login_required
 def send_confirm(request):
     member = request.user.member
     if not member.confirmed:
@@ -270,9 +230,8 @@ def password_changed(request):
     return render(request, 'password.html', {'success': True})
 
 
-def logout_view(request):
-    auth.logout(request)
-    return redirect('home')
+class LogoutView(auth_views.LogoutView):
+    next_page = 'home'
 
 
 def cookies(request):

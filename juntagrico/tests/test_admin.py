@@ -5,6 +5,7 @@ from django.utils import timezone
 from juntagrico.entity.jobs import RecuringJob
 from . import JuntagricoTestCaseWithShares
 from ..defaults import richtextfield_config
+from ..entity.membership import Membership
 
 
 class AdminTests(JuntagricoTestCaseWithShares):
@@ -195,6 +196,10 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_changelist'), member=self.admin, data={'q': 'test'})
 
+    @override_settings(MEMBERSHIP={'enable': False})
+    def testSubtypeWithoutMemebrshipsAdmin(self):
+        self.testSubtypeAdmin()
+
     def testSubBundleAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptionbundle_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionbundle_change', args=(self.bundle.pk,)), member=self.admin)
@@ -209,6 +214,12 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_change', args=(self.sub_product.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscriptionproduct_changelist'), member=self.admin, data={'q': 'test'})
+
+    def testMembershipAdmin(self):
+        membership = Membership.objects.create(account=self.admin)
+        self.assertGet(reverse('admin:juntagrico_membership_changelist'), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_membership_change', args=(membership.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_membership_changelist'), member=self.admin, data={'q': 'test'})
 
     @override_settings(DJRICHTEXTFIELD_CONFIG=richtextfield_config('en', True))
     def testRichTextField(self):

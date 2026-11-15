@@ -2,14 +2,15 @@ from django import template
 from django.utils.translation import gettext as _
 from schwifty import IBAN
 
+from juntagrico.config import Config
+
 register = template.Library()
 
 
 @register.simple_tag
 def required_for_subscription(share, index):
     member = share.member
-    subscription = member.subscription_future or member.subscription_current
-    if subscription:
+    for subscription in member.subscriptions.all():
         remaining = subscription.required_shares - subscription.paid_shares
         if index <= remaining:
             other_unpaid = subscription.co_members(of_member=member).filter(
@@ -19,6 +20,16 @@ def required_for_subscription(share, index):
                 return _("Ja. Oder ") + ", ".join(
                     str(o) for o in other_unpaid.distinct()
                 ) + ". " + _("({} insgesamt)").format(remaining)
+            return _("Ja")
+    return _("Nein")
+
+
+@register.filter
+def required_for_membership(share, index):
+    # requires annotations. See ShareUnpaidView
+    if Config.membership('enable') and share.member.has_uncanceled_membership:
+        required_shares = Config.membership('required_shares') - share.member.active_usable_shares
+        if required_shares >= index:
             return _("Ja")
     return _("Nein")
 

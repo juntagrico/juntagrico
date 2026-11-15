@@ -8,964 +8,511 @@ msgid ""
 msgstr ""
 "Project-Id-Version: juntagrico \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 15:50+0200\n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_CH\n"
 "Language-Team: de_CH <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"MIME-Version: 1.0\n"
+"MIME-Version: 1.0\n
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../reference/permissions.rst:4 4b18e22158e340c988df07054b116579
 msgid "Permissions"
 msgstr "Berechtigungen"
 
-#: ../../reference/permissions.rst:7 50fffa83e75f4cd39a3579ddaa32dc64
-msgid ""
-"Permissions are named in the language of your instance and use your "
-"terminology."
-msgstr ""
-"Berechtigungen sind in der Sprache deiner Instanz benannt und verwenden "
-"dein Vokabular."
+msgid "Permissions are named in the language of your instance and use your terminology."
+msgstr "Berechtigungen sind in der Sprache deiner Instanz benannt und verwenden dein Vokabular."
 
-#: ../../reference/permissions.rst:9 ac7913d215894d0a83d319a93f8bddb4
-msgid ""
-"juntagrico relies heavily on the Django permission mechanism to customize"
-" the system for different users. In this chapter we will explain which "
-"permissions can be used for customization and how they work."
-msgstr ""
-"Juntagrico verlässt sich stark auf den Django-Berechtigungsmechanismus, "
-"um das System für verschiedene Benutzer anzupassen. In diesem Kapitel "
-"erklären wir, welche Berechtigungen zur Anpassung verwendet werden können"
-" und wie sie funktionieren."
+msgid "juntagrico relies heavily on the Django permission mechanism to customize the system for different users. In this chapter we will explain which permissions can be used for customization and how they work."
+msgstr "Juntagrico verlässt sich stark auf den Django-Berechtigungsmechanismus, um das System für verschiedene Benutzer anzupassen. In diesem Kapitel erklären wir, welche Berechtigungen zur Anpassung verwendet werden können und wie sie funktionieren."
 
-#: ../../reference/permissions.rst:13 0bf91e82e34247988ff981cfab2edf4a
 msgid "Grant Permissions"
 msgstr "Berechtigungen erteilen"
 
-#: ../../reference/permissions.rst:16 08523a23bf9d46508136f57664a74114
 msgid "Create a group"
 msgstr "Gruppe erstellen"
 
-#: ../../reference/permissions.rst:18 ../../reference/permissions.rst:42
-#: 12fa70558a4a40e681abbe8848208c0b c1839085382247ee96e6093cf1c35ede
 msgid "Login with a super admin user."
 msgstr "Mit einem Super-Admin-Benutzer anmelden."
 
-#: ../../reference/permissions.rst:19 afaecbc7f1c644d19ee194f1ff9de6a1
-msgid ""
-"Open the data management (\"Datenverwaltung\") -> Groups -> Add to create"
-" a new group or edit an existing one."
-msgstr ""
-"Öffne die Datenverwaltung (\"Datenverwaltung\") -> Gruppen -> Hinzufügen,"
-" um eine neue Gruppe zu erstellen oder eine bestehende zu bearbeiten."
+msgid "Open the data management (\"Datenverwaltung\") -> Groups -> Add to create a new group or edit an existing one."
+msgstr "Öffne die Datenverwaltung (\"Datenverwaltung\") -> Gruppen -> Hinzufügen, um eine neue Gruppe zu erstellen oder eine bestehende zu bearbeiten."
 
-#: ../../reference/permissions.rst:20 935375382f144f8e99a9182e1191d376
 msgid "Set a name for the group, e.g. \"share management\"."
 msgstr "Gib der Gruppe einen Namen, z.B. \"Anteilsschein-Verwaltung\"."
 
-#: ../../reference/permissions.rst:21 ebc0f5e2aeac445eb72a9d98a19e758d
-msgid ""
-"Select and add the permissions (using the arrow to the right in the "
-"middle) that you want to give to this group and save the group."
-msgstr ""
-"Wähle und füge die Berechtigungen hinzu (mit dem Pfeil rechts in der "
-"Mitte), die du dieser Gruppe geben möchtest, und speichere die Gruppe."
+msgid "Select and add the permissions (using the arrow to the right in the middle) that you want to give to this group and save the group."
+msgstr "Wähle und füge die Berechtigungen hinzu (mit dem Pfeil rechts in der Mitte), die du dieser Gruppe geben möchtest, und speichere die Gruppe."
 
-#: ../../reference/permissions.rst:24 45fe03ccec2e4d47bb0cf8ba74b2b80a
 msgid "What Permissions do I need to set?"
 msgstr "Welche Berechtigungen muss ich setzen?"
 
-#: ../../reference/permissions.rst:26 9975ea70a57a4d15bf60ee89d02570ae
 msgid "There are 4 basic permissions for each entity which are self explanatory:"
 msgstr "Es gibt 4 Grundberechtigungen für jede Entität, die selbsterklärend sind:"
 
-#: ../../reference/permissions.rst:28 b08f6bba2e2944348a3395d078478d73
 msgid "View"
 msgstr "Anzeigen"
 
-#: ../../reference/permissions.rst:29 dc8dd5c40ec844c8bbce6df7ec49d896
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ../../reference/permissions.rst:30 560b3b0677e34bc2aa999f2cefbcf4e9
 msgid "Change"
 msgstr "Ändern"
 
-#: ../../reference/permissions.rst:31 f831e467a5974094abf16ccf2581532b
 msgid "Delete"
 msgstr "Löschen"
 
-#: ../../reference/permissions.rst:34 f82c1c10294e47e1bcddbeaaaf3ee8a9
-msgid ""
-"If a user should be able to change an entity, they also need access to at"
-" least view the related entities. See :ref:`Dependent Permissions "
-"<reference-dependent-permissions>` below."
-msgstr ""
-"Falls ein Benutzer eine Entität ändern können soll, benötigt er auch "
-"Zugriff um verwandte Entitäten mindestens anzusehen. Siehe unten "
-":ref:`Abhängige Berechtigungen <reference-dependent-permissions>`."
+msgid "If a user should be able to change an entity, they also need access to at least view the related entities. See :ref:`Dependent Permissions <reference-dependent-permissions>` below."
+msgstr "Falls ein Benutzer eine Entität ändern können soll, benötigt er auch Zugriff um verwandte Entitäten mindestens anzusehen. Siehe unten :ref:`Abhängige Berechtigungen <reference-dependent-permissions>`."
 
-#: ../../reference/permissions.rst:37 69745de453914331a9a7e95edc2c4f8c
-msgid ""
-"Juntagrico provides some additional permissions, that are described in "
-"the sections below."
-msgstr ""
-"Juntagrico bietet einige zusätzliche Berechtigungen, die in den folgenden"
-" Abschnitten beschrieben werden."
+msgid "Juntagrico provides some additional permissions, that are described in the sections below."
+msgstr "Juntagrico bietet einige zusätzliche Berechtigungen, die in den folgenden Abschnitten beschrieben werden."
 
-#: ../../reference/permissions.rst:40 03618efa2df845eca2a8de99f0b5d042
 msgid "Add users to the group"
 msgstr "Benutzer zur Gruppe hinzufügen"
 
-#: ../../reference/permissions.rst:43 60a8e147c1d941378cef014062513e8c
-msgid ""
-"Open the data management (\"Datenverwaltung\") -> User (\"Benutzer\") and"
-" edit the user of the member you want to give the permissions to."
-msgstr ""
-"Öffne die Datenverwaltung (\"Datenverwaltung\") -> Benutzer "
-"(\"Benutzer\") und bearbeite den Benutzer des Mitglieds, dem du die "
-"Berechtigungen geben möchtest."
+msgid "Open the data management (\"Datenverwaltung\") -> User (\"Benutzer\") and edit the user of the member you want to give the permissions to."
+msgstr "Öffne die Datenverwaltung (\"Datenverwaltung\") -> Benutzer (\"Benutzer\") und bearbeite den Benutzer des Mitglieds, dem du die Berechtigungen geben möchtest."
 
-#: ../../reference/permissions.rst:44 a10cdc2887a4431e9bc61dba3838fbb9
-msgid ""
-"If the user needs access to the data management, tick staff status "
-"(\"Mitarbeiter-Status\")."
-msgstr ""
-"Wenn der Benutzer Zugriff auf die Datenverwaltung benötigt, setze das "
-"Häkchen bei Mitarbeiter-Status (\"Mitarbeiter-Status\")."
+msgid "If the user needs access to the data management, tick staff status (\"Mitarbeiter-Status\")."
+msgstr "Wenn der Benutzer Zugriff auf die Datenverwaltung benötigt, setze das Häkchen bei Mitarbeiter-Status (\"Mitarbeiter-Status\")."
 
-#: ../../reference/permissions.rst:45 4fa8007191f34f70bacb490ef46b1725
 msgid "Add the relevant groups for this user and save the user."
-msgstr ""
-"Füge die relevanten Gruppen für diesen Benutzer hinzu und speichere den "
-"Benutzer."
+msgstr "Füge die relevanten Gruppen für diesen Benutzer hinzu und speichere den Benutzer."
 
-#: ../../reference/permissions.rst:47 9b6ac44b5c4843a59974da87615b57df
-msgid ""
-"You may also give permissions do users directly but this is not "
-"recommended as it is then harder to transfer the same permissions to "
-"another user."
-msgstr ""
-"Du kannst Berechtigungen auch direkt an Benutzer geben, dies wird aber "
-"nicht empfohlen, da es dann schwieriger ist, dieselben Berechtigungen auf"
-" einen anderen Benutzer zu übertragen."
+msgid "You may also give permissions do users directly but this is not recommended as it is then harder to transfer the same permissions to another user."
+msgstr "Du kannst Berechtigungen auch direkt an Benutzer geben, dies wird aber nicht empfohlen, da es dann schwieriger ist, dieselben Berechtigungen auf einen anderen Benutzer zu übertragen."
 
-#: ../../reference/permissions.rst:50 24f65af878ca489087b0c282c57c91fc
 msgid "Testing the user access"
 msgstr "Benutzerzugriff testen"
 
-#: ../../reference/permissions.rst:52 961b8bc93b07418bac040cf2ca338ab5
-msgid ""
-"To be sure, that the user can do what you intended them to do, it is best"
-" to create a test user and give them the same permissions. Try out all "
-"actions with the test user, to confirm that they work."
-msgstr ""
-"Um sicherzugehen, dass der Benutzer tun kann, was du ihm ermöglichen "
-"möchtest, ist es am besten, einen Test-Benutzer zu erstellen und ihm "
-"dieselben Berechtigungen zu geben. Teste alle Aktionen mit dem Test-"
-"Benutzer, um zu bestätigen, dass sie funktionieren."
+msgid "To be sure, that the user can do what you intended them to do, it is best to create a test user and give them the same permissions. Try out all actions with the test user, to confirm that they work."
+msgstr "Um sicherzugehen, dass der Benutzer tun kann, was du ihm ermöglichen möchtest, ist es am besten, einen Test-Benutzer zu erstellen und ihm dieselben Berechtigungen zu geben. Teste alle Aktionen mit dem Test-Benutzer, um zu bestätigen, dass sie funktionieren."
 
-#: ../../reference/permissions.rst:56 38a3bfc8a19e4a3aab477883544ac644
-msgid ""
-"You can also test the permissions of a user by impersonating them. "
-"However, by default the data admin is excluded from impersonation. If you"
-" want to check the users permissions in the data admin as well, set the "
-"``IMPERSONATE_URI_EXCLUSIONS`` setting to an empty list. `Read more "
-"<https://code.netlandish.com/~petersanchez/django-"
-"impersonate/#settings>`_."
-msgstr ""
-"Du kannst auch die Berechtigungen eines Benutzers testen, indem du dich "
-"als ihn ausgeben. Standardmäßig ist jedoch der Daten-Admin von der "
-"Übernahme ausgeschlossen. Wenn du die Benutzerberechtigungen auch im "
-"Daten-Admin prüfen möchtest, setze die Einstellung "
-"``IMPERSONATE_URI_EXCLUSIONS`` auf eine leere Liste. `Mehr lesen "
-"<https://code.netlandish.com/~petersanchez/django-"
-"impersonate/#settings>`_."
+msgid "You can also test the permissions of a user by impersonating them. However, by default the data admin is excluded from impersonation. If you want to check the users permissions in the data admin as well, set the ``IMPERSONATE_URI_EXCLUSIONS`` setting to an empty list. `Read more <https://code.netlandish.com/~petersanchez/django-impersonate/#settings>`_."
+msgstr "Du kannst auch die Berechtigungen eines Benutzers testen, indem du dich als ihn ausgeben. Standardmäßig ist jedoch der Daten-Admin von der Übernahme ausgeschlossen. Wenn du die Benutzerberechtigungen auch im Daten-Admin prüfen möchtest, setze die Einstellung ``IMPERSONATE_URI_EXCLUSIONS`` auf eine leere Liste. `Mehr lesen <https://code.netlandish.com/~petersanchez/django-impersonate/#settings>`_."
 
-#: ../../reference/permissions.rst:64 976e90e53fc640218380afda2983a772
 msgid "Staff status and superuser status"
 msgstr "Mitarbeiter-Status und Superuser-Status"
 
-#: ../../reference/permissions.rst:66 afa17d7b6d7a4e7cb96e0535e6e7b2ac
-msgid ""
-"In addition to the permissions a user can be granted staff status "
-"(\"Mitarbeiter-Status\") and superuser status (\"Administrator-Status\")."
-" These have the following effects:"
-msgstr ""
-"Zusätzlich zu den Berechtigungen kann einem Benutzer Mitarbeiter-Status "
-"(\"Mitarbeiter-Status\") und Superuser-Status (\"Administrator-Status\") "
-"gewährt werden. Diese haben folgende Auswirkungen:"
+msgid "In addition to the permissions a user can be granted staff status (\"Mitarbeiter-Status\") and superuser status (\"Administrator-Status\"). These have the following effects:"
+msgstr "Zusätzlich zu den Berechtigungen kann einem Benutzer Mitarbeiter-Status (\"Mitarbeiter-Status\") und Superuser-Status (\"Administrator-Status\") gewährt werden. Diese haben folgende Auswirkungen:"
 
-#: ../../reference/permissions.rst:69 c2bd2ffa717349a294110cdd953c37df
-msgid ""
-"staff status: Allows the user to login to the django admin page "
-"(\"Datenverwaltung\"), to see which version of juntagrico is installed "
-"and to contact any member via email."
-msgstr ""
-"Mitarbeiter-Status: Ermöglicht dem Benutzer, sich auf der Django-Admin-"
-"Seite (\"Datenverwaltung\") anzumelden, zu sehen, welche Version von "
-"Juntagrico installiert ist und jedes Mitglied per E-Mail zu kontaktieren."
+msgid "staff status: Allows the user to login to the django admin page (\"Datenverwaltung\"), to see which version of juntagrico is installed and to contact any member via email."
+msgstr "Mitarbeiter-Status: Ermöglicht dem Benutzer, sich auf der Django-Admin-Seite (\"Datenverwaltung\") anzumelden, zu sehen, welche Version von Juntagrico installiert ist und jedes Mitglied per E-Mail zu kontaktieren."
 
-#: ../../reference/permissions.rst:70 751dd46731ae41cea0aaa563bb100127
-msgid ""
-"superuser status: Grants the user all permissions, except the "
-"notification permissions, which need to be granted specifically."
-msgstr ""
-"Superuser-Status: Gewährt dem Benutzer alle Berechtigungen, ausgenommen "
-"die Benachrichtigungs-Berechtigungen, die speziell gewährt werden müssen."
+msgid "superuser status: Grants the user all permissions, except the notification permissions, which need to be granted specifically."
+msgstr "Superuser-Status: Gewährt dem Benutzer alle Berechtigungen, ausgenommen die Benachrichtigungs-Berechtigungen, die speziell gewährt werden müssen."
 
-#: ../../reference/permissions.rst:73 a1a5eff1b23a4ea687a2752c3936ffc3
 msgid "Dependent permissions"
 msgstr "Abhängige Berechtigungen"
 
-#: ../../reference/permissions.rst:74 208d0f8a19fd4fce87e49fa270792a95
-msgid ""
-"In order to be able to edit some types of entities not only the "
-"``change`` permission of this entity type has to be granted to a member "
-"but also some dependent permissions."
-msgstr ""
-"Um bestimmte Entitätsarten bearbeiten zu können, muss nicht nur die "
-"``change``-Berechtigung für diesen Entitätstyp einem Mitglied gewährt "
-"werden, sondern auch einige abhängige Berechtigungen."
+msgid "In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also some dependent permissions."
+msgstr "Um bestimmte Entitätsarten bearbeiten zu können, muss nicht nur die ``change``-Berechtigung für diesen Entitätstyp einem Mitglied gewährt werden, sondern auch einige abhängige Berechtigungen."
 
-#: ../../reference/permissions.rst:78 602e0f1907de4a2587838723ae7ea159
 msgid "Subscription"
 msgstr "Abonnement"
 
-#: ../../reference/permissions.rst:79 90ba4d112eae4303a885c3ce5d6f24a7
-msgid ""
-"Also requires change permissions for subscription parts and subscription "
-"membership. And view permission for members."
-msgstr ""
-"Erfordert zudem Änderungsberechtigungen für Abonnement-Teile und "
-"Abonnement-Mitgliedschaft. Und Anzeigeberechtigung für Mitglieder."
+msgid "Also requires change permissions for subscription parts and subscription membership. And view permission for members."
+msgstr "Erfordert zudem Änderungsberechtigungen für Abonnement-Teile und Abonnement-Mitgliedschaft. Und Anzeigeberechtigung für Mitglieder."
 
-#: ../../reference/permissions.rst:83 88ea3b7914f64b02a31ae083b08e8d8e
 msgid "Jobs"
 msgstr "Jobs"
 
-#: ../../reference/permissions.rst:84 871d0d54a04c468a850a29aa4762cc84
-msgid ""
-"Also requires change permission for assignments and job extras. And view "
-"permission for job types and members."
-msgstr ""
-"Erfordert zudem Änderungsberechtigung für Einsätze und Job-Zusätze. Und "
-"Anzeigeberechtigung für Job-Typen und Mitglieder."
+msgid "Also requires change permission for assignments and job extras. And view permission for job types and members."
+msgstr "Erfordert zudem Änderungsberechtigung für Einsätze und Job-Zusätze. Und Anzeigeberechtigung für Job-Typen und Mitglieder."
 
-#: ../../reference/permissions.rst:88 8409cebab8dc4656a7e3f3a92da5feef
 msgid "Job Types"
 msgstr "Job-Typen"
 
-#: ../../reference/permissions.rst:89 ../../reference/permissions.rst:93
-#: 63bdddfe45fd440f9223d8bed9277657 9defaf17cf7c484db890b852d32cf88b
 msgid "Also require at least view permission for locations."
 msgstr "Erfordert zudem mindestens Anzeigeberechtigung für Orte."
 
-#: ../../reference/permissions.rst:92 0d3818dad3cf4b8ca1e460c3013258d4
 msgid "Depot"
 msgstr "Depot"
 
-#: ../../reference/permissions.rst:96 79f6ce7829e345118fa84d808c709fb9
 msgid "Deliveries"
 msgstr "Lieferungen"
 
-#: ../../reference/permissions.rst:97 f285f21b9bcd4011b3a2469d6c64eb4e
 msgid "Also requires change permission for deliver item."
 msgstr "Erfordert zudem Änderungsberechtigung für Lieferartikel."
 
-#: ../../reference/permissions.rst:100 94c47af3504c4b07abe8e6a60c32532b
 msgid "Shares"
 msgstr "Anteilscheine"
 
-#: ../../reference/permissions.rst:101 cd7ed5ac60a64d7e837b1a2233c42b0e
 msgid "Also require at least view permission for members."
 msgstr "Erfordert zudem mindestens Anzeigeberechtigung für Mitglieder."
 
-#: ../../reference/permissions.rst:105 5754725c460a48eda9b70d181776d4a7
 msgid "Area and Depot Admins"
 msgstr "Bereichs- und Depot-Admins"
 
-#: ../../reference/permissions.rst:107 bb091a94c858400d947104ec8bfd6b52
 msgid "Depot Coordinators"
 msgstr "Depot-Koordinatoren"
 
-#: ../../reference/permissions.rst:110 c96a45cac9d745d899d692f77de950b9
 msgid "Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed."
 msgstr "Geändert in 2.0: Berechtigung `juntagrico.is_depot_admin` wurde entfernt."
 
-#: ../../reference/permissions.rst:112 99a330ec6ad1405699ecd77976398bfa
-msgid ""
-"Depot coordinator permissions are configured for each depot and "
-"coordinator individually. These permissions can be set when editing a "
-"depot in the data management (\"Datenverwaltung\") -> Depots "
-"(\"Depots\"). There you can add a coordinator and distribute the "
-"following permissions."
-msgstr ""
-"Depot-Koordinator-Berechtigungen werden für jedes Depot und jeden "
-"Koordinator individuell konfiguriert. Diese Berechtigungen können beim "
-"Bearbeiten eines Depots in der Datenverwaltung (\"Datenverwaltung\") -> "
-"Depots (\"Depots\") gesetzt werden. Dort kannst du einen Koordinator "
-"hinzufügen und die folgenden Berechtigungen verteilen."
+msgid "Depot coordinator permissions are configured for each depot and coordinator individually. These permissions can be set when editing a depot in the data management (\"Datenverwaltung\") -> Depots (\"Depots\"). There you can add a coordinator and distribute the following permissions."
+msgstr "Depot-Koordinator-Berechtigungen werden für jedes Depot und jeden Koordinator individuell konfiguriert. Diese Berechtigungen können beim Bearbeiten eines Depots in der Datenverwaltung (\"Datenverwaltung\") -> Depots (\"Depots\") gesetzt werden. Dort kannst du einen Koordinator hinzufügen und die folgenden Berechtigungen verteilen."
 
-#: ../../reference/permissions.rst:116 96aa6db644634f008785b38aebfb6666
 msgid "Can modify depot: Coordinator can change the descriptions of this depot"
-msgstr ""
-"Darf Depot ändern: Koordinator darf die Beschreibungen dieses Depots "
-"ändern"
+msgstr "Darf Depot ändern: Koordinator darf die Beschreibungen dieses Depots ändern"
 
-#: ../../reference/permissions.rst:117 2c0a2da2d8764c10bfca1f3ff18def0c
-msgid ""
-"Can see members: Coordinator can see the list of members with active "
-"subscriptions in this depot"
-msgstr ""
-"Darf Mitglieder sehen: Koordinator darf die Liste der Mitglieder mit "
-"aktiven Abonnements in diesem Depot sehen"
+msgid "Can see members: Coordinator can see the list of members with active subscriptions in this depot"
+msgstr "Darf Mitglieder sehen: Koordinator darf die Liste der Mitglieder mit aktiven Abonnements in diesem Depot sehen"
 
-#: ../../reference/permissions.rst:118 c73da82b779e44ac99cee40901cc759f
-msgid ""
-"Can contact members: Coordinator can see names, email addresses and phone"
-" numbers of members with active subscriptions in this depot"
-msgstr ""
-"Darf Mitglieder kontaktieren: Koordinator darf Namen, E-Mail-Adressen und"
-" Telefonnummern der Mitglieder mit aktiven Abonnements in diesem Depot "
-"sehen"
+msgid "Can contact members: Coordinator can see names, email addresses and phone numbers of members with active subscriptions in this depot"
+msgstr "Darf Mitglieder kontaktieren: Koordinator darf Namen, E-Mail-Adressen und Telefonnummern der Mitglieder mit aktiven Abonnements in diesem Depot sehen"
 
-#: ../../reference/permissions.rst:121 1824a271463f4ebbb047df30cbc45e0d
 msgid "Area Coordinators"
 msgstr "Bereichskoordinatoren"
 
-#: ../../reference/permissions.rst:124 ed6185bb83d9499d9351ab21cc23ef24
 msgid "Changed in 2.0: Permission `juntagrico.is_area_admin` was removed."
 msgstr "Geändert in 2.0: Berechtigung `juntagrico.is_area_admin` wurde entfernt."
 
-#: ../../reference/permissions.rst:126 c8fcc9d37f7e4f6b93b2612431af4bde
-msgid ""
-"Area coordinator permissions are configured for each area and coordinator"
-" individually. These permissions can be set when editing an area in the "
-"data management (\"Datenverwaltung\") -> Activity Area "
-"(\"Tätigkeitsbereiche\"). There you can add a coordinator and distribute "
-"the following permissions."
-msgstr ""
-"Bereichskoordinator-Berechtigungen werden für jeden Bereich und "
-"Koordinator individuell konfiguriert. Diese Berechtigungen können beim "
-"Bearbeiten eines Bereichs in der Datenverwaltung (\"Datenverwaltung\") ->"
-" Tätigkeitsbereiche (\"Tätigkeitsbereiche\") gesetzt werden. Dort kannst "
-"du einen Koordinator hinzufügen und die folgenden Berechtigungen "
-"verteilen."
+msgid "Area coordinator permissions are configured for each area and coordinator individually. These permissions can be set when editing an area in the data management (\"Datenverwaltung\") -> Activity Area (\"Tätigkeitsbereiche\"). There you can add a coordinator and distribute the following permissions."
+msgstr "Bereichskoordinator-Berechtigungen werden für jeden Bereich und Koordinator individuell konfiguriert. Diese Berechtigungen können beim Bearbeiten eines Bereichs in der Datenverwaltung (\"Datenverwaltung\") -> Tätigkeitsbereiche (\"Tätigkeitsbereiche\") gesetzt werden. Dort kannst du einen Koordinator hinzufügen und die folgenden Berechtigungen verteilen."
 
-#: ../../reference/permissions.rst:130 8cdb99223b084d07b6825643bb121d0e
-msgid ""
-"Can modify area: Coordinator can change the description and the "
-"contact(s) of this area"
-msgstr ""
-"Darf Bereich ändern: Koordinator darf die Beschreibung und den/die "
-"Kontakt(e) dieses Bereichs ändern"
+msgid "Can modify area: Coordinator can change the description and the contact(s) of this area"
+msgstr "Darf Bereich ändern: Koordinator darf die Beschreibung und den/die Kontakt(e) dieses Bereichs ändern"
 
-#: ../../reference/permissions.rst:131 e58d96ff4e884a50bc22c3ae8bcbc975
-msgid ""
-"Can see members: Coordinator can see the list of members that participate"
-" in this activity area"
-msgstr ""
-"Darf Mitglieder sehen: Koordinator darf die Liste der Mitglieder sehen, "
-"die in diesem Tätigkeitsbereich teilnehmen"
+msgid "Can see members: Coordinator can see the list of members that participate in this activity area"
+msgstr "Darf Mitglieder sehen: Koordinator darf die Liste der Mitglieder sehen, die in diesem Tätigkeitsbereich teilnehmen"
 
-#: ../../reference/permissions.rst:132 0e6cb07414bb426b9b2a6cdc8fc815ce
-msgid ""
-"Can contact members: Coordinator can see names, email addresses and phone"
-" numbers of area participants and can contact participants of jobs in "
-"their area"
-msgstr ""
-"Darf Mitglieder kontaktieren: Koordinator darf Namen, E-Mail-Adressen und"
-" Telefonnummern der Bereichsteilnehmer sehen und Teilnehmer von Jobs in "
-"seinem Bereich kontaktieren"
+msgid "Can contact members: Coordinator can see names, email addresses and phone numbers of area participants and can contact participants of jobs in their area"
+msgstr "Darf Mitglieder kontaktieren: Koordinator darf Namen, E-Mail-Adressen und Telefonnummern der Bereichsteilnehmer sehen und Teilnehmer von Jobs in seinem Bereich kontaktieren"
 
-#: ../../reference/permissions.rst:133 eba7de9c5ffd43d59373cbb865af4d19
 msgid "Can remove members: Coordinator can remove participants from this area"
-msgstr ""
-"Darf Mitglieder entfernen: Koordinator darf Teilnehmer aus diesem Bereich"
-" entfernen"
+msgstr "Darf Mitglieder entfernen: Koordinator darf Teilnehmer aus diesem Bereich entfernen"
 
-#: ../../reference/permissions.rst:134 0f7ef2e4f7e845ce97e9c12e10e3d6f5
 msgid "Can manage jobs: Coordinator can create and modify all jobs of this area"
-msgstr ""
-"Darf Jobs verwalten: Koordinator darf alle Jobs dieses Bereichs erstellen"
-" und bearbeiten"
+msgstr "Darf Jobs verwalten: Koordinator darf alle Jobs dieses Bereichs erstellen und bearbeiten"
 
-#: ../../reference/permissions.rst:135 5d57dcee014c40908d7f121559ad162d
-msgid ""
-"Can manage assignments: Coordinator can change and remove assignments of "
-"jobs in this area"
-msgstr ""
-"Darf Einsätze verwalten: Koordinator darf Einsätze von Jobs in diesem "
-"Bereich ändern und entfernen"
+msgid "Can manage assignments: Coordinator can change and remove assignments of jobs in this area"
+msgstr "Darf Einsätze verwalten: Koordinator darf Einsätze von Jobs in diesem Bereich ändern und entfernen"
 
-#: ../../reference/permissions.rst:141 4f337afc3b584ad2b7307d091a954de2
+msgid "All area coordinators can view and delete the messages left on jobs in their area. The permission `juntagrico.manage_job_messages` grants access to view and delete messages on all jobs."
+msgstr "Alle Bereichskoordinatoren können die Nachrichten auf Jobs in ihrem Bereich anzeigen und löschen. Die Berechtigung `juntagrico.manage_job_messages` gewährt Zugriff, um Nachrichten auf allen Jobs anzeigen und löschen zu können."
+
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
-#: ../../reference/permissions.rst:142 89af3d9b462d48659e1f8c414de9d1e5
-msgid ""
-"Some entities send a notification email when they are created or "
-"canceled. Should a member be notified on a certain event it has to have "
-"the corresponding permission for that entity type and event."
-msgstr ""
-"Einige Entitäten senden eine Benachrichtigungs-E-Mail, wenn sie erstellt "
-"oder gekündigt werden. Falls ein Mitglied über ein bestimmtes Ereignis "
-"benachrichtigt werden soll, muss es die entsprechende Berechtigung für "
-"diesen Entitätstyp und dieses Ereignis haben."
+msgid "Some entities send a notification email when they are created or canceled. Should a member be notified on a certain event it has to have the corresponding permission for that entity type and event."
+msgstr "Einige Entitäten senden eine Benachrichtigungs-E-Mail, wenn sie erstellt oder gekündigt werden. Falls ein Mitglied über ein bestimmtes Ereignis benachrichtigt werden soll, muss es die entsprechende Berechtigung für diesen Entitätstyp und dieses Ereignis haben."
 
-#: ../../reference/permissions.rst:147 7ad73ad7c3384323ba98ae0ffa9e5b37
-msgid ""
-"These permissions need to be given explicitly, i.e., administrators are "
-"not notified implicitly."
-msgstr ""
-"Diese Berechtigungen müssen explizit erteilt werden, d.h. Administratoren"
-" werden nicht implizit benachrichtigt."
+msgid "These permissions need to be given explicitly, i.e., administrators are not notified implicitly."
+msgstr "Diese Berechtigungen müssen explizit erteilt werden, d.h. Administratoren werden nicht implizit benachrichtigt."
 
-#: ../../reference/permissions.rst:153 ca81d1db487a4f1ba627b3eda6bc6f6e
 msgid "juntagrico.notified_on_share_creation"
 msgstr "juntagrico.notified_on_share_creation"
 
-#: ../../reference/permissions.rst:154 046be5276f914524aa676117b7939a80
-msgid ""
-"Person gets :ref:`notified <reference-notifications-share-created>` when "
-"a share is created."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-share-"
-"created>`, wenn eine Aktie erstellt wird."
+msgid "Person gets :ref:`notified <reference-notifications-share-created>` when a share is created."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-share-created>`, wenn eine Aktie erstellt wird."
 
-#: ../../reference/permissions.rst:157 ../../reference/permissions.rst:166
-#: ../../reference/permissions.rst:175 ../../reference/permissions.rst:184
-#: ../../reference/permissions.rst:193 ../../reference/permissions.rst:202
-#: ../../reference/permissions.rst:211 ../../reference/permissions.rst:220
-#: ../../reference/permissions.rst:229 ../../reference/permissions.rst:239
-#: ../../reference/permissions.rst:250 ../../reference/permissions.rst:257
-#: ../../reference/permissions.rst:264 ../../reference/permissions.rst:271
-#: ../../reference/permissions.rst:278 ../../reference/permissions.rst:285
-#: ../../reference/permissions.rst:293 ../../reference/permissions.rst:306
-#: ../../reference/permissions.rst:316 ../../reference/permissions.rst:326
-#: ../../reference/permissions.rst:333 ../../reference/permissions.rst:340
-#: ../../reference/permissions.rst:347 ../../reference/permissions.rst:354
-#: ../../reference/permissions.rst:361 ../../reference/permissions.rst:369
-#: ../../reference/permissions.rst:379 ../../reference/permissions.rst:387
-#: ../../reference/permissions.rst:398 ../../reference/permissions.rst:406
-#: ../../reference/permissions.rst:413 ../../reference/permissions.rst:420
-#: ../../reference/permissions.rst:433 01127c6e285147faaf627412cc41e2dd
-#: 0234c08fcd1a432192d0092340339c9e 05ac640766e347ae9c1f7eb2a11fcb8f
-#: 07f41693a0654569b29fce9b8cc9b951 0ea15d8b88984229aacacd6530ddddd7
-#: 1a40e3ad1d154d7b8896bc7c6426205d 243e40101adf499cb39149178953baed
-#: 46158898db6c4cf2bdc4a7b18e13a4e9 539f02f91f54465896eb8b04b4d168bd
-#: 57ff0c77ec764e3f9301e0e19ea5aae9 67f5df8a0a1544a0abd5675b957d3b5e
-#: 6b7a1baf2889439da4473762e8e9d728 6be6b61df0fb4f759a1f8ac296643ada
-#: 7026ffc53468408f8f0c91cb27c14d70 85525d8da8fe4acf85b2e36767e67064
-#: 91385b3bcac14ed09caf5038b41f77a5 9a089839ca144bca893f0dc0acdcb339
-#: 9cfaf8d486bc4d4ea181be1f616e949c 9e4612ca7bbc4d1d9fd5a3b1021c6972
-#: 9ec29ed78a394c5cb60889733054c9d5 a7fc6fed75554d59a60dbeaeb06e9726
-#: b6cd260b5a014ac9b1a1f214e4201345 bba29f8a418c4c68944b595106f223e0
-#: bdb8ebbfa02e4fdd9b94c9fb3150453b bebc46f5d99c41cb864273c8bd10e716
-#: c6b14e79f49b450d861e322746aee2fc ce593814900a49dd87fc1cfd69af83d7
-#: cf7a41f864e24dca80f9013b9d639d50 dcdadb8f9db04937a5c1c64f687b8c39
-#: f5d3a9752b5c4e40813e998bd705fade f65bcbd57c91406eb675791f40690aee
-#: fb91d35d7c1b4c5eb9c46e323e57994a ff839fef3f8340ae9e01c6fc00b1369b
 msgid "Search Hints:"
 msgstr "Suchhinweise:"
 
-#: ../../reference/permissions.rst:157 ../../reference/permissions.rst:175
-#: ../../reference/permissions.rst:193 ../../reference/permissions.rst:211
-#: 2fba4a1912874384915157c05114033b 3864907f2001409f913922bab84f32e4
-#: 6e2fab813c74494b9056d6ce6e1d7f22 9f4d0e929dc1458883acc7c15ecc9a67
 msgid "German: Erstellung informiert"
 msgstr "Deutsch: Erstellung informiert"
 
-#: ../../reference/permissions.rst:162 fcb6d0d2f4d54d7085be9f3a6d47b641
 msgid "juntagrico.notified_on_share_cancellation"
 msgstr "juntagrico.notified_on_share_cancellation"
 
-#: ../../reference/permissions.rst:163 8979e136d79b4294a6d2a78ce8bd36d5
-msgid ""
-"Person gets :ref:`notified <reference-notifications-share-canceled>` when"
-" a share is canceled."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-share-"
-"canceled>`, wenn eine Aktie gekündigt wird."
+msgid "Person gets :ref:`notified <reference-notifications-share-canceled>` when a share is canceled."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-share-canceled>`, wenn eine Aktie gekündigt wird."
 
-#: ../../reference/permissions.rst:166 ../../reference/permissions.rst:184
-#: ../../reference/permissions.rst:202 ../../reference/permissions.rst:220
-#: 2281bdad9d8c4e859c3e4b4fa5c40f62 5350220c24834b3ab1f7bd5bb6c74cfa
-#: 5484296b386a404ca0daf9de5bc402d0 80347e38e77d4855ba82424e82b733e5
 msgid "German: Kündigung informiert"
 msgstr "Deutsch: Kündigung informiert"
 
-#: ../../reference/permissions.rst:171 1ba14b9fd15c42f59e57eb3390285842
 msgid "juntagrico.notified_on_member_creation"
 msgstr "juntagrico.notified_on_member_creation"
 
-#: ../../reference/permissions.rst:172 0878f3eeee1b457286d36200aa511536
-msgid ""
-"Person gets :ref:`notified <reference-notifications-member-created>` when"
-" a member is created."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-member-"
-"created>`, wenn ein Mitglied erstellt wird."
+msgid "Person gets :ref:`notified <reference-notifications-member-created>` when a member is created."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-member-created>`, wenn ein Mitglied erstellt wird."
 
-#: ../../reference/permissions.rst:180 a15a06a0afe94864b700a4fbf80a24e8
 msgid "juntagrico.notified_on_member_cancellation"
 msgstr "juntagrico.notified_on_member_cancellation"
 
-#: ../../reference/permissions.rst:181 104df3ef0b3745dc9193bc53d1830f29
-msgid ""
-"Person gets :ref:`notified <reference-notifications-member-canceled>` "
-"when any member cancels their membership."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-member-"
-"canceled>`, wenn ein beliebiges Mitglied die Mitgliedschaft kündigt."
+msgid "Person gets :ref:`notified <reference-notifications-member-canceled>` when any member closes their account."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-member-canceled>`, wenn ein beliebiges Mitglied seinen Account schliesst."
 
-#: ../../reference/permissions.rst:189 28ad3a03b8264a0090e3a7e80a1ccc0c
+msgid "juntagrico.notified_on_membership_creation"
+msgstr "juntagrico.notified_on_membership_creation"
+
+msgid "Person gets :ref:`notified <reference-notifications-membership-created>` when a new membership is requested."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-membership-created>`, wenn eine neue Mitgliedschaft beantragt wird."
+
+msgid "juntagrico.notified_on_membership_cancellation"
+msgstr "juntagrico.notified_on_membership_cancellation"
+
+msgid "Person gets :ref:`notified <reference-notifications-membership-canceled>` when any member cancels their membership."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-membership-canceled>`, wenn ein beliebiges Mitglied seine Mitgliedschaft kündigt."
+
 msgid "juntagrico.notified_on_subscription_creation"
 msgstr "juntagrico.notified_on_subscription_creation"
 
-#: ../../reference/permissions.rst:190 a6d771d679494eafae7ebf1fe0acbac1
-msgid ""
-"Person gets :ref:`notified <reference-notifications-subscription-"
-"created>` when a subscription is created."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-subscription-"
-"created>`, wenn ein Abonnement erstellt wird."
+msgid "Person gets :ref:`notified <reference-notifications-subscription-created>` when a subscription is created."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-subscription-created>`, wenn ein Abonnement erstellt wird."
 
-#: ../../reference/permissions.rst:198 18ed6ff8249c4fe4978392ca69233e06
 msgid "juntagrico.notified_on_subscription_cancellation"
 msgstr "juntagrico.notified_on_subscription_cancellation"
 
-#: ../../reference/permissions.rst:199 ec119266f4f54ad8921952cc15d4f542
-msgid ""
-"Person gets :ref:`notified <reference-notifications-subscription-"
-"canceled>` when a subscription is canceled."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-subscription-"
-"canceled>`, wenn ein Abonnement gekündigt wird."
+msgid "Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is canceled."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-subscription-canceled>`, wenn ein Abonnement gekündigt wird."
 
-#: ../../reference/permissions.rst:207 1f0d97d784bc4a718ade94857ef5f193
 msgid "juntagrico.notified_on_subscriptionpart_creation"
 msgstr "juntagrico.notified_on_subscriptionpart_creation"
 
-#: ../../reference/permissions.rst:208 16d989760cbc4e27addc69f787d5fcb5
-msgid ""
-"Person gets :ref:`notified <reference-notifications-subscription-part-"
-"created>` when a subscription part is created."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-subscription-"
-"part-created>`, wenn ein Abonnement-Teil erstellt wird."
+msgid "Person gets :ref:`notified <reference-notifications-subscription-part-created>` when a subscription part is created."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-subscription-part-created>`, wenn ein Abonnement-Teil erstellt wird."
 
-#: ../../reference/permissions.rst:216 47a2c58551c940219aaf2b2e0c0a0aac
 msgid "juntagrico.notified_on_subscriptionpart_cancellation"
 msgstr "juntagrico.notified_on_subscriptionpart_cancellation"
 
-#: ../../reference/permissions.rst:217 9c2f53fcaf6b49e3808726d068d7b970
-msgid ""
-"Person gets :ref:`notified <reference-notifications-subscription-part-"
-"canceled>` when a subscription part is canceled."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-subscription-"
-"part-canceled>`, wenn ein Abonnement-Teil gekündigt wird."
+msgid "Person gets :ref:`notified <reference-notifications-subscription-part-canceled>` when a subscription part is canceled."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-subscription-part-canceled>`, wenn ein Abonnement-Teil gekündigt wird."
 
-#: ../../reference/permissions.rst:225 cbb6c1405f7f476da86dd2ac3b02fbc4
 msgid "juntagrico.notified_on_depot_change"
 msgstr "juntagrico.notified_on_depot_change"
 
-#: ../../reference/permissions.rst:226 2d09bd5be1694816804ac16e8441fae1
-msgid ""
-"Person gets :ref:`notified <reference-notifications-depot-change-"
-"request>` when a member wants to change their depot."
-msgstr ""
-"Person wird :ref:`benachrichtigt <reference-notifications-depot-change-"
-"request>`, wenn ein Mitglied sein Depot ändern möchte."
+msgid "Person gets :ref:`notified <reference-notifications-depot-change-request>` when a member wants to change their depot."
+msgstr "Person wird :ref:`benachrichtigt <reference-notifications-depot-change-request>`, wenn ein Mitglied sein Depot ändern möchte."
 
-#: ../../reference/permissions.rst:229 fe2e9f26f30b494e8225c1a3c3a6c822
 msgid "German: Änderung informiert"
 msgstr "Deutsch: Änderung informiert"
 
-#: ../../reference/permissions.rst:234 86a1562f3d1642dab078e8e63c635a90
 msgid "juntagrico.depot_list_notification"
 msgstr "juntagrico.depot_list_notification"
 
-#: ../../reference/permissions.rst:235 290e6fcb419e4945a3d36986bfcd416f
-msgid ""
-"Member gets :ref:`notified <reference-notifications-depot-list-"
-"generated>` when the depot list is generated."
-msgstr ""
-"Mitglied wird :ref:`benachrichtigt <reference-notifications-depot-list-"
-"generated>`, wenn die Depot-Liste erstellt wird."
+msgid "Member gets :ref:`notified <reference-notifications-depot-list-generated>` when the depot list is generated."
+msgstr "Mitglied wird :ref:`benachrichtigt <reference-notifications-depot-list-generated>`, wenn die Depot-Liste erstellt wird."
 
-#: ../../reference/permissions.rst:238 c4c8cc5399ff4ae8a19bff91c08176f0
 msgid "German: Listen-Erstellung informiert"
 msgstr "Deutsch: Listen-Erstellung informiert"
 
-#: ../../reference/permissions.rst:242 26bfc9252ba04fe1bfbf61e72139bc04
 msgid "Administrator Menu"
 msgstr "Administrations-Menü"
 
-#: ../../reference/permissions.rst:243 bd43c82a90bf4dcfaf87e77861e88bf9
-msgid ""
-"Which entries can be seen on the administration menu depend on a set of "
-"permissions."
-msgstr ""
-"Welche Einträge im Administrations-Menü sichtbar sind, hängt von einer "
-"Reihe von Berechtigungen ab."
+msgid "Which entries can be seen on the administration menu depend on a set of permissions."
+msgstr "Welche Einträge im Administrations-Menü sichtbar sind, hängt von einer Reihe von Berechtigungen ab."
 
-#: ../../reference/permissions.rst:246 1ce6ee3f4b444d76b50cf63798265365
 msgid "juntagrico.change_subscription"
 msgstr "juntagrico.change_subscription"
 
-#: ../../reference/permissions.rst:247 a4b68b984ada4d26a2ccce43176f7f08
 msgid "Person sees the subscription entry in the administration menu."
 msgstr "Person sieht den Abonnement-Eintrag im Administrations-Menü."
 
-#: ../../reference/permissions.rst:250 296f44b40427479db9e8d8612227f0d1
 msgid "German: Abo"
 msgstr "Deutsch: Abo"
 
-#: ../../reference/permissions.rst:253 c955132d6e3b4b4d89cb36e231b69759
 msgid "juntagrico.change_subscriptionpart"
 msgstr "juntagrico.change_subscriptionpart"
 
-#: ../../reference/permissions.rst:254 45faf9508bd54364a02a61455685fcd9
 msgid "Person sees the extra subscription entry in the administration menu."
 msgstr "Person sieht den Zusatz-Abonnement-Eintrag im Administrations-Menü."
 
-#: ../../reference/permissions.rst:257 6736b223b8d54da6b5db6cf474593ea7
 msgid "German: Bestandteil"
 msgstr "Deutsch: Bestandteil"
 
-#: ../../reference/permissions.rst:260 4236f912283a44b18cae02d85ec928a4
 msgid "juntagrico.change_member"
 msgstr "juntagrico.change_member"
 
-#: ../../reference/permissions.rst:261 5f8ef729660a491fa3b8344e8ba4b1a1
 msgid "Person sees the member entry in the administration menu."
 msgstr "Person sieht den Mitgiled-Eintrag im Administrations-Menü."
 
-#: ../../reference/permissions.rst:264 e0ebdf0a6bc648f9bdaaf1705c42d729
 msgid "German: Mitglied"
 msgstr "Deutsch: Mitglied"
 
-#: ../../reference/permissions.rst:267 ../../reference/permissions.rst:401
-#: 3012f09ed8a64b28b976f202488cfcba 92c464a8fad34311b0db2fc94105e17d
 msgid "juntagrico.change_assignment"
 msgstr "juntagrico.change_assignment"
 
-#: ../../reference/permissions.rst:268 dc8b4c34bb70472583b9836230a52ed9
 msgid "Person sees the assignment entry in the administration menu."
 msgstr "Person sieht den Einsatz-Eintrag im Administrations-Menü."
 
-#: ../../reference/permissions.rst:271 ../../reference/permissions.rst:406
-#: ../../reference/permissions.rst:413 8a848da74fc84e28a663366cd436fb44
-#: 8aa8829994564019b2adc1cb1b525d6a ba94c51768744f1082eafeac7169e0c5
 msgid "German: Arbeitseinsatz"
 msgstr "Deutsch: Arbeitseinsatz"
 
-#: ../../reference/permissions.rst:274 57eb17e2323c48b1ab78909140de9cf7
 msgid "juntagrico.change_share"
 msgstr "juntagrico.change_share"
 
-#: ../../reference/permissions.rst:275 500f0f39638845da8de9a16ae632028e
 msgid "Person sees the share entry in the administration menu."
 msgstr "Person sieht den Anteilscheine-Eintrag im Administrations-Menü."
 
-#: ../../reference/permissions.rst:278 332c94e99717401f8f54d7d501d81814
 msgid "German: Anteilsschein"
 msgstr "Deutsch: Anteilsschein"
 
-#: ../../reference/permissions.rst:281 e4a4d0b8f2514d7897a6cc0db6b95f38
 msgid "juntagrico.can_filter_members"
 msgstr "juntagrico.can_filter_members"
 
-#: ../../reference/permissions.rst:282 3501b0f1d8204f98a99608ef59bf8e66
-msgid ""
-"Person sees the member filter entry in the administration menu without "
-"the permission to change members."
-msgstr ""
-"Person sieht den Mitglieder-Filter-Eintrag im Administrations-Menü ohne "
-"die Berechtigung, Mitglieder zu ändern."
+msgid "Person sees the member filter entry in the administration menu without the permission to change members."
+msgstr "Person sieht den Mitglieder-Filter-Eintrag im Administrations-Menü ohne die Berechtigung, Mitglieder zu ändern."
 
-#: ../../reference/permissions.rst:285 ../../reference/permissions.rst:292
-#: a8aac8a38ca9464bb5da79f710d48096 ef88cf5b94f8410a8c34be286a68199d
 msgid "German: filtern"
 msgstr "Deutsch: filtern"
 
-#: ../../reference/permissions.rst:288 cd5f8eb4e75840ea981230f49ef42b78
 msgid "juntagrico.can_filter_subscriptions"
 msgstr "juntagrico.can_filter_subscriptions"
 
-#: ../../reference/permissions.rst:289 a08f8d79e4ee437aa4d2853d73337a7d
-msgid ""
-"Person sees the subscription filter entry in the administration menu "
-"without the permission to change subscriptions."
-msgstr ""
-"Person sieht den Abonnement-Filter-Eintrag im Administrations-Menü ohne "
-"die Berechtigung, Abonnements zu ändern."
+msgid "Person sees the subscription filter entry in the administration menu without the permission to change subscriptions."
+msgstr "Person sieht den Abonnement-Filter-Eintrag im Administrations-Menü ohne die Berechtigung, Abonnements zu ändern."
 
-#: ../../reference/permissions.rst:296 85359cf7a815427db96fdb97f3f3d9fa
 msgid "Email Permissions"
 msgstr "E-Mail-Berechtigungen"
 
-#: ../../reference/permissions.rst:297 2e6dedd5977542fda649a5f8654a74aa
 msgid "These permissions are related to sending emails."
 msgstr "Diese Berechtigungen beziehen sich auf das Senden von E-Mails."
 
-#: ../../reference/permissions.rst:300 ../../reference/permissions.rst:313
-#: ../../reference/permissions.rst:323 2c8bd66802c64121937699fb407adcb3
-#: f724f588b28947a8a6127b396aede468 f8d2f5272745470c93e9e4fad1639f14
 msgid "juntagrico.can_send_mails"
 msgstr "juntagrico.can_send_mails"
 
-#: ../../reference/permissions.rst:301 bd6b3207b1ec45d9b10378b83ab696ba
 msgid "Person can in general send emails to anyone."
 msgstr "Person kann allgemein E-Mails an beliebige Personen senden."
 
-#: ../../reference/permissions.rst:303 7c156dba6d904dd888f0dfe3b9f322fb
-msgid ""
-"If you want to give limited access to send emails, use the area admin or "
-"depot admin features."
-msgstr ""
-"Wenn du begrenzten Zugriff zum Senden von E-Mails geben möchtest, "
-"verwende die Bereichs-Admin- oder Depot-Admin-Funktionen."
+msgid "If you want to give limited access to send emails, use the area admin or depot admin features."
+msgstr "Wenn du begrenzten Zugriff zum Senden von E-Mails geben möchtest, verwende die Bereichs-Admin- oder Depot-Admin-Funktionen."
 
-#: ../../reference/permissions.rst:306 ../../reference/permissions.rst:316
-#: ../../reference/permissions.rst:326 58fe6b30ef004415aadd161a91d93999
-#: b7e59046c6ed4234b5d0c93ab75d8519 f1b5a0d53e9b4c31a86f4e9cc502141f
 msgid "German: Emails versenden"
 msgstr "Deutsch: E-Mails versenden"
 
-#: ../../reference/permissions.rst:309 7b3c2e8a3a00407bbde3a1876e60a092
-msgid "juntagrico.can_email_all_with_share"
-msgstr "juntagrico.can_email_all_with_share"
+msgid "juntagrico.can_email_all_with_membership"
+msgstr "juntagrico.can_email_all_with_membership"
 
-#: ../../reference/permissions.rst:310 3e8ee11be1ae486f9f035dd344a126c0
-msgid ""
-"Person sees the option in the email form to send mass emails to all users"
-" with active shares."
-msgstr ""
-"Person sieht die Option im E-Mail-Formular, Massen-E-Mails an alle "
-"Benutzer mit aktiven Anteilscheinen zu senden."
+msgid "Person sees the option in the email form to send mass emails to all users with active memberships."
+msgstr "Person sieht die Option im E-Mail-Formular, Massen-E-Mails an alle Benutzer mit aktiven Mitgliedschaften zu senden."
 
-#: ../../reference/permissions.rst:313 ../../reference/permissions.rst:323
-#: 713435f888bd4f86909ccfbf4fa8d375 9812680d70a44821a8cf69f57567da1e
 msgid "Requires:"
 msgstr "Erfordert:"
 
-#: ../../reference/permissions.rst:319 6fb0a5e6414642dba7f1b6f88f3e3370
+msgid "juntagrico.can_email_all_with_share"
+msgstr "juntagrico.can_email_all_with_share"
+
+msgid "Person sees the option in the email form to send mass emails to all users with active shares."
+msgstr "Person sieht die Option im E-Mail-Formular, Massen-E-Mails an alle Benutzer mit aktiven Anteilscheinen zu senden."
+
 msgid "juntagrico.can_email_all_with_sub"
 msgstr "juntagrico.can_email_all_with_sub"
 
-#: ../../reference/permissions.rst:320 cc13ce7601094a9ea8f9bd87d9bc78d3
-msgid ""
-"Person sees the option in the email form to send mass emails to all users"
-" with active subscription."
-msgstr ""
-"Person sieht die Option im E-Mail-Formular, Massen-E-Mails an alle "
-"Benutzer mit aktivem Abonnement zu senden."
+msgid "Person sees the option in the email form to send mass emails to all users with active subscription."
+msgstr "Person sieht die Option im E-Mail-Formular, Massen-E-Mails an alle Benutzer mit aktivem Abonnement zu senden."
 
-#: ../../reference/permissions.rst:329 fc1a74db00db43859d5169a85487b62b
 msgid "juntagrico.can_use_general_email"
 msgstr "juntagrico.can_use_general_email"
 
-#: ../../reference/permissions.rst:330 014e0cbaa4ab4deda1b31897d3d7f450
-msgid ""
-"Person can use the \"general\" email address specified in the setting "
-":ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
-msgstr ""
-"Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-"
-"contacts>` angegebene \"general\" E-Mail-Adresse als Absender im E-Mail-"
-"Formular verwenden."
+msgid "Person can use the \"general\" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
+msgstr "Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-contacts>` angegebene \"general\" E-Mail-Adresse als Absender im E-Mail-Formular verwenden."
 
-#: ../../reference/permissions.rst:333 faee121b9c6f42339fe2c74fdc5e518f
 msgid "German: Kann allgemeine E-Mail-Adresse verwenden"
 msgstr "Deutsch: Kann allgemeine E-Mail-Adresse verwenden"
 
-#: ../../reference/permissions.rst:336 d9a3eb314b904ec8905ea72a0d14d7f9
 msgid "juntagrico.can_use_for_members_email"
 msgstr "juntagrico.can_use_for_members_email"
 
-#: ../../reference/permissions.rst:337 1f7747f777a5448f87d0ac40d4a8c756
-msgid ""
-"Person can use the \"for_member\" email address specified in the setting "
-":ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
-msgstr ""
-"Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-"
-"contacts>` angegebene \"for_members\" E-Mail-Adresse als Absender im E"
-"-Mail-Formular verwenden."
+msgid "Person can use the \"for_member\" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
+msgstr "Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-contacts>` angegebene \"for_members\" E-Mail-Adresse als Absender im E-Mail-Formular verwenden."
 
-#: ../../reference/permissions.rst:340 7f7871d5909b47c29aea73fcfcc80e29
 msgid "German: Kann E-Mail-Adresse \"for_members\" verwenden"
 msgstr "Deutsch: Kann E-Mail-Adresse \"for_members\" verwenden"
 
-#: ../../reference/permissions.rst:343 1894b9db4b2e4de187807611a78d2cf2
 msgid "juntagrico.can_use_for_subscriptions_email"
 msgstr "juntagrico.can_use_for_subscriptions_email"
 
-#: ../../reference/permissions.rst:344 68de7c28eb3b445aafa4d5cb404c656e
-msgid ""
-"Person can use the \"for_subscriptions\" email address specified in the "
-"setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the "
-"mail form."
-msgstr ""
-"Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-"
-"contacts>` angegebene \"for_subscriptions\" E-Mail-Adresse als Absender "
-"im E-Mail-Formular verwenden."
+msgid "Person can use the \"for_subscriptions\" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
+msgstr "Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-contacts>` angegebene \"for_subscriptions\" E-Mail-Adresse als Absender im E-Mail-Formular verwenden."
 
-#: ../../reference/permissions.rst:347 ae2ed73866bd4f3382fb4bafc0b44225
 msgid "German: Kann E-Mail-Adresse \"for_subscription\" verwenden"
 msgstr "Deutsch: Kann E-Mail-Adresse \"for_subscription\" verwenden"
 
-#: ../../reference/permissions.rst:350 533963e51e2541c9a00419f035850ee4
 msgid "juntagrico.can_use_for_shares_email"
 msgstr "juntagrico.can_use_for_shares_email"
 
-#: ../../reference/permissions.rst:351 7cfb6f193eed4ef3a1ef595f18d40925
-msgid ""
-"Person can use the \"for_shares\" email address specified in the setting "
-":ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
-msgstr ""
-"Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-"
-"contacts>` angegebene \"for_shares\" E-Mail-Adresse als Absender im E"
-"-Mail-Formular verwenden."
+msgid "Person can use the \"for_shares\" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
+msgstr "Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-contacts>` angegebene \"for_shares\" E-Mail-Adresse als Absender im E-Mail-Formular verwenden."
 
-#: ../../reference/permissions.rst:354 0fc38d7555fe41c7aa161b3785ed2f81
 msgid "German: Kann E-Mail-Adresse \"for_shares\" verwenden"
 msgstr "Deutsch: Kann E-Mail-Adresse \"for_shares\" verwenden"
 
-#: ../../reference/permissions.rst:357 37907640f8ff44acb8417aebeda29e54
 msgid "juntagrico.can_use_technical_email"
 msgstr "juntagrico.can_use_technical_email"
 
-#: ../../reference/permissions.rst:358 d7f62c04999d42beb96ae9a8fa596bd5
-msgid ""
-"Person can use the \"technical\" email address specified in the setting "
-":ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
-msgstr ""
-"Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-"
-"contacts>` angegebene \"technical\" E-Mail-Adresse als Absender im E"
-"-Mail-Formular verwenden."
+msgid "Person can use the \"technical\" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form."
+msgstr "Person kann die in der Einstellung :ref:`CONTACTS <reference-settings-contacts>` angegebene \"technical\" E-Mail-Adresse als Absender im E-Mail-Formular verwenden."
 
-#: ../../reference/permissions.rst:361 192c76f997f34eb981bcca82e87c2774
 msgid "German: Kann technische E-Mail-Adresse verwenden"
 msgstr "Deutsch: Kann technische E-Mail-Adresse verwenden"
 
-#: ../../reference/permissions.rst:364 5082f19fc0b54e8a8cc55c713ef037d9
 msgid "juntagrico.can_email_attachments"
 msgstr "juntagrico.can_email_attachments"
 
-#: ../../reference/permissions.rst:366 6fff8ee1712c41c2800b2940b415a6e6
-msgid ""
-"Person can add attachments when sending an email via the member contact "
-"form."
-msgstr ""
-"Person kann Anhänge hinzufügen, wenn eine E-Mail über das Mitglieder-"
-"Kontaktformular gesendet wird."
+msgid "Person can add attachments when sending an email via the member contact form."
+msgstr "Person kann Anhänge hinzufügen, wenn eine E-Mail über das Mitglieder-Kontaktformular gesendet wird."
 
-#: ../../reference/permissions.rst:369 ec67305949b440afa5eccbbb43a90c0a
 msgid "German: Kann Anhänge per E-Mail senden"
 msgstr "Deutsch: Kann Anhänge per E-Mail senden"
 
-#: ../../reference/permissions.rst:372 4e832c116bf44b02862c8435c9c0c957
 msgid "Depot List Permissions"
 msgstr "Depot-Listen-Berechtigungen"
 
-#: ../../reference/permissions.rst:375 e44e679bd50046d7b517d9c6f2bce990
 msgid "juntagrico.can_view_lists"
 msgstr "juntagrico.can_view_lists"
 
-#: ../../reference/permissions.rst:376 9a8f85c0f2184bd6a6216c8f58d6826d
 msgid "Person can open the generated lists."
 msgstr "Person kann die generierten Listen öffnen."
 
-#: ../../reference/permissions.rst:379 a4e20051c3aa44c3a0d1f4f99f3c2bd3
 msgid "German: Kann Listen öffnen"
 msgstr "Deutsch: Kann Listen öffnen"
 
-#: ../../reference/permissions.rst:382 f52607891b7a4c6cbe7a9f9218e3713d
 msgid "juntagrico.can_generate_lists"
 msgstr "juntagrico.can_generate_lists"
 
-#: ../../reference/permissions.rst:383 ed1535f21c43493fb2413a76cba916c6
 msgid "Person can generate lists (of depot etc.)"
 msgstr "Person kann Listen generieren (von Depot etc.)"
 
-#: ../../reference/permissions.rst:386 261df0f7cdb043a0b5bedb023f92076d
 msgid "German: Kann Listen erzeugen"
 msgstr "Deutsch: Kann Listen erzeugen"
 
-#: ../../reference/permissions.rst:390 b27e9f80a4c74d548f5ecc067962aae9
 msgid "Edit Permissions"
 msgstr "Bearbeitungs-Berechtigungen"
 
-#: ../../reference/permissions.rst:391 0ce97499dcd84334807c82558492f73e
 msgid "These permissions allow to edit certain entities."
 msgstr "Diese Berechtigungen erlauben das Bearbeiten bestimmter Entitäten."
 
-#: ../../reference/permissions.rst:394 dcb97762d2bb45f7ae9e7e94c7383e89
 msgid "juntagrico.can_edit_past_jobs"
 msgstr "juntagrico.can_edit_past_jobs"
 
-#: ../../reference/permissions.rst:395 fce9defc487e4f5f81b5bc8f7fd67367
 msgid "Person can edit jobs which are in the past."
 msgstr "Person kann Jobs bearbeiten, die in der Vergangenheit liegen."
 
-#: ../../reference/permissions.rst:398 0900c163a63947c49dd3ec39c55ddaf4
 msgid "German: vergangene"
 msgstr "Deutsch: vergangene"
 
-#: ../../reference/permissions.rst:402 56d0a75517e94a83a4176b80a3a3e909
-msgid ""
-"Person can edit all assignments on all jobs. To reduce the assignments, "
-"the `juntagrico.delete_assignment` permission is needed. See below."
-msgstr ""
-"Person kann alle Einsätze auf allen Jobs bearbeiten. Um Einsätze zu "
-"reduzieren, wird die `juntagrico.delete_assignment` Berechtigung "
-"benötigt. Siehe unten."
+msgid "Person can edit all assignments on all jobs. To reduce the assignments, the `juntagrico.delete_assignment` permission is needed. See below."
+msgstr "Person kann alle Einsätze auf allen Jobs bearbeiten. Um Einsätze zu reduzieren, wird die `juntagrico.delete_assignment` Berechtigung benötigt. Siehe unten."
 
-#: ../../reference/permissions.rst:409 ce5cc46eb74f48c88cd4fec80e3e7cc6
 msgid "juntagrico.delete_assignment"
 msgstr "juntagrico.delete_assignment"
 
-#: ../../reference/permissions.rst:410 9b062b04f94940ab9071164055102857
 msgid "Person can remove any assignment on any job."
 msgstr "Person kann beliebige Einsätze auf beliebigen Jobs entfernen."
 
-#: ../../reference/permissions.rst:416 f64aa8c9c514446cb574aa2730056ddc
 msgid "juntagrico.can_change_deactivated_subscriptions"
 msgstr "juntagrico.can_change_deactivated_subscriptions"
 
-#: ../../reference/permissions.rst:417 aed6ed635c234042b4d10dc01e570159
 msgid "Person can edit subscriptions which are deactivated."
 msgstr "Person kann Abonnements bearbeiten, die deaktiviert sind."
 
-#: ../../reference/permissions.rst:420 d68e0422b8e142abac95089626153897
 msgid "German: deaktivierte"
 msgstr "Deutsch: deaktivierte"
 
-#: ../../reference/permissions.rst:423 0287b788a5c64cc69232056e4afdff60
 msgid "Other Permissions"
 msgstr "Andere Berechtigungen"
 
-#: ../../reference/permissions.rst:426 235846bd9a52497fa4c94f4af00fd8c3
 msgid "juntagrico.is_operations_group"
 msgstr "juntagrico.is_operations_group"
 
-#: ../../reference/permissions.rst:429 502d98811add4011ad3d987659319011
-msgid ""
-"Deprecated. This permission will be replaced by more granular permissions"
-" in the next releases."
-msgstr "Veraltet. Diese Berechtigung wird in den nächsten Versionen durch detailliertere Berechtigungen ersetzt."
+msgid "Removed in Juntagrico 2.1"
+msgstr "Entfernt in Juntagrico 2.1"
 
-#: ../../reference/permissions.rst:431 130af4f942604effa8e82f1acb2e529d
-msgid "(De)activate subscriptions"
-msgstr "Abonnemente (de)aktivieren"
-
-#: ../../reference/permissions.rst:434 acb99abf79bd4b0b93ae01e11de6aeaa
 msgid "German: Ist in der BG"
 msgstr "Deutsch: Ist in der BG"
