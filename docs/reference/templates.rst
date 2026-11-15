@@ -136,8 +136,8 @@ juntagrico/menu/admin/subscriptions.html|extend
 
 Add entries to the subscription section in the admin menu.
 
-juntagrico/menu/admin/*.html|sub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/menu/admin/\*.html|sub
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Change admin sub menu entries of:
 
