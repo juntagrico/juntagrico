@@ -6031,7 +6031,7 @@ msgstr ""
 #: juntagrico/templates/manage_shares.html:81
 #, python-format
 msgid "%(v_membership)s kündigen"
-msgstr ""
+msgstr "Résilier %(v_membership)s"
 
 #: juntagrico/templates/manage_shares.html:86
 #, python-format
