@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-28 23:38-0600\n"
+"POT-Creation-Date: 2026-11-16 09:40-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,7 @@ msgid "Du hast noch keine Zusatzabos"
 msgstr ""
 
 #: juntagrico_legacy/templates/extra_change.html:16
-#: juntagrico_legacy/views.py:130
+#: juntagrico_legacy/views.py:154
 msgid "Übersicht"
 msgstr ""
 
@@ -84,7 +84,7 @@ msgstr ""
 #: juntagrico_legacy/templates/extra_change.html:25
 #: juntagrico_legacy/templates/size_change.html:29
 #: juntagrico_legacy/templates/subscription.html:71
-#: juntagrico_legacy/views.py:136
+#: juntagrico_legacy/views.py:160
 msgid "Status"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgstr ""
 
 #: juntagrico_legacy/templates/management_lists/canceledlist.html:22
 #: juntagrico_legacy/templates/management_lists/part_canceledlist.html:28
-#: juntagrico_legacy/views.py:137
+#: juntagrico_legacy/views.py:161
 msgid "Kündigungsdatum"
 msgstr ""
 
@@ -193,7 +193,7 @@ msgstr ""
 #: juntagrico_legacy/templates/management_lists/part_canceledlist.html:25
 #: juntagrico_legacy/templates/management_lists/part_waitinglist.html:26
 #: juntagrico_legacy/templates/management_lists/waitinglist.html:28
-#: juntagrico_legacy/views.py:89
+#: juntagrico_legacy/views.py:113
 msgid "Email"
 msgstr ""
 
@@ -292,7 +292,7 @@ msgid "Bestandteile verwalten"
 msgstr ""
 
 #: juntagrico_legacy/templates/size_change.html:26
-#: juntagrico_legacy/views.py:83
+#: juntagrico_legacy/views.py:107
 msgid "Name"
 msgstr ""
 
@@ -607,74 +607,74 @@ msgstr ""
 msgid "Welchen Teil möchtest du ändern?"
 msgstr ""
 
-#: juntagrico_legacy/views.py:86
+#: juntagrico_legacy/views.py:110
 msgid "Kernbereich"
 msgstr ""
 
-#: juntagrico_legacy/views.py:87
+#: juntagrico_legacy/views.py:111
 msgid "Taetigkeitsbereiche"
 msgstr ""
 
-#: juntagrico_legacy/views.py:88 juntagrico_legacy/views.py:138
+#: juntagrico_legacy/views.py:112 juntagrico_legacy/views.py:162
 msgid "Depot"
 msgstr ""
 
-#: juntagrico_legacy/views.py:90
+#: juntagrico_legacy/views.py:114
 msgid "Telefon"
 msgstr ""
 
-#: juntagrico_legacy/views.py:91
+#: juntagrico_legacy/views.py:115
 msgid "Mobile"
 msgstr ""
 
-#: juntagrico_legacy/views.py:99
+#: juntagrico_legacy/views.py:123
 msgid "-Kein Tätigkeitsbereich-"
 msgstr ""
 
-#: juntagrico_legacy/views.py:101
+#: juntagrico_legacy/views.py:125
 msgid "Kein Depot definiert"
 msgstr ""
 
-#: juntagrico_legacy/views.py:131
+#: juntagrico_legacy/views.py:155
 msgid "HauptbezieherIn"
 msgstr ""
 
-#: juntagrico_legacy/views.py:132
+#: juntagrico_legacy/views.py:156
 msgid "HauptbezieherInEmail"
 msgstr ""
 
-#: juntagrico_legacy/views.py:133
+#: juntagrico_legacy/views.py:157
 msgid "HauptbezieherInTelefon"
 msgstr ""
 
-#: juntagrico_legacy/views.py:134
+#: juntagrico_legacy/views.py:158
 msgid "HauptbezieherInMobile"
 msgstr ""
 
-#: juntagrico_legacy/views.py:135
+#: juntagrico_legacy/views.py:159
 msgid "Weitere BezieherInnen"
 msgstr ""
 
-#: juntagrico_legacy/views.py:140
+#: juntagrico_legacy/views.py:164
 msgid "{} soll"
 msgstr ""
 
-#: juntagrico_legacy/views.py:141
+#: juntagrico_legacy/views.py:165
 msgid "{} status(%)"
 msgstr ""
 
-#: juntagrico_legacy/views.py:142
+#: juntagrico_legacy/views.py:166
 msgid "{} Kernbereich"
 msgstr ""
 
-#: juntagrico_legacy/views.py:143
+#: juntagrico_legacy/views.py:167
 msgid "{} Kernbereich soll"
 msgstr ""
 
-#: juntagrico_legacy/views.py:144
+#: juntagrico_legacy/views.py:168
 msgid "{} Kernbereich status(%)"
 msgstr ""
 
-#: juntagrico_legacy/views.py:145
+#: juntagrico_legacy/views.py:169
 msgid "Preis"
 msgstr ""
