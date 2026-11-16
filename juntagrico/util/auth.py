@@ -16,6 +16,10 @@ from juntagrico.models import Member
 
 class AuthenticateWithEmail(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
+        if username is None or password is None:
+            # e.g. called without credentials by token based backends.
+            # member__email__iexact=None would match all users without member
+            return None
         try:
             user = User.objects.get(member__email__iexact=username)
         except User.DoesNotExist:
