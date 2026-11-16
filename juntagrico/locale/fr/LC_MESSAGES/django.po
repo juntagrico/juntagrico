@@ -365,7 +365,7 @@ msgstr "parts sociales"
 
 #: juntagrico/config.py:55
 msgid "Abo"
-msgstr "abonnement"
+msgstr "Abonnement"
 
 #: juntagrico/config.py:56
 msgid "Abos"
@@ -401,7 +401,7 @@ msgstr ""
 
 #: juntagrico/config.py:64
 msgid "Depot"
-msgstr "dépôt"
+msgstr "Dépôt"
 
 #: juntagrico/config.py:65
 msgid "Depots"
@@ -2646,7 +2646,7 @@ msgstr ""
 #: juntagrico/templates/depot_change.html:37
 #: juntagrico/templates/future.html:24
 msgid "Aktuell"
-msgstr "Actuellement"
+msgstr "Actuel"
 
 #: juntagrico/templates/depot_change.html:45
 msgid "Zukünftig"
@@ -2667,7 +2667,7 @@ msgstr ""
 #: juntagrico/templates/depot_change.html:74
 #, python-format
 msgid "%(v_depot)s ändern"
-msgstr "Modifier le %(v_depot)s"
+msgstr "Modifier %(v_depot)s"
 
 #: juntagrico/templates/exports/amount_overview.html:7
 #: juntagrico/views_admin.py:80
@@ -3844,7 +3844,7 @@ msgstr "Désactiver ces {count} %(v_member_pl)s ?"
 
 #: juntagrico/templates/juntagrico/manage/member/show.html:95
 msgid "-Kein Tätigkeitsbereich-"
-msgstr "-Aucun domaine d'activité-"
+msgstr "- Aucun domaine d'activité -"
 
 #: juntagrico/templates/juntagrico/manage/member/show.html:103
 #: juntagrico/templates/juntagrico/manage/member/show.html:114
@@ -4146,7 +4146,7 @@ msgstr "Commandé"
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:53
 #, python-format
 msgid "Bezahlte %(v_share_pl)s"
-msgstr "%(v_share_pl)s payées"
+msgstr "%(v_share_pl)s payés"
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:83
 msgid "Bestelldatum"
@@ -4850,7 +4850,7 @@ msgstr "Gérer les %(v_share_pl)s"
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:37
 #, python-format
 msgid "%(v_share_pl)s von %(v_co_member_pl)s"
-msgstr "%(v_share_pl)s des %(v_co_member_pl)s"
+msgstr "%(v_share_pl)s de %(v_co_member_pl)s"
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:41
 #, python-format
@@ -4859,7 +4859,7 @@ msgstr "%(csc)s de %(cm)s"
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:45
 msgid "E-Mail-Adresse nicht bestätigt"
-msgstr "Adresse e-mail non confirmée"
+msgstr "Adresse courriel non confirmée"
 
 #: juntagrico/templates/juntagrico/my/subscription/change_primary.html:8
 #, python-format
@@ -4923,7 +4923,7 @@ msgstr "Afficher les détails"
 #: juntagrico/templates/juntagrico/my/subscription/snippets/co_members.html:47
 #, python-format
 msgid "%(v_subscription)s verlassen"
-msgstr "Quitter la %(v_subscription)s"
+msgstr "Quitter %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/leave.html:16
 #, python-format
@@ -4949,7 +4949,7 @@ msgstr "%(v_subscription)s"
 #: juntagrico/templates/juntagrico/my/subscription/part/change.html:8
 #, python-format
 msgid "%(v_subscription)s ändern"
-msgstr "changer %(v_subscription)s"
+msgstr "Modifier %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/part/change.html:13
 msgid "Wähle einen neuen Bestandteil"
@@ -4977,7 +4977,7 @@ msgstr ""
 #: juntagrico/templates/juntagrico/my/subscription/single.html:47
 #, python-format
 msgid "%(v_subscription)s geteilt mit"
-msgstr "%(v_subscription)s partagée avec"
+msgstr "%(v_subscription)s partagé avec"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/canceled.html:6
 #, python-format
@@ -5006,7 +5006,7 @@ msgstr "Tu peux te réinscrire ici :"
 #: juntagrico/templates/juntagrico/my/subscription/snippets/buttons/create_subscription.html:6
 #, python-format
 msgid "%(v_subscription)s erstellen"
-msgstr "Créer une %(v_subscription)s"
+msgstr "Créer %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/leaving_membership.html:4
 #, python-format
@@ -5124,12 +5124,12 @@ msgstr "Es-tu sûr·e de vouloir résilier cet abonnement supplémentaire ?"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:83
 msgid "ändern"
-msgstr "changer"
+msgstr "modifier"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:89
 #, python-format
 msgid "%(v_subscription)s komplett künden"
-msgstr "Résilier entièrement la %(v_subscription)s"
+msgstr "Résilier complètement %(v_subscription)s"
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
