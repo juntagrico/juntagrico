@@ -218,6 +218,8 @@ CURRENCY
 External Documents
 ------------------
 
+.. _reference-settings-documents:
+
 DOCUMENTS
 ^^^^^^^^^
 
