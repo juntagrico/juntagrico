@@ -1,16 +1,14 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/member/base.txt" %}
 {% load i18n %}
-{% load juntagrico.config %}
-{% block content %}{% vocabulary "subscription_pl" as v_subscription_pl %}
-{% trans "Hallo" %}
-{% blocktrans with fn=member.first_name ln=member.last_name e=member.email k=member.signup_comment %}
-Soeben hat {{ fn }} {{ ln }} sich registriert.
-E-Mail: {{ e }}
-Kommentar: {{ k }}
+
+{% block member_message %}
+{% blocktrans trimmed %}
+Soeben hat {{ member }} sich registriert.
 {% endblocktrans %}
-{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
 
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% if member.signup_comment %}
+{% blocktrans trimmed with comment=member.signup_comment %}
+Kommentar: {{ comment }}
+{% endblocktrans %}
+{% endif %}
 {% endblock %}

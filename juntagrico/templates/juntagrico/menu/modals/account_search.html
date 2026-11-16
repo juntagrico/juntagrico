@@ -1,0 +1,20 @@
+{% extends "juntagrico/modal.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans trimmed %}
+        Suche
+    {% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    <div id="{{ name }}_content">
+        {% crispy account_search_form %}
+    </div>
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="{{ account_search_form.helper.form_id }}" class="btn btn-primary"
+           value="{% trans "Suchen" %}">
+{% endblock %}

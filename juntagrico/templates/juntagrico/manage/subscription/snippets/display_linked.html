@@ -1,5 +1,5 @@
 {% if perms.juntagrico.view_subscription or perms.juntagrico.change_subscription %}
-    <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}?next={{ request.path|urlencode }}"
+    <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}{% querystring next=request.path %}"
        {% if css_class %}class="{{ css_class }}"{% endif %}>
         {{ subscription.id }}
     </a>

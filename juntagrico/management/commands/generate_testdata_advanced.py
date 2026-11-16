@@ -88,20 +88,22 @@ class Command(BaseCommand):
         sub_dict = {
             'depot': depot,
             'future_depot': None,
-            'creation_date': fake.date_between(start_date='-10y', end_date='-1m')
+            'creation_date': fake.date_between(start_date='-10y', end_date='-1m'),
+            'activation_date': None,
         }
-        sub_dict['activation_date'] = sub_dict['creation_date']
+        if random.random() < .7:  # 70% of subscriptions are created active
+            sub_dict['activation_date'] = sub_dict['creation_date']
         subscription = Subscription.objects.create(**sub_dict)
         subscription.primary_member = main_member
         subscription.subscriptionmembership_set.create(
             member=main_member,
-            join_date=sub_dict['creation_date'])
+            join_date=sub_dict['activation_date'])
         subscription.subscriptionmembership_set.create(
             member=co_member,
-            join_date=sub_dict['creation_date'])
+            join_date=sub_dict['activation_date'])
         subscription.save()
         for sub_type in sub_types:
-            SubscriptionPart.objects.create(subscription=subscription, type=sub_type, activation_date=sub_dict['creation_date'])
+            SubscriptionPart.objects.create(subscription=subscription, type=sub_type, activation_date=sub_dict['activation_date'])
         self.members.append(main_member)
         self.members.append(co_member)
 
@@ -249,8 +251,8 @@ class Command(BaseCommand):
                         'default_duration': 2, 'location': location_1}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
                         'default_duration': 2, 'location': location_1}
-        type_1 = JobType.objects.create(**type1_fields)
-        type_2 = JobType.objects.create(**type2_fields)
+        type_1, _ = JobType.objects.get_or_create(name=type1_fields['name'], defaults=type1_fields)
+        type_2, _ = JobType.objects.get_or_create(name=type2_fields['name'], defaults=type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_1}
         for _ in range(0, options['job_amount']):

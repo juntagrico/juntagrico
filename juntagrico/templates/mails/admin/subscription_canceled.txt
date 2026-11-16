@@ -1,19 +1,14 @@
-{% extends "mails/email.txt" %}
+{% extends "juntagrico/mails/admin/subscription/base.txt" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block content %}
-{% vocabulary "subscription_pl" as v_subscriptions %}
-{% trans "Hallo" %}
-{% blocktrans with fn=subscription.primary_member.first_name ln=subscription.primary_member.last_name e=subscription.primary_member.email sd=subscription.end_date %}
-Soeben hat {{ fn }} {{ ln }} die {{ v_subscriptions }} per {{ sd }} gekündet.
-email : {{e }}
+
+{% block subscription_message %}
+{% vocabulary "subscription_pl" as v_subscription_pl %}
+{% blocktrans trimmed with account=subscription.primary_member sd=subscription.end_date %}
+Soeben hat {{ account }} die {{ v_subscription_pl }} per {{ sd }} gekündigt.
 {% endblocktrans %}
-{{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
-{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
-{{ message}}
-
-{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
-Dein Server{% endblocktrans %}
-
+{% if message %}
+{% trans "Kommentar:" %} {{ message }}
+{% endif %}
 {% endblock %}

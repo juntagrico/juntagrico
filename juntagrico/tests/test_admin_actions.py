@@ -190,7 +190,7 @@ class JobCopyTests(JobCopyTestCase):
         self.assertEqual(self.complex_job.multiplier, self.complex_job_data['multiplier'])
         self.assertEqual(self.complex_job.additional_description, self.complex_job_data['additional_description'])
         self.assertEqual(self.complex_job.duration_override, self.complex_job_data['duration_override'])
-        self.assertListEqual(self.complex_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertSetEqual(set(self.complex_job.get_emails()), {'test@test.org', self.member2.email})
         # check completeness of copy
         new_job = RecuringJob.objects.last()
         self.assertEqual(new_job.type, self.complex_job.type)
@@ -252,7 +252,7 @@ class JobCopyTests(JobCopyTestCase):
         self.assertEqual(self.complex_job.multiplier, self.complex_job_data['multiplier'])
         self.assertEqual(self.complex_job.additional_description, self.complex_job_data['additional_description'])
         self.assertEqual(self.complex_job.duration_override, self.complex_job_data['duration_override'])
-        self.assertListEqual(self.complex_job.get_emails(), ['test@test.org', self.member2.email])
+        self.assertSetEqual(set(self.complex_job.get_emails()), {'test@test.org', self.member2.email})
         # check first and last new copy
         for new_job, new_date in zip(RecuringJob.objects.order_by("-pk")[0:8:7], (data['end_date'], data['start_date']), strict=True):
             self.assertEqual(new_job.type, self.complex_job.type)

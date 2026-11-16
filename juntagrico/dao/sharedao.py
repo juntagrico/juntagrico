@@ -10,6 +10,7 @@ class ShareDao:
 
     @staticmethod
     def all_shares_subscription(subscription):
+        print('ShareDao.all_shares_subscription is deprecated: Use subscription.available_shares instead')
         return Share.objects.filter(member__in=subscription.current_members).filter(
             cancelled_date__isnull=True)
 

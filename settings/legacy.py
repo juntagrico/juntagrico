@@ -1,4 +1,4 @@
-from .dev import *  # noqa: F401, F403
+from .dev import *  # noqa: F401 F403
 
 INSTALLED_APPS = [
     'juntagrico_legacy',
