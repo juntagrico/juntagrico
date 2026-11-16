@@ -3,19 +3,23 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Translators:
+# admin juntagrico, 2026
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-16 09:40-0600\n"
-"PO-Revision-Date: 2026-11-15 15:00+0000\n"
+"PO-Revision-Date: 2021-10-18 06:38+0000\n"
 "Last-Translator: admin juntagrico, 2026\n"
 "Language-Team: French (https://app.transifex.com/juntagrico/teams/126289/"
 "fr/)\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
 "1000000 == 0 ? 1 : 2;\n"
 
@@ -1928,7 +1932,8 @@ msgstr ""
 msgid "Es sind keine Optionen verfügbar."
 msgstr "Aucune option n'est disponible."
 
-#: juntagrico/forms/__init__.py:627 juntagrico/templates/manage_shares.html:126
+#: juntagrico/forms/__init__.py:627
+#: juntagrico/templates/manage_shares.html:126
 msgid "Bestellen"
 msgstr "Commander"
 
@@ -2693,7 +2698,6 @@ msgstr "Invitation acceptée"
 msgid "Einladung abgelehnt"
 msgstr "Invitation refusée"
 
-# python-brace-format
 #: juntagrico/mailer/membernotification.py:68
 #, python-brace-format
 msgid "Dein neuer {share}"
@@ -3455,10 +3459,8 @@ msgid "E-Mail an {count} %(v_member_pl)s senden"
 msgstr "Envoyer un e-mail à {count} %(v_member_pl)s"
 
 #: juntagrico/templates/js/i18n.js:10
-#, fuzzy
-#| msgid "E-Mails kopiert"
 msgid "E-Mails kopieren"
-msgstr "E-mails copiés"
+msgstr "Copier les e-mails"
 
 #: juntagrico/templates/js/i18n.js:11
 msgid "E-Mails kopiert"
@@ -3469,10 +3471,8 @@ msgid "Suchen: "
 msgstr "Rechercher : "
 
 #: juntagrico/templates/js/i18n.js:15
-#, fuzzy
-#| msgid "Es sind keine Optionen verfügbar."
 msgid "Keine Daten verfügbar"
-msgstr "Aucune option n'est disponible."
+msgstr "Aucune donnée disponible"
 
 #: juntagrico/templates/js/i18n.js:16
 msgid "Keine passenden Einträge gefunden"
@@ -3566,10 +3566,8 @@ msgstr "Pas entre"
 
 #: juntagrico/templates/js/i18n.js:47 juntagrico/templates/js/i18n.js:57
 #: juntagrico/templates/js/i18n.js:69 juntagrico/templates/js/i18n.js:79
-#, fuzzy
-#| msgid "nicht kern"
 msgid "Nicht leer"
-msgstr "non principal"
+msgstr "Non vide"
 
 #: juntagrico/templates/js/i18n.js:63
 msgid "Grösser als"
@@ -8038,326 +8036,3 @@ msgid ""
 msgstr ""
 "Les attestations de {share} ne peuvent être délivrées que pour les années "
 "écoulées."
-
-#~ msgid "Möchtest du deine Mitgliedschaft verbindlich künden?"
-#~ msgstr "Souhaites-tu résilier ton adhésion de manière définitive ?"
-
-#~ msgid "Mitgliedschaft künden"
-#~ msgstr "Résilier l'adhésion"
-
-#, python-brace-format
-#~ msgid ""
-#~ "Bitte hinterlege oder überprüfe deine Daten, damit deine {shares} "
-#~ "ausbezahlt werden können."
-#~ msgstr ""
-#~ "Enregistre ou vérifie tes données afin que tes {shares} puissent être "
-#~ "remboursées."
-
-#, python-brace-format
-#~ msgid ""
-#~ "Die Person mit dieser E-Mail-Adresse ist bereits aktive {subscription}-"
-#~ "BezierIn. Bitte meldet euch bei {email}, wenn ihr bestehende {members} "
-#~ "als {co_members} hinzufügen möchtet."
-#~ msgstr ""
-#~ "La personne ayant cette adresse e-mail est déjà bénéficiaire active de "
-#~ "{subscription}. Contacte {email} si tu souhaites ajouter des {members} "
-#~ "existant·es comme {co_members}."
-
-#, python-brace-format
-#~ msgid "&rarr; Oder {subscription} komplett künden"
-#~ msgstr "&rarr; Ou résilier {subscription} complètement"
-
-#, no-python-brace-format
-#~ msgid ""
-#~ "Du brauchst insgesamt {num} {share} für die von dir gewählten "
-#~ "{subscription}-Bestandteile"
-#~ msgid_plural ""
-#~ "Du brauchst insgesamt {num} {shares} für die von dir gewählten "
-#~ "{subscription}-Bestandteile"
-#~ msgstr[0] ""
-#~ "Tu as besoin au total de {num} {share} pour les composants de "
-#~ "{subscription} que tu as choisis"
-#~ msgstr[1] ""
-#~ "Tu as besoin au total de {num} {share} pour les composants de "
-#~ "{subscription} que tu as choisis"
-#~ msgstr[2] ""
-#~ "Tu as besoin au total de {num} {shares} pour les composants de "
-#~ "{subscription} que tu as choisis"
-
-#, python-brace-format
-#~ msgid "Deaktivierte {0} können nicht wieder aktiviert werden"
-#~ msgstr "Les {0} désactivées ne peuvent pas être réactivées"
-
-#, python-brace-format
-#~ msgid "Neues Mitglied im Taetigkeitsbereich {0}"
-#~ msgstr "Nouveau·elle membre dans le domaine d'activité {0}"
-
-#~ msgid "Neue/r/s {} erstellt"
-#~ msgstr "Nouvel·le {} créé·e"
-
-#~ msgid "Neues Konto"
-#~ msgstr "Nouveau compte"
-
-#~ msgid "Dein neuer Anteilschein"
-#~ msgstr "Ta nouvelle part sociale"
-
-#~ msgid "Austritt aus {}"
-#~ msgstr "Départ de {}"
-
-#~ msgid "Ist in der BG"
-#~ msgstr "Fait partie de l'équipe"
-
-#, python-format
-#~ msgid ""
-#~ "Hier kannst du %(v_your_subscription_acc)s kündigen. Der nächste reguläre "
-#~ "Kündigungstermin ist der <b>%(ed)s</b>."
-#~ msgstr ""
-#~ "Tu peux résilier ici %(v_your_subscription_acc)s. La prochaine date de "
-#~ "résiliation ordinaire est le <b>%(ed)s</b>."
-
-#~ msgid "Belegter Platz"
-#~ msgstr "Place occupée"
-
-#~ msgid "Freier Platz"
-#~ msgstr "Place disponible"
-
-#~ msgid "Hallo"
-#~ msgstr "Salut"
-
-#~ msgid "E-Mail:"
-#~ msgstr "E-mail :"
-
-#, python-format
-#~ msgid ""
-#~ "%(e)s hat deine Anmeldung für den %(c_organisation_name)s-Arbeitseinsatz "
-#~ "\"%(jtg)s\" um %(jt)s-%(jet)s geändert. Falls das ein Irrtum war, "
-#~ "antworte auf dieses E-Mail um %(e)s zu kontaktieren."
-#~ msgstr ""
-#~ "%(e)s a modifié ton inscription à la tâche %(c_organisation_name)s "
-#~ "« %(jtg)s » de %(jt)s à %(jet)s. Si c'était une erreur, réponds à cet e-"
-#~ "mail pour contacter %(e)s."
-
-#, python-format
-#~ msgid ""
-#~ "%(e)s hat deine Anmeldung für den %(c_organisation_name)s-Arbeitseinsatz "
-#~ "\"%(jtg)s\" um %(jt)s-%(jet)s gelöscht. Falls das ein Irrtum war, "
-#~ "antworte auf dieses E-Mail um %(e)s zu kontaktieren."
-#~ msgstr ""
-#~ "%(e)s a supprimé ton inscription à la tâche %(c_organisation_name)s "
-#~ "« %(jtg)s » de %(jt)s à %(jet)s. Si c'était une erreur, réponds à cet e-"
-#~ "mail pour contacter %(e)s."
-
-#~ msgid "Teilnehmer"
-#~ msgstr "Participant·e·s"
-
-#, python-format
-#~ msgid "Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe"
-#~ msgstr ""
-#~ "A bientôt et meilleures salutations le groupe d'organisation "
-#~ "%(c_organisation_name)s"
-
-#, python-format
-#~ msgid ""
-#~ "\n"
-#~ "Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe\n"
-#~ msgstr ""
-#~ "\n"
-#~ "À bientôt et cordialement, l'équipe de %(c_organisation_name)s\n"
-
-#~ msgid "Lässt die Probe noch für die verbleibende Laufzeit laufen"
-#~ msgstr "Laisse l'essai se poursuivre pour la durée restante"
-
-#, python-format
-#~ msgid ""
-#~ "Hier kannst du deine Mitgliedschaft bei %(v_d_enriched_organisation)s "
-#~ "kündigen."
-#~ msgstr ""
-#~ "Ici, tu peux résilier ton adhésion auprès de "
-#~ "%(v_d_enriched_organisation)s."
-
-#~ msgid "Du erhältst keine Emails mehr"
-#~ msgstr "Tu ne recevras plus d'e-mails"
-
-#, python-format
-#~ msgid "Du verlässt %(v_your_subscription_acc)s"
-#~ msgstr "Tu quittes %(v_your_subscription_acc)s"
-
-#, python-format
-#~ msgid "Deine %(v_share_pl)s werden gekündigt"
-#~ msgstr "Tes %(v_share_pl)s seront résiliées"
-
-#~ msgid "Dein Zugang wird deaktiviert"
-#~ msgstr "Ton accès sera désactivé"
-
-#~ msgid ""
-#~ "Du kannst deine Mitgliedschaft aus folgenden Gründen noch nicht kündigen:"
-#~ msgstr ""
-#~ "Tu ne peux pas encore résilier ton adhésion pour les raisons suivantes :"
-
-#, python-format
-#~ msgid "Deine %(v_share_pl)s werden noch benötigt in 1 %(v_subscription)s."
-#~ msgstr "Tes %(v_share_pl)s sont encore nécessaires dans un abonnement."
-
-#, python-format
-#~ msgid "Du bist noch in 1 %(v_subscription)s als BezieherIn eingetragen."
-#~ msgstr ""
-#~ "Tu es encore inscrit·e en tant que bénéficiaire dans une "
-#~ "%(v_subscription)s."
-
-#, python-format
-#~ msgid "%(v_subscription)s komplett künden"
-#~ msgstr "Résilier entièrement la %(v_subscription)s"
-
-#, python-format
-#~ msgid "Weitere %(v_co_member)s hinzufügen"
-#~ msgstr "ajouter d'autres %(v_co_member)s"
-
-#, python-format
-#~ msgid "Wähle deine %(v_subscription)s-Bestandteile"
-#~ msgstr "Choisis tes composants %(v_subscription)s"
-
-#, python-format
-#~ msgid ""
-#~ "\n"
-#~ "Soeben hat %(fn)s %(ln)s das Konto per %(ed)s gekündet.\n"
-#~ "E-Mail: %(e)s\n"
-#~ msgstr ""
-#~ "\n"
-#~ "%(fn)s %(ln)s vient de résilier son adhésion au %(ed)s.\n"
-#~ "E-mail : %(e)s\n"
-
-#, python-format
-#~ msgid ""
-#~ "\n"
-#~ "Soeben hat %(fn)s %(ln)s sich registriert.\n"
-#~ "E-Mail: %(e)s\n"
-#~ "Kommentar: %(k)s\n"
-#~ msgstr ""
-#~ "\n"
-#~ "%(fn)s %(ln)s vient de s'inscrire.\n"
-#~ "E-mail : %(e)s\n"
-#~ "Commentaire : %(k)s\n"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgid "Beschrieb"
-#~ msgstr "Description"
-
-#, python-format
-#~ msgid ""
-#~ "Soeben hat dich '%(pm)s' als %(v_co_member)s hinzugefügt und für dich "
-#~ "%(new_shares)s %(v_share_pl)s bestellt."
-#~ msgstr ""
-#~ "« %(pm)s » vient de t'ajouter en tant que %(v_co_member)s et a commandé "
-#~ "pour toi %(new_shares)s %(v_share_pl)s."
-
-#, python-format
-#~ msgid "Soeben hat dich '%(pm)s' als %(v_co_member)s hinzugefügt."
-#~ msgstr "« %(pm)s » vient de t'ajouter en tant que %(v_co_member)s."
-
-#, python-format
-#~ msgid ""
-#~ "Solltest du irrtümlicherweise hier eingetragen worden sein melde dies "
-#~ "bitte %(contact_email)s.\n"
-#~ "Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat."
-#~ msgstr ""
-#~ "Si tu as été inscrit·e ici par erreur, signale-le à %(contact_email)s.\n"
-#~ "Dans le cas contraire, nous partons du principe que tout est correct."
-
-#, python-format
-#~ msgid ""
-#~ "Soeben hat dich '%(pm)s' als %(v_co_member)s hinzugefügt und für dich "
-#~ "%(shares)s %(v_share_pl)s bestellt."
-#~ msgstr ""
-#~ "« %(pm)s » vient de t'ajouter en tant que %(v_co_member)s et a commandé "
-#~ "pour toi %(shares)s %(v_share_pl)s."
-
-#~ msgid ""
-#~ "Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und "
-#~ "gleich dein Passwort zu ändern."
-#~ msgstr "Utilise le lien de confirmation pour confirmer ton adresse e-mail."
-
-#~ msgid "Bestätigungslink"
-#~ msgstr "Lien de confirmation "
-
-#~ msgid "Damit bestätigst du dass du damit einverstanden bist"
-#~ msgstr "Tu confirmes ainsi ton accord pour"
-
-#, python-format
-#~ msgid "die bestellten %(v_share_pl)s zu erwerben"
-#~ msgstr "acquérir les %(v_share_pl)s commandées"
-
-#~ msgid "Ebenfalls bestätigst du, dass du folgendes gelesen hast"
-#~ msgstr "Tu confirmes également avoir lu ce qui suit"
-
-#, python-format
-#~ msgid ""
-#~ "Solltest du irrtümlicherweise hier eingetragen worden sein, melde dies "
-#~ "bitte %(contact_email)s."
-#~ msgstr ""
-#~ "Si tu as été inscrit·e ici par erreur, signale-le à %(contact_email)s."
-
-#, python-format
-#~ msgid ""
-#~ "%(c_organisation_name)s freut sich dir beim Setzen deines neuen Passworts "
-#~ "behilflich sein zu dürfen. Um den Vorgang zu beenden, klicke bitte auf "
-#~ "den untenstehenden Link: "
-#~ msgstr ""
-#~ "%(c_organisation_name)s est heureux·se de pouvoir t'aider à définir ton "
-#~ "nouveau mot de passe. Pour terminer la procédure, clique sur le lien ci-"
-#~ "dessous : "
-
-#~ msgid "Passwort ungültig"
-#~ msgstr "Mot de passe invalide"
-
-#~ msgid "Passwort (wiederholung)"
-#~ msgstr "Mot de passe (répétition)"
-
-#~ msgid "Passwortwiederholung ungültig"
-#~ msgstr "Répétition du mot de passe invalide"
-
-#, python-brace-format
-#~ msgid "der {share}"
-#~ msgstr "la {share}"
-
-#~ msgid "Kein/e/n {}"
-#~ msgstr "Pas de {}"
-
-#, python-format
-#~ msgid ""
-#~ "Die %(v_member_type_pl)s tragen im Rahmen ihrer Motivationen, Prioritäten "
-#~ "und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei. Wer bei "
-#~ "%(v_d_enriched_organisation)s %(v_member_type)s ist, verpflichtet sich "
-#~ "zur Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit "
-#~ "willkommen."
-#~ msgstr ""
-#~ "Les %(v_member_type_pl)s contribuent ensemble au succès de l'entreprise "
-#~ "dans le cadre de leurs motivations, priorités et possibilités. Quiconque "
-#~ "est membre de %(v_d_enriched_organisation)s %(v_member_type)s s'engage à "
-#~ "coopérer. Tout engagement supplémentaire ou spontané est toujours le "
-#~ "bienvenu."
-
-#, python-format
-#~ msgid "Mitgliedschaft ohne %(v_subscription)s"
-#~ msgstr "Adhésion sans %(v_subscription)s"
-
-#, python-format
-#~ msgid ""
-#~ "Um %(v_member_type)s bei %(v_d_enriched_organisation)s zu werden, musst "
-#~ "du mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. "
-#~ "Beim Austritt aus %(v_d_enriched_organisation)s bekommst du deine "
-#~ "%(v_share_pl)s zurückerstattet."
-#~ msgstr ""
-#~ "Pour devenir %(v_member_type)s chez %(v_d_enriched_organisation)s, tu "
-#~ "dois acquérir au moins 1 %(v_share)s (%(c_currency)s %(c_share_price)s). "
-#~ "Si tu quittes %(v_d_enriched_organisation)s, tes %(v_share_pl)s te seront "
-#~ "remboursés."
-
-#, python-format
-#~ msgid ""
-#~ "Du benötigst mindestens %(c_required_shares)s %(v_share_pl)s. Du kannst "
-#~ "natürlich noch mehr erwerben."
-#~ msgstr ""
-#~ "Tu as besoin d'au moins %(c_required_shares)s %(v_share_pl)s. Tu peux "
-#~ "bien sûr en acheter davantage."
