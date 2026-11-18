@@ -51,12 +51,13 @@ class ShareTests(ShareTestCase):
         tomorrow = today + datetime.timedelta(days=1)
         unpaid_share = Share.objects.create(member=self.member)
         canceled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
-        future_terminated_share = Share.objects.create(
-            member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
-        )
-        # terminated share (should not show)
+        canceled_share2 = Share.objects.create(member=self.member3, cancelled_date=yesterday)
+        # terminated shares (should not show)
         Share.objects.create(
-            member=self.member4, cancelled_date=yesterday, termination_date=yesterday
+            member=self.member4, cancelled_date=yesterday, termination_date=tomorrow
+        )
+        Share.objects.create(
+            member=self.member5, cancelled_date=yesterday, termination_date=yesterday
         )
         unneeded_unpaid_share = Share.objects.create(member=self.member4)
         # additional part that needs shares for member 1 and 3
@@ -68,7 +69,7 @@ class ShareTests(ShareTestCase):
         response = self.assertGet(reverse('manage-share-unpaid'))
         # make sure the right shares are shown
         self.assertEqual(list(response.context['object_list'].order_by('id')), [
-            unpaid_share, canceled_share, future_terminated_share, unneeded_unpaid_share
+            unpaid_share, canceled_share, canceled_share2, unneeded_unpaid_share
         ])
         # member2 has no access
         self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=403)
