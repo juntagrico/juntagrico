@@ -90,7 +90,7 @@
         </thead>
         <tbody>
             {% for subscription in object_list %}
-                {% with canceled_parts=subscription.parts.canceled ordered_parts=subscription.parts.ordered %}
+                {% with canceled_parts=subscription.canceled_parts ordered_parts=subscription.ordered_parts %}
                     <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
                             {% include './snippets/display_linked.html' %}

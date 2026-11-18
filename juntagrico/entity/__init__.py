@@ -2,7 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Case, When, Q, Value, DateField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _, gettext
 from polymorphic.models import PolymorphicModel
@@ -38,6 +38,29 @@ class SimpleStateModelQuerySet(QuerySet):
         exclude those that ended before or started after our date range.
         """
         return self.filter(activation_date__lte=till_date).exclude(deactivation_date__lt=from_date)
+
+    def annotate_change_in_range(self, from_date, till_date):
+        return self.annotate(
+            starts=Case(
+                When(
+                    Q(activation_date__gte=from_date)
+                    & Q(activation_date__lte=till_date),
+                    then='activation_date',
+                ),
+                default=Value(None),
+                output_field=DateField(),
+            )
+        ).annotate(
+            ends=Case(
+                When(
+                    Q(deactivation_date__gte=from_date)
+                    & Q(deactivation_date__lte=till_date),
+                    then='deactivation_date',
+                ),
+                default=Value(None),
+                output_field=DateField(),
+            )
+        )
 
 
 class SimpleStateModel(models.Model):

@@ -37,7 +37,7 @@ def get_emails_by_permission(permission_code):
     Get all email addresses of members by permission of user
     """
     from juntagrico.dao.memberdao import MemberDao
-    emails = MemberDao.members_by_permission(permission_code).values_list('email', flat=True)
+    emails = MemberDao.members_by_permission(permission_code).active().values_list('email', flat=True)
     return emails
 
 

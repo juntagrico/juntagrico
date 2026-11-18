@@ -3,7 +3,8 @@
         $("input.switch").AjaxSlider(
             '{% url 'area-join' '99' %}',
             '{% url 'area-leave' '99' %}',
-            '99'
+            '99',
+            '{{ csrf_token }}'
         )
     })
 </script>

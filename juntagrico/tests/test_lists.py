@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.core.management import call_command
 
 from ..config import Config
-from ..entity.depot import Tour
+from ..entity.depot import Tour, Depot
 from ..entity.subs import Subscription
 from ..util.depot_list import depot_list_data, default_depot_list_generation
 from . import JuntagricoTestCase
@@ -21,6 +21,19 @@ from . import JuntagricoTestCase
     }
 )
 class DepotlistTestCase(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        depot_data = {
+            'name': 'depot_without_tour',
+            'tour': None,
+            'weekday': 4,
+            'location': cls.depot.location,
+        }
+        cls.depot_without_tour = Depot.objects.create(**depot_data)
+        cls.sub5 = cls.create_sub_now(cls.depot_without_tour)
+        cls.member5.join_subscription(cls.sub5, True)
+    
     def setUp(self):
         super().setUp()
         from ..util.pdf import internal_storage
@@ -52,7 +65,17 @@ class DepotlistGenerationTests(DepotlistTestCase):
     def testDepotListData(self):
         Subscription.objects.update(identifier=None)
         data = depot_list_data()
-        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub])
+        self.assertListEqual(
+            list(data['subscriptions']),
+            [
+                self.sub2,
+                self.sub,
+                self.sub4,
+                self.sub5,
+                self.canceled_sub,
+                self.deactivated_sub,
+            ],
+        )
         # test depot list numbers
         rendered_html = get_template('exports/depotlist.html').render(data)
         self.assertInHTML("""
@@ -103,14 +126,19 @@ class DepotlistGenerationTests(DepotlistTestCase):
                 <td class="text-right">8</td>
             </tr>
             <tr>
+                <td>Keine</td>
+                <td class="text-right">1</td>
+                <td class="text-right">1</td>
+            </tr>
+            <tr>
                 <td><b>Alle</b></td>
-                <td class="text-right">8</td>
-                <td class="text-right">8</td>
+                <td class="text-right">9</td>
+                <td class="text-right">9</td>
             </tr>
         """, rendered_html)
 
     def testDepotListDataWithIdentifiers(self):
-        result = [self.sub2, self.sub, self.sub4, self.canceled_sub, self.deactivated_sub]
+        result = [self.sub2, self.sub, self.sub4, self.sub5, self.canceled_sub, self.deactivated_sub]
         for i, sub in enumerate(result):
             sub.identifier = f'B{i}'
             sub.save()
@@ -131,11 +159,15 @@ class DepotlistGenerationTests(DepotlistTestCase):
             <td class="top-border left-border">1</td>
         """, rendered_html)
         self.assertInHTML("""
-            <td class="namecol top-border left-border horz-left">B3 - first_name6 last_name6</td>
+            <td class="namecol top-border left-border horz-left">B3 - first_name5 last_name5</td>
             <td class="top-border left-border">1</td>
         """, rendered_html)
         self.assertInHTML("""
-            <td class="namecol top-border left-border horz-left">B4 - first_name7 last_name7</td>
+            <td class="namecol top-border left-border horz-left">B4 - first_name6 last_name6</td>
+            <td class="top-border left-border">1</td>
+        """, rendered_html)
+        self.assertInHTML("""
+            <td class="namecol top-border left-border horz-left">B5 - first_name7 last_name7</td>
             <td class="top-border left-border">1</td>
         """, rendered_html)
 

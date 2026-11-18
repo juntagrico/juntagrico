@@ -1,9 +1,25 @@
 import datetime
+import re
 
 from django.contrib.auth.models import Permission
-from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q, Count, Exists, OuterRef
+from django.db.models import (
+    QuerySet,
+    Sum,
+    Case,
+    When,
+    Prefetch,
+    F,
+    Q,
+    Count,
+    Exists,
+    OuterRef,
+    Value,
+    Subquery,
+)
+from django.db.models.functions import Coalesce
 from django.utils.decorators import method_decorator
 from django.utils.itercompat import is_iterable
+from django.utils.translation import gettext as _
 
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
@@ -48,19 +64,21 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             deactivation_date__isnull=True
         )
 
-    def has_active_subscription(self, on_date=None):
+    def has_active_subscription(self, on_date=None, in_depot=None):
         on_date = on_date or datetime.date.today()
+        depot_query = []
+        if in_depot is not None:
+            if is_iterable(in_depot):
+                depot_query.append(Q(subscriptions__depot__in=in_depot))
+            else:
+                depot_query.append(Q(subscriptions__depot=in_depot))
         return self.filter(
             q_subscription_activated(on_date),
             ~q_subscription_deactivated(on_date),
             q_joined_subscription(on_date),
-            ~q_left_subscription(on_date)
+            ~q_left_subscription(on_date),
+            *depot_query
         )
-
-    def in_depot(self, depot):
-        if is_iterable(depot):
-            return self.filter(subscriptions__depot__in=depot)
-        return self.filter(subscriptions__depot=depot)
 
     def has_active_shares(self, on_date=None):
         on_date = on_date or datetime.date.today()
@@ -86,17 +104,52 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         })
 
     def prefetch_for_list(self):
-        members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
+        members = self.defer('notes').select_user().prefetch_related('areas')
         # prefetch current subscription. This will be picked up in Member.subscription_current()
         from juntagrico.entity.subs import Subscription
         return members.prefetch_related(
             Prefetch(
                 'subscriptions',
-                queryset=Subscription.objects.joined().annotate(depot_name=F('depot__name')),
-                to_attr='current_subscription'
+                queryset=Subscription.objects.joined().annotate(
+                    # DEPRECATED: depot is prefetched. use depot.name instead.
+                    depot_name=F('depot__name')
+                ).cache_content(),
+                to_attr='current_subscription',
             ),
         )
 
+    def annotate_membership_status(self):
+        from ..entity.membership import Membership
+        today = datetime.date.today()
+        membership = Membership.objects.filter(
+            account=OuterRef('pk'),
+        )
+        active_membership = membership.active(today)
+        requested_membership = membership.requested(today)
+        return self.annotate(
+            membership_status=Case(
+                When(
+                    Exists(active_membership),
+                    then=Value(_('aktiv')),
+                ),
+                When(
+                    Exists(requested_membership),
+                    then=Value(_('wartend')),
+                ),
+                default=Value(_('nein')),
+            )
+        )
+
+    def annotate_membership(self):
+        from juntagrico.entity.membership import Membership
+        return self.annotate(
+            has_uncanceled_membership=Exists(
+                Membership.objects.not_canceled().filter(
+                    account=OuterRef('pk'),
+                )
+            )
+        )
+  
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):
         """
@@ -131,8 +184,37 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             .annotate_core_assignment_count(start, end, prefix, **extra_filters)
 
     def as_email_recipients(self):
-        return [f'{m} <{m.email}>' for m in self]
+        allowed = re.compile(r"[^\w \-._']", flags=re.UNICODE)
+        return [f'{allowed.sub("", str(m))} <{m.email}>' for m in self]
 
     def by_permission(self, permission_codename):
         perm = Permission.objects.get(codename=permission_codename)
         return self.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()
+
+    def select_user(self):
+        return self.select_related('user')
+
+    def annotate_shares(self, **kwargs):
+        from juntagrico.entity.share import Share
+        if not kwargs:
+            kwargs = {'ordered_shares': 'unpaid.usable', 'paid_shares': 'active', 'canceled_shares': 'active.canceled'}
+        qs = self
+        for to_attr, filters in kwargs.items():
+            share_qs = Share.objects
+            for f in filters.split('.'):
+                share_qs = getattr(share_qs, f)()
+            qs = qs.annotate(
+                **{
+                    to_attr: Coalesce(
+                        Subquery(
+                            share_qs
+                            .filter(member=OuterRef('pk'))
+                            .values('member')
+                            .annotate(count=Count('id'))
+                            .values('count')
+                        ),
+                        0,
+                    )
+                }
+            )
+        return qs

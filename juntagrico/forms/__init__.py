@@ -21,9 +21,8 @@ from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.jobs import ActivityArea
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, Invitee
 from juntagrico.entity.subs import SubscriptionPart, Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
@@ -164,7 +163,6 @@ class MemberBaseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.existing_member = None
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
@@ -178,7 +176,7 @@ class MemberBaseForm(ModelForm):
         return mark_safe(
             escape(
                 _('Diese E-Mail-Adresse existiert bereits im System.')
-            ) + f'<a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+            ) + f' <a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
 
@@ -254,9 +252,18 @@ class EditMemberForm(RegisterMemberForm):
 
 
 class CoMemberBaseForm(MemberBaseForm):
+    class Meta(MemberBaseForm.Meta):
+        model = Invitee
+        fields = ('first_name', 'last_name', 'email',)
+
     def __init__(self, *args, existing_emails=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.existing_emails = existing_emails or []  # list of emails that can not be used
+        self.base_layout = (
+            'first_name',
+            'last_name',
+            'email',
+        )
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
@@ -265,23 +272,6 @@ class CoMemberBaseForm(MemberBaseForm):
                 escape(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {co_members} verwendet.'))
                 .format(co_members=Config.vocabulary('co_member_pl'))), 'email_exists'
             )
-        existing_member = MemberDao.member_by_email(email)
-        if existing_member:
-            if existing_member.blocked:
-                raise ValidationError(mark_safe(
-                    escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive '
-                             '{subscription}-BezierIn. Bitte meldet euch bei {email}, '
-                             'wenn ihr bestehende {members} als {co_members} hinzufügen möchtet.')).format(
-                        subscription=Config.vocabulary('subscription'),
-                        email='<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
-                        members=Config.vocabulary('member_type_pl'),
-                        co_members=Config.vocabulary('co_member_pl')
-                    )),
-                    'has_active_subscription'
-                )
-            else:
-                # store existing member for reevaluation
-                self.existing_member = existing_member
         return email
 
     def clean(self):
@@ -290,19 +280,22 @@ class CoMemberBaseForm(MemberBaseForm):
 
     @staticmethod
     def get_submit_button():
-        return Submit('submit', _('{co_member} hinzufügen').format(
+        return Submit('submit', _('{co_member} einladen').format(
             co_member=Config.vocabulary('co_member')
         ), css_class='btn-success')
 
 
 class AddCoMemberForm(CoMemberBaseForm):
-    shares = IntegerField(label=Config.vocabulary('share_pl'), required=False, min_value=0, initial=0)
+    class Meta(CoMemberBaseForm.Meta):
+        fields = (*CoMemberBaseForm.Meta.fields, 'shares')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         fields = list(self.base_layout)  # keep first 9 fields
         if Config.enable_shares():
             fields.append(Field('shares', css_class='col-md-2'))
+        else:
+            del self.fields['shares']
         self.helper.layout = Layout(
             *fields,
             FormActions(
@@ -432,6 +425,9 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def type_filter(self, qs):
         return qs.filter(visible=True, is_extra=self.extra)
 
+    def available_types(self):
+        return self.type_filter(SubscriptionType.objects.all())
+
     def _get_initial(self, subscription_type):
         return 0
 
@@ -480,6 +476,7 @@ class SubscriptionPartSelectRequiredForm(SubscriptionPartBaseForm):
                 subscription=Config.vocabulary('subscription')
             ))
             raise ValidationError(selection_error_message, code='selection_error')
+        return super().clean()  # run validators
 
 
 class SubscriptionPartSelectForm(SubscriptionPartSelectRequiredForm):
@@ -543,17 +540,8 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
                 raise ValidationError(self._get_share_error_message(), code='share_error')
         # check that at least one subscription was selected
         if sum(selected.values()) == 0:
-            amount_error_message = mark_safe(
-                _('Wähle mindestens 1 {subscription} aus.').format(
-                    subscription=Config.vocabulary('subscription')
-                ) + (
-                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('sub-cancel', args=[self.subscription.id]),
-                        _('&rarr; Oder {subscription} komplett künden').format(
-                            subscription=Config.vocabulary('subscription')
-                        )
-                    )
-                )
+            amount_error_message = _('Wähle mindestens 1 {subscription} aus.').format(
+                subscription=Config.vocabulary('subscription')
             )
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
@@ -563,25 +551,31 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     part_type = ChoiceField()
 
     def __init__(self, part=None, *args, **kwargs):
-        self.pre_check(part)
-        super().__init__(*args, **kwargs)
         self.part = part
+        self.pre_check()
+        kwargs['extra'] = part.is_extra  # extra parts can only be changed to another extra part
+        super().__init__(*args, **kwargs)
         self.fields['part_type'].choices = self.get_choices
         self.helper.label_class = ''
         self.helper.field_class = 'col-md-12'
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Ändern'), css_class='btn-success')
+        if self.available_types().exists():
+            self.helper.layout = Layout(
+                *self._collect_type_fields(),
+                FormActions(
+                    self.get_submit_button()
+                )
             )
-        )
+        else:
+            self.helper.layout = Layout(
+                HTML(f'<p>{_("Es sind keine Optionen verfügbar.")}</p>')
+            )
 
-    @staticmethod
-    def pre_check(part):
-        if part.subscription.canceled or part.subscription.inactive:
+    def pre_check(self):
+        if self.part.subscription.canceled or self.part.subscription.inactive:
             raise Http404("Can't change subscription part of canceled subscription")
-        if not SubscriptionType.objects.can_change():
-            raise Http404("Can't change subscription part if there is only one subscription type")
+
+    def get_submit_button(self):
+        return Submit('submit', _('Ändern'), css_class='btn-success')
 
     def get_type_field(self, subscription_type):
         return SubscriptionTypeOption('part_type', instance=subscription_type)
@@ -590,7 +584,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         return super().type_filter(qs).exclude(pk=self.part.type.pk)
 
     def get_choices(self):
-        for subscription_type in self.type_filter(SubscriptionType.objects.normal().visible()):
+        for subscription_type in self.available_types():
             yield subscription_type.id, subscription_type.name
 
     def clean(self):
@@ -625,19 +619,12 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
 
     def send_notification(self, new_part):
         # notify admin
-        adminnotification.subpart_canceled(self.part)
-        adminnotification.subparts_created([new_part], self.part.subscription)
+        adminnotification.subpart_changed(self.part, new_part)
 
 
 class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
-    def __init__(self, part=None, *args, **kwargs):
-        super().__init__(part, *args, **kwargs)
-        self.helper.layout = Layout(
-            *self._collect_type_fields(),
-            FormActions(
-                Submit('submit', _('Bestellen'), css_class='btn-success')
-            )
-        )
+    def get_submit_button(self):
+        return Submit('submit', _('Bestellen'), css_class='btn-success')
 
     def type_filter(self, qs):
         return super().type_filter(qs).exclude(trial_days__gt=0)
@@ -755,7 +742,7 @@ class ShareOrderForm(Form):
         if isinstance(required, dict):
             self.required = required
         else:
-            self.required = {'total': required, 'for_primary': existing}
+            self.required = {'total': required, 'for_primary': required}
         self.existing = existing
         self.co_members = co_members or []
 

@@ -3,6 +3,7 @@ import datetime
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.member import SubscriptionMembership
 from ..view_decorators import using_change_date
 
 
@@ -12,9 +13,27 @@ def get_change_date(request, change_date):
 
 
 class ManageListTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.waiting_member = cls.create_member('waiting@juntagrico.invalid')
+        SubscriptionMembership.objects.create(
+            member=cls.waiting_member,
+            subscription=cls.sub
+        )
+        cls.waiting_with_date_member = cls.create_member('waiting_with_date@juntagrico.invalid')
+        SubscriptionMembership.objects.create(
+            member=cls.waiting_with_date_member,
+            subscription=cls.sub,
+            join_date=datetime.date.today() + datetime.timedelta(days=10),
+        )
 
     def testSubscription(self):
-        self.assertGet(reverse('manage-subscription'))
+        response = self.assertGet(reverse('manage-subscription'))
+        self.assertContains(response, 'künftig')
+        self.assertContains(response, 'waiting@juntagrico.invalid')
+        self.assertContains(response, 'ab')
+        self.assertContains(response, 'waiting_with_date@juntagrico.invalid')
         # member2 has no access
         self.assertGet(reverse('manage-subscription'), member=self.member2, code=403)
 
@@ -36,7 +55,8 @@ class ManageListTests(JuntagricoTestCase):
             self.member, self.member2, self.member3, self.member4, self.member5, self.member6, self.member7,
             self.admin, self.area_admin, self.area_admin_modifier, self.area_admin_viewer,
             self.area_admin_contact, self.area_admin_remover, self.area_admin_job_modifier,
-            self.area_admin_assignment_modifier, self.depot_coordinator
+            self.area_admin_assignment_modifier, self.depot_coordinator,
+            self.waiting_member, self.waiting_with_date_member
         ])
         member = objects[0]
         self.assertEqual(member.subscription_current, self.sub)
@@ -54,6 +74,18 @@ class ManageListTests(JuntagricoTestCase):
         ])
         # member2 has no access
         self.assertGet(reverse('manage-member-archive'), member=self.member2, code=403)
+
+    def testAccountWithoutMembership(self):
+        self.create_membership(self.member)  # should not appear
+        self.create_membership(self.member2, cancellation_date='2026-03-14', deactivation_date='2026-03-14')  # should appear
+        response = self.assertGet(reverse('manage-account-no-membership'))
+        # check that member list is correct
+        objects = list(response.context['object_list'].order_by('id'))
+        self.assertNotIn(self.member, objects)
+        self.assertIn(self.member2, objects)
+        self.assertIn(self.member3, objects)
+        # member2 has no access
+        self.assertGet(reverse('manage-account-no-membership'), member=self.member2, code=403)
 
     def testAreaMember(self):
         url = reverse('manage-area-member', args=[self.area.pk])
@@ -99,3 +131,13 @@ class ManageListTests(JuntagricoTestCase):
         self.assertPost(reverse('changedate-set'), data={'date': '1999-01-01'}, code=302)
         self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
         self.assertGet(reverse('changedate-unset'), code=302)
+        # missing date
+        self.assertPost(reverse('changedate-set'), code=200)
+
+    def testAnonymousAccess(self):
+        self.client.logout()
+        for name, args in [('changedate-set', []), ('changedate-unset', []), ('manage-area-member-remove', [self.area.pk])]:
+            response = self.client.post(reverse(name, args=args), {'date': '1999-01-01', 'member_id': 1})
+            self.assertRedirects(response, reverse('login') + '?next=' + reverse(name, args=args),
+                                 fetch_redirect_response=False)
+        self.assertTrue(self.area.members.filter(id=1).exists())

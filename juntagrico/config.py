@@ -4,7 +4,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _, get_language
 
 from juntagrico import defaults
 
@@ -30,6 +30,22 @@ def _get_setting_with_key(setting_key, default):
     return inner
 
 
+def _get_setting_with_key_localized(setting_key, default):
+    def inner(key, fallback=None):
+        if hasattr(settings, setting_key):
+            setting = getattr(settings, setting_key)
+            lang_code = get_language()
+            for locale in [lang_code, lang_code[:2]]:
+                if locale in setting and key in setting[locale]:
+                    return getattr(settings, setting_key)[locale][key]
+            if key in getattr(settings, setting_key):
+                return getattr(settings, setting_key)[key]
+        d = default.get(key, fallback)
+        return d() if callable(d) else d
+
+    return inner
+
+
 def fallback_static(path):
     try:
         return static(path)
@@ -43,7 +59,7 @@ def v_format(text, key):
 
 class Config:
     # organisation settings
-    vocabulary = _get_setting_with_key(
+    vocabulary = _get_setting_with_key_localized(
         'VOCABULARY',
         {
             'account': _('Konto'),
@@ -85,10 +101,12 @@ class Config:
             'no_subscription_acc': v_format(_('kein {subscription}'), 'subscription'),
             'this_subscription_acc': v_format(_('dieses {subscription}'), 'subscription'),
             'this_subscription_dat': v_format(_('diesem {subscription}'), 'subscription'),
+            'your_subscription': v_format(_('dein {subscription}'), 'subscription'),
             'your_subscription_acc': v_format(_('dein {subscription}'), 'subscription'),
             'your_subscription_dat': v_format(_('deinem {subscription}'), 'subscription'),
+            'another_subscription_dat': v_format(_('einem anderen {subscription}'), 'subscription'),
             'with_active_subscription': v_format(_('mit aktivem {subscription}'), 'subscription'),
-
+            'a_subscription_dat': v_format(_('einem {subscription}'), 'subscription'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -278,8 +296,6 @@ class Config:
         'EMAILS',
         {
             'welcome': 'mails/member/member_welcome.txt',
-            'co_welcome': 'mails/member/co_member_welcome.txt',
-            'co_added': 'mails/member/co_member_added.txt',
             'password': 'mails/member/password_reset.txt',
             'confirm': 'mails/member/email_confirm.txt',
             'j_reminder': 'mails/member/job_reminder.txt',
@@ -319,6 +335,10 @@ class Config:
         }
     )
 
+    # Security Settings
+    unlock_mailtemplates = _get_setting('UNLOCK_MAILTEMPLATES', False)
+    always_allowed_url_names = _get_setting('ALWAYS_ALLOWED_URLNAMES', [])
+
     @classmethod
     def using_richtext(cls):
         try:
@@ -328,6 +348,13 @@ class Config:
             )
         except (AttributeError, KeyError):
             return False
+
+    @classmethod
+    def allow_impersonate(cls, request):
+        if 'impersonate' in settings.INSTALLED_APPS:
+            from impersonate.helpers import check_allow_impersonate
+            return check_allow_impersonate(request)
+        return False
 
     @classmethod
     def notifications(cls, name):

@@ -3,7 +3,7 @@ import datetime
 from django import template
 from django.db.models import Q, Sum
 from django.utils import timezone
-from impersonate.helpers import check_allow_for_user
+from impersonate.helpers import users_impersonable
 
 from juntagrico.config import Config
 from juntagrico.context_processors import Vocabulary
@@ -11,15 +11,22 @@ from juntagrico.entity.jobs import Job, RecuringJob, JobMessage
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.forms.job import AddAssignmentForm, AddJobMessageForm
+from juntagrico.util import temporal
 
 register = template.Library()
 
 
 @register.inclusion_tag('snippets/impersonation_link.html')
 def impersonate_start(request, member):
+    if not Config.allow_impersonate(request):
+        return {'can_impersonate': False}
+
+    if not hasattr(request, 'users_impersonable'):
+        request.users_impersonable = users_impersonable(request)
+
     user = member.user
     return {
-        'can_impersonate': check_allow_for_user(request, user),
+        'can_impersonate': user in request.users_impersonable,
         'user': user
     }
 
@@ -95,6 +102,14 @@ def subscription_depot_fee(subscription_type, depot=''):
         condition = subscription_type.depot_conditions.filter(depot=depot).first()
         fee = condition.fee if condition else 0
     return fee
+
+
+@register.inclusion_tag('juntagrico/snippets/subscription/type_duration_info.html')
+def type_duration_info(subscription):
+    return {
+        'subscription': subscription,
+        'end_of_business_year': temporal.end_of_business_year(),
+    }
 
 
 @register.inclusion_tag('juntagrico/snippets/action_date.html')
@@ -208,9 +223,9 @@ def share_overview(account):
 
 @register.inclusion_tag('juntagrico/manage/share/snippets/summary.html')
 def share_summary(account):
-    ordered_shares = account.shares.unpaid().usable()
-    active_shares = account.shares.active()
-    canceled_shares = account.shares.canceled()
+    ordered_shares = account.shares.unpaid().usable().order_by('creation_date')
+    active_shares = account.shares.active().order_by('paid_date')
+    canceled_shares = account.shares.canceled().order_by('termination_date')
     return {
         'ordered_shares': ordered_shares,
         'active_shares': active_shares,

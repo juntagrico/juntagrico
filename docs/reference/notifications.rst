@@ -34,22 +34,11 @@ Signup Emails
 
 Welcome member
 ^^^^^^^^^^^^^^
-Trigger: Member completes the signup process
+Trigger: Member completes the signup process or creates a new account while accepting an invitation
 
 Template: ``mails/member/member_welcome.txt``
 
 Recipients: The member who signed up
-
-Welcome co-member
-^^^^^^^^^^^^^^^^^
-Trigger: Member completes the signup process where they added co-members
-
-Template: The template depends on whether the co-member already had an account
-
-- For new co-members: ``mails/member/co_member_welcome.txt``
-- For co-members with an existing account: ``mails/member/co_added.txt``
-
-Recipients: The co-member(s) added during the signup process
 
 Email address confirmation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

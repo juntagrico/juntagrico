@@ -2,18 +2,38 @@
 {% load i18n %}
 {% vocabulary "co_member_pl" as v_co_member_pl %}
 {% vocabulary "subscription" as v_subscription %}
-<div>
+<div class="co-members-container">
     {% for co_member in co_members %}
-        <span class="co-member">
+        <span class="comma-sep">
             {{ co_member }}<!--
             {% if subscription.primary_member == co_member %}
                 --> <span class="badge badge-dark">{% blocktrans %}{{ v_subscription }}-VerwalterIn{% endblocktrans %}</span><!--
             {% endif %}
         --></span>
     {% empty %}
-        {% blocktrans %}Du hast keine {{ v_co_member_pl }} eingetragen.{% endblocktrans %}
+        {% blocktrans %}Du hast keine {{ v_co_member_pl }}.{% endblocktrans %}
     {% endfor %}
 </div>
+{% with invitees=subscription_membership.invitees %}
+    {% if invitees.exists %}
+        <div class="invitees-container">
+            <span>{% trans "Eingeladene:" %}</span>
+            {% for invitee in invitees %}
+                <form action="{% url 'invitation-modify' %}" method="post" class="d-inline comma-sep">
+                    {% csrf_token %}
+                    <input type="hidden" name="key" value="{{ invitee.key }}">
+                    {{ invitee }} ({{ invitee.email }})
+                    <button class="btn btn-link p-0" type="submit" name="action" value="withdraw">
+                        <i class="bi bi-trash" title="{% trans 'Einladung zurückziehen' %}"></i>
+                    </button>
+                    <button class="btn btn-link p-0" type="submit" name="action" value="resend">
+                        <i class="bi bi-arrow-clockwise" title="{% trans 'Einladung erneut senden' %}"></i>
+                    </button>
+                </form>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 {% if not subscription.inactive %}
     {% if subscription.primary_member == member %}
         <div>

@@ -1,25 +1,34 @@
+{% load juntagrico.snippets %}
 {% load juntagrico.common %}
 {% load i18n %}
 {% load juntagrico.config %}
 
 <strong>{{ amount }}</strong>&times; {{ type.name }}
-{% if type.has_periods %}
-    {% for period in type.periods.all %}
-        <br/>
-        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
-        {{ period.price|price }}
-    {% endfor %}
-{% else %}
-    <strong>
-    {% if type.trial_days %}
-        {%blocktrans trimmed with tp=type.price|price %}
-         à {{ tp }}.
-        {%endblocktrans%}
+{% block price %}
+    {% if type.has_periods %}
+        {% block periodic_price %}
+            {% for period in type.periods.all %}
+                <br/>
+                {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+                {{ period.price|price }}
+            {% endfor %}
+        {% endblock %}
     {% else %}
-        {%blocktrans trimmed with tp=type.price|price %}
-         à {{ tp }} pro Jahr.
-        {%endblocktrans%}
+        <strong>
+        {% if type.trial_days %}
+            {% block trial_price %}
+                {%blocktrans trimmed with tp=type.price|price %}
+                    à {{ tp }}.
+                {%endblocktrans%}
+            {% endblock %}
+        {% else %}
+            {% block regular_price %}
+                {%blocktrans trimmed with tp=type.price|price %}
+                    à {{ tp }} pro Jahr.
+                {%endblocktrans%}
+            {% endblock %}
+        {% endif %}
+        </strong>
+        {% type_duration_info type %}
     {% endif %}
-    </strong>
-    {{ type.min_duration_info }}
-{% endif %}
+{% endblock %}

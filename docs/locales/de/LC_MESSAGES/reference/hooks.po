@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) GNU Lesser General Public License v3 (LGPLv3)
+# This file is distributed under the same license as the juntagrico package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: juntagrico \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 13:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de_CH\n"
+"Language-Team: de_CH <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Hooks"
+msgstr "Hooks"
+
+msgid "Template Hooks"
+msgstr "Template-Hooks"
+
+msgid "register_admin_menu"
+msgstr "register_admin_menu"
+
+msgid "Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_admin_menu>` instead."
+msgstr "Seit Version 1.6.0 veraltet. Verwende stattdessen :ref:`Template-Überschreibungen <reference-templates-extend_admin_menu>`."
+
+msgid "Renders the given template at the end of the admin menu."
+msgstr "Rendert das angegebene Template am Ende des Admin-Menüs."
+
+msgid "Arguments:"
+msgstr "Argumente:"
+
+msgid "template: String"
+msgstr "template: String"
+
+msgid "register_admin_subscription_menu"
+msgstr "register_admin_subscription_menu"
+
+msgid "Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_admin_subscription_menu>` instead."
+msgstr "Seit Version 1.6.0 veraltet. Verwende stattdessen :ref:`Template-Überschreibungen <reference-templates-extend_admin_subscription_menu>`."
+
+msgid "Renders the given template at the end of the subscription section in the admin menu."
+msgstr "Rendert das angegebene Template am Ende des Abonnement-Abschnitts im Admin-Menü."
+
+msgid "register_show_admin_menu_method"
+msgstr "register_show_admin_menu_method"
+
+msgid "Removed in juntagrico 1.6.0. Now it is enough to not add any HTML to the admin menu, for users without access. I.e. Add an if condition in your menu template to only show it to users who should have access."
+msgstr "Entfernt in Juntagrico 1.6.0. Jetzt reicht es, für Benutzer ohne Zugang keinen HTML-Code zum Admin-Menü hinzuzufügen. D.h. Füge eine if-Bedingung in deinem Menü-Template hinzu, um es nur Benutzern zu zeigen, die Zugang haben sollen."
+
+msgid "register_user_menu"
+msgstr "register_user_menu"
+
+msgid "Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_user_menu>` instead."
+msgstr "Seit Version 1.6.0 veraltet. Verwende stattdessen :ref:`Template-Überschreibungen <reference-templates-extend_user_menu>`."
+
+msgid "Renders the given template at the end of the user menu."
+msgstr "Rendert das angegebene Template am Ende des Benutzer-Menüs."
+
+msgid "register_sub_overview"
+msgstr "register_sub_overview"
+
+msgid "Removed in version 1.6.0. Keep it for the legacy subscription overview. For the new subscription overview use :ref:`template overrides <reference-templates-extend_subscription_overview_single>` instead."
+msgstr "Entfernt in Version 1.6.0. Behalte es für die veraltete Abonnement-Übersicht. Für die neue Abonnement-Übersicht verwende stattdessen :ref:`Template-Überschreibungen <reference-templates-extend_subscription_overview_single>`."
+
+msgid "register_sub_change"
+msgstr "register_sub_change"
+
+msgid "Admin Hooks"
+msgstr "Admin-Hooks"
+
+msgid "register_model_inline"
+msgstr "register_model_inline"
+
+msgid "Adds the given inline to the admin of the given model."
+msgstr "Fügt das angegebene Inline zum Admin des gegebenen Modells hinzu."
+
+msgid "Call this in your apps admin.py."
+msgstr "Rufe dies in deinem App-Admin.py auf."
+
+msgid "model: String"
+msgstr "model: String"
+
+msgid "inline: InlineModelAdmin"
+msgstr "inline: InlineModelAdmin"
+
+msgid "Config Hooks"
+msgstr "Config-Hooks"
+
+msgid "register_config_class"
+msgstr "register_config_class"
+
+msgid "Extends the juntagrico ``config`` template tag by the attributes of the given class"
+msgstr "Erweitert den Juntagrico ``config``-Template-Tag um die Attribute der gegebenen Klasse"
+
+msgid "cls: Class"
+msgstr "cls: Class"
+
+msgid "register_version"
+msgstr "register_version"
+
+msgid "Since Version 1.6.0 this hook shall be called with the package name (as in imports) as the only argument. Juntagrico will identify the installed version automatically."
+msgstr "Seit Version 1.6.0 sollte dieser Hook mit dem Paketnamen (wie in Imports) als einzigem Argument aufgerufen werden. Juntagrico identifiziert die installierte Version automatisch."
+
+msgid "Shows the given version with the given name on the version page"
+msgstr "Zeigt die angegebene Version mit dem angegebenen Namen auf der Versionsseite an"
+
+msgid "name: String"
+msgstr "name: String"
+
+msgid "version: String (deprecated since juntagrico 1.6.0)"
+msgstr "version: String (seit Juntagrico 1.6.0 veraltet)"

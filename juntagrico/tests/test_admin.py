@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from juntagrico.entity.jobs import RecuringJob
 from . import JuntagricoTestCaseWithShares
+from ..defaults import richtextfield_config
 from ..entity.membership import Membership
 
 
@@ -219,3 +220,18 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_membership_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_membership_change', args=(membership.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_membership_changelist'), member=self.admin, data={'q': 'test'})
+
+    @override_settings(DJRICHTEXTFIELD_CONFIG=richtextfield_config('en', True))
+    def testRichTextField(self):
+        location = self.depot.location
+        self.assertPost(
+            reverse('admin:juntagrico_location_change', args=(location.pk,)),
+            data={
+                'name': location.name,
+                'description': '<p onclick="notallowed()">allowed</p><script type="text/javascript">alert("not allowed")</script>',
+            },
+            member=self.admin,
+            code=302,
+        )
+        location.refresh_from_db()
+        self.assertEqual('<p>allowed</p>', location.description)

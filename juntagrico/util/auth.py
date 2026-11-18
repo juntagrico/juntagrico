@@ -1,41 +1,55 @@
+
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.utils.text import format_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 
 from juntagrico.config import Config
 from juntagrico.mailer import membernotification
 from juntagrico.models import Member
 
 
-class AuthenticateWithEmail(object):
-    @staticmethod
-    def authenticate(request, username=None, password=None):
-        try:
-            user = Member.objects.get(email__iexact=username).user
-            if user.check_password(password):
-                return user
-        except Member.DoesNotExist:
+class AuthenticateWithEmail(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        if username is None or password is None:
+            # e.g. called without credentials by token based backends.
+            # member__email__iexact=None would match all users without member
             return None
-
-    @staticmethod
-    def get_user(user_id):
         try:
-            return User.objects.get(pk=user_id)
+            user = User.objects.get(member__email__iexact=username)
         except User.DoesNotExist:
-            return None
+            pass
+        else:
+            if user.check_password(password) and self.user_can_authenticate(user):
+                return user
+        # try ModelBackend
+        return super().authenticate(request, username, password, **kwargs)
+
+    def user_can_authenticate(self, user):
+        """
+        Reject inactive users/members and users without members
+        """
+        try:
+            return super().user_can_authenticate(user) and not user.member.inactive
+        except Member.DoesNotExist as exp:
+            raise PermissionDenied from exp
 
 
 class JuntagricoAuthenticationForm(AuthenticationForm):
     error_messages = {
-        'invalid_login': _('Sorry, das ist kein gültiges Login'),
-        'inactive': _('Dein Konto ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
+        'invalid_login': gettext_lazy('Sorry, das ist kein gültiges Login'),
+        'inactive': format_lazy(
+            _('Dein Konto ist deaktiviert. Bei Fragen melde dich bitte bei {}'),
             '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members'))
         ),
-        'mail_unconfirmed': _('Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '
-                              'der E-Mail, die wir gerade verschickt haben (schaue auch im Spam-Ordner nach).'
+        'mail_unconfirmed': gettext_lazy(
+            'Deine Mail-Adresse ist nicht bestätigt. Bitte bestätige sie per Klick auf den Link in '
+            'der E-Mail, die wir gerade verschickt haben (schaue auch im Spam-Ordner nach).'
         ),
     }
 
@@ -45,6 +59,8 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
                 self.error_messages['inactive'],
                 code='inactive',
             )
+
+        super().confirm_login_allowed(user)
 
         if not user.member.confirmed and Config.enforce_mail_confirmation():
             membernotification.email_confirmation(user.member)
@@ -56,6 +72,20 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
 
 class JuntagricoLoginView(LoginView):
     form_class = JuntagricoAuthenticationForm
+
+    def form_valid(self, form):
+        user = form.get_user()
+
+        try:
+            validate_password(form.cleaned_data["password"], user)
+        except ValidationError:
+            # LoginView logs the user in here; middleware will restrict
+            # this session to the password-change flow.
+            response = super().form_valid(form)
+            self.request.session["must_change_password"] = True
+            return response
+
+        return super().form_valid(form)
 
 
 class JuntagricoPasswordResetForm(PasswordResetForm):

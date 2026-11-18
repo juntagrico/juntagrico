@@ -9,37 +9,7 @@
 {% endblock %}
 
 {% block intro %}
-    {% config "enable_shares" as c_enable_shares %}
-    {% config "share_price_display" as c_share_price %}
-    {% enriched_organisation "D" as v_d_enriched_organisation %}
-    {% block intro_1 %}
-        <p>{% blocktrans %}Interessiert an {{ v_d_enriched_organisation }}?{% endblocktrans %}</p>
-    {% endblock %}
-
-    <p>
-        {% block intro_2 %}
-            {% blocktrans trimmed %}
-                Bei {{ v_d_enriched_organisation }} tragen Alle im Rahmen ihrer Motivationen, Prioritäten und
-                Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
-            {% endblocktrans %}
-        {% endblock %}
-    </p>
-
-    {% documents "account-signup" as c_documents %}
-    {% if c_documents %}
-        {% block read_instructions %}
-            <p>
-                {% blocktrans trimmed %}
-                    Bevor du dich anmeldest, lies bitte Folgendes durch:
-                {% endblocktrans %}
-            </p>
-        {% endblock %}
-        <ul>
-            {% for name, link in c_documents %}
-                <li>{% ext_link name link %}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    {% include "./snippets/intro.html" %}
 {% endblock %}
 
 {% block content %}

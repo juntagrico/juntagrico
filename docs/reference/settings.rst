@@ -218,6 +218,8 @@ CURRENCY
 External Documents
 ------------------
 
+.. _reference-settings-documents:
+
 DOCUMENTS
 ^^^^^^^^^
 
@@ -234,19 +236,21 @@ DOCUMENTS
 
   Tags define where the document is shown:
 
-  - 'account': show on profile/membership page
-  - 'account-signup': same as above and additionally show it in the first step of the signup process
-  - 'account-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'membership-signup' show on step "membership" during signup process
-  - 'membership-signup-accept': same as above and must confirm checkbox that it has been read
-  - 'subscription': show on subscription overview page
-  - 'extrasub': show below subscription parts on subscription overview page
-  - 'activityarea': show on activity area overview page
+  - ``'account'``: show on profile/membership page
+  - ``'account-signup'``: same as above and additionally show it in the first step of the signup process
+  - ``'account-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'membership-signup'``: show on step "membership" during signup process
+  - ``'membership-signup-accept'``: same as above and must confirm checkbox that it has been read
+  - ``'subscription'``: show on subscription overview page
+  - ``'extrasub'``: show below subscription parts on subscription overview page
+  - ``'activityarea'``: show on activity area overview page
 
   Type: List of Tuples or Strings
 
   Default values are always applied when the corresponding settings are defined. E.g. setting BUSINESS_REGULATIONS and
   adding the same document in DOCUMENTS will show the document twice.
+
+  Default value is ``[]``, but if the other document settings are set, they are applied as follows:
 
   .. code-block:: python
 
@@ -438,13 +442,16 @@ MEMBERSHIP
   Membership configuration
 
   The setting takes a dictionary of key-value pairs:
+
     - ``'enable'``: enable all membership related functions (Bool)
     - ``'required_shares'``: amount of shares required for a membership (Integer)
     - ``'cumulative_shares'``: If true, shares count either for membership or for subscription, not both (Bool)
     - ``'required_on_signup'``: whether a membership is mandatory to signup up
+
         - True: always require membership on signup
         - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
         - False: don't require membership during signup, unless selected subscriptions require it
+
     - ``'fee'``: yearly membership fee (Float, Integer or String)
     - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
       and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
@@ -504,7 +511,7 @@ Shares
 
 ENABLE_SHARES
 ^^^^^^^^^^^^^
-  Enable all share related funtionality
+  Enable all share related functionality
 
   Type: String
 
@@ -572,6 +579,7 @@ FIRST_JOB_INFO
   This setting will automatically enable admin notifications for the indicated first jobs.
   Add the following entries to :ref:`ENABLE_NOTIFICATIONS <reference-settings-enable-notifications>`
   or :ref:`DISABLE_NOTIFICATIONS <reference-settings-disable-notifications>` to override the notifications:
+
     - ``'first_job_subscribed'``: notify admin if member subscribes to their first job
     - ``'first_job_in_area_subscribed'``: notify admin if member subscribes to their first job in this area
     - ``'first_job_in_type_subscribed'``: notify admin if member subscribes to their first job in this job type
@@ -653,7 +661,7 @@ DEPOT_LISTS
     def extra_context(context):
         from juntagrico.entity.subs import Subscription
         # pass a custom set to subscriptions
-        return dict(subscriptions=Subscription.objects.active_on(context['date']).filter(...))
+        return dict(subscriptions=Subscription.objects.served_on(context['date']).filter(...))
 
     DEPOT_LISTS = defaults.DEPOT_LISTS | {
         'depotlist': {  # overwrite existing depotlist definition.
@@ -720,14 +728,39 @@ Appearance
 
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word.
-  the member key describes the custom name you give your members.
+  Vocabulary dictionary for organisation specific words.
+
   the member_type key describes what you call your member in accordance to your organisation form.
 
   The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
 
-  If you use vocabulary with a different gender than the default you will also have to adjust the related fragments.
-  When using the same gender it is sufficient to only change the singular and plural form of your vocabulary.
+  There are helpers for some languages, that will adjust all related fragments:
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.german(
+        subscription=('Ernteanteil', 'Ernteanteile', 'm'),  # m = masculine
+        assignment=('Böhnli', 'Böhnli', 'n'),  # n = neutral
+        package='Korb',  # pass other vocabulary items as arguments
+    )
+
+  Other key that can be defined with a tuple: 'account', 'member_type', 'membership', 'share', 'co_member', 'depot'.
+  Keys without tuple: 'price', 'package', 'from'.
+
+  For french, use a capital letter for the gender if your word starts with an "h aspiré".
+
+  .. code-block:: python
+
+    from juntagrico import defaults
+
+    VOCABULARY = defaults.french(
+        subscription=('part de récolte', 'parts de récolte', 'm'),  # m = masculine
+        assignment=('haricot', 'haricots', 'M'),  # M = masculine with a h aspiré
+    )
+
+  For other languages you will have to define all relevant fragments.
 
   Type: Dictionary
 
@@ -762,7 +795,7 @@ VOCABULARY
         'subscription_pl' : 'Abos',
         'the_subscription': 'das Abo',
         'the_subscription_acc': 'das Abo',  # für ...
-        'no_subscription_acc': 'kein Abo',
+        'no_subscription_acc': 'kein Abo',  # für ...
         'this_subscription_acc': 'dieses Abo',  # für ...
         'this_subscription_dat': 'diesem Abo',  # von ...
         'your_subscription_acc': 'dein Abo',  # für ...
@@ -885,6 +918,9 @@ EMAILS
   .. warning::
     Deprecated since version 1.6.0. :ref:`Override template directly instead <reference-templates>`.
 
+  .. warning::
+    Removed options ``co_welcome`` and ``co_added`` since version 2.1.0.
+
   Defining the different email templates
 
   default value
@@ -893,8 +929,6 @@ EMAILS
 
     {
         'welcome': 'mails/member/member_welcome.txt',
-        'co_welcome': 'mails/member/co_member_welcome.txt',
-        'co_added': 'mails/member/co_member_added.txt',
         'password': 'mails/member/password_reset.txt',
         'confirm': 'mails/member/email_confirm.txt',
         'j_reminder': 'mails/member/job_reminder.txt',
@@ -1028,6 +1062,44 @@ DISABLE_NOTIFICATIONS
     Notifications on job subscription are always sent, when the member leaves a message, because the message is not stored outside of the email.
 
   default value:
+
+  .. code-block:: python
+
+    []
+
+.. _reference-settings-security:
+
+Security
+--------
+
+.. _reference-settings-unlock-mailtemplates:
+
+UNLOCK_MAILTEMPLATES
+^^^^^^^^^^^^^^^^^^^^
+  By default, mail templates are locked in the admin interface to prevent
+  potential security issues with code injection. Set this to ``True`` to
+  allow adding new templates and editing existing ones.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+.. _reference-settings-always-allowed-urlnames:
+
+ALWAYS_ALLOWED_URLNAMES
+^^^^^^^^^^^^^^^^^^^^^^^
+  List of URL name patterns that should always be accessible, even when a user
+  is forced to change their password (see :ref:`Password Validation
+  <intro-security-password>`). Patterns may contain namespaces and wildcards,
+  e.g. ``'home'``, ``'profile-*'``, ``'oauth:*'``.
+
+  Type: List of strings
+
+  default value
 
   .. code-block:: python
 

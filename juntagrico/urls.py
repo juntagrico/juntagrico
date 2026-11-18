@@ -8,7 +8,19 @@ from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, create_subscription, manage, email, job, api, config, membership, account
+from juntagrico.views import (
+    subscription,
+    create_subscription,
+    manage,
+    email,
+    job,
+    api,
+    config,
+    authentication,
+    membership,
+    account,
+    signup
+)
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -20,6 +32,11 @@ urlpatterns = [
     # /signup
     path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
     path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
+    path('signup/invitation/reject', signup.invitation_reject, name='invitation-reject'),
+    path('signup/invitation/modify', signup.invitation_modify, name='invitation-modify'),
+    path('signup/invitation/<str:key>', signup.invitation, name='invitation'),
+    path('signup/invitation/new/<str:key>', signup.invitation_to_new, name='invitation-new'),
+    path('signup/invitation/existing/<str:key>', signup.invitation_to_existing, name='invitation-existing'),
     path('signup/welcome/', create_subscription.welcome, name='welcome'),
     path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
     path('signup/external', create_subscription.create_external, name='signup-external'),
@@ -40,7 +57,7 @@ urlpatterns = [
     # login/
     path('accounts/login/', JuntagricoLoginView.as_view(), name='login'),
     # logout/
-    path('logout/', juntagrico.logout_view, name='logout'),
+    path('logout/', juntagrico.LogoutView.as_view(), name='logout'),
 
     # /accounts (password reset)
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html',
@@ -57,7 +74,8 @@ urlpatterns = [
 
     # /my (personal stuff)
     # /my/password
-    path('my/password', juntagrico.change_password, name='password'),
+    path('my/password', authentication.JuntagricoPasswordChangeView.as_view(), name='password'),
+    path('my/password/done', juntagrico.password_changed, name='password_change_done'),
     # my/email
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
     # /my/membership
@@ -146,6 +164,7 @@ urlpatterns = [
     # /manage/subscription
     path('manage/subscription/recent', manage.SubscriptionRecentView.as_view(), name='manage-sub-recent'),
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
+    path('manage/subscription/price', manage.SubscriptionPriceView.as_view(), name='manage-subscription-price'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
     path('manage/subscription/shares', manage.SubscriptionSharesView.as_view(), name='manage-sub-shares'),
@@ -190,8 +209,10 @@ urlpatterns = [
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
     path('manage/member/archive', manage.MemberArchiveView.as_view(), name='manage-member-archive'),
+    path('manage/account/nonmembers', manage.AccountWithoutMembershipView.as_view(), name='manage-account-no-membership'),
 
     # /manage/account
+    path('manage/account/search', manage.account_search, name='manage-account-search'),
     path('manage/account/<int:account_id>', manage.account_single, name='manage-account-single'),
     path('manage/account/<int:account_id>/notes/edit', manage.account_notes_edit, name='manage-account-notes-edit'),
 

@@ -1,3 +1,4 @@
+{% load juntagrico.widgets %}
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
@@ -16,6 +17,20 @@
         </h5>
     </li>
     {% include "juntagrico/menu/admin/admin.html" %}
+    {% block search %}
+        {% if perms.juntagrico.view_member %}
+            <div class="input-group py-2">
+                <div class="input-group-prepend">
+                    <label for="account_search_launcher" class="mb-0 input-group-text">
+                        <i class="bi bi-search"></i>
+                    </label>
+                </div>
+                <input id="account_search_launcher" type="text" placeholder="{% trans "Person suchen" %}"
+                       class="form-control account-search-launcher"
+                       data-toggle="modal" data-target="#account_search_modal"/>
+            </div>
+        {% endif %}
+    {% endblock %}
     {% include "juntagrico/menu/admin/memberships.html" %}
     {% block subscriptions %}
         {% include "juntagrico/menu/admin/subscriptions.html" %}

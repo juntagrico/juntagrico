@@ -113,7 +113,7 @@ class ShareTests(ShareTestCase):
     def testMemberCantCancelShare(self):
         # member can not cancel share because it is used
         share = self.member.share_set.last()
-        self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
+        self.assertPost(reverse('share-cancel', args=[share.pk]), code=302)
         share.refresh_from_db()
         self.assertIsNone(share.cancelled_date)
 
@@ -127,7 +127,10 @@ class ShareCancelTests(ShareTestCase):
         mail.outbox.clear()
 
     def testMemberShareCancel(self):
-        self.assertGet(reverse('share-cancel', args=[self.spare_share.pk]), 302)
+        self.assertGet(reverse('share-cancel', args=[self.spare_share.pk]), 405)
+        self.spare_share.refresh_from_db()
+        self.assertIsNone(self.spare_share.cancelled_date)
+        self.assertPost(reverse('share-cancel', args=[self.spare_share.pk]), code=302)
         self.spare_share.refresh_from_db()
         self.assertEqual(self.spare_share.cancelled_date, datetime.date.today())
         self.assertIsNotNone(self.spare_share.termination_date)
@@ -136,7 +139,7 @@ class ShareCancelTests(ShareTestCase):
 
     def testCancelWrongShareFails(self):
         share = self.member4.share_set.first()
-        self.assertGet(reverse('share-cancel', args=[share.pk]), 404)
+        self.assertPost(reverse('share-cancel', args=[share.pk]), code=404)
         share.refresh_from_db()
         self.assertEqual(share.cancelled_date, None)
         self.assertEqual(share.termination_date, None)
@@ -338,7 +341,8 @@ class ShareManageTests(ShareTestCase):
         share.cancelled_date = datetime.date.today()
         share.termination_date = datetime.date.today()
         share.save()
-        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
+        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 405)
+        self.assertPost(reverse('manage-share-payout-single', args=[share.pk]), {}, 302)
         self.assertEqual(self.member.active_shares.count(), 0)
         membership.refresh_from_db()
         self.assertTrue(membership.inactive)

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from import_export.admin import ExportMixin
 
@@ -24,7 +25,7 @@ class ShareAdmin(ExportMixin, BaseAdmin):
     resource_classes = [ShareResource, TranslatedShareResource]
     export_form_class = TranslatedSelectableFieldsExportForm
 
-    @admin.action(description=_('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl')))
+    @admin.action(description=format_lazy(_('Datum für ausgewählte {} setzen'), Config.vocabulary('share_pl')))
     def mass_edit_share_dates(self, request, queryset):
         if 'apply' in request.POST:
             form = EditShareDatesForm(request.POST)

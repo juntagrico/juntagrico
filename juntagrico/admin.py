@@ -12,7 +12,12 @@ from juntagrico.admins.job_admin import JobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
 from juntagrico.admins.location_admin import LocationAdmin
-from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
+from juntagrico.admins.mail_template_admin import MailTemplateAdmin
+from juntagrico.admins.member_admin import (
+    MemberAdmin,
+    MemberAdminWithShares,
+    InviteeAdmin,
+)
 from juntagrico.admins.membership_admin import MembershipAdmin
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
@@ -29,7 +34,7 @@ from juntagrico.entity.depot import Depot, Tour
 from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
-from juntagrico.entity.member import Member, SubscriptionMembership
+from juntagrico.entity.member import Member, SubscriptionMembership, Invitee
 from juntagrico.entity.membership import Membership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -49,9 +54,10 @@ admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdminWithShares if Config.enable_shares() else MemberAdmin)
+admin.site.register(Invitee, InviteeAdmin)
 admin.site.register(SubscriptionMembership, BaseAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
-admin.site.register(MailTemplate)
+admin.site.register(MailTemplate, MailTemplateAdmin)
 admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra, BaseAdmin)
 admin.site.register(JobExtraType, BaseAdmin)

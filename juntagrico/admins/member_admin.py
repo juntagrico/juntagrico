@@ -87,6 +87,12 @@ class MemberAdmin(DateRangeExportMixin, BaseAdmin):
         inst, = queryset.all()
         return HttpResponseRedirect(reverse('impersonate-start', args=(inst.user.id,)))
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not Config.allow_impersonate(request):
+            actions.pop('impersonate_job', None)
+        return actions
+
 
 class MemberAdminWithShares(MemberAdmin):
     def __init__(self, model, admin_site):
@@ -118,3 +124,10 @@ class MembershipInline(admin.TabularInline):
 
 if Config.membership('enable'):
     MemberAdmin.inlines.append(MembershipInline)
+
+
+class InviteeAdmin(BaseAdmin):
+    list_display = ['email', 'first_name', 'last_name', 'invited_by']
+    search_fields = ['first_name', 'last_name', 'email']
+    fields = ['key', 'created_at', 'first_name', 'last_name', 'email', 'shares', 'subscription', 'invited_by']
+    readonly_fields = ['key', 'created_at']

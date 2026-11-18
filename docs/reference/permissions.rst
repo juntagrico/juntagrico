@@ -104,7 +104,7 @@ Also require at least view permission for members.
 Area and Depot Admins
 ---------------------
 Depot Coordinators
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 .. warning::
     Changed in 2.0: Permission `juntagrico.is_depot_admin` was removed.
@@ -327,8 +327,28 @@ If you want to give limited access to send emails, use the area admin or depot a
 Search Hints:
     * German: Emails versenden
 
+juntagrico.can_email_all
+^^^^^^^^^^^^^^^^^^^^^^^^
+Person sees the option in the email form to send mass emails to all users.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_membership
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person sees the option in the email form to send mass emails to all users with active memberships.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
 juntagrico.can_email_all_with_share
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the option in the email form to send mass emails to all users with active shares.
 
 Requires:
@@ -338,7 +358,7 @@ Search Hints:
     * German: Emails versenden
 
 juntagrico.can_email_all_with_sub
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the option in the email form to send mass emails to all users with active subscription.
 
 Requires:

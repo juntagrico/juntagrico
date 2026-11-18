@@ -1,5 +1,8 @@
+import hashlib
+
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth import authenticate, get_user
+from django.contrib.auth.models import Permission, User
 from django.core import mail
 from django.test import override_settings
 from django.urls import reverse
@@ -65,11 +68,44 @@ class AuthTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.deactivated_member = cls.create_member('deactivated_member@example.com', deactivation_date='2020-01-01')
+        cls.deactivated_member = cls.create_member(
+            'deactivated_member@example.com',
+            deactivation_date='2020-01-01',
+            confirmed=True,
+        )
 
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))
         self.assertEqual(len(mail.outbox), 1)
+
+    def testLoginWithEmail(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+    def testLoginWithUsername(self):
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.user.username,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+    def testAuthenticateWithoutCredentials(self):
+        # multiple users without member must not break authentication without credentials,
+        # e.g. when called by token based backends
+        User.objects.create_user('no_member_1')
+        User.objects.create_user('no_member_2')
+        self.assertIsNone(authenticate(request=None))
 
     @override_settings(ENFORCE_MAIL_CONFIRMATION=False)
     def testUnconfirmedLogin(self):
@@ -100,10 +136,17 @@ class AuthTests(JuntagricoTestCase):
         self.member.save()
         self.assertEqual(self.member.confirmed, False)
         # test confirmation link
-        response = self.client.get(reverse('confirm', args=['wrong_hash']))
-        self.assertEqual(response.status_code, 200)
-        self.member.refresh_from_db()
-        self.assertEqual(self.member.confirmed, False)
+        token_before_change = Member.objects.get(pk=self.member.pk).get_hash()
+        self.member.email = 'other_email@email.org'
+        self.member.save()
+        # the former unsigned hash can be computed by anyone
+        old_hash = hashlib.sha1((str(self.member.email) + str(self.member.pk)).encode('utf8')).hexdigest()
+        for invalid in ['wrong_hash', old_hash, token_before_change, self.member.get_hash() + 'x']:
+            response = self.client.get(reverse('confirm', args=[invalid]))
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(response.context['error_message'])
+            self.member.refresh_from_db()
+            self.assertEqual(self.member.confirmed, False)
         response = self.client.get(reverse('confirm', args=[self.member.get_hash()]))
         self.assertEqual(response.status_code, 200)
         self.member.refresh_from_db()
@@ -128,5 +171,105 @@ class AuthTests(JuntagricoTestCase):
         self.assertPost(reverse('password_reset'), {'email': 'deactivated_member@example.com'}, code=302)
         self.assertEqual(len(mail.outbox), 0)  # should send no email
 
+    def testDeactivatedUserSessionEnds(self):
+        self.client.force_login(self.member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 200)
+        self.member.user.is_active = False
+        self.member.user.save()
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testDeactivatedMemberSessionEnds(self):
+        self.client.force_login(self.deactivated_member.user, 'juntagrico.util.auth.AuthenticateWithEmail')
+        self.assertEqual(self.client.get(reverse('profile')).status_code, 302)
+
+    def testInactiveUserLogin(self):
+        self.member.user.is_active = False
+        self.member.user.save()
+        self.member.confirmed = True
+        self.member.save()
+        response = self.client.post(reverse('login'), {
+            'username': self.member.email,
+            'password': self.member.set_password(),
+        })
+        self.assertEqual(response.status_code, 200)
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
+    @override_settings(AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend'])
+    def testInactiveMemberLogin(self):
+        # The AuthenticateWithEmail backend will show a generic error message
+        # because deactivated members are excluded earlier
+        # In case another backend is used, the login form will also fail with a more specific error message
+        response = self.client.post(
+            reverse('login'),
+            {
+                'username': self.deactivated_member.user.username,
+                'password': self.deactivated_member.set_password(),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Dein Konto ist deaktiviert')
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
     def testLogout(self):
-        self.assertGet(reverse('logout'), code=302)
+        self.assertGet(reverse('logout'), code=405)
+        self.assertPost(reverse('logout'), code=302)
+
+
+class AuthBackendTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.member = cls.create_member('otheruser@example.com')
+        cls.member.confirmed = True
+        cls.member.save()
+        cls.password = cls.member.set_password()
+        cls.other_user = User.objects.create_user(username='otheruser@example.com', password='otherpassword')
+        cls.other_user.save()
+    
+    def testMemberEmailMatchesOtherUsername(self):
+        """
+        A Member's email equals the username of another User.
+        Logging in with that email should authenticate the Member, not the other User.
+        """
+        # other_user has no Member associated
+        # Login with the email (which is also the other_user's username)
+        response = self.client.post(reverse('login'), {
+            'username': 'otheruser@example.com',
+            'password': self.password,
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+        # Should authenticate the Member, not the other User
+        self.assertEqual(user.id, self.member.user.id)
+        self.assertNotEqual(user.id, self.other_user.id)
+        
+    def testUserWithoutMemberShouldNotAuth(self):
+        """
+        A User without a Member exists with a given username.
+        Auth should not pass and no other auth backends should be tried.
+        """
+        # Try to authenticate
+        response = self.client.post(
+            reverse('login'),
+            {
+                'username': 'otheruser@example.com',
+                'password': 'otherpassword',
+            },
+        )
+        # The login should fail. The second backend is not used.
+        self.assertEqual(response.status_code, 200)
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
+
+@override_settings(
+    AUTHENTICATION_BACKENDS=(
+        'juntagrico.util.auth.AuthenticateWithEmail',
+        'django.contrib.auth.backends.ModelBackend',
+    )
+)
+class ModelAuthBackendTests(AuthBackendTests):
+    """AuthenticateWithEmail should fully shadow ModelBackend"""

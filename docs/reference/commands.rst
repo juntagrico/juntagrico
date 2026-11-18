@@ -76,3 +76,31 @@ generate_testdata_advanced
     This command requires ``faker``. Install it via pip.
 
 Like ``generate_testdata`` but produces a much bigger set of test data.
+
+.. _reference-commands-sanitize-richtext:
+
+sanitize_richtext
+-----------------
+
+Sanitizes HTML content in rich text fields to remove potentially dangerous tags
+and attributes (e.g. ``<script>`` tags, ``onclick`` handlers). This is useful
+for cleaning up existing data after enabling the rich text editor, or as a
+one-time migration to harden stored content.
+
+By default, the command sanitizes all known juntagrico rich text fields. You can
+also pass specific fields in ``app_label.ModelName.field_name`` format.
+
+Options:
+
+- ``--dry-run``: Show what would be changed without actually updating the database.
+- ``--batch-size``: Number of records to process at a time (default: 500).
+
+Example usage:
+
+.. code-block:: bash
+
+  # Dry run on all default fields
+  python manage.py sanitize_richtext --dry-run
+
+  # Sanitize a specific field
+  python manage.py sanitize_richtext juntagrico.ActivityArea.description

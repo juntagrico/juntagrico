@@ -76,10 +76,24 @@ Menu Templates
 
 .. _reference-templates-extend_user_menu:
 
-juntagrico/menu/user.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/menu/user.html
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add entries to the user menu.
+
+You can extend any element to add your menu entry before or after the existing entry:
+
+- ``title``: the menu header
+- ``subscription``
+- ``job``
+- ``delivery``
+- ``area``
+- ``membership``
+- ``contact``
+- ``extend``: normally empty, may be used by addons
+- ``separator``
+- ``website``
+- ``logout``
 
 Example:
 
@@ -94,10 +108,15 @@ Example:
 
 .. _reference-templates-extend_admin_menu:
 
-juntagrico/menu/admin.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/menu/admin.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add entries to the admin menu.
+
+Blocks:
+
+- ``extend``: Add custom menu entries
+- ``search``: Account search field (shown when member view permission is granted)
 
 Example:
 
@@ -118,18 +137,19 @@ juntagrico/menu/admin/subscriptions.html|extend
 Add entries to the subscription section in the admin menu.
 
 juntagrico/menu/admin/\*.html|sub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Change admin sub menu entries of:
 
 - ``activityareas.html``
 - ``assignments.html``
 - ``depots.html``
-- ``extra_subscriptions.html``
-- ``lists.html``
 - ``members.html``
+- ``memberships.html``
 - ``shares.html``
 - ``subscriptions.html``
+
+Note: ``emails.html`` and ``lists.html`` are single-item menu entries without blocks and cannot be extended.
 
 Signup Templates
 ----------------
@@ -139,26 +159,39 @@ All signup pages have these 2 blocks to override:
 - ``title``: Text of the title
 - ``intro``: Text after the title
 
-The signup templates are located in the folder ``createsubscription``.
+Most of the signup templates are located in ``juntagrico/subscription/create``.
 
 Some pages have additional blocks listed below.
 
 juntagrico/signup/member.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. hint::
+    The intro text has been moved to ``juntagrico/signup/snippets/intro.html`` in version 2.1. See below.
+
+- ``title``: Text of the title
+- ``intro``: Intro section (includes ``snippets/intro.html``)
+
+juntagrico/signup/snippets/intro.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Intro text snippets for the member signup page.
+
 - ``intro_1``: First part of intro
-- ``intro_with_shares``: Part of intro, about shares
-- ``intro_2``  Last part of intro
-- ``read_instructions``: Text on documents that should be read
+- ``intro_2``: Last part of intro
+- ``read_instructions``: Text on documents that should be read. Populated automatically from the :ref:`DOCUMENTS <reference-settings-documents>` setting.
 
 juntagrico/form/layout/category_container.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Defines the structure to display subscription categories in the subscription/part order and change forms
+Defines the structure to display subscription categories in the subscription/part order and change forms.
 
 Blocks:
 
-- ``head``: Name and description of category
+- ``all_head``: Wrapper for the category header
+
+  - ``head``: Name and description of category
+
 - ``fields``: Nested fields
 
 
@@ -168,6 +201,30 @@ juntagrico/form/layout/bundle_container.html
 Defines the structure to display subscription bundles in the subscription/part order and change forms.
 
 Has the same blocks as ``category_container.html``.
+
+juntagrico/snippets/subscription/type.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays subscription type in any order process and in configuration view.
+
+Blocks:
+
+- ``name``: Long name of the subscription type
+- ``description``: Description text of the subscription type
+- ``price``: Price display for all cases
+
+  - ``periodic_price``: Price display for types that have periods
+  - ``price_display``: Price display for types without periods
+
+- ``required_assignments``: Required assignments count
+- ``required_core_assignments``: Required core assignments count
+- ``shares``: Required shares count
+- ``duration``: Duration/runtime information
+
+juntagrico/snippets/subscription/type_duration_info.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays the runtime of the subscription type.
 
 
 juntagrico/subscription/create/form/no_subscription_field.html
@@ -191,42 +248,77 @@ juntagrico/subscription/create/select_start_date.html
 juntagrico/subscription/create/select_shares.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``intro_membership``: Explaining required shares for membership
+- ``intro_membership``: Explaining required shares for membership (includes ``juntagrico/my/share/snippets/intro_for_membership.html``)
 - ``intro_subscriptions``: Explaining required shares for subscriptions
 - ``intro_signup``: Explaining required shares for signup
 - ``intro_additional``: Last part of intro
+
+
+juntagrico/subscription/create/snippets/membership_intro.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Intro text snippet for membership selection.
 
 juntagrico/subscription/create/summary.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Each section has a block:
 
-- ``profile``
-- ``subscription``
-- ``depot``
-- ``start_date``
-- ``co_member``
-- ``activity_areas``
-- ``shares``
-- ``comment``
+- ``profile``: Personal information
+- ``subscription``: Selected subscription parts
+- ``extras``: Extra subscription items (shown if extras are configured)
+- ``depot``: Selected depot
+- ``start_date``: Desired start date
+- ``co_member``: Co-members
+- ``activity_areas``: Auto-joined activity areas
+- ``membership``: Membership status and fee
+- ``shares``: Share allocation
+- ``comment``: Comment field
+
+
+juntagrico/subscription/create/summary/snippets/part.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Displays selected subscription part types in signup summary.
+
+Blocks:
+
+- ``price``: Price display for all cases
+
+  - ``periodic_price``: Price display for types that have periods
+  - ``trial_price``: Price display for trial types without periods
+  - ``regular_price``: Price display for non-trial types without periods
+
 
 Subscription Templates
 ----------------------
 
 .. _reference-templates-extend_subscription_overview_single:
 
-juntagrico/my/subscription/single.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/subscription/single.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add content to the subscription overview page, for members that have a subscription.
+Subscription overview page for members that have a subscription.
+
+Blocks:
+
+- ``part-list``: Subscription composition section
+- ``co-members``: Co-members section
+- ``documents``: Subscription-related documents
+- ``extend``: Add custom content (normally empty, may be used by addons)
 
 
 .. _reference-templates-extend_subscription_overview_none:
 
-juntagrico/my/subscription/none.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/my/subscription/none.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add content to the subscription overview page, for members that have no subscription.
+Subscription overview page for members that have no subscription.
+
+Blocks:
+
+- ``documents``: Subscription-related documents
+- ``extend``: Add custom content (normally empty, may be used by addons)
 
 
 Depot Templates
@@ -251,9 +343,15 @@ Activity Area Templates
 juntagrico/my/area/snippets/intro.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Intro text on the activity area overview page
+Intro text on the activity area overview page.
+
+Blocks:
 
 - ``all``: Use this block if you want to append or prepend text
+
+  - ``intro1``: First paragraph about participation
+  - ``intro2``: Second paragraph about registration
+  - ``documents``: Activity area documents. Populated from the :ref:`DOCUMENTS <reference-settings-documents>` setting.
 
 juntagrico/my/area/list.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -278,29 +376,54 @@ juntagrico/my/area/show.html
 Membership Templates
 --------------------
 
-juntagrico/my/membership/cancel.html
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- ``intro``: Text after title
-
 juntagrico/my/membership/profile.html
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Blocks exist for the text in the info banner on top and for the buttons
+Blocks for membership info banners, buttons, account information, and profile editing.
 
-- ``info_canceled``
-- ``info_active``
-- ``button_change_password``
-- ``button_cancel_membership``
+- ``membership``: Entire membership status section
+
+  - ``info_canceled``: Info banner when membership is canceled
+  - ``info_active``: Info banner when membership is active
+  - ``info_inactive``: Info banner when no membership exists
+  - ``info_requested``: Info banner when membership is requested but not yet active
+  - ``button_cancel_membership``: Button to cancel membership
+  - ``button_create_membership``: Button to create new membership
+  - ``button_recreate_membership``: Button to revoke cancellation
+
+- ``account_number``: Displays member account number
+- ``documents``: Account-related documents
+- ``password``: Password section
+
+  - ``button_change_password``: Button to change password
+
+- ``profile``: Personal information editing section
+
+juntagrico/my/membership/create.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Membership creation page.
+
+- ``intro_with_shares``: Intro text about shares requirement (shown when shares are enabled)
+
+juntagrico/my/membership/snippets/documents.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Documents related to membership.
 
 
 Widget Templates
 ----------------
 
-juntagrico/widgets/assignment_progress.html|progress
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/widgets/assignment_progress.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Change appearance of the assignment progress widget in menu.
+
+Blocks:
+
+- ``title``: Widget title
+- ``progress``: Progress display
 
 E.g. to use the bean icon indicators of previous juntagrico versions do:
 

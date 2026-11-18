@@ -288,6 +288,16 @@ textarea#recipients[disabled=disabled] {
     background-color: #780fff;
 }
 
+/* img as icon */
+.icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+    object-fit: contain;
+    object-position: center;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;
@@ -325,6 +335,10 @@ textarea#recipients[disabled=disabled] {
     padding-bottom: .5rem;
 }
 
+/* forward compatibility with bootstrap 5 */
+.gap-1 {
+    gap: .25rem !important;
+}
 .dtsb-titleRow {
     display: none;
 }
@@ -533,4 +547,10 @@ a.phone-number {
 
 .share-overview {
     max-width: 60em;
+}
+
+/* comma separator */
+
+.comma-sep:not(:last-child)::after {
+    content: ', ';
 }

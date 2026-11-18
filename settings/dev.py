@@ -69,7 +69,6 @@ TEMPLATES[0]['OPTIONS'].update({  # noqa: F405
 
 
 USE_I18N = True
-USE_L10N = True  # required to pass tests
 LANGUAGE_CODE = 'de-CH'  # required to pass tests
 DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 

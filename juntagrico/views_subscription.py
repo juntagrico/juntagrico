@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
@@ -22,10 +23,10 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, NicknameForm, SubscriptionPartChangeForm
 from juntagrico.forms.subscription import PrimaryMemberChangeForm, CancellationForm, LeaveForm
-from juntagrico.mailer import adminnotification
+from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.management import create_or_update_co_member, create_share
+from juntagrico.util.management import create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part
@@ -150,12 +151,12 @@ def confirm(request, member_hash):
     Confirm mail address from link with hash after signup or if user that has been added as a co_subscription member
     """
     renderdict = {'error_message': _('Ungültiger Link.')}
-    for member in Member.objects.filter(confirmed=False):
-        if member_hash == member.get_hash():
+    member = Member.from_hash(member_hash)
+    if member is not None:
+        if not member.confirmed:
             member.confirmed = True
             member.save()
-            renderdict = {}
-            break
+        renderdict = {}
     return render(request, 'mail_confirmation.html', renderdict)
 
 
@@ -168,25 +169,10 @@ class AddCoMemberView(FormView, ModelFormMixin):
         self.object = None
         self.subscription = None
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(
-            **{},
-            **kwargs
-        )
-
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs['existing_emails'] = self.subscription.current_members.values_list('email', flat=True)
         return form_kwargs
-
-    def get_initial(self):
-        # use address from main member as default
-        mm = self.request.user.member
-        return {
-            'addr_street': mm.addr_street,
-            'addr_zipcode': mm.addr_zipcode,
-            'addr_location': mm.addr_location
-        }
 
     @method_decorator(primary_member_of_subscription)
     def dispatch(self, request, subscription_id, *args, **kwargs):
@@ -194,14 +180,11 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # add existing member
-        co_member = getattr(form, 'existing_member', None)
-        shares = 0
-        # or create new member and order shares for them
-        if co_member is None:
-            shares = form.cleaned_data.get('shares', 0)
-            co_member = form.instance
-        create_or_update_co_member(co_member, self.subscription, shares)
+        # invite co-member
+        form.instance.subscription = self.subscription
+        form.instance.invited_by = self.request.user.member
+        invitee = form.save()
+        membernotification.invite_co_member(invitee)
         return self._done()
 
     def _done(self):
@@ -340,6 +323,7 @@ def share_certificate(request):
 
 
 @login_required
+@require_POST
 def cancel_share(request, share_id):
     member = request.user.member
     share = get_object_or_404(Share, id=share_id, member=member)
