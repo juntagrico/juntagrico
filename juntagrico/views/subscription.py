@@ -61,7 +61,7 @@ def single(request, subscription_id=None):
     subscription = Subscription.objects.annotate_assignment_counts(
         of_member=member,
         prefix='member_'
-    ).annotate_assignments_progress().get(pk=subscription)
+    ).annotate_assignments_progress().get(pk=subscription.pk)
 
     subscription_membership = member.subscriptionmembership_set.get(subscription=subscription)
     return render(request, 'juntagrico/my/subscription/single.html', {

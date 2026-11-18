@@ -8,7 +8,7 @@ import juntagrico.entity
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0001_squashed_0040_post_1_6'),
+        ('juntagrico', '0040_post_1_6'),
     ]
 
     operations = [

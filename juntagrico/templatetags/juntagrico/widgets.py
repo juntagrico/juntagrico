@@ -51,7 +51,7 @@ def assignment_progress(member, future=None, start=None, end=None, subscription=
             # annotate future member assignment count and progress
             subs = subs.annotate_assignments_progress(start, end, member, count_jobs_from=count_jobs_from, prefix='future_member_')
         # get result
-        sub = subs.get(pk=sub)
+        sub = subs.get(pk=sub.pk)
 
         # calculate values for display: partner = total - member
         for core in ['', 'core_']:

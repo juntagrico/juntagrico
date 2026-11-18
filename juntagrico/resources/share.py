@@ -14,7 +14,7 @@ class ShareResource(resources.ModelResource):
 
     class Meta:
         model = Share
-        exclude = ('billable_ptr', 'polymorphic_ctype', 'member')
+        exclude = ('member',)
         widgets = {
             'id': {'coerce_to_string': False},
             'number': {'coerce_to_string': False},

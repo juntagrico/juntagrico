@@ -97,7 +97,7 @@ def check_sub_reactivation(instance):
 
 
 def check_sub_primary(instance):
-    if instance.primary_member is not None:
+    if instance.primary_member is not None and (instance.pk or hasattr(instance, 'override_future_members')):
         # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
         pm_sub = instance.pk and instance.primary_member in instance.current_members
         # this check works also for new instances, because future_members is populated with form data, if available

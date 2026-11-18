@@ -179,7 +179,6 @@ class ActiveTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
         self.assertTrue(self.trial_part1.inactive)
         self.trial_sub1.refresh_from_db()
         self.assertTrue(self.trial_sub1.inactive)
-        self.assertTrue(self.trial_sub1.subscription.inactive)
         self.assertIsNotNone(self.trial_member1.subscriptionmembership_set.first().leave_date)
 
 

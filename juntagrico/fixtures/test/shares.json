@@ -1,25 +1,5 @@
 [
 {
-    "model": "juntagrico.billable",
-    "pk": 1,
-    "fields": {}
-},
-{
-    "model": "juntagrico.billable",
-    "pk": 2,
-    "fields": {}
-},
-{
-    "model": "juntagrico.billable",
-    "pk": 3,
-    "fields": {}
-},
-{
-    "model": "juntagrico.billable",
-    "pk": 4,
-    "fields": {}
-},
-{
     "model": "juntagrico.share",
     "pk": 1,
     "fields": {

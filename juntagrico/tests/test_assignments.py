@@ -54,7 +54,7 @@ class AssignmentTests(JuntagricoTestCase):
 
     def testRequiredAssignments(self):
         # get assignments for entire year.
-        subs = Subscription.objects.annotate_required_assignments(self.activation_date, date(self.year, 12, 31)).filter(pk__in=self.subs).distinct()
+        subs = Subscription.objects.annotate_required_assignments(self.activation_date, date(self.year, 12, 31)).filter(pk__in=[s.pk for s in self.subs]).distinct()
         subs = {sub.id: sub for sub in subs}
         # sub in second half of the year
         self.assertEqual(subs[self.subs[0].id].required_assignments, 5)

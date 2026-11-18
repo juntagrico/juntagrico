@@ -5,16 +5,6 @@ from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset
 
 
-class Billable(JuntagricoBaseModel):
-    '''
-    Parent type for billables.
-    '''
-
-    class Meta:
-        verbose_name = _('Verrechenbare Einheit')
-        verbose_name_plural = _('Verrechenbare Einheiten')
-
-
 class BillingPeriod(JuntagricoBaseModel):
     '''
     Billing Period for subscription product for which a bill has to be issued

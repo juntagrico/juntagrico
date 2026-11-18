@@ -10,8 +10,8 @@ from django.utils.translation import gettext_lazy as _, gettext
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
-from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.lifecycle.sub import check_sub_consistency, check_sub_reactivation
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
@@ -23,7 +23,7 @@ from juntagrico.util import temporal
 from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
 
 
-class Subscription(Billable, SimpleStateModel):
+class Subscription(JuntagricoBaseModel, SimpleStateModel):
     '''
     One Subscription that may be shared among several people.
     '''
@@ -65,6 +65,10 @@ class Subscription(Billable, SimpleStateModel):
     objects = SubscriptionQuerySet.as_manager()
 
     def __str__(self):
+        if self.pk is None:
+            return gettext('{subscription} (neu)').format(
+                subscription=Config.vocabulary('subscription'),
+            )
         return gettext('{subscription} ({id}) {content}').format(
             subscription=Config.vocabulary('subscription'),
             id=self.id,
@@ -115,6 +119,8 @@ class Subscription(Billable, SimpleStateModel):
         """
         if hasattr(self, 'cached_content'):
             return self.cached_content
+        if self.pk is None:
+            return []
         return self.types.with_active_or_future_parts().annotate_content()
 
     def content_strings(self, sformat=None):
@@ -205,10 +211,14 @@ class Subscription(Billable, SimpleStateModel):
     def future_members(self):
         if hasattr(self, 'override_future_members'):
             return self.override_future_members
+        if self.pk is None:
+            return set()
         return set(self.members.joining())
 
     @property
     def current_members(self):
+        if self.pk is None:
+            return Member.objects.none()
         if self.waiting:
             return self.members.active()
         elif self.inactive:
