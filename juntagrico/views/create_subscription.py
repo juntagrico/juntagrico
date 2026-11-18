@@ -339,6 +339,7 @@ class SummaryView(SignupView, FormView):
         args['extras'] = self.signup_manager.extras()
         args['depot'] = self.signup_manager.depot()
         args['membership_fee'] = Config.membership('fee')
+        args['requires_membership'] = self.signup_manager.requires_membership()
         if args['subscriptions']:
             args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return args
