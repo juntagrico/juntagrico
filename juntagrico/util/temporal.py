@@ -20,6 +20,7 @@ weekdays = dict(weekday_choices)
 
 def make_valid_date(year, month, day):
     """Ensure day is valid for the given month and year."""
+    month = max(1, min(month, 12))
     day = max(1, min(day, days_in_month(year, month)))
     return datetime.date(year, month, day)
 
@@ -75,7 +76,7 @@ def start_of_next_business_year():
 
 def end_of_next_business_year():
     tmp = start_of_next_business_year()
-    return datetime.date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
+    return make_valid_date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
@@ -106,6 +107,7 @@ def cancelation_date():
 
 def next_cancelation_date_from(start):
     c_month = Config.business_year_cancelation_month()
+    c_month = max(1, min(c_month, 12))
     if start.month <= c_month:
         year = start.year
     else:
@@ -120,6 +122,7 @@ def next_membership_end_date(cancellation_date=None):
     """
     date = cancellation_date or datetime.date.today()
     endmonth = Config.membership_end_month()
+    endmonth = max(1, min(endmonth, 12))
     noticemonths = Config.membership_end_notice_period()
     nowplusnotice = date + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
