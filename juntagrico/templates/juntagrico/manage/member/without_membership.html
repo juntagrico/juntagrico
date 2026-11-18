@@ -1,6 +1,15 @@
 {% extends "./show.html" %}
 {% load i18n %}
 
+{% block list_super_head %}
+    {% if shares_enabled %}
+        <tr>
+            <th colspan="2"></th>
+            <th colspan="3">{{ vocabulary.share_pl }}</th>
+        </tr>
+    {% endif %}
+{% endblock %}
+
 {% block list_head %}
     <th class="filter">
         {% trans "Kontakt" %}
@@ -10,13 +19,13 @@
     </th>
     {% if shares_enabled %}
         <th class="filter">
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}bestellte {{ v_share_pl }}{% endblocktrans %}
+            {% trans "bestellte" %}
         </th>
         <th class="filter">
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}bezahlte {{ v_share_pl }}{% endblocktrans %}
+            {% trans "bezahlte" %}
         </th>
         <th class="filter">
-            {% blocktrans with v_share_pl=vocabulary.share_pl %}davon gekündigt{% endblocktrans %}
+            {% trans "davon gekündigt" %}
         </th>
     {% endif %}
 {% endblock %}

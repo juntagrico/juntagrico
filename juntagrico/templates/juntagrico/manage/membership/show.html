@@ -38,6 +38,15 @@
 {% block list %}
     <table id="filter-table" class="list table">
         <thead>
+            {% if required_shares %}
+            <tr>
+                <th colspan="2"></th>
+                <th colspan="3">{{ vocabulary.share_pl }}</th>
+                {% block inner_list_super_head %}
+                    <th colspan="{% if perms.juntagrico.change_membership %}4{% else %}3{% endif %}"></th>
+                {% endblock %}
+            </tr>
+            {% endif %}
             <tr>
                 {% block list_head %}
                     <th class="filter">
@@ -48,8 +57,13 @@
                     </th>
                     {% if required_shares %}
                         <th class="filter">
-                            {% vocabulary "share_pl" %}
-                            {% trans "(bestellt / bezahlt / davon gekündigt)" %}
+                            {% trans "bestellt" %}
+                        </th>
+                        <th class="filter">
+                            {% trans "bezahlt" %}
+                        </th>
+                        <th class="filter">
+                            {% trans "davon gekündigt" %}
                         </th>
                     {% endif %}
                     {% block inner_list_head %}
@@ -82,8 +96,13 @@
                     </th>
                     {% if required_shares %}
                         <th>
-                            {% vocabulary "share_pl" %}
-                            {% trans "(bestellt / bezahlt / davon gekündigt)" %}
+                            {% trans "bestellt" %}
+                        </th>
+                        <th>
+                            {% trans "bezahlt" %}
+                        </th>
+                        <th>
+                            {% trans "davon gekündigt" %}
                         </th>
                     {% endif %}
                     {% block inner_list_foot %}
@@ -117,7 +136,13 @@
                         </td>
                         {% if required_shares %}
                             <td>
-                                {{ membership.ordered_shares }} / {{ membership.paid_shares }} / {{ membership.canceled_shares }}
+                                {{ membership.ordered_shares }}
+                            </td>
+                            <td>
+                                {{ membership.paid_shares }}
+                            </td>
+                            <td>
+                                {{ membership.canceled_shares }}
                             </td>
                         {% endif %}
                         {% block inner_list_entry %}
