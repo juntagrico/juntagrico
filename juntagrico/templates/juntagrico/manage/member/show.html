@@ -19,6 +19,7 @@
     {% config 'enable_membership' as c_enable_membership %}
     <table id="filter-table" class="list table">
         <thead>
+            {% block list_super_head %}{% endblock %}
             <tr>
                 {% block list_head %}
                     <th class="filter">
