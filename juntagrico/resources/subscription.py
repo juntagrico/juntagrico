@@ -38,7 +38,7 @@ class SubscriptionResource(DateRangeResourceMixin, resources.ModelResource):
 
     class Meta:
         model = Subscription
-        exclude = ('billable_ptr', 'polymorphic_ctype', 'future_depot', 'primary_member')
+        exclude = ('future_depot', 'primary_member')
         widgets = {
             'id': {'coerce_to_string': False},
             'creation_date': {'coerce_to_string': False},

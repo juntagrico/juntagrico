@@ -153,6 +153,80 @@ jobs:
         python -m manage test juntagrico.tests --parallel
         python -m manage test juntagrico_legacy.tests --parallel --settings="settings.legacy"
 
+  test-migration-upgrade-postgres:
+    name: Migration Upgrade (postgres)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DJANGO_SETTINGS_MODULE: settings.dev
+      PYTHONPATH: .
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Install dependencies
+      run: |
+        pip install --upgrade -r requirements.txt
+        pip install psycopg
+    - name: Test migration upgrade path
+      run: python test/test_migration_upgrade.py
+
+  test-migration-upgrade-mysql:
+    name: Migration Upgrade (mysql)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DJANGO_SETTINGS_MODULE: settings.dev
+      PYTHONPATH: .
+      GITHUB_MYSQL: 1
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: mysql
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Install dependencies
+      run: |
+        pip install --upgrade -r requirements.txt
+        pip install mysqlclient
+    - name: Test migration upgrade path
+      run: python test/test_migration_upgrade.py
+
   coverage:
     name: Coverage Report
     needs: tests-postgres

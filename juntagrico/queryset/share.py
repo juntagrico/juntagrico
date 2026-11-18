@@ -1,12 +1,11 @@
 import datetime
 
-from django.db.models import ExpressionWrapper, Q, BooleanField
-from polymorphic.query import PolymorphicQuerySet
+from django.db.models import ExpressionWrapper, Q, BooleanField, QuerySet
 
 from juntagrico.config import Config
 
 
-class ShareQueryset(PolymorphicQuerySet):
+class ShareQueryset(QuerySet):
     def active(self):
         return self.filter(paid_date__isnull=False, payback_date__isnull=True)
 

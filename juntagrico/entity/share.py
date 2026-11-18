@@ -2,11 +2,9 @@ import datetime
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _, gettext
-from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
-from juntagrico.entity import notifiable
-from juntagrico.entity.billing import Billable
+from juntagrico.entity import notifiable, JuntagricoBaseModel
 from juntagrico.lifecycle.share import check_share_consistency
 from juntagrico.queryset.share import ShareQueryset
 from juntagrico.util.temporal import next_membership_end_date
@@ -28,7 +26,7 @@ def share_value_default():
     return float(Config.share_price())
 
 
-class Share(Billable):
+class Share(JuntagricoBaseModel):
     member = models.ForeignKey('Member', on_delete=models.PROTECT)
     value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, blank=True, default=share_value_default)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=datetime.date.today)
@@ -51,7 +49,7 @@ class Share(Billable):
         _('Notizen'), default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
-    objects = PolymorphicManager.from_queryset(ShareQueryset)()
+    objects = ShareQueryset.as_manager()
 
     _state_dict = {
         0: 'unpaid',

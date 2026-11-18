@@ -98,21 +98,6 @@ class Migration(migrations.Migration):
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
         migrations.CreateModel(
-            name='Billable',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('polymorphic_ctype',
-                 models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE,
-                                   related_name='polymorphic_%(app_label)s.%(class)s_set+',
-                                   to='contenttypes.contenttype')),
-            ],
-            options={
-                'verbose_name': 'Verrechenbare Einheit',
-                'verbose_name_plural': 'Verrechenbare Einheiten',
-            },
-            bases=(models.Model, juntagrico.entity.OldHolder),
-        ),
-        migrations.CreateModel(
             name='Contact',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -332,9 +317,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subscription',
             fields=[
-                ('billable_ptr',
-                 models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True,
-                                      primary_key=True, serialize=False, to='juntagrico.billable')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('creation_date', models.DateField(auto_now_add=True, null=True, verbose_name='Erstellungsdatum')),
                 ('activation_date', models.DateField(blank=True, null=True, verbose_name='Aktivierungsdatum')),
                 ('cancellation_date', models.DateField(blank=True, null=True, verbose_name='Kündigungsdatum')),
@@ -358,7 +341,7 @@ class Migration(migrations.Migration):
                                 ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'),
                                 ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')],
             },
-            bases=('juntagrico.billable', models.Model),
+            bases=(models.Model, juntagrico.entity.OldHolder),
         ),
         migrations.CreateModel(
             name='EmailContact',
@@ -758,9 +741,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Share',
             fields=[
-                ('billable_ptr',
-                 models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True,
-                                      primary_key=True, serialize=False, to='juntagrico.billable')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value',
                  models.DecimalField(blank=True, decimal_places=2, default=juntagrico.entity.share.share_value_default,
                                      max_digits=8, verbose_name='Wert')),
@@ -800,7 +781,7 @@ class Migration(migrations.Migration):
                 'permissions': [('notified_on_share_creation', 'Wird bei Anteilschein Erstellung informiert'),
                                 ('notified_on_share_cancellation', 'Wird bei Anteilschein Kündigung informiert')],
             },
-            bases=('juntagrico.billable',),
+            bases=(models.Model, juntagrico.entity.OldHolder),
         ),
         migrations.CreateModel(
             name='SubscriptionPart',
