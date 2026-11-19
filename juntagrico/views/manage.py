@@ -440,8 +440,8 @@ class ShareUnpaidView(ShareView):
 
     def get_queryset(self):
         return (
-            Share.objects.filter(paid_date__isnull=True)
-            .exclude(termination_date__lt=datetime.date.today())
+            Share.objects.unpaid()
+            .exclude(termination_date__isnull=False)
             .prefetch_related(
                 Prefetch(
                     'member',
