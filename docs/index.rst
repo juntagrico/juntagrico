@@ -18,6 +18,7 @@ It provides the basic functionality like
 
    intro/installation.rst
    intro/basic.rst
+   intro/depot_lists.rst
    intro/advanced.rst
    intro/deployment.rst
 

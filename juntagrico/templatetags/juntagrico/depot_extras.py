@@ -78,3 +78,9 @@ def by_depot(subscriptions, depot):
 @register.filter
 def served_on(parts, date=None):
     return parts.served_on(date)
+
+
+@register.filter
+def active_on(parts, date=None):
+    # backward compatibility
+    return parts.active_on(date)
