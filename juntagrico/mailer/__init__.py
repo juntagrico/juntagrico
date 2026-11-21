@@ -118,29 +118,31 @@ class EmailBuilder:
             template = Config.emails(self.template, self.template)
         template = get_template(template)
 
-        count = 0
-        with mail.get_connection() as connection:
-            for recipient in self.recipients:
-                if isinstance(recipient, (list, tuple)):
-                    email, recipient = recipient
-                else:
-                    email = recipient.email
+        messages = []
+        for recipient in self.recipients:
+            if isinstance(recipient, (list, tuple)):
+                email, recipient = recipient
+            else:
+                email = recipient.email
 
-                pre_render.send(EmailBuilder, recipient=recipient)
-                if language := getattr(settings, 'EMAIL_LANGUAGE', None):
-                    translation.activate(language)
-                count += EmailMultiAlternatives(
-                    subject=organisation_subject(self.subject),
-                    body=trim_newlines(template.render(context | {'recipient': recipient})),
-                    from_email=from_email,
-                    to=[email],
-                    connection=connection,
-                    attachments=[a() if callable(a) else a for a in self.attachments],
-                    headers=self.headers,
-                    reply_to=self.reply_to,
-                ).send()
-                translation.deactivate()
-        return count
+            pre_render.send(EmailBuilder, recipient=recipient)
+            if language := getattr(settings, 'EMAIL_LANGUAGE', None):
+                translation.activate(language)
+            messages.append(EmailMultiAlternatives(
+                subject=organisation_subject(self.subject),
+                body=trim_newlines(template.render(context | {'recipient': recipient})),
+                from_email=from_email,
+                to=[email],
+                attachments=[a() if callable(a) else a for a in self.attachments],
+                headers=self.headers,
+                reply_to=self.reply_to,
+            ))
+            translation.deactivate()
+        if not messages:
+            return 0
+        # let backend handle all emails
+        with mail.get_connection() as connection:
+            return connection.send_messages(messages)
 
     @chainable
     def attach(self, attachment):
