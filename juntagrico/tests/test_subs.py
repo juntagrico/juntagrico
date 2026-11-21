@@ -225,8 +225,20 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertTrue(new_part.inactive)
 
     def testFuture(self):
-        self.assertGet(reverse('future'))
+        response = self.assertGet(reverse('future'))
         self.assertGet(reverse('future'), member=self.member2, code=302)
+        # counts must match the per subscription calculation
+        lines = {line['name']: line for line in response.context['subscription_lines']}
+        for bundle in (self.bundle, self.unused_bundle):
+            self.assertEqual(lines[str(bundle)]['now'], sum(
+                sub.subscription_amount(bundle) for sub in Subscription.objects.active()
+            ))
+            self.assertEqual(lines[str(bundle)]['future'], sum(
+                sub.subscription_amount_future(bundle)
+                for sub in Subscription.objects.filter(cancellation_date=None, deactivation_date=None)
+            ))
+        self.assertGreater(lines[str(self.bundle)]['now'], 0)
+        self.assertEqual(lines[str(self.unused_bundle)]['now'], 0)
 
     def testPrimaryMember(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
