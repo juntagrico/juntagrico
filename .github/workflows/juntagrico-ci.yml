@@ -45,7 +45,7 @@ jobs:
         run: deptry . --extend-exclude ".*/debug.py" --github-output
 
   tests-postgres:
-    name: Tests (${{ matrix.python-version }}, postgres)
+    name: Tests (${{ matrix.python-version }}, postgres${{ matrix.exclude-test == 'shares' && ', no-shares' || '' }})
     runs-on: ubuntu-latest
     permissions:
       contents: read

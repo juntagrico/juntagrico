@@ -118,10 +118,14 @@ class SignupManager(SessionManager):
 
     def membership_ok(self):
         return (
-            self.request.user.is_authenticated
-            and self.request.user.member.memberships.filter(cancellation_date__isnull=False).exists()
-        ) or (
-            self.get('membership') is not None
+            (
+                self.request.user.is_authenticated
+                and self.request.user.member.memberships.filter(
+                    cancellation_date__isnull=False
+                ).exists()
+            )
+            or (self.get('membership') is not None)
+            or (self.requires_membership() == '' and Config.membership('skip_if_optional'))
         )
 
     def required_shares_details(self):
@@ -146,7 +150,21 @@ class SignupManager(SessionManager):
         return self.request.user.member.active_shares_count if self.request.user.is_authenticated else 0
 
     def shares_ok(self):
-        return ShareOrderForm(self.required_shares(), self.existing_shares(), self.co_members(), data=self.get('shares')).is_valid()
+        required_shares = self.required_shares()
+        existing_shares = self.existing_shares()
+        shares = self.get('shares')
+        form = ShareOrderForm(
+            required_shares,
+            existing_shares,
+            self.co_members(),
+            data=shares,
+        )
+        if form.is_valid():
+            return True
+        # check if shares are optional and should be skipped
+        if shares is None and Config.shares('skip_if_optional') and required_shares['total'] <= existing_shares:
+            return True
+        return False
 
     def get_next_page(self):
         """identify next page, based on what information is still missing
@@ -195,20 +213,20 @@ class SignupManager(SessionManager):
 
     def apply_co_member(self, invited_by, subscription):
         invitees = []
-        shares = self.get('shares')
+        shares = self.get('shares') or {}
         for i, co_member_data in enumerate(self.get('co_members', [])):
             # create invite for co-member
             form = CoMemberBaseForm(co_member_data)
             form.instance.invited_by = invited_by
             form.instance.subscription = subscription
             if Config.enable_shares():
-                form.instance.shares = int(shares[f'of_co_member[{i}]'])
+                form.instance.shares = int(shares.get(f'of_co_member[{i}]', 0) or 0)
             invitees.append(form.save())
         return invitees
 
     def apply_shares(self, member):
-        shares = self.get('shares')
-        member.share_count = int(shares['of_member'])
+        shares = self.get('shares') or {}
+        member.share_count = int(shares.get('of_member', 0) or 0)
         create_share(member.member, member.share_count)
 
     def apply_subscriptions(self, member):

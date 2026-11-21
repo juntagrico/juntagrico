@@ -165,6 +165,13 @@ class Config:
             'required_on_signup': 'if_no_sub',
             'fee': 0,
             'sync_shares': True,
+            'skip_if_optional': False,
+        }
+    )
+    shares = _get_setting_with_key(
+        'SHARES',
+        {
+            'skip_if_optional': True,
         }
     )
 

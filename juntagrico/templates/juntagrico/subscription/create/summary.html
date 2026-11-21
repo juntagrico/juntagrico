@@ -101,11 +101,17 @@
     {% if membership is not None %}
         {% block membership %}
             <h4>{% vocabulary "membership" %} <a href="{% url 'cs-membership' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
-            <p>
-                {{ membership|yesno:_('Ja,Nein') }}
-            </p>
-            {% if membership and membership_fee %}
-                <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+            {% if not membership and not requires_membership %}
+                <p>{% trans "Nicht erforderlich" %}
+                    <a href="{% url 'cs-membership' %}?mod">{% trans "Dennoch erwerben" %}</a>
+                </p>
+            {% else %}
+                <p>
+                    {{ membership|yesno:_('Ja,Nein') }}
+                </p>
+                {% if membership and membership_fee %}
+                    <p><strong>{% blocktrans with fee=membership_fee|price %}Jahresbeitrag: {{ fee }}{% endblocktrans %}</strong></p>
+                {% endif %}
             {% endif %}
         {% endblock %}
     {% endif %}
@@ -114,15 +120,23 @@
     {% if c_enable_shares %}
         {% block shares %}
             {% config "share_price_display" as c_share_price %}
-            <h4>{{ vocabulary.share_pl|capfirst }} <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a></h4>
-            <p>
-                {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
-                <b>{{ shares.of_member|default:'Keine' }}</b>
-                {% for co_member in co_members %}
-                    <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
-                {% endfor %}
-            </p>
-            <p><strong>{% blocktrans %}Zu je einmalig {{ c_share_price }}{% endblocktrans %}</strong></p>
+            <h4>{{ vocabulary.share_pl|capfirst }}
+                <a href="{% url 'cs-shares' %}?mod" class="edit"><i class="bi bi-pencil-square"></i></a>
+            </h4>
+            {% if shares is None %}
+                <p>{% trans "Nicht erforderlich" %}
+                    <a href="{% url 'cs-shares' %}?mod">{% trans "Dennoch erwerben" %}</a>
+                </p>
+            {% else %}
+                <p>
+                    {% if main_member %}{{ main_member.first_name }} {{ main_member.last_name }}: {% endif %}
+                    <b>{{ shares.of_member|default:'Keine' }}</b>
+                    {% for co_member in co_members %}
+                        <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
+                    {% endfor %}
+                </p>
+                <p><strong>{% blocktrans %}Zu je einmalig {{ c_share_price }}{% endblocktrans %}</strong></p>
+            {% endif %}
         {% endblock %}
     {% endif %}
 
