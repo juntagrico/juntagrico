@@ -1,23 +1,37 @@
+import threading
 from unittest.mock import patch
 
 from django.conf import settings
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives
+from django.core.mail.backends import base
 from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares, JuntagricoTestCase
 from ..mailer import get_emails_by_permission
 from ..util.string import int_array_decompress
+from ..backends.email import BaseBatchEmailBackend
 
 
 def mock_batch_mailer(self, msgs):
     # patch batch mailer to not use threads to make it testable
-    for msg in msgs:
-        self._send_batches(msg, 1, 0)  # testing with individual "to" emails
-        self._send_batches(msg, 2, 0)  # testing in batches of 2
-        self._send_batches(msg, 4, 3)  # testing with waiting time
-        return 1  # pretend message was sent
+    # Process all messages together with different batch sizes
+    # testing with individual "to" emails
+    self.batch_size = 1
+    self.split_size = 1
+    self.wait_time = 0
+    self._process_all_messages(msgs)
+    # testing in batches of 2
+    self.batch_size = 2
+    self.split_size = 2
+    self._process_all_messages(msgs)
+    # testing with waiting time
+    self.batch_size = 4
+    self.split_size = 4
+    self.wait_time = 3
+    self._process_all_messages(msgs)
+    return 1  # pretend message was sent
 
 
 class AreaMailerTests(JuntagricoTestCaseWithShares):
@@ -476,3 +490,134 @@ class NotificationTests(JuntagricoTestCase):
         self.member.deactivate()
         self.assertFalse(get_emails_by_permission('notified_on_member_creation').exists())
         self.assertFalse(get_emails_by_permission('depot_list_notification').exists())
+
+
+class TrackingEmailBackend(base.BaseEmailBackend):
+    """Mock email backend that tracks open/close calls like SMTP does.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._connection = None
+        self.sent_messages = []
+        self.open_count = 0
+        self.close_count = 0
+        self.before_send = threading.Event()
+        self.wait_before_send = None
+
+    def open(self):
+        """Simulate opening an SMTP connection."""
+        self._connection = 'connected'
+        self.open_count += 1
+        return self
+
+    def close(self):
+        """Simulate closing an SMTP connection — invalidates the connection."""
+        self._connection = None
+        self.close_count += 1
+
+    def send_messages(self, email_messages):
+        """Send messages, requiring an open connection."""
+        self.before_send.set()
+        if self.wait_before_send is not None:
+            self.wait_before_send.wait(timeout=5)
+        if self._connection is None:
+            print('No connection opened — cannot send emails')
+            return 0
+        for message in email_messages:
+            self.sent_messages.append(message)
+        return len(email_messages)
+
+
+class TrackingBatchEmailBackend(BaseBatchEmailBackend):
+    backend = TrackingEmailBackend
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.after_send_all = threading.Event()
+        self.backend_obj = super().get_backend()
+
+    def get_backend(self):
+        return self.backend_obj
+
+    def _process_all_messages(self, email_messages):
+        result = super()._process_all_messages(email_messages)
+        self.after_send_all.set()
+        return result
+
+
+class BatchBackendConnectionTests(TestCase):
+    """Tests that verify the batch backend's connection lifecycle using a mock backend.
+    """
+
+    def test_with_noop_close_emails_succeed(self):
+        """Verify that emails are sent in the batch mailer, even when the main thread moves on before all
+        emails are sent.
+        """
+        backend = TrackingBatchEmailBackend()
+        msg = EmailMultiAlternatives(
+            'Test subject', 'Test body', 'sender@example.com',
+            bcc=['user1@example.com', 'user2@example.com'],
+        )
+
+        with backend:
+            backend.backend_obj.wait_before_send = threading.Event()
+            backend.send_messages([msg])
+            backend.backend_obj.before_send.wait(timeout=5)
+        # backend.close() is called before the emails are sent.
+        backend.backend_obj.wait_before_send.set()
+
+        backend.after_send_all.wait(timeout=5)
+
+        self.assertEqual(
+            len(backend.backend_obj.sent_messages),
+            1,
+            'emails should succeed even when context manager exits while threads are running',
+        )
+
+    def test_empty_email(self):
+        backend = TrackingBatchEmailBackend()
+        self.assertEqual(backend.send_messages([]), 0)
+
+    def test_fast_path_sends_without_batching(self):
+        """When recipients <= batch_size, sends directly without splitting."""
+        backend = TrackingBatchEmailBackend()
+        EmailMultiAlternatives(
+            'Test subject',
+            'Test body',
+            'sender@example.com',
+            bcc=['user1@example.com', 'user2@example.com'],
+            connection=backend,
+        ).send()
+        backend.after_send_all.wait(timeout=5)
+        # Fast path sends the original message as-is (1 message, not split)
+        self.assertEqual(len(backend.backend_obj.sent_messages), 1)
+        self.assertEqual(len(backend.backend_obj.sent_messages[0].bcc), 2)
+
+    @override_settings(BATCH_MAILER={'batch_size': 3, 'wait_time': 0})
+    def test_bcc_batching_splits_recipients(self):
+        """BCC recipients are split into batches of the specified size."""
+        backend = TrackingBatchEmailBackend()
+        recipients = [f'user{i}@example.com' for i in range(1, 11)]  # 10 recipients
+        EmailMultiAlternatives(
+            'Test subject',
+            'Test body',
+            'sender@example.com',
+            to=['test@example.com'],
+            bcc=recipients,
+            connection=backend,
+        ).send()
+        backend.after_send_all.wait(timeout=5)
+        # 10 recipients with batch_size 3 -> 4 batches (1+3+3+3+1)
+        self.assertEqual(len(backend.backend_obj.sent_messages), 5)
+        # Check batch sizes
+        self.assertEqual(len(backend.backend_obj.sent_messages[0].to), 1)
+        self.assertEqual(len(backend.backend_obj.sent_messages[1].bcc), 3)
+        self.assertEqual(len(backend.backend_obj.sent_messages[2].bcc), 3)
+        self.assertEqual(len(backend.backend_obj.sent_messages[3].bcc), 3)
+        self.assertEqual(len(backend.backend_obj.sent_messages[4].bcc), 1)
+        # All recipients should be covered exactly once
+        sent_recipients = []
+        for m in backend.backend_obj.sent_messages:
+            sent_recipients.extend(m.bcc)
+        self.assertEqual(sorted(sent_recipients), sorted(recipients))

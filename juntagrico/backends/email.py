@@ -84,69 +84,133 @@ batch_mail_sent = Signal()
 
 
 class BaseBatchEmailBackend(BaseEmailBackend):
+    backend = None
+    batch_size = None
+    split_size = None  # size of bcc slices. if 1, recipients are placed in "to" on individual emails
+    wait_time = None
+
+    def __new__(cls, *args, **kwargs):
+        # backwards compatibility
+        if cls.batch_size is None:
+            cls.batch_size = Config.batch_mailer('batch_size')
+        if cls.split_size is None:
+            cls.split_size = Config.batch_mailer('batch_size')
+        if cls.wait_time is None:
+            cls.wait_time = Config.batch_mailer('wait_time')
+        return super().__new__(cls)
+
+    def get_backend(self):
+        if self.backend is not None:
+            return self.backend()
+        # backward compatibility
+        return super(BaseBatchEmailBackend, self)
+
     def send_messages(self, email_messages):
         email_messages = self.clean_messages(email_messages)
-        for email_message in email_messages:
-            # open daemon thread that sends the emails in the background
-            t = threading.Thread(
-                target=self._send_batches,
-                args=[email_message, Config.batch_mailer('batch_size'), Config.batch_mailer('wait_time')],
-            )
-            t.start()
+        if not email_messages:
+            return 0
+        # Spawn a single background thread to process all messages in the background
+        t = threading.Thread(
+            target=self._process_all_messages,
+            args=[email_messages],
+        )
+        t.start()
         return len(email_messages)  # pretend that all will go well
 
-    def _send_batches(self, msg, batch_size, wait_time):
-        # use default mail strategy if num of recipients is below batch size
-        if len(msg.recipients()) <= batch_size:
-            self.send_cleaned_messages([msg])
-            return
+    def open(self):
+        """connections are managed internally"""
+        return self
 
-        # First send to all To and CC recipients without BCC
-        messages = []
-        if msg.to or msg.cc:
-            plain_msg = copy.copy(msg)
-            plain_msg.bcc = []
-            messages.append(plain_msg)
+    def close(self):
+        """connections are managed internally"""
+        pass
 
-        # Send BCC recipients in batches of size email_batch_size
-        if msg.bcc:
-            bcc_message = copy.copy(msg)
-            bcc_message.to = []
-            bcc_message.cc = []
-            bcc_message.bcc = []
-            method = 'to' if batch_size == 1 else 'bcc'  # if emails are sent out individually, receiver can be explicit
-            for i in range(0, len(msg.bcc), batch_size):
-                new_message = copy.copy(bcc_message)
-                setattr(new_message, method, msg.bcc[i:i + batch_size])
-                messages.append(new_message)
+    def _process_all_messages(self, email_messages):
+        """Process all messages in a single thread."""
+        # Step 1: Create all batches
+        all_batches = list(self._create_batches(email_messages))
 
-        # send emails in batches with a wait time in between
-        self.open()  # use a single connection if there is no wait time
-        for message in messages:
-            start_time = time.time()
-            message.connection = self
-            self.send_cleaned_messages([message])
+        # Step 2: Send each batch with wait time in between
+        backend = self.get_backend()
+        backend.open()
+        try:
+            total_batches = len(all_batches)
+            for index, message_batch in enumerate(all_batches):
+                backend.send_messages(message_batch)
 
-            batch_mail_sent.send(self.__class__, message=message, original_message=msg, done=message is messages[-1])
+                is_last = (index == total_batches - 1)
+                batch_mail_sent.send(self.__class__, message=message_batch,
+                                     original_message=email_messages, done=is_last)
 
-            t_wait = wait_time - (time.time() - start_time)
-            if t_wait > 0:
-                self.close()
-                time.sleep(t_wait)
-                self.open()
-        self.close()
+                # Wait between batches (not after the last one)
+                if not is_last and self.wait_time > 0:
+                    backend.close()
+                    time.sleep(self.wait_time)
+                    backend.open()
+        finally:
+            backend.close()
+
+    def _create_batches(self, email_messages):
+        """Create batches from messages so each batch has ≤ batch_size recipients if possible."""
+        current_batch = []
+        current_count = 0
+        for message in self._split_messages(email_messages):
+            count = len(message.recipients())
+
+            if current_batch and current_count + count > self.batch_size:
+                yield current_batch
+                current_batch = []
+                current_count = 0
+
+            current_batch.append(message)
+            current_count += count
+
+        if current_batch:
+            yield current_batch
+
+    def _split_messages(self, messages):
+        """Split messages so no single message has more recipients than batch_size (if possible).
+
+        For each message:
+        - If recipients <= batch_size, yield as-is.
+        - Otherwise, keep To/CC recipients in one message (without BCC),
+          then create emails for BCC recipients in separate batches.
+        """
+        for msg in messages:
+            # use default mail strategy if num of recipients is below split size or has no bcc recipients
+            if not msg.bcc or len(msg.recipients()) <= self.split_size:
+                yield msg
+                continue
+
+            # First send to all To and CC recipients without BCC
+            if msg.to or msg.cc:
+                plain_msg = copy.copy(msg)
+                plain_msg.bcc = []
+                yield plain_msg
+
+            # split BCC recipients in to slices of split_size
+            if msg.bcc:
+                bcc_message = copy.copy(msg)
+                bcc_message.to = []
+                bcc_message.cc = []
+                bcc_message.bcc = []
+                method = 'to' if self.split_size == 1 else 'bcc'
+                for i in range(0, len(msg.bcc), self.split_size):
+                    new_message = copy.copy(bcc_message)
+                    setattr(new_message, method, msg.bcc[i:i + self.split_size])
+                    yield new_message
 
 
-class BatchEmailBackend(BaseBatchEmailBackend, smtp.EmailBackend):
-    pass
+class BatchEmailBackend(BaseBatchEmailBackend):
+    backend = smtp.EmailBackend
 
 
-class ConsoleBatchEmailBackend(BaseBatchEmailBackend, console.EmailBackend):
-    pass
+class ConsoleBatchEmailBackend(BaseBatchEmailBackend):
+    backend = console.EmailBackend
 
 
-class LocmemBatchEmailBackend(BaseBatchEmailBackend, locmem.EmailBackend):
-    pass
+class LocmemBatchEmailBackend(BaseBatchEmailBackend):
+    backend = locmem.EmailBackend
 
 
 class MailTextBackend(console.EmailBackend):
