@@ -24,10 +24,11 @@ The member is required by juntagrico to be able to log in.
 generate_depot_list
 -------------------
 
-This command generates all depot lists. This can be used to generate the lists regularly, e.g., using a cronjob.
+This command generates all depot lists defined in the :ref:`DEPOT_LISTS <settings-depot-lists>` setting.
+For details on configuring and customizing depot lists, see :ref:`setup-depot-lists`.
 
 .. note::
-    When using a :ref:`custom depot list generator <settings-default-depotlist-generators>`, the arguments have the effect, that you implement.
+    When using a :ref:`custom depot list generator <settings-default-depotlist-generators>`(deprecated), the arguments have the effect, that you implement.
 
 .. warning::
     Currently all pending depot changes are applied, when executing the command on a weekday specified in :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>`.

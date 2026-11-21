@@ -441,3 +441,35 @@ The ``future`` argument on ``assignment_progress`` specifies if planned future a
 * None: Count future assignments
 * False: Don't count future assignments
 * True: Count future assignments separately. This is not supported by the classic assignments widget.
+
+
+.. _reference-depot-list-templates:
+
+Depot List Templates
+--------------------
+
+For a guide on customizing and creating depot lists with examples, see :ref:`setup-depot-lists`.
+
+Snippet Templates
+^^^^^^^^^^^^^^^^^
+
+- ``exports/snippets/snippet_depotlist_header.html``: Header table for a depot list page.
+- ``exports/snippets/snippet_depotlist_style.css``: CSS styles for depot lists.
+- ``exports/snippets/snippet_tour_header.html``: Header row for tour/amount overview tables.
+- ``exports/snippets/snippet_tour.html``: Tour table for a specific weekday.
+- ``exports/snippets/snippet_tour_overview.html``: Full weekday overview table.
+- ``juntagrico/snippets/subscription/recipients.html``: Subscription recipient names.
+
+Template Tags and Filters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+From ``juntagrico.depot_extras`` (load with ``{% load juntagrico.depot_extras %}``):
+
+- **by_depot** (filter): Filter subscriptions by depot.
+- **by_tour** (filter): Filter subscriptions by tour (pass ``None`` for subscriptions without a tour).
+- **by_tour_day** (filter): Filter subscriptions by tour weekday integer.
+- **parts_by_size** (filter): Filter subscription parts by product size.
+- **served_on** (filter): Filter subscription parts by service date (defaults to current date).
+- **count** (filter): Count items (0 for empty/None, 1 for a single model instance, queryset.count(), or len()).
+- **count_units** (filter): Count total subscription units served on a given date.
+
