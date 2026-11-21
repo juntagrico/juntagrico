@@ -1,5 +1,4 @@
 import threading
-import time
 from unittest.mock import patch
 
 from django.conf import settings
@@ -539,6 +538,10 @@ class BatchBackendConnectionTests(TestCase):
             'emails should succeed even when context manager exits while threads are running',
         )
 
+    def test_empty_email(self):
+        backend = TrackingBatchEmailBackend()
+        self.assertEqual(backend.send_messages([]), 0)
+
     def test_fast_path_sends_without_batching(self):
         """When recipients <= batch_size, sends directly without splitting."""
         backend = TrackingBatchEmailBackend()
@@ -563,18 +566,19 @@ class BatchBackendConnectionTests(TestCase):
             'Test subject',
             'Test body',
             'sender@example.com',
+            to=['test@example.com'],
             bcc=recipients,
             connection=backend,
         ).send()
         backend.after_send_all.wait(timeout=5)
-        time.sleep(0.1)
-        # 10 recipients with batch_size 3 -> 4 batches (3+3+3+1)
-        self.assertEqual(len(backend.backend_obj.sent_messages), 4)
+        # 10 recipients with batch_size 3 -> 4 batches (1+3+3+3+1)
+        self.assertEqual(len(backend.backend_obj.sent_messages), 5)
         # Check batch sizes
-        self.assertEqual(len(backend.backend_obj.sent_messages[0].bcc), 3)
+        self.assertEqual(len(backend.backend_obj.sent_messages[0].to), 1)
         self.assertEqual(len(backend.backend_obj.sent_messages[1].bcc), 3)
         self.assertEqual(len(backend.backend_obj.sent_messages[2].bcc), 3)
-        self.assertEqual(len(backend.backend_obj.sent_messages[3].bcc), 1)
+        self.assertEqual(len(backend.backend_obj.sent_messages[3].bcc), 3)
+        self.assertEqual(len(backend.backend_obj.sent_messages[4].bcc), 1)
         # All recipients should be covered exactly once
         sent_recipients = []
         for m in backend.backend_obj.sent_messages:
