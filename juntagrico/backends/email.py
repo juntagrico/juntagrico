@@ -127,13 +127,8 @@ class BaseBatchEmailBackend(BaseEmailBackend):
 
     def _process_all_messages(self, email_messages):
         """Process all messages in a single thread."""
-        if not email_messages:
-            return
-
         # Step 1: Create all batches
         all_batches = list(self._create_batches(email_messages))
-        if not all_batches:
-            return
 
         # Step 2: Send each batch with wait time in between
         backend = self.get_backend()

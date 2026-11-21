@@ -138,8 +138,6 @@ class EmailBuilder:
                 reply_to=self.reply_to,
             ))
             translation.deactivate()
-        if not messages:
-            return 0
         # let backend handle all emails
         with mail.get_connection() as connection:
             return connection.send_messages(messages)
