@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import auth
 from django.core import mail
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 
 from juntagrico.entity.depot import Depot
@@ -405,3 +405,75 @@ class CreateSubscriptionWithoutMembershipsTests(CreateSubscriptionTests):
 @override_settings(MEMBERSHIP={'cumulative_shares': True})
 class CreateSubscriptionWithCumulativeSharesTests(CreateSubscriptionTests, CreateMembershipTests):
     share_order_count = 2
+
+
+class SignupStepSettingsTests(CreateSubscriptionTestCase):
+    """Test the SHARES.skip_if_optional and MEMBERSHIP.skip_if_optional settings"""
+
+    @tag('shares')
+    @override_settings(SHARES={'skip_if_optional': False}, REQUIRED_SHARES=0, MEMBERSHIP={'required_shares': 0})
+    def testShareStepAlwaysShown(self):
+        """Share step should be shown even with 0 required shares when skip_if_optional is False"""
+        self.prepareSession(subscription_count=0, membership=True, shares=None)
+        response = self.client.get(reverse('cs-membership'))
+        self.assertRedirects(response, reverse('cs-shares'))
+        response = self.client.post(reverse('cs-shares'), {'of_member': 0})
+        self.assertRedirects(response, reverse('cs-summary'))
+
+    @tag('shares')
+    @override_settings(SHARES={'skip_if_optional': True}, REQUIRED_SHARES=0, MEMBERSHIP={'required_shares': 0})
+    def testShareStepSkippedWhenZeroRequired(self):
+        """Share step should be skipped when 0 required shares and skip_if_optional is True"""
+        self.prepareSession(subscription_count=0, membership=True, shares=None)
+        response = self.client.get(reverse('cs-co-members') + '?next=1')
+        self.assertRedirects(response, reverse('cs-summary'))
+
+    @override_settings(MEMBERSHIP={'skip_if_optional': True, 'required_on_signup': False}, SHARES={'skip_if_optional': True})
+    def testMembershipSkippedWhenOptional(self):
+        """Membership step should be skipped when optional and skip_if_optional is True"""
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        response = self.client.get(reverse('cs-co-members') + '?next=1')
+        self.assertRedirects(response, reverse('cs-summary'))
+
+    @override_settings(MEMBERSHIP={'skip_if_optional': False, 'required_on_signup': False})
+    def testMembershipNotSkippedWhenSettingFalse(self):
+        """Membership step should NOT be skipped when skip_if_optional is False (default)"""
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        response = self.client.get(reverse('cs-co-members') + '?next=1')
+        self.assertRedirects(response, reverse('cs-membership'))
+
+    @override_settings(MEMBERSHIP={'skip_if_optional': True, 'required_on_signup': True})
+    def testMembershipNotSkippedWhenRequired(self):
+        """Membership step should NOT be skipped when required even if skip_if_optional is True"""
+        self.prepareSession(subscription_count=0, co_members_done=True, shares=None)
+        response = self.client.get(reverse('cs-co-members') + '?next=1')
+        self.assertRedirects(response, reverse('cs-membership'))
+
+    @tag('shares')
+    @override_settings(REQUIRED_SHARES=0)
+    def testSummaryShowsSharesSkipped(self):
+        """Summary page should show when share step was not completed"""
+        self.prepareSession(subscription_count=0, co_members_done=True, membership=False, shares=None)
+        response = self.client.get(reverse('cs-summary'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context['shares'])
+        self.assertContains(response, 'Nicht erforderlich')
+
+    @tag('shares')
+    def testSummaryShowsSharesNotSkipped(self):
+        """Summary page should show shares when share step was completed"""
+        self.prepareSession(co_members_done=True, membership=True, shares={'of_member': 2})
+        response = self.client.get(reverse('cs-summary'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context.get('shares'))
+        self.assertNotContains(response, 'Nicht erforderlich')
+
+    @override_settings(MEMBERSHIP={'skip_if_optional': True, 'required_on_signup': False})
+    def testSummaryShowsMembershipSkipped(self):
+        """Summary page should show when membership was skipped"""
+        self.prepareSession(subscription_count=0, co_members_done=True)
+        # membership is not set, so membership_ok() returns False
+        response = self.client.get(reverse('cs-summary'))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['requires_membership'])
+        self.assertNotContains(response, 'Nicht erforderlich')
