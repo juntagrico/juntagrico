@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
-from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset
+from juntagrico.util.temporal import month_choices, calculate_last_offset, calculate_next_offset
 
 
 class Billable(JuntagricoBasePoly):
@@ -34,19 +34,25 @@ class BillingPeriod(JuntagricoBaseModel):
         _('Kündigungs Monat'), choices=month_choices)
     code = models.TextField(_('Code für Teilabrechnung'), default='', blank=True)
 
+    def clean(self):
+        for prefix in ('start', 'end', 'cancel'):
+            day = getattr(self, f'{prefix}_day')
+            if day is not None:
+                setattr(self, f'{prefix}_day', max(1, min(day, 31)))
+
     def get_actual_start(self, activation_date=None):
-        start = calculate_last(self.start_day, self.start_month)
+        start = calculate_last_offset(self.start_day, self.start_month)
         if activation_date is None:
             return start
         return max(activation_date, start)
 
     def get_actual_end(self):
-        return calculate_next(self.end_day, self.end_month)
+        return calculate_next_offset(self.end_day, self.end_month)
 
     def get_actual_cancel(self):
-        return calculate_next_offset(self.cancel_day,
-                                     self.cancel_month,
-                                     self.get_actual_start())
+        return calculate_next_offset(
+            self.cancel_day, self.cancel_month, self.get_actual_start()
+        )
 
     def __str__(self):
         return '{0}({1}.{2} - {3}.{4})'.format(self.type.name,

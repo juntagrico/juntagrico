@@ -18,6 +18,13 @@ weekday_choices = ((1, _('Montag')),
 weekdays = dict(weekday_choices)
 
 
+def make_valid_date(year, month, day):
+    """Ensure day is valid for the given month and year."""
+    month = max(1, min(month, 12))
+    day = max(1, min(day, days_in_month(year, month)))
+    return datetime.date(year, month, day)
+
+
 def get_business_year(date=None):
     """
     :param date: date for which to determine business year, defaults to today
@@ -36,8 +43,10 @@ def get_business_date_range(year):
     :return: date range of the selected business year
     """
     business_year = Config.business_year_start()
-    start = datetime.date(year, business_year['month'], business_year['day'])
-    end = datetime.date(year + 1, business_year['month'], business_year['day']) - timedelta(days=1)
+    month = business_year['month']
+    day = business_year['day']
+    start = make_valid_date(year, month, day)
+    end = make_valid_date(year + 1, month, day) - timedelta(days=1)
     return start, end
 
 
@@ -67,7 +76,7 @@ def start_of_next_business_year():
 
 def end_of_next_business_year():
     tmp = start_of_next_business_year()
-    return datetime.date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
+    return make_valid_date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
@@ -98,6 +107,7 @@ def cancelation_date():
 
 def next_cancelation_date_from(start):
     c_month = Config.business_year_cancelation_month()
+    c_month = max(1, min(c_month, 12))
     if start.month <= c_month:
         year = start.year
     else:
@@ -112,6 +122,7 @@ def next_membership_end_date(cancellation_date=None):
     """
     date = cancellation_date or datetime.date.today()
     endmonth = Config.membership_end_month()
+    endmonth = max(1, min(endmonth, 12))
     noticemonths = Config.membership_end_notice_period()
     nowplusnotice = date + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
@@ -128,7 +139,7 @@ def calculate_next_offset(day, month, offset=None):
         year = offset.year
     else:
         year = offset.year + 1
-    return datetime.date(year, month, day)
+    return make_valid_date(year, month, day)
 
 
 calculate_next = calculate_next_offset  # todo: remove in 2.0
@@ -140,7 +151,7 @@ def calculate_last_offset(day, month, offset=None):
         year = offset.year
     else:
         year = offset.year - 1
-    return datetime.date(year, month, day)
+    return make_valid_date(year, month, day)
 
 
 calculate_last = calculate_last_offset  # todo: remove in 2.0
