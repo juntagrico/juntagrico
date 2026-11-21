@@ -452,6 +452,7 @@ MEMBERSHIP
         - 'if_no_sub': required membership when signing up without subscription or when selected subscriptions require it (default)
         - False: don't require membership during signup, unless selected subscriptions require it
 
+    - ``'skip_if_optional'``: If set to True, the membership step is skipped during signup if it is optional. It will still be shown on the summary screen and can be accessed from there.
     - ``'fee'``: yearly membership fee (Float, Integer or String)
     - ``'sync_shares'``: If true, membership will activate automatically when enough shares are paid
       and deactivate when shares are paid back. Has no effect if required_shares is 0. (Bool)
@@ -465,6 +466,7 @@ MEMBERSHIP
             'required_shares': 1,
             'cumulative_shares': False,
             'required_on_signup': 'if_no_sub',
+            'skip_if_optional': False,
             'fee': 0,
             'sync_shares': True,
         }
@@ -508,6 +510,23 @@ MEMBERSHIP_END_NOTICE_PERIOD
 
 Shares
 ------
+
+SHARES
+^^^^^^
+  Share configuration
+
+  The setting takes a dictionary of key-value pairs:
+
+    - ``'skip_if_optional'``: If set to True (default), the shares step is skipped during signup if 0 are required. It will still be shown on the summary screen and can be accessed from there.
+
+  default value
+
+  .. code-block:: python
+
+        {
+            'skip_if_optional': True,
+        }
+
 
 ENABLE_SHARES
 ^^^^^^^^^^^^^
