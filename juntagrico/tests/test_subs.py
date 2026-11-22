@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership
-from ..entity.subs import SubscriptionPart
+from ..entity.subs import SubscriptionPart, Subscription
 from ..entity.subtypes import SubscriptionType
 
 

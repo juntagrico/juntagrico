@@ -17,6 +17,7 @@ from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
+from juntagrico.util.models import q_isactive
 from juntagrico.util.pdf import return_pdf_http, internal_storage
 from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
@@ -31,7 +32,7 @@ def future(request):
         )
 
     now_counts = count_parts_by_bundle(
-        SubscriptionPart.objects.active(),
+        SubscriptionPart.objects.filter(q_isactive()),
         Subscription.objects.active()
     )
     future_counts = count_parts_by_bundle(
