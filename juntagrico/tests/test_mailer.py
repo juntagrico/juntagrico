@@ -621,3 +621,115 @@ class BatchBackendConnectionTests(TestCase):
         for m in backend.backend_obj.sent_messages:
             sent_recipients.extend(m.bcc)
         self.assertEqual(sorted(sent_recipients), sorted(recipients))
+
+
+@override_settings(
+    EMAIL_BACKEND='juntagrico.backends.email.BatchEmailBackend',
+    EMAIL_HOST='127.0.0.1',
+    EMAIL_PORT=3025,
+    BATCH_MAILER={'batch_size': 2, 'wait_time': 0},
+)
+class BatchMailerSMTPTests(TestCase):
+    """Tests that verify the BatchEmailBackend against a real in-process SMTP server (aiosmtpd)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from aiosmtpd.controller import Controller
+        from aiosmtpd.handlers import Message
+
+        class CollectingHandler(Message):
+            def __init__(self):
+                super().__init__()
+                self.messages = []
+
+            def handle_message(self, message):
+                self.messages.append(message)
+                return None
+
+        cls._handler = CollectingHandler()
+        cls._controller = Controller(
+            cls._handler, hostname=settings.EMAIL_HOST, port=settings.EMAIL_PORT
+        )
+        cls._controller.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._controller.stop()
+        super().tearDownClass()
+
+    def _wait_for_done(self):
+        """Connect a signal callback, return an event that fires when the last batch is done."""
+        from juntagrico.backends.email import batch_mail_sent
+        event = threading.Event()
+
+        def on_batch_sent(sender, message, original_message, done, **kwargs):
+            if done:
+                event.set()
+        batch_mail_sent.connect(on_batch_sent)
+
+        def wait():
+            event.wait(timeout=5)
+            batch_mail_sent.disconnect(on_batch_sent)
+        return wait
+
+    def test_send_single_email_via_smtp(self):
+        """Verify that a single email sent through BatchEmailBackend arrives at the SMTP server."""
+        self._handler.messages.clear()
+        wait = self._wait_for_done()
+        EmailMultiAlternatives(
+            'SMTP Test',
+            'This is a test body',
+            'sender@example.com',
+            bcc=['recipient1@example.com', 'recipient2@example.com'],
+        ).send()
+        wait()
+        self.assertEqual(len(self._handler.messages), 1)
+        received = self._handler.messages[0]
+        self.assertEqual(received['Subject'], 'SMTP Test')
+        self.assertEqual(received['From'], 'sender@example.com')
+
+    def test_batched_emails_via_smtp(self):
+        """Verify that emails are correctly batched and all arrive at the SMTP server."""
+        from django.core import mail
+        self._handler.messages.clear()
+        wait = self._wait_for_done()
+        backend = mail.get_connection()
+        recipients = [f'user{i}@example.com' for i in range(1, 100)]  # 99 recipients
+        msg = EmailMultiAlternatives(
+            'Batch SMTP Test',
+            'Batch test body',
+            'sender@example.com',
+            bcc=recipients,
+        )
+        backend.send_messages([msg])
+        wait()
+        # 99 recipients with batch_size 2 -> 50 batches
+        self.assertEqual(len(self._handler.messages), 50)
+        # All recipients should be covered — aiosmtpd records recipients in X-RcptTo header
+        all_rcpt = []
+        for m in self._handler.messages:
+            rcpt_to = m.get('X-RcptTo')
+            if rcpt_to:
+                all_rcpt.extend([addr.strip() for addr in rcpt_to.split(',')])
+        self.assertEqual(len(all_rcpt), 99)
+        self.assertEqual(sorted(all_rcpt), sorted(recipients))
+
+    def test_email_with_attachment_via_smtp(self):
+        """Verify that emails with attachments are sent correctly via SMTP."""
+        self._handler.messages.clear()
+        wait = self._wait_for_done()
+        msg = EmailMultiAlternatives(
+            'Attachment Test',
+            'Body with attachment',
+            'sender@example.com',
+            bcc=['recipient@example.com'],
+        )
+        msg.attach('test.txt', 'Hello, world!', 'text/plain')
+        msg.send()
+        wait()
+        self.assertEqual(len(self._handler.messages), 1)
+        received = self._handler.messages[0]
+        self.assertEqual(received['Subject'], 'Attachment Test')
+        # Check attachment is present
+        self.assertTrue(len(received.get_payload()) > 0)
