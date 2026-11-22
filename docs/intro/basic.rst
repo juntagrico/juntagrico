@@ -70,14 +70,12 @@ Custom Logo & Style
 
 Other customizations can be added to the same css file.
 
-Depot list setup
-----------------
-Initial List Generation
-^^^^^^^^^^^^^^^^^^^^^^^
-The depot lists are created by the following django management command :ref:`generate_depot_list <reference-generate-depot-list>`.
-This command can be called manually or using a cronjob.
+Depot Lists
+-----------
 
-Make sure to set the :ref:`depot list settings <settings-depot>` according to your needs.
+Depot lists contain a summary of what needs to be packed, delivered and picked up in depots.
+The lists can be generated automatically or on demand.
+See :ref:`setup-depot-lists` for details on generating and customizing depot lists.
 
 
 Admin Permission Setup
