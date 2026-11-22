@@ -76,6 +76,16 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      smtp:
+        image: reachfive/fake-smtp-server
+        ports:
+          - 1025:1025
+          - 1080:1080
+        options: >-
+          --health-cmd "nc -z 127.0.0.1 1025"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v7
