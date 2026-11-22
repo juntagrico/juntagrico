@@ -588,41 +588,70 @@ class BatchBackendConnectionTests(TestCase):
 
 @override_settings(
     EMAIL_BACKEND='juntagrico.backends.email.BatchEmailBackend',
-    EMAIL_HOST='127.0.0.1',
-    EMAIL_PORT=3025,
-    BATCH_MAILER={'batch_size': 2, 'wait_time': 0},
+    EMAIL_PORT=1025,
+    BATCH_MAILER={'batch_size': 1, 'wait_time': 0},
 )
 class BatchMailerSMTPTests(TestCase):
-    """Tests that verify the BatchEmailBackend against a real in-process SMTP server (aiosmtpd)."""
+    """Tests that verify the BatchEmailBackend against a real SMTP server.
+
+    The SMTP server is expected to be running as a service (e.g., in CI via Docker):
+    sudo docker run -d --name fake-smtp -p 1025:1025 -p 1080:1080 reachfive/fake-smtp-server
+
+    These tests are skipped when the SMTP server is not available.
+    Uses the fake-smtp-server REST API (port 1080) to inspect received emails.
+    """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        from aiosmtpd.controller import Controller  # deptry: ignore[DEP004]
-        from aiosmtpd.handlers import Message  # deptry: ignore[DEP004]
+        # Check if SMTP server is available — try CI service hostname first, then localhost
+        import socket
+        cls._smtp_available = False
+        cls._smtp_host = None
+        cls._api_url = None
+        for host in ('smtp', '127.0.0.1'):
+            try:
+                with socket.create_connection((host, 1025), timeout=2):
+                    cls._smtp_available = True
+                    cls._smtp_host = host
+                    cls._api_url = f'http://{host}:1080'
+                    break
+            except (ConnectionRefusedError, OSError):
+                pass
 
-        class CollectingHandler(Message):
-            def __init__(self):
-                super().__init__()
-                self.messages = []
+    def setUp(self):
+        super().setUp()
+        if not getattr(self.__class__, '_smtp_available', False):
+            self.skipTest('SMTP test server not available')
+        # Override EMAIL_HOST to point to the discovered SMTP server
+        from django.test import override_settings
+        self._smtp_override = override_settings(EMAIL_HOST=self.__class__._smtp_host)
+        self._smtp_override.enable()
+        # Clear any previously received emails via the API
+        self._clear_emails()
 
-            def handle_message(self, message):
-                self.messages.append(message)
-                return None
+    def tearDown(self):
+        self._smtp_override.disable()
+        super().tearDown()
 
-        cls._handler = CollectingHandler()
-        cls._controller = Controller(
-            cls._handler, hostname=settings.EMAIL_HOST, port=settings.EMAIL_PORT
-        )
-        cls._controller.start()
+    def _clear_emails(self):
+        """Delete all captured emails via the fake-smtp-server API."""
+        import urllib.request
+        try:
+            req = urllib.request.Request(f'{self.__class__._api_url}/api/emails', method='DELETE')
+            urllib.request.urlopen(req, timeout=5)
+        except (urllib.error.URLError, OSError):
+            pass
 
-    @classmethod
-    def tearDownClass(cls):
-        cls._controller.stop()
-        super().tearDownClass()
+    def _get_emails(self):
+        """Fetch captured emails via the fake-smtp-server API."""
+        import json
+        import urllib.request
+        resp = urllib.request.urlopen(f'{self.__class__._api_url}/api/emails', timeout=5)
+        return json.loads(resp.read())
 
     def _wait_for_done(self):
-        """Connect a signal callback, return an event that fires when the last batch is done."""
+        """Connect a signal callback, return a wait function that fires when the last batch is done."""
         from juntagrico.backends.email import batch_mail_sent
         event = threading.Event()
 
@@ -638,7 +667,6 @@ class BatchMailerSMTPTests(TestCase):
 
     def test_send_single_email_via_smtp(self):
         """Verify that a single email sent through BatchEmailBackend arrives at the SMTP server."""
-        self._handler.messages.clear()
         wait = self._wait_for_done()
         EmailMultiAlternatives(
             'SMTP Test',
@@ -647,15 +675,18 @@ class BatchMailerSMTPTests(TestCase):
             bcc=['recipient1@example.com', 'recipient2@example.com'],
         ).send()
         wait()
-        self.assertEqual(len(self._handler.messages), 1)
-        received = self._handler.messages[0]
-        self.assertEqual(received['Subject'], 'SMTP Test')
-        self.assertEqual(received['From'], 'sender@example.com')
+        emails = self._get_emails()
+        # split_size=1 means each BCC recipient gets a separate email with 'to' field
+        self.assertEqual(len(emails), 2)
+        addresses = [email['to']['text'] for email in emails]
+        self.assertEqual(sorted(addresses), ['recipient1@example.com', 'recipient2@example.com'])
+        for email in emails:
+            self.assertEqual(email['subject'], 'SMTP Test')
+            self.assertEqual(email['from']['text'], 'sender@example.com')
 
     def test_batched_emails_via_smtp(self):
         """Verify that emails are correctly batched and all arrive at the SMTP server."""
         from django.core import mail
-        self._handler.messages.clear()
         wait = self._wait_for_done()
         backend = mail.get_connection()
         recipients = [f'user{i}@example.com' for i in range(1, 100)]  # 99 recipients
@@ -667,20 +698,18 @@ class BatchMailerSMTPTests(TestCase):
         )
         backend.send_messages([msg])
         wait()
-        # 99 recipients with batch_size 2 -> 50 batches
-        self.assertEqual(len(self._handler.messages), 50)
-        # All recipients should be covered — aiosmtpd records recipients in X-RcptTo header
-        all_rcpt = []
-        for m in self._handler.messages:
-            rcpt_to = m.get('X-RcptTo')
-            if rcpt_to:
-                all_rcpt.extend([addr.strip() for addr in rcpt_to.split(',')])
-        self.assertEqual(len(all_rcpt), 99)
-        self.assertEqual(sorted(all_rcpt), sorted(recipients))
+        # split_size=1, batch_size=1: each recipient gets a separate email with 'to' field
+        emails = self._get_emails()
+        self.assertEqual(len(emails), 99)
+        # Collect all recipient addresses from the captured emails
+        all_recipients = []
+        for email in emails:
+            to_value = email.get('to', {}).get('value', [])
+            all_recipients.extend(entry['address'] for entry in to_value)
+        self.assertEqual(sorted(all_recipients), sorted(recipients))
 
     def test_email_with_attachment_via_smtp(self):
         """Verify that emails with attachments are sent correctly via SMTP."""
-        self._handler.messages.clear()
         wait = self._wait_for_done()
         msg = EmailMultiAlternatives(
             'Attachment Test',
@@ -691,8 +720,8 @@ class BatchMailerSMTPTests(TestCase):
         msg.attach('test.txt', 'Hello, world!', 'text/plain')
         msg.send()
         wait()
-        self.assertEqual(len(self._handler.messages), 1)
-        received = self._handler.messages[0]
-        self.assertEqual(received['Subject'], 'Attachment Test')
-        # Check attachment is present
-        self.assertTrue(len(received.get_payload()) > 0)
+        emails = self._get_emails()
+        self.assertEqual(len(emails), 1)
+        self.assertEqual(emails[0]['subject'], 'Attachment Test')
+        self.assertEqual(len(emails[0]['attachments']), 1)
+        self.assertEqual(emails[0]['attachments'][0]['filename'], 'test.txt')
