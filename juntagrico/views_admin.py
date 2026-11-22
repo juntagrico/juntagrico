@@ -3,6 +3,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
+from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -12,7 +13,7 @@ from django.views.generic import FormView
 
 from juntagrico import __version__
 from juntagrico.config import Config
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.util import return_to_previous_location, addons
@@ -23,28 +24,31 @@ from juntagrico.views_subscription import error_page
 
 @permission_required('juntagrico.change_subscription')
 def future(request):
-    subscriptionbundles = []
-    subscription_lines = dict({})
-    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'long_name'):
-        subscriptionbundles.append(subscription_bundle.id)
-        subscription_lines[subscription_bundle.id] = {
-            'name': str(subscription_bundle),
-            'future': 0,
-            'now': 0
-        }
-    for subscription in Subscription.objects.active():
-        for subscription_bundle in subscriptionbundles:
-            subscription_lines[subscription_bundle]['now'] += subscription.subscription_amount(
-                subscription_bundle)
+    def count_parts_by_bundle(parts, subscriptions):
+        return dict(
+            parts.filter(subscription__in=subscriptions)
+            .values_list('type__bundle').annotate(count=Count('id')).order_by()
+        )
 
-    for subscription in Subscription.objects.filter(cancellation_date=None, deactivation_date=None):
-        for subscription_bundle in subscriptionbundles:
-            subscription_lines[subscription_bundle]['future'] += subscription.subscription_amount_future(
-                subscription_bundle)
+    now_counts = count_parts_by_bundle(
+        SubscriptionPart.objects.active(),
+        Subscription.objects.active()
+    )
+    future_counts = count_parts_by_bundle(
+        SubscriptionPart.objects.not_canceled(),
+        Subscription.objects.filter(cancellation_date=None, deactivation_date=None)
+    )
+    subscription_lines = [
+        {
+            'name': str(subscription_bundle),
+            'now': now_counts.get(subscription_bundle.id, 0),
+            'future': future_counts.get(subscription_bundle.id, 0),
+        } for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'long_name')
+    ]
 
     renderdict = {
         'changed': request.GET.get('changed'),
-        'subscription_lines': iter(subscription_lines.values()),
+        'subscription_lines': subscription_lines,
     }
     return render(request, 'future.html', renderdict)
 
