@@ -122,12 +122,15 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def calc_subscription_amount(parts, bundle):
+        # DEPRECATED
         return parts.filter(type__bundle=bundle).count()
 
     def subscription_amount(self, bundle):
+        # DEPRECATED
         return self.calc_subscription_amount(self.active_parts, bundle)
 
     def subscription_amount_future(self, bundle):
+        # DEPRECATED
         return self.calc_subscription_amount(self.future_parts, bundle)
 
     @property
@@ -199,6 +202,7 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
+        # DEPRECATED
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
 
     @staticmethod
