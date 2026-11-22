@@ -635,8 +635,8 @@ class BatchMailerSMTPTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        from aiosmtpd.controller import Controller
-        from aiosmtpd.handlers import Message
+        from aiosmtpd.controller import Controller  # deptry: ignore[DEP004]
+        from aiosmtpd.handlers import Message  # deptry: ignore[DEP004]
 
         class CollectingHandler(Message):
             def __init__(self):
