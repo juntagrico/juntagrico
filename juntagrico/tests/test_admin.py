@@ -2,7 +2,8 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.jobs import RecuringJob
+from juntagrico import defaults
+from juntagrico.entity.jobs import Assignment, RecuringJob
 from . import JuntagricoTestCaseWithShares
 from ..defaults import richtextfield_config
 from ..entity.membership import Membership
@@ -131,6 +132,34 @@ class AdminTests(JuntagricoTestCaseWithShares):
             code=302,
         )
         self.assertRedirects(response, reverse('config'), fetch_redirect_response=False)
+
+    @override_settings(VOCABULARY=defaults.german(assignment=('Böhnli', 'Böhnli', 'n')))
+    def testJobAdminDeleteAssignment(self):
+        # the change message names the deleted assignment while translations are deactivated
+        assignment = self.create_assignment(self.job1, self.member)
+        change_url = reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,))
+        self.assertPost(
+            change_url,
+            data={
+                'type': self.job1.type.pk,
+                'slots': 1,
+                'multiplier': 1,
+                'time_0': self.job1.time.date(),
+                'time_1': self.job1.time.time(),
+                'assignment_set-TOTAL_FORMS': 1,
+                'assignment_set-INITIAL_FORMS': 1,
+                'assignment_set-0-id': assignment.pk,
+                'assignment_set-0-job': self.job1.pk,
+                'assignment_set-0-member': self.member.pk,
+                'assignment_set-0-amount': 1,
+                'assignment_set-0-DELETE': 'on',
+                'juntagrico-contact-content_type-object_id-TOTAL_FORMS': 0,
+                'juntagrico-contact-content_type-object_id-INITIAL_FORMS': 0,
+            },
+            member=self.admin,
+            code=302,
+        )
+        self.assertFalse(Assignment.objects.filter(pk=assignment.pk).exists())
 
     def testAdminDeleteReturn(self):
         delete_url = reverse('admin:juntagrico_recuringjob_delete', args=(self.job1.pk,)) + '?next=/config/'

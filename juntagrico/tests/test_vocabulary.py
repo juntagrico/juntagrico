@@ -1,4 +1,5 @@
 from django.test import override_settings
+from django.utils import translation
 
 from . import JuntagricoTestCase
 from .. import defaults
@@ -73,3 +74,9 @@ class VocabularyMultipleLanguagesTests(JuntagricoTestCase):
         self.assertEqual(Config.vocabulary('the_depot_acc'), 'l\'H')
         self.assertEqual(Config.vocabulary('the_depot_dat'), 'à l\'H')
         self.assertEqual(Config.vocabulary('another_subscription_dat'), 'à un autre E')
+
+    @override_settings(LANGUAGE_CODE='fr')
+    def testDeactivatedLanguage(self):
+        # the admin deactivates translations while building change messages
+        with translation.override(None):
+            self.assertEqual(Config.vocabulary('assignment'), 'B')
