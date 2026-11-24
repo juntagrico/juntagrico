@@ -342,7 +342,9 @@ class MembershipSyncTests(MembershipTests):
         new_membership.refresh_from_db()
         self.assertEqual(new_membership.activation_date, datetime.date(2026, 3, 1))
 
-    def testSyncDeactivatesMembershipWhenSharesInsufficient(self):
+    def testSyncDeactivatesMembershipWhenSharesInsufficient(self, end_date=None):
+        end_date = end_date or datetime.date(2026, 3, 15)
+        end_date_str = end_date.strftime('%Y-%m-%d')
         member = self.create_member('sync_deactivate@email.org', True)
         membership = member.memberships.first()
         self.assertTrue(membership.active)
@@ -351,11 +353,15 @@ class MembershipSyncTests(MembershipTests):
             paid_date='2026-01-01',
             cancelled_date='2026-03-01',
             termination_date='2026-03-01',
-            payback_date='2026-03-15',
+            payback_date=end_date_str,
         )
         membership.refresh_from_db()
         self.assertEqual(membership.cancellation_date, datetime.date(2026, 3, 1))
-        self.assertEqual(membership.deactivation_date, datetime.date(2026, 3, 15))
+        self.assertEqual(membership.deactivation_date, end_date)
+
+    def testSyncWithFutureDeactivation(self):
+        next_week = datetime.date.today() + datetime.timedelta(days=7)
+        self.testSyncDeactivatesMembershipWhenSharesInsufficient(end_date=next_week)
 
     def testSyncPreservesExistingCancellationDateWhenDeactivating(self):
         member = self.create_member(
@@ -373,6 +379,30 @@ class MembershipSyncTests(MembershipTests):
         membership.refresh_from_db()
         self.assertEqual(membership.cancellation_date, datetime.date(2026, 2, 10))
         self.assertEqual(membership.deactivation_date, datetime.date(2026, 3, 15))
+
+    def testSyncExistingMembershipWithFutureDeactivation(self):
+        # existing membership with future deactivation stays unchanged
+        next_week = datetime.date.today() + datetime.timedelta(days=7)
+        next_week_str = next_week.strftime('%Y-%m-%d')
+        member = self.create_member(
+            'sync_preserve_cancel@email.org',
+            {
+                'activation_date': '2026-01-01',
+                'cancellation_date': '2026-02-10',
+                'deactivation_date': next_week_str,
+            },
+        )
+        membership = member.memberships.first()
+        self.create_custom_share(
+            member,
+            paid_date='2026-01-01',
+            cancelled_date='2026-03-01',
+            termination_date='2026-03-01',
+            payback_date=next_week_str,
+        )
+        membership.refresh_from_db()
+        self.assertEqual(membership.cancellation_date, datetime.date(2026, 2, 10))
+        self.assertEqual(membership.deactivation_date, next_week)
 
     def testSyncClearsDuplicateMemberships(self):
         member = self.create_member('sync_duplicates@email.org')

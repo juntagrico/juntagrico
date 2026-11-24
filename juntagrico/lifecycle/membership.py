@@ -56,8 +56,7 @@ def sync(sender, instance, **kwargs):
         account = instance
     else:
         account = instance.member
-    today = datetime.date.today()
-    active_shares = account.shares.exclude(payback_date__lte=today)
+    active_shares = account.shares.exclude(payback_date__isnull=False)
     current_membership = account.memberships.active_or_requested().first()
     # clear duplicate memberships
     for duplicate in account.memberships.active_or_requested()[1:]:
