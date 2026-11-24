@@ -34,7 +34,8 @@ def _get_setting_with_key_localized(setting_key, default):
     def inner(key, fallback=None):
         if hasattr(settings, setting_key):
             setting = getattr(settings, setting_key)
-            lang_code = get_language()
+            # get_language() returns None while translations are deactivated, e.g. in admin change messages
+            lang_code = get_language() or settings.LANGUAGE_CODE
             for locale in [lang_code, lang_code[:2]]:
                 if locale in setting and key in setting[locale]:
                     return getattr(settings, setting_key)[locale][key]
