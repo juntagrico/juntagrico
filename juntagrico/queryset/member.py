@@ -1,7 +1,7 @@
 import datetime
 import re
 
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.db.models import (
     QuerySet,
     Sum,
@@ -190,6 +190,23 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def by_permission(self, permission_codename):
         perm = Permission.objects.get(codename=permission_codename)
         return self.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()
+
+    def privileged(self):
+        """
+        Accounts that can do more than a normal member: staff, superusers, coordinators of areas or depots
+        and users with any permission (groups without permissions don't count).
+        """
+        from juntagrico.entity.depot import DepotCoordinator
+        from juntagrico.entity.jobs import AreaCoordinator
+        # use subqueries instead of joins to keep the queryset combinable and free of duplicates
+        return self.filter(
+            Q(user__in=User.objects.filter(
+                Q(is_staff=True) | Q(is_superuser=True)
+                | Q(user_permissions__isnull=False) | Q(groups__permissions__isnull=False)
+            ))
+            | Q(pk__in=AreaCoordinator.objects.values('member'))
+            | Q(pk__in=DepotCoordinator.objects.values('member'))
+        )
 
     def select_user(self):
         return self.select_related('user')

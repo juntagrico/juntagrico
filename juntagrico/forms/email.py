@@ -194,6 +194,8 @@ class RecipientsForm(BaseRecipientsForm):
                 'all_shares',
                 _('Alle mit {share}').format(share=Config.vocabulary('share'))
             ))
+        if self.sender.user.is_superuser:
+            choices.append(('all_privileged', _('Alle mit Verwaltungsrechten')))
         return choices
 
     def _populate_recipients_queryset(self, recipients):
@@ -210,6 +212,8 @@ class RecipientsForm(BaseRecipientsForm):
                 recipients |= Member.objects.active().has_active_shares()
             if 'all_memberships' in to_list:
                 recipients |= Member.objects.active().filter(memberships__in=Membership.objects.active())
+            if 'all_privileged' in to_list:
+                recipients |= Member.objects.active().privileged()
             if to_areas := cleaned_data.get('to_areas'):
                 recipients |= Member.objects.active().filter(areas__in=to_areas)
             if to_jobs := cleaned_data.get('to_jobs'):
