@@ -1,3 +1,4 @@
+import datetime
 import threading
 from unittest.mock import patch
 
@@ -9,6 +10,9 @@ from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares, JuntagricoTestCase
+from ..entity.member import Member
+from ..entity.subtypes import SubscriptionCategory
+from ..forms.email import RecipientsForm
 from ..mailer import get_emails_by_permission
 from ..util.string import int_array_decompress
 from ..backends.email import BaseBatchEmailBackend
@@ -199,6 +203,120 @@ class MemberMailerTests(JuntagricoTestCaseWithShares):
             'to_members': [self.member2.id, self.member4.id, self.member5.id]
         })
         self.assertEqual(b'An 3 Personen senden', response.content)
+
+
+class CategoryMailerTests(JuntagricoTestCaseWithShares):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.other_category = SubscriptionCategory.objects.create(name='other category', sort_order=2)
+        cls.other_type = cls.create_sub_type(cls.create_bundle('other bundle', cls.other_category))
+        cls.uncategorized_type = cls.create_sub_type(cls.create_bundle('uncategorized bundle'))
+
+    def recipients(self, *categories):
+        return set(Member.objects.has_active_subscription_in_category(categories))
+
+    def testActiveSubscriptionInCategory(self):
+        # active, canceled and deactivated in the future subscriptions count. Waiting and inactive ones do not.
+        self.assertSetEqual(
+            self.recipients(self.sub_category),
+            {self.member, self.member3, self.member6, self.member7}
+        )
+        self.assertSetEqual(self.recipients(self.other_category), set())
+
+    def testSingleCategory(self):
+        self.assertSetEqual(
+            set(Member.objects.has_active_subscription_in_category(self.sub_category)),
+            {self.member, self.member3, self.member6, self.member7}
+        )
+
+    def testOnlyCategoryOfActivePart(self):
+        today = datetime.date.today()
+        sub = self.create_sub(self.depot, [self.other_type], today - datetime.timedelta(10))
+        # part of the first category ended already
+        sub.parts.create(
+            type=self.sub_type, activation_date=today - datetime.timedelta(10),
+            cancellation_date=today - datetime.timedelta(5),
+            deactivation_date=today - datetime.timedelta(1),
+        )
+        # part of the other category is still waiting
+        sub.parts.create(type=self.sub_type2)
+        self.member4.join_subscription(sub, True)
+        self.assertSetEqual(self.recipients(self.other_category), {self.member4})
+        self.assertNotIn(self.member4, self.recipients(self.sub_category))
+
+    def testWaitingPart(self):
+        sub = self.create_sub_now(self.depot, parts=[self.sub_type])
+        sub.parts.all().update(activation_date=None)
+        self.member4.join_subscription(sub, True)
+        self.assertNotIn(self.member4, self.recipients(self.sub_category))
+
+    def testWaitingSubscription(self):
+        sub = self.create_sub(self.depot, [self.other_type])
+        self.member4.join_subscription(sub, True)
+        self.assertSetEqual(self.recipients(self.other_category), set())
+
+    def testNoDuplicatesAndUnion(self):
+        sub = self.create_sub_now(self.depot, parts=[self.sub_type, self.other_type])
+        self.member4.join_subscription(sub, True)
+        members = Member.objects.has_active_subscription_in_category([self.sub_category, self.other_category])
+        self.assertEqual(members.count(), len(set(members)))
+        self.assertIn(self.member4, members)
+        self.assertSetEqual(self.recipients(self.other_category), {self.member4})
+
+    def testUncategorizedBundleBelongsToNoCategory(self):
+        sub = self.create_sub_now(self.depot, parts=[self.uncategorized_type])
+        self.member4.join_subscription(sub, True)
+        self.assertNotIn(self.member4, self.recipients(self.sub_category, self.other_category))
+
+    def testLeftMember(self):
+        sub = self.create_sub_now(self.depot, parts=[self.other_type])
+        self.member4.join_subscription(sub, True)
+        self.member4.leave_subscription(sub, datetime.date.today())
+        self.assertSetEqual(self.recipients(self.other_category), set())
+
+    def testInactiveMember(self):
+        sub = self.create_sub_now(self.depot, parts=[self.other_type])
+        self.member4.join_subscription(sub, True)
+        self.assertSetEqual(self.recipients(self.other_category), {self.member4})
+        Member.objects.filter(pk=self.member4.pk).update(deactivation_date=datetime.date.today())
+        self.assertSetEqual(set(Member.objects.active().has_active_subscription_in_category([self.other_category])), set())
+
+    def testRecipientCounter(self):
+        response = self.assertGet(reverse('email-count-recipients'), data={
+            'to_categories': [self.sub_category.id]
+        })
+        self.assertEqual(b'An 4 Personen senden', response.content)
+        response = self.assertGet(reverse('email-count-recipients'), data={
+            'to_categories': [self.other_category.id]
+        })
+        self.assertEqual(b'Senden', response.content)
+
+    def testSending(self):
+        self.assertPost(reverse('email-write'), {
+            'from_email': 'private',
+            'to_categories': [self.sub_category.id],
+            'subject': 'test',
+        }, code=302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox[0].bcc), 4)
+
+    def testFieldAvailability(self):
+        # members that may contact everybody
+        form = RecipientsForm(self.admin)
+        self.assertIn('to_categories', form.fields)
+        self.assertIn('to_categories', form.form_fields)
+        # coordinators with restricted access can't choose categories
+        form = RecipientsForm(self.area_admin_contact, areas=self.area_admin_contact.coordinated_areas.all())
+        self.assertNotIn('to_categories', form.fields)
+        self.assertNotIn('to_categories', form.form_fields)
+        # the class attribute is not modified
+        self.assertIn('to_categories', RecipientsForm.form_fields)
+
+    def testFieldHiddenWithoutCategories(self):
+        SubscriptionCategory.objects.all().delete()
+        form = RecipientsForm(self.admin)
+        self.assertNotIn('to_categories', form.fields)
 
 
 class MailerTests(JuntagricoTestCaseWithShares):

@@ -1,6 +1,7 @@
 import datetime
 import re
 
+from django.apps import apps
 from django.contrib.auth.models import Permission
 from django.db.models import (
     QuerySet,
@@ -79,6 +80,35 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
             ~q_left_subscription(on_date),
             *depot_query
         )
+
+    def has_active_subscription_in_category(self, categories, on_date=None):
+        """
+        :param categories: subscription categories (iterable or single category)
+        :param on_date: defaults to today
+        :return: members with an active subscription that has an active part in one of the categories.
+            Canceled subscriptions and parts count until they are deactivated, waiting ones don't.
+        """
+        on_date = on_date or datetime.date.today()
+        if not is_iterable(categories):
+            categories = [categories]
+        Subscription = apps.get_model('juntagrico', 'Subscription')
+        SubscriptionPart = apps.get_model('juntagrico', 'SubscriptionPart')
+        SubscriptionMembership = apps.get_model('juntagrico', 'SubscriptionMembership')
+        parts = SubscriptionPart.objects.filter(
+            Q(deactivation_date__isnull=True) | Q(deactivation_date__gt=on_date),
+            activation_date__isnull=False, activation_date__lte=on_date,
+            type__bundle__category__in=categories,
+        )
+        subscriptions = Subscription.objects.active(on_date).filter(
+            Q(deactivation_date__isnull=True) | Q(deactivation_date__gt=on_date),
+            pk__in=parts.values('subscription'),
+        )
+        memberships = SubscriptionMembership.objects.filter(
+            Q(leave_date__isnull=True) | Q(leave_date__gt=on_date),
+            join_date__isnull=False, join_date__lte=on_date,
+            subscription__in=subscriptions,
+        )
+        return self.filter(pk__in=memberships.values('member'))
 
     def has_active_shares(self, on_date=None):
         on_date = on_date or datetime.date.today()
