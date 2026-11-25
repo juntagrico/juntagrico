@@ -19,6 +19,7 @@ from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.membership import Membership
+from juntagrico.entity.subtypes import SubscriptionCategory
 from juntagrico.forms import InternalModelSelect2MultipleWidget
 from juntagrico.forms.account import MemberSelect2MultipleWidget
 from juntagrico.util.html import EmailHtmlParser
@@ -142,7 +143,21 @@ class RecipientsForm(BaseRecipientsForm):
         )
     )
 
-    form_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
+    to_categories = forms.ModelMultipleChoiceField(
+        SubscriptionCategory.objects.order_by('sort_order'),
+        label=format_lazy(
+            _('An alle {with_active_subscription} in diesen Kategorien'),
+            with_active_subscription=Config.vocabulary('with_active_subscription')
+        ),
+        required=False,
+        widget=InternalModelSelect2MultipleWidget(
+            model=SubscriptionCategory,
+            search_fields=['name__icontains'],
+            attrs={'data-minimum-input-length': 0}
+        )
+    )
+
+    form_fields = ['to_list', 'to_categories', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
 
     def __init__(self, sender, *args, areas=None, depots=None, **kwargs):
         super().__init__(sender, *args, areas=areas, depots=depots, **kwargs)
@@ -165,6 +180,13 @@ class RecipientsForm(BaseRecipientsForm):
             self._set_field_queryset('to_jobs', Job.objects.order_by_recent())
         if 'to_depots' in self.fields and depots is not None:
             self._set_field_queryset('to_depots', depots.order_by('id'))
+        if 'to_categories' in self.fields:
+            if areas is not None or depots is not None:
+                # like "all with subscription", only available to those who may contact everyone
+                del self.fields['to_categories']
+                self.form_fields.remove('to_categories')
+            else:
+                self._set_field_queryset('to_categories', SubscriptionCategory.objects.order_by('sort_order'))
 
     def _set_field_queryset(self, field, queryset):
         if not queryset.exists():
@@ -210,6 +232,8 @@ class RecipientsForm(BaseRecipientsForm):
                 recipients |= Member.objects.active().has_active_shares()
             if 'all_memberships' in to_list:
                 recipients |= Member.objects.active().filter(memberships__in=Membership.objects.active())
+            if to_categories := cleaned_data.get('to_categories'):
+                recipients |= Member.objects.active().has_active_subscription_in_category(to_categories)
             if to_areas := cleaned_data.get('to_areas'):
                 recipients |= Member.objects.active().filter(areas__in=to_areas)
             if to_jobs := cleaned_data.get('to_jobs'):
