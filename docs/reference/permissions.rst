@@ -309,6 +309,7 @@ Search Hints:
 juntagrico.can_filter_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the subscription filter entry in the administration menu without the permission to change subscriptions.
+Also grants access to the future view, which compares the current and future number of subscriptions.
 
 Search Hints:
     * German: filtern
