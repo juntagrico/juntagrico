@@ -22,7 +22,9 @@ from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
 
 
-@permission_required('juntagrico.change_subscription')
+@any_permission_required(
+    'juntagrico.view_subscription', 'juntagrico.change_subscription', 'juntagrico.can_filter_subscriptions'
+)
 def future(request):
     def count_parts_by_bundle(parts, subscriptions):
         return dict(

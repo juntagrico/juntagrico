@@ -233,6 +233,24 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGreater(lines[str(self.bundle)]['now'], 0)
         self.assertEqual(lines[str(self.unused_bundle)]['now'], 0)
 
+    def testFutureReadPermission(self):
+        # read permissions are enough to see the future view
+        for codename in ('view_subscription', 'can_filter_subscriptions', 'change_subscription'):
+            with self.subTest(codename=codename):
+                self.member2.user.user_permissions.set([
+                    Permission.objects.get(codename=codename, content_type__app_label='juntagrico')
+                ])
+                self.assertGet(reverse('future'), member=self.member2)
+        # menu links to the view, but not to the views that require more permissions
+        self.member2.user.user_permissions.set([Permission.objects.get(codename='can_filter_subscriptions')])
+        response = self.assertGet(reverse('future'), member=self.member2)
+        self.assertContains(response, f'href="{reverse("future")}"')
+        self.assertNotContains(response, f'href="{reverse("manage-sub-pending")}"')
+        self.assertGet(reverse('manage-sub-pending'), member=self.member2, code=403)
+        # unrelated permissions are not enough
+        self.member2.user.user_permissions.set([Permission.objects.get(codename='can_filter_members')])
+        self.assertGet(reverse('future'), member=self.member2, code=302)
+
     def testPrimaryMember(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
 

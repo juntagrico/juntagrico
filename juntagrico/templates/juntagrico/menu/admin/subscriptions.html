@@ -64,7 +64,7 @@
                             </a>
                         </li>
                     {% endif %}
-                    {% if perms.juntagrico.change_subscription %}
+                    {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'future' %}">
                                 {% trans "Zukunftsblick" %}
