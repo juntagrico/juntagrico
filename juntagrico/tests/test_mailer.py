@@ -2,6 +2,7 @@ import threading
 from unittest.mock import patch
 
 from django.conf import settings
+from django.contrib.auth.models import Group, Permission, User
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends import base
@@ -9,6 +10,9 @@ from django.test import override_settings, tag, TestCase
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares, JuntagricoTestCase
+from ..entity.depot import DepotCoordinator
+from ..entity.jobs import AreaCoordinator
+from ..entity.member import Member
 from ..mailer import get_emails_by_permission
 from ..util.string import int_array_decompress
 from ..backends.email import BaseBatchEmailBackend
@@ -412,6 +416,71 @@ class MailerTests(JuntagricoTestCaseWithShares):
             'First_name4 Last_name4 <email4@email.org>',
             'first_name1 last_name1 <email1@email.org>'
         ])
+
+    def testAllPrivilegedMailSend(self):
+        AreaCoordinator.objects.all().delete()
+        DepotCoordinator.objects.all().delete()
+        users = User.objects.exclude(pk=self.admin.user.pk)
+        users.update(is_staff=False, is_superuser=False)
+        for user in users:
+            user.groups.clear()
+            user.user_permissions.clear()
+
+        def create(name, **user_fields):
+            member = self.create_member(f'{name}@example.org', first_name=name, last_name='x')
+            User.objects.filter(pk=member.user.pk).update(**user_fields)
+            return member
+
+        permission = Permission.objects.get(codename='can_view_lists')
+        create('staff', is_staff=True)
+        create('superuser', is_superuser=True)
+        create('permitted').user.user_permissions.add(permission)
+        groups = [Group.objects.create(name=name) for name in ('group1', 'group2')]
+        for group in groups:
+            group.permissions.add(permission, Permission.objects.get(codename='can_generate_lists'))
+        create('grouped').user.groups.set(groups)  # several groups and permissions, but only one email
+        AreaCoordinator.objects.create(area=self.area, member=create('area'))
+        DepotCoordinator.objects.create(depot=self.depot, member=create('depot'))
+        # must not receive the email
+        create('normal')
+        create('emptygroup').user.groups.add(Group.objects.create(name='without permissions'))
+        former = create('former', is_staff=True)
+        Member.objects.filter(pk=former.pk).update(deactivation_date='2017-03-27')
+
+        expected = ['area', 'depot', 'grouped', 'permitted', 'staff', 'superuser']
+        self.assertListEqual(
+            sorted(Member.objects.active().privileged().exclude(pk=self.admin.pk).values_list('first_name', flat=True)),
+            expected
+        )
+        post_data = {'from_email': 'private', 'to_list': ['all_privileged'], 'subject': 'test'}
+        self.assertPost(reverse('email-write'), post_data, code=302, member=self.admin)
+        admin = Member.objects.filter(pk=self.admin.pk).as_email_recipients()
+        self.assertListEqual(
+            sorted(mail.outbox[0].bcc), sorted(admin + [f'{name} x <{name}@example.org>' for name in expected])
+        )
+        # combined with other recipients, everyone gets the email only once
+        mail.outbox = []
+        post_data['to_members'] = [Member.objects.get(first_name='staff').pk, Member.objects.get(first_name='normal').pk]
+        post_data['to_areas'] = [self.area.pk]
+        self.assertPost(reverse('email-write'), post_data, code=302, member=self.admin)
+        recipients = mail.outbox[0].bcc
+        self.assertEqual(len(recipients), len(set(recipients)))
+        self.assertIn('normal x <normal@example.org>', recipients)
+        self.assertIn('area x <area@example.org>', recipients)
+
+    def testAllPrivilegedSuperuserOnly(self):
+        def choices():
+            response = self.assertGet(reverse('email-write'))
+            return [key for key, _ in response.context['form'].fields['to_list'].choices]
+
+        self.assertNotIn('all_privileged', choices())
+        post_data = {'from_email': 'private', 'to_list': ['all_privileged'], 'subject': 'test'}
+        self.assertPost(reverse('email-write'), post_data)
+        self.assertEqual(len(mail.outbox), 0)
+        User.objects.filter(pk=self.member.user.pk).update(is_staff=True)
+        self.assertNotIn('all_privileged', choices())
+        User.objects.filter(pk=self.member.user.pk).update(is_superuser=True)
+        self.assertIn('all_privileged', choices())
 
     def testMailTemplate(self):
         self.assertGet(reverse('email-template', args=[self.mail_template.pk]))

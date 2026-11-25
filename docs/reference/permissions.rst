@@ -68,6 +68,8 @@ These have the following effects:
 
 - staff status: Allows the user to login to the django admin page ("Datenverwaltung"), to see which version of juntagrico is installed and to contact any member via email.
 - superuser status: Grants the user all permissions, except the notification permissions, which need to be granted specifically.
+  Additionally, superusers can send emails to everyone with more rights than a normal member, i.e., staff, superusers,
+  area and depot coordinators and users with any permission (directly or through a group).
 
 Dependent permissions
 ---------------------
